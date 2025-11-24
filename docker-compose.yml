@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: vindhellfest-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data # volumes persistant
+      - ./bd/init:/docker-entrypoint-initdb.d # path pour les scripts d'initialisation
+    networks:
+      - app-net # Permet au backend de l’appeler via le hostname db
+    healthcheck: # Toutes les 10 secondes, Docker vérifie si Postgres répond. Si la base n’est pas prête elle est considérée comme “unhealthy”. Eviter que le backend démarre avant que la BDD soit prête
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: vindhellfest-backend
+    restart: always
+    env_file:
+      - .env
+      - .env.backend
+    depends_on:
+      db:
+        condition: service_healthy # attend que db soit en état healthy avant de démarrer.
+    ports:
+      - "4000:4000" # exposes le port 4000 du conteneur sur le port 4000 de ta machine. http://localhost:4000
+    networks:
+      - app-net # Permet au backend d’appeler la BDD via le hostname db
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    container_name: vindhellfest-frontend
+    restart: always
+    env_file:
+      - .env
+      - .env.frontend
+    depends_on:
+      - backend # attend que le backend soit démarré avant de démarrer le frontend.
+    ports:
+      - "3000:3000" # # exposes le port 3000 du conteneur sur le port 3000 de ta machine. http://localhost:3000
+    networks:
+      - app-net # Permet au frontend d’appeler le backend via le hostname backend
+
+networks:
+  app-net: # Déclare un réseau Docker interne nommé app-net
+
+volumes:
+  pgdata: # Volume persistant pour les données PostgreSQL
