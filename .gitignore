@@ -2,3 +2,6 @@
 .env
 .env.backend
 .env.frontend
+
+# Ne pas versionner les dossier générés par les dépendances
+**/node_modules/
