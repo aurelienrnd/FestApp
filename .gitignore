@@ -1,0 +1,4 @@
+# Ne pas versionner les variables d'environnement
+.env
+.env.backend
+.env.frontend
