@@ -1,17 +1,31 @@
 # 📦 Base de Donnée Projet Vindhellfest – Architecture & Documentation
 
-# 🗂️ Structure du Projet
-Voici l’architecture globale du projet avec l’explication du rôle de chaque dossier :
+## Demarrage :
+- `docker compose up -d db` :  Lance uniquement la base de données Postgres en arrière-plan.
+
+- `docker compose down -v` : Arrête et supprime, les conteneurs, les réseaux Docker, et la base de données (utile apres modif sur la bdd)
+
+- `docker ps` : Affiche les conteneurs en cours d'exécution.
+
+- `docker exec -it vindhellfest-db psql -U postgres -d vindhellfest` : Entre dans le conteneur PostgreSQL et ouvre un terminal psql.
+Util pour tester tes tables directement dans la base.
+
+
+## Architecture globale du projet
 
 ```bash
 ├─ .init/
-│  └─ user_schema.sql
+│  ├─ 01_user_schema.sql
+│  └─ 02_user_inserts.sql
 └─ README.md
 ```
 ## 📁 `init/` – Fichier d'initialisation de la base de donnée
-Ce dossier contient l’ensemble des scripts nécessaires à la création et à la configuration initiale du schéma SQL du projet.
+Le dossier init/ regroupe l’ensemble des scripts SQL utilisés pour créer et alimenter la base de données durant le développement.
+Il contient deux types de fichiers :
+- `schema.sql` – Définit la structure de la base (tables, contraintes, extensions, triggers, etc.)
+- `inserts.sql` – Fournit des données d’exemple pour les phases de développement et de test
 
-### `user_schema.sql`
+### `01_user_schema.sql`
 Ce fichier contient :
 
 Les extensions PostgreSQL nécessaires
