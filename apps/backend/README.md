@@ -1,12 +1,15 @@
 # 📦 Backend Projet Vindhellfest – Architecture & Documentation
 ## Sript :
-- `npm run dev`	: Lancer TS + auto-reload (développement)
-- `npm run build` : 	Compiler TS → JS
-- `npm start	Démarrer` :  l’app compilée (production)
+- `docker compose up -d db backend`	: Démarrer la base de données et le backend
+- `docker compose restart backend` : Redémarrer uniquement le backend
+- `docker compose logs -f backend` : Consulter les logs
+
+Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfest-backend`
 - `npm test	Placeholder` :  (aucun test configuré)
 - `npm run lint` : 	Vérifier le code (ESLint)
 - `npm run lint:fix` : 	Corriger automatiquement les erreurs ESLint
 - `npm run format` : 	Formater ton code auto avec Prettier
+
 ## Stack technique
 **Dependencies**
 - `bcrypt` : Permet de hasher les mots de passe avant de les stocker dans la base de données.
@@ -29,6 +32,7 @@
 - `prettier` : Formateur de code automatique.
 - `ts-node-dev` : Comme nodemon, mais pour TypeScript.
 - `typescript` : Le compilateur TypeScript.
+
 ## Architecture
 ```bash
 ├─ node_modules/
@@ -52,10 +56,15 @@
 ```
 ## 📄 Dockerfile
 Ce Dockerfile définit la manière dont l’application backend TypeScript est compilée, puis packagée dans une image Docker.
+
 ## 📁 src / 
+
 ### 📁 Controllers
+
 ### 📁 Middlewares
+
 ### 📁 Routes
+
 ### 📄 db.ts
 Ce fichier centralise la configuration de la connexion à la base de données PostgreSQL ainsi qu’une fonction utilitaire permettant d’exécuter facilement des requêtes SQL depuis le backend.
 **Rôle du fichier**
@@ -63,6 +72,7 @@ Ce fichier centralise la configuration de la connexion à la base de données Po
 - Créer un pool de connexions PostgreSQL via le module pg
 - Exposer une fonction query() qui simplifie l’exécution de requêtes SQL
 - Éviter la répétition de code lors des interactions avec la base de données
+
 ### 📄 index.ts 
 Ce fichier contient le serveur Express principal.
 Il a pour rôle d’initialiser l’API, gérer les routes de base et vérifier le bon fonctionnement du backend ainsi que de la base de données.
@@ -71,8 +81,10 @@ Il a pour rôle d’initialiser l’API, gérer les routes de base et vérifier 
 - Créer une application Express
 - Exposer des routes simples de diagnostic (/health, /debug/db)
 - Lancer le serveur HTTP sur le port configuré
+
 ## ESLint & Prettier
 Dans ce projet, deux outils complémentaires assurent la qualité du code :
+
 ### ESLint — Analyseur de code
 ESLint est un analyseur statique qui vérifie ton code TypeScript/JavaScript pour détecter :
 - erreurs de logique
@@ -81,6 +93,7 @@ ESLint est un analyseur statique qui vérifie ton code TypeScript/JavaScript pou
 - types incorrects
 - règles de style définies par l’équipe
 - incohérences dans l’organisation du code
+
 ### Prettier — Formateur automatique (style du code uniquement)
 Il ne vérifie pas les bugs, il s’occupe uniquement de :
 - indentation
@@ -89,4 +102,5 @@ Il ne vérifie pas les bugs, il s’occupe uniquement de :
 - espaces
 - retours à la ligne
 mise en forme des objets et fonctions
+
 ## List des routes API
