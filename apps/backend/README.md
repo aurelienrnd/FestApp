@@ -1,5 +1,4 @@
 # 📦 Backend Projet Vindhellfest – Architecture & Documentation
-
 ## Sript :
 - `npm run dev`	: Lancer TS + auto-reload (développement)
 - `npm run build` : 	Compiler TS → JS
@@ -8,7 +7,6 @@
 - `npm run lint` : 	Vérifier le code (ESLint)
 - `npm run lint:fix` : 	Corriger automatiquement les erreurs ESLint
 - `npm run format` : 	Formater ton code auto avec Prettier
-
 ## Stack technique
 **Dependencies**
 - `bcrypt` : Permet de hasher les mots de passe avant de les stocker dans la base de données.
@@ -31,7 +29,6 @@
 - `prettier` : Formateur de code automatique.
 - `ts-node-dev` : Comme nodemon, mais pour TypeScript.
 - `typescript` : Le compilateur TypeScript.
-
 ## Architecture
 ```bash
 ├─ node_modules/
