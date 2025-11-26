@@ -9,12 +9,14 @@ const PORT = process.env.PORT || 4000;
 
 // Définition d'une route GET sur /health pour tester si le backend fonctionne correctement.
 app.get("/health", (req, res) => {
+  console.log("Health check successful serveur backend opérationnel");
   res.json({ status: "ok", message: "Backend is running" });
 });
 
 app.get("/debug/db", async (req, res) => {
   try {
     const rows = await query("SELECT NOW() as now");
+    console.log("Connexion to the DB successful at:", rows[0].now);
     res.json({
       db: "ok",
       now: rows[0].now,
