@@ -53,13 +53,27 @@
 ├─ README.MD
 └─ tsconfig.json
 ```
+## 📄 Dockerfile
+Ce Dockerfile définit la manière dont l’application backend TypeScript est compilée, puis packagée dans une image Docker.
 ## 📁 src / 
 ### 📁 Controllers
 ### 📁 Middlewares
 ### 📁 Routes
-
-
-
+### 📄 db.ts
+Ce fichier centralise la configuration de la connexion à la base de données PostgreSQL ainsi qu’une fonction utilitaire permettant d’exécuter facilement des requêtes SQL depuis le backend.
+**Rôle du fichier**
+- Charger les variables d’environnement (fichier .env) grâce à dotenv
+- Créer un pool de connexions PostgreSQL via le module pg
+- Exposer une fonction query() qui simplifie l’exécution de requêtes SQL
+- Éviter la répétition de code lors des interactions avec la base de données
+### 📄 index.ts 
+Ce fichier contient le serveur Express principal.
+Il a pour rôle d’initialiser l’API, gérer les routes de base et vérifier le bon fonctionnement du backend ainsi que de la base de données.
+**Rôle du fichier**
+- Charger les variables d’environnement (via dotenv)
+- Créer une application Express
+- Exposer des routes simples de diagnostic (/health, /debug/db)
+- Lancer le serveur HTTP sur le port configuré
 ## ESLint & Prettier
 Dans ce projet, deux outils complémentaires assurent la qualité du code :
 ### ESLint — Analyseur de code
@@ -78,6 +92,4 @@ Il ne vérifie pas les bugs, il s’occupe uniquement de :
 - espaces
 - retours à la ligne
 mise en forme des objets et fonctions
-
-
-## ↕️ List des routes API
+## List des routes API
