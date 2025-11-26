@@ -24,6 +24,7 @@ services:
     build:
       context: ./apps/backend
       dockerfile: Dockerfile
+      target: dev  
     container_name: vindhellfest-backend
     restart: always
     env_file:
@@ -31,11 +32,14 @@ services:
       - .env.backend
     depends_on:
       db:
-        condition: service_healthy # attend que db soit en état healthy avant de démarrer.
+        condition: service_healthy
     ports:
-      - "4000:4000" # exposes le port 4000 du conteneur sur le port 4000 de ta machine. http://localhost:4000
+      - "4000:4000"
+    volumes:
+      - ./apps/backend:/app         
+      - /app/node_modules           
     networks:
-      - app-net # Permet au backend d’appeler la BDD via le hostname db
+      - app-net  
 
   frontend:
     build:
