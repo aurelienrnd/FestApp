@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data # volumes persistant
-      - ./bd/init:/docker-entrypoint-initdb.d # path pour les scripts d'initialisation
+      - ./bd/init:/docker-entrypoint-initdb.d # Pour les scripts d'initialisation
     networks:
       - app-net # Permet au backend de l’appeler via le hostname db
     healthcheck: # Toutes les 10 secondes, Docker vérifie si Postgres répond. Si la base n’est pas prête elle est considérée comme “unhealthy”. Eviter que le backend démarre avant que la BDD soit prête

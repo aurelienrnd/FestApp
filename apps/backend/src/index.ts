@@ -13,6 +13,7 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "Backend is running" });
 });
 
+// Définition d'une route GET sur /debug/db pour tester la connexion à la base de données.
 app.get("/debug/db", async (req, res) => {
   try {
     const rows = await query("SELECT NOW() as now");
