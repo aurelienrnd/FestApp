@@ -1,11 +1,8 @@
 import express from "express";
-import dotenv from "dotenv";
 import { query } from "./db";
 
 // Création de l’application Express
 export function createApp() {
-  dotenv.config();
-
   const app = express();
 
   // test de demmarrage du serveur
