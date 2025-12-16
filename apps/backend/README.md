@@ -32,6 +32,9 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 - `prettier` : Formateur de code automatique.
 - `ts-node-dev` : Comme nodemon, mais pour TypeScript.
 - `typescript` : Le compilateur TypeScript.
+- `vitest` : Lance les tests et vérifie les assertions.
+- `supertest` : Simule un navigateur ou un client API.
+- `@types/supertest` : Définitions TypeScript pour supertest.
 
 ## Architecture
 ```bash
