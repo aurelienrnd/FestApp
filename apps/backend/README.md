@@ -18,6 +18,10 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 - `express` : Framework web
 - `jsonwebtoken` : Gère la création et la vérification des JSON Web Tokens
 - `pg` : Client PostgreSQL pour Node.js.
+- `cookie` : Parser et sérialiser les cookies HTTP côté serveur
+- `express-rate-limit` : Middleware de limitation du nombre de requêtes par IP.
+- `zod` : Bibliothèque de validation et de typage des données.
+
 
 **DevDependencies**
 - `@types/bcrypt` : Définitions TypeScript pour bcrypt.
@@ -36,6 +40,7 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 - `vitest` : Lance les tests et vérifie les assertions.
 - `supertest` : Simule un navigateur ou un client API.
 - `@types/supertest` : Définitions TypeScript pour supertest.
+- `@types/cookie` : Définitions TypeScript pour cookie.
 
 ## Architecture
 ```bash
