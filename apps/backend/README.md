@@ -9,6 +9,7 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 - `npm run lint` : 	Vérifier le code (ESLint)
 - `npm run lint:fix` : 	Corriger automatiquement les erreurs ESLint
 - `npm run format` : 	Formater ton code auto avec Prettier
+- `npm test` : Lancer les tests vitetest
 
 ## Stack technique
 **Dependencies**
@@ -50,6 +51,10 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 │  ├─ app.ts
 │  └─ index.ts/
 │
+├─ test/
+│  └─ integration/
+│     └─ ...
+│
 ├─ .eslintrc.json
 ├─ .prettierignore
 ├─ .prettierc
@@ -63,11 +68,11 @@ Ce Dockerfile définit la manière dont l’application backend TypeScript est c
 
 ## 📁 src / 
 
-### 📁 Controllers
+### 📁 controllers
 
-### 📁 Middlewares
+### 📁 middlewares
 
-### 📁 Routes
+### 📁 routes
 
 ### 📄 db.ts
 Ce fichier centralise la configuration de la connexion à la base de données PostgreSQL ainsi qu’une fonction utilitaire permettant d’exécuter facilement des requêtes SQL depuis le backend.
@@ -92,6 +97,10 @@ Il est responsable de l’exécution du serveur HTTP, à partir de l’applicati
 - Charger les variables d’environnement (via dotenv)
 - Importer l’application Express depuis app.ts
 - Démarrer le serveur HTTP avec app.listen sur le port configuré
+
+## 📁 test
+Ce dossier regroupe les tests automatisés du backend. 
+Les tests d’intégration utilisent Vitest et Supertest pour vérifier le bon fonctionnement des endpoints Express sans lancer un serveur réel (l’application est importée depuis app.ts).
 
 ## ESLint & Prettier
 Dans ce projet, deux outils complémentaires assurent la qualité du code :
