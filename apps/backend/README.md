@@ -111,4 +111,3 @@ mise en forme des objets et fonctions
 | Connexion admin    | POST    | /api/v1/auth/login         | ❌   | `{ email, password }`    | 200 `{ user }` + Set-Cookie session       | 400 champs invalides, 401 identifiants invalides, 429 trop de tentatives (verrouillage) |
 | Session courante   | GET     | /api/v1/auth/me            | ✅   | —                        | 200 `{ user }`                            | 401 si non connecté |
 | Déconnexion        | POST    | /api/v1/auth/logout        | ✅   | —                        | 204 + cookie supprimé                     | 401 si non connecté |
-| (Option) Refresh   | POST    | /api/v1/auth/refresh       | ✅   | —                        | 200 + cookie renouvelé                    | utile si session courte |
