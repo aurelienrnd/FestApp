@@ -43,7 +43,8 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 │  │  └─ ...
 │  ├─ routes/
 │  │  └─ ...
-│  ├─ dbts
+│  ├─ db.ts
+│  ├─ app.ts
 │  └─ index.ts/
 │
 ├─ .eslintrc.json
@@ -73,14 +74,21 @@ Ce fichier centralise la configuration de la connexion à la base de données Po
 - Exposer une fonction query() qui simplifie l’exécution de requêtes SQL
 - Éviter la répétition de code lors des interactions avec la base de données
 
+### 📄 app.ts 
+Ce fichier est responsable de la création et de la configuration de l’application Express
+Il permet de séparer la création de l’API de son exécution, afin de faciliter les tests automatisés et la maintenabilité du code.
+**Rôle du fichier**
+- Créer l’application Express
+- Configurer les middlewares globaux (JSON, sécurité, etc.)
+- Monter les routes de l’API
+- Exporter l’application via une fonction (createApp) sans lancer le serveur
+
 ### 📄 index.ts 
-Ce fichier contient le serveur Express principal.
-Il a pour rôle d’initialiser l’API, gérer les routes de base et vérifier le bon fonctionnement du backend ainsi que de la base de données.
+Il est responsable de l’exécution du serveur HTTP, à partir de l’application Express configurée dans app.ts.
 **Rôle du fichier**
 - Charger les variables d’environnement (via dotenv)
-- Créer une application Express
-- Exposer des routes simples de diagnostic (/health, /debug/db)
-- Lancer le serveur HTTP sur le port configuré
+- Importer l’application Express depuis app.ts
+- Démarrer le serveur HTTP avec app.listen sur le port configuré
 
 ## ESLint & Prettier
 Dans ce projet, deux outils complémentaires assurent la qualité du code :
