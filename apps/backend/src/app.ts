@@ -5,6 +5,8 @@ import { query } from "./db";
 export function createApp() {
   const app = express();
 
+  app.use(express.json()); // permet de lire le JSON envoyé par le client dans le body des requêtes HTTP.
+
   // test de demmarrage du serveur
   app.get("/health", (req, res) => {
     console.log("Health check successful serveur backend operationnel");
@@ -27,6 +29,9 @@ export function createApp() {
         .json({ error: "Impossible de joindre la base de donnees" });
     }
   });
+
+  //routes API (auth, admin, public, etc.)
+  //app.use("/api/auth", userRoutes);
 
   return app;
 }
