@@ -1,10 +1,14 @@
-import "dotenv/config";
-import { createApp } from "../../src/app.js";
+import { describe, it, expect } from "vitest";
+import request from "supertest";
+import { createApp } from "../../src/app";
 
-const PORT = Number(process.env.PORT) || 4000;
+describe("GET /health", () => {
+  it("should return 200 + {status: ok}", async () => {
+    const app = createApp();
 
-const app = createApp();
+    const res = await request(app).get("/health");
 
-app.listen(PORT, () => {
-  console.log(`[backend] Server started on http://localhost:${PORT}`);
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ status: "ok", message: "Backend is running" });
+  });
 });
