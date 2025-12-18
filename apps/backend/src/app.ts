@@ -1,6 +1,9 @@
 import express from "express";
 import { query } from "./db";
 
+// Importation des routes
+import authRoutes from "./routes/auth.routes";
+
 // Création de l’application Express
 export function createApp() {
   const app = express();
@@ -31,7 +34,7 @@ export function createApp() {
   });
 
   //routes API (auth, admin, public, etc.)
-  //app.use("/api/auth", userRoutes);
+  app.use("/api/v1/auth", authRoutes);
 
   return app;
 }
