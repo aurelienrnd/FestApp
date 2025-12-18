@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import { pool, query } from "../db";
+import type { Request, Response } from "express";
+import { query } from "../db";
 
 // NOTE Test de connexion à la base de données.
 export const testGetUsers = async (req: Request, res: Response) => {
