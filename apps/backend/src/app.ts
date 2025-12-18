@@ -34,7 +34,7 @@ export function createApp() {
   });
 
   //routes API (auth, admin, public, etc.)
-  app.use("/api/v1/auth", authRoutes);
+  app.use("/api/auth", authRoutes);
 
   return app;
 }

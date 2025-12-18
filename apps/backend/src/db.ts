@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config(); // charge .env.backend & .env (depuis Docker/env_file)
 
 // Configuration de la connexion à la base de données PostgreSQL
-const pool = new Pool({
+export const pool = new Pool({
   host: process.env.DB_HOST || "localhost",
   port: Number(process.env.DB_PORT || 5432),
   user: process.env.DB_USER || "postgres",
@@ -24,5 +24,6 @@ export async function query<T extends QueryResultRow = any>(
   params?: any[],
 ): Promise<T[]> {
   const result = await pool.query<T>(text, params);
+  //console.log(result.rows);
   return result.rows;
 }
