@@ -17,7 +17,7 @@ CREATE TABLE users (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()         -- Dernière mise à jour (mise à jour via trigger)
 );
 
--- Trigger pour mettre à jour updated_at lors d’un UPDATE
+-- Fonction pour mettre à jour updated_at lors d’un UPDATE
 CREATE OR REPLACE FUNCTION update_timestamp()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -26,6 +26,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Trigger pour lancer update_timestamp a chaque modification de la table
 CREATE TRIGGER tg_update_timestamp
 BEFORE UPDATE ON users
 FOR EACH ROW

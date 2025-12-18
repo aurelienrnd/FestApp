@@ -1,4 +1,25 @@
-# Ignore environment files from Docker build context
+# Ignore environment files from Docker build context 
+# (Ils contiennent des informations sensibles et n'ont pas besoin d’être copiés dans l’image)
 .env
 .env.backend
 .env.frontend
+
+# Ignorer les dépendances locales (elles seront réinstallées dans le conteneur)
+node_modules
+
+# Ignorer les fichiers de logs NPM
+npm-debug.log
+
+# Ignorer les fichiers de logs Yarn
+yarn-error.log
+
+# Ignorer le dossier de build local
+dist
+
+# Ignorer les fichiers et dossiers Git
+.git
+.gitignore
+
+# Ignorer les fichiers liés à la configuration Docker  (Ils ne doivent pas être copiés dans l’image)
+Dockerfile
+docker-compose.yml

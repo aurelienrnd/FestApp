@@ -5,8 +5,6 @@
 
 - `docker compose down -v` : Arrête et supprime, les conteneurs, les réseaux Docker, et la base de données (utile apres modif sur la bdd)
 
-- `docker ps` : Affiche les conteneurs en cours d'exécution.
-
 - `docker exec -it vindhellfest-db psql -U postgres -d vindhellfest` : Entre dans le conteneur PostgreSQL et ouvre un terminal psql.
 Util pour tester tes tables directement dans la base.
 
