@@ -6,10 +6,11 @@ import { validateBody } from "../../src/middlewares/validateBody";
 import { createUserSchema } from "../../src/shemas/users.shema";
 
 describe("Auth middlewares", () => {
-  describe("validateBody (createUserSchema)", () => {
-    const app = express();
-    app.use(express.json());
+  // creation d'une application express pour les tests
+  const app = express();
+  app.use(express.json());
 
+  describe("validateBody (createUserSchema)", () => {
     // creation d'une route de test utilisant le middleware
     app.post("/test-validate", validateBody(createUserSchema), (req, res) => {
       return res.status(200).json({ success: true, data: req.body });
