@@ -16,7 +16,7 @@ describe("Auth middlewares", () => {
       return res.status(200).json({ success: true, data: req.body });
     });
 
-    it("should be 200 if body is valid even with whitespace in display_name", async () => {
+    it("should be 200 if body is valid even with whitespace in display_name, zod shema should trim() it", async () => {
       const res = await request(app).post("/test-validate").send({
         email: "admin@test.fr",
         password: "Test1234!",
@@ -31,7 +31,7 @@ describe("Auth middlewares", () => {
       expect(res.body.data.password.length).toBeGreaterThan(7); // je verifie que le mot de passe a au moins 8 caracteres comme dans le schema
     });
 
-    it("should be 400 if email is invalid", async () => {
+    it("should be 400 if email the email not corespond to the regex zod expression", async () => {
       const res = await request(app).post("/test-validate").send({
         email: "pas-un-email",
         password: "Test1234!",
