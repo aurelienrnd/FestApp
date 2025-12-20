@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { query } from "../db";
 
-// NOTE Test de connexion à la base de données.
+// NOTE Test de connexion à la base de données, a supprimer plus tard.
 export const testGetUsers = async (req: Request, res: Response) => {
   try {
     const rows = await query("SELECT id, email, display_name FROM users");

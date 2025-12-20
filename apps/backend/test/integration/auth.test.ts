@@ -5,7 +5,8 @@ import express from "express";
 import { validateBody } from "../../src/middlewares/validateBody";
 import { createUserSchema } from "../../src/shemas/users.shema";
 
-describe("Auth middlewares", () => {
+//NOTE cette routes est creer pour test et cera deplacer plus tard
+describe("Add_user", () => {
   // creation d'une application express pour les tests
   const app = express();
   app.use(express.json());
