@@ -16,11 +16,11 @@ describe("Auth middlewares", () => {
       return res.status(200).json({ success: true, data: req.body });
     });
 
-    it("should be 200 if body is valid", async () => {
+    it("should be 200 if body is valid even with whitespace in display_name", async () => {
       const res = await request(app).post("/test-validate").send({
         email: "admin@test.fr",
         password: "Test1234!",
-        display_name: "TestAdmin",
+        display_name: " TestAdmin ",
       });
 
       expect(res.status).toBe(200);

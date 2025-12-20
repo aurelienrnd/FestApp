@@ -1,9 +1,9 @@
 // Schéma pour la création d'un utilisateur
-import { z } from "zod";
+import { email, z } from "zod";
 
-// Schéma pour la création d'un utilisateur
+// Schéma pour la création d'un utilisateur, valide et trime les champs
 export const createUserSchema = z.object({
-  email: z.email(),
+  email: z.email(), // pas de trim() ici car zod crée une regex qui prend deja en compte les espaces
   password: z.string().min(8),
-  display_name: z.string().min(2).max(80).optional(),
+  display_name: z.string().min(2).max(30).trim(),
 });
