@@ -3,7 +3,7 @@ import request from "supertest";
 import express from "express";
 
 import { validateBody } from "../../src/middlewares/validateBody";
-import { createUserSchema } from "../../src/shemas/users.shema";
+import { createUserSchema, loginSchema } from "../../src/shemas/users.shema";
 import { hashPassword } from "../../src/middlewares/hashPassword";
 import { rateLimitLogin } from "../../src/middlewares/rateLimitLogin";
 
@@ -142,11 +142,11 @@ describe("Add_user", () => {
 
 describe("login", () => {
   describe("rateLimitLogin middleware", () => {
-    it("should allow 5 requests and block the 6th within 10 minutes", async () => {
-      app.post("/test-rate-limit", rateLimitLogin, (req, res) => {
-        return res.status(200).json({ success: true });
-      });
+    app.post("/test-rate-limit", rateLimitLogin, (req, res) => {
+      return res.status(200).json({ success: true });
+    });
 
+    it("should allow 5 requests and block the 6th within 10 minutes", async () => {
       // on fait 5 requetes qui doivent passer
       for (let i = 0; i < 5; i++) {
         const res = await request(app).post("/test-rate-limit");
@@ -160,6 +160,47 @@ describe("login", () => {
       expect(res6.body).toEqual({
         error: "Trop de tentatives, réessayer plus tard",
       });
+    });
+  });
+
+  describe("validateBody (loginSchema)", () => {
+    // creation d'une route de test utilisant le middleware
+    app.post("/test-validate", validateBody(loginSchema), (req, res) => {
+      return res.status(200).json({ success: true, data: req.body });
+    });
+
+    it("should be 200 if body is valid even with whitespace in display_name, zod shema should trim() it", async () => {
+      const res = await request(app).post("/test-validate").send({
+        email: "admin@test.fr",
+        password: "Test1234!",
+        display_name: " TestAdmin ",
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.email).toBe("admin@test.fr");
+      expect(res.body.data).toHaveProperty("password"); // Le mots de passe pourait etre hashé du coup je ne controle pas sa valeur exacte mais sont existence
+      expect(res.body.data.password.length).toBeGreaterThan(7); // je verifie que le mot de passe a au moins 8 caracteres comme dans le schema
+    });
+
+    it("should be 400 if email the email not corespond to the regex zod expression", async () => {
+      const res = await request(app).post("/test-validate").send({
+        email: "pas-un-email",
+        password: "Test1234!",
+      });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe("Données invalides");
+    });
+
+    it("should be 400 if password is too short", async () => {
+      const res = await request(app).post("/test-validate").send({
+        email: "admin@test.fr",
+        password: "123",
+      });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe("Données invalides");
     });
   });
 });
