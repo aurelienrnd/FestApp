@@ -129,10 +129,3 @@ Il ne vérifie pas les bugs, il s’occupe uniquement de :
 mise en forme des objets et fonctions
 
 ## List des routes API
-### 1) Auth & Session (Admin)
-
-| Feature            | Méthode | Endpoint                   | Auth | Body (req)              | Réponse (succès)                          | Erreurs / règles |
-|--------------------|---------|----------------------------|------|--------------------------|-------------------------------------------|------------------|
-| Connexion admin    | POST    | /api/v1/auth/login         | ❌   | `{ email, password }`    | 200 `{ user }` + Set-Cookie session       | 400 champs invalides, 401 identifiants invalides, 429 trop de tentatives (verrouillage) |
-| Session courante   | GET     | /api/v1/auth/me            | ✅   | —                        | 200 `{ user }`                            | 401 si non connecté |
-| Déconnexion        | POST    | /api/v1/auth/logout        | ✅   | —                        | 204 + cookie supprimé                     | 401 si non connecté |
