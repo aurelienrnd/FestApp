@@ -5,6 +5,7 @@ import express from "express";
 import { validateBody } from "../../src/middlewares/validateBody";
 import { createUserSchema } from "../../src/shemas/users.shema";
 import { hashPassword } from "../../src/middlewares/hashPassword";
+import { rateLimitLogin } from "../../src/middlewares/rateLimitLogin";
 
 // Mock de la base de données
 vi.mock("../../src/db", () => {
@@ -23,12 +24,12 @@ import { query } from "../../src/db";
 // routes
 import authRoutes from "../../src/routes/auth.routes";
 
+// creation d'une application express pour les tests
+const app = express();
+app.use(express.json());
+
 //NOTE cette routes est creer pour tester, elle cera deplacé plus tard avec un middleware d'authentification
 describe("Add_user", () => {
-  // creation d'une application express pour les tests
-  const app = express();
-  app.use(express.json());
-
   describe("validateBody (createUserSchema)", () => {
     // creation d'une route de test utilisant le middleware
     app.post("/test-validate", validateBody(createUserSchema), (req, res) => {
@@ -135,6 +136,30 @@ describe("Add_user", () => {
       });
 
       expect(res.status).toBe(201);
+    });
+  });
+});
+
+describe("login", () => {
+  describe("rateLimitLogin middleware", () => {
+    it("should allow 5 requests and block the 6th within 10 minutes", async () => {
+      app.post("/test-rate-limit", rateLimitLogin, (req, res) => {
+        return res.status(200).json({ success: true });
+      });
+
+      // on fait 5 requetes qui doivent passer
+      for (let i = 0; i < 5; i++) {
+        const res = await request(app).post("/test-rate-limit");
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+      }
+
+      // on fait une 6eme requete qui doit etre bloquée
+      const res6 = await request(app).post("/test-rate-limit");
+      expect(res6.status).toBe(429);
+      expect(res6.body).toEqual({
+        error: "Trop de tentatives, réessayer plus tard",
+      });
     });
   });
 });
