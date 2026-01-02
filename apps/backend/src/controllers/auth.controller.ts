@@ -89,7 +89,15 @@ export async function login(req: Request, res: Response) {
     const token = initToken(user);
 
     // ajout du cookie dans le header de la reponse
-    res.setHeader("Set-Cookie", serializeCookie(token));
+    res.setHeader(
+      "Set-Cookie",
+      serializeCookie(
+        "COOKIE_ACCESS_TOKEN_NAME",
+        "COOKIE_ACCESS_TOKEN_SECURE",
+        "COOKIE_ACCESS_TOKEN_SAME_SITE",
+        token,
+      ),
+    );
 
     // reponse avec les informations de l'utilisateur
     return res.status(200).json({

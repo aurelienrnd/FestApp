@@ -4,7 +4,6 @@ import * as jwt from "jsonwebtoken";
 import { serialize } from "cookie";
 import type { DbUser } from "./type..ts";
 
-
 export function getEnv(name: string): string {
   const variables = process.env[name];
   if (!variables) throw new Error(`Missing env var: ${name}`);
@@ -39,10 +38,15 @@ export function initToken(user: DbUser): string {
   });
 }
 
-export function serializeCookie(token: string): string {
-  const cookieName = getEnv("COOKIE_NAME");
-  const secure = getEnv("COOKIE_SECURE") === "true"; // oblige le cookie à être transmis uniquement via HTTPS, cookie doit recevoir un boolean
-  const sameSite = getEnv("COOKIE_SAME_SITE") as "lax" | "strict" | "none"; // definit la politique SameSite pour le cookie
+export function serializeCookie(
+  EnvName: string,
+  envSecure: string,
+  envSameSite: string,
+  token: string,
+): string {
+  const cookieName = getEnv(EnvName);
+  const secure = getEnv(envSecure) === "true"; // oblige le cookie à être transmis uniquement via HTTPS, cookie doit recevoir un boolean
+  const sameSite = getEnv(envSameSite) as "lax" | "strict" | "none"; // definit la politique SameSite pour le cookie
 
   return serialize(cookieName, token, {
     httpOnly: true, // empêche l'accès au cookie via JavaScript côté client, réduisant les risques de vol de cookie via des attaques XSS
