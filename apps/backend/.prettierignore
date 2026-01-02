@@ -1,0 +1,8 @@
+# Ignore the README file
+README.md
+
+# Ignore files and directories for Prettier
+node_modules/
+
+# Ignore distribution files
+dist/
