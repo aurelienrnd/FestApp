@@ -32,9 +32,13 @@ export function passwordIsValid(password: string, passwordHash: string) {
   }
 }
 
-export function initToken(user: DbUser): string {
-  return jwt.sign({ sub: user.id, role: "admin" }, getEnv("JWT_SECRET"), {
-    expiresIn: envToString("JWT_EXPIRES_IN"), // jwt ne peut recevoir que des string ou number et non des Environment Variable
+export function initToken(
+  user: DbUser,
+  JWT_SECRET: string,
+  JWT_EXPIRES_IN: string,
+): string {
+  return jwt.sign({ sub: user.id, role: "admin" }, getEnv(JWT_SECRET), {
+    expiresIn: envToString(JWT_EXPIRES_IN), // jwt ne peut recevoir que des string ou number et non des Environment Variable
   });
 }
 
@@ -43,6 +47,7 @@ export function serializeCookie(
   envSecure: string,
   envSameSite: string,
   token: string,
+  time: number,
 ): string {
   const cookieName = getEnv(EnvName);
   const secure = getEnv(envSecure) === "true"; // oblige le cookie à être transmis uniquement via HTTPS, cookie doit recevoir un boolean
@@ -53,6 +58,6 @@ export function serializeCookie(
     secure,
     sameSite,
     path: "/", // rend le cookie accessible sur l'ensemble du site
-    maxAge: 60 * 60, // durée de vie du cookie en secondes (ici 1 heure)
+    maxAge: time, // durée de vie du cookie en secondes (ici 1 heure)
   });
 }
