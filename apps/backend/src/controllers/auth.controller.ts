@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import crypto from "crypto";
 import { query } from "../db";
+import ms from "ms";
 import {
   userExists,
   passwordIsValid,
@@ -81,11 +82,9 @@ export async function login(req: Request, res: Response) {
 
     // on verifie que l'utilisateur existe
     userExists(user);
-    console.log("user exists");
 
     // on verifie que le mot de passe est correct
     passwordIsValid(password, user.password_hash);
-    console.log("password is valid");
 
     const refreshToken = crypto.randomBytes(64).toString("hex");
     const refreshTokenHash = crypto
@@ -93,10 +92,10 @@ export async function login(req: Request, res: Response) {
       .update(refreshToken)
       .digest("hex");
 
-    await query(
+    /*await query(
       `INSERT INTO sessions (user_id, refresh_token_hash, expires_at) VALUES ($1, $2, $3)`,
       [user.id, refreshTokenHash, Date.now() + "REFRESH_TOKEN_EXPIRES_IN"],
-    );
+    );*/
 
     // générer un jwt pour le accessToken
     const accessToken = initToken(
@@ -110,16 +109,16 @@ export async function login(req: Request, res: Response) {
       "COOKIE_ACCESS_TOKEN_SECURE",
       "COOKIE_ACCESS_TOKEN_SAME_SITE",
       accessToken,
-      60 * 60, // 1h
+      "JWT_ACCESS_EXPIRES_IN",
     );
 
-    const refreshCookie = serializeCookie(
+    /*const refreshCookie = serializeCookie(
       "COOKIE_REFRESH_TOKEN_NAME",
       "COOKIE_REFRESH_TOKEN_SECURE",
       "COOKIE_REFRESH_TOKEN_SAME_SITE",
       refreshToken,
-      7 * 24 * 60 * 60, // 7 jours
-    );
+      "REFRESH_TOKEN_EXPIRES_IN",
+    );*/
 
     // ajout du cookie dans le header de la reponse
     res.setHeader("Set-Cookie", [accessCookie]);

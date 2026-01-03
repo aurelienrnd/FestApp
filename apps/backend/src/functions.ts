@@ -2,6 +2,7 @@ import type { StringValue } from "ms";
 import bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { serialize } from "cookie";
+import ms from "ms";
 import type { DbUser } from "./type.ts";
 
 export function getEnv(name: string): string {
@@ -10,7 +11,7 @@ export function getEnv(name: string): string {
   return variables;
 }
 
-export function envToString(name: string): StringValue | number {
+export function envToStringValue(name: string): StringValue {
   const value = getEnv(name);
   if (!/^\d+(\s?[a-zA-Z]+)?$/.test(value)) {
     throw new Error(`Invalid duration for ${name}`);
@@ -38,7 +39,7 @@ export function initToken(
   JWT_EXPIRES_IN: string,
 ): string {
   return jwt.sign({ sub: user.id, role: "admin" }, getEnv(JWT_SECRET), {
-    expiresIn: envToString(JWT_EXPIRES_IN), // jwt ne peut recevoir que des string ou number et non des Environment Variable
+    expiresIn: envToStringValue(JWT_EXPIRES_IN), //il peux recevoir des valleur en seconde ou en ms?
   });
 }
 
@@ -47,17 +48,18 @@ export function serializeCookie(
   envSecure: string,
   envSameSite: string,
   token: string,
-  time: number,
+  time: string,
 ): string {
   const cookieName = getEnv(EnvName);
   const secure = getEnv(envSecure) === "true"; // oblige le cookie à être transmis uniquement via HTTPS, cookie doit recevoir un boolean
   const sameSite = getEnv(envSameSite) as "lax" | "strict" | "none"; // definit la politique SameSite pour le cookie
+  const timeS = ms(envToStringValue(time)) / 1000;
 
   return serialize(cookieName, token, {
     httpOnly: true, // empêche l'accès au cookie via JavaScript côté client, réduisant les risques de vol de cookie via des attaques XSS
     secure,
     sameSite,
     path: "/", // rend le cookie accessible sur l'ensemble du site
-    maxAge: time, // durée de vie du cookie en secondes (ici 1 heure)
+    maxAge: timeS, // durée de vie du cookie en secondes (ici 1 heure)
   });
 }
