@@ -6,7 +6,7 @@ import {
   initToken,
   serializeCookie,
 } from "../functions";
-import type { DbUser } from "../type..ts";
+import type { DbUser } from "../type.ts";
 
 // NOTE Test de connexion à la base de données, a supprimer plus tard.
 export const testGetUsers = async (req: Request, res: Response) => {
@@ -69,7 +69,7 @@ export async function login(req: Request, res: Response) {
   try {
     // Creation de la requette SQL pour recuperer l'utilisateur par email
     const result = await query<DbUser>(
-      `SELECT id, email, password_hash, display_name
+      `SELECT id, email, password_hash, display_name, is_active
       FROM users
       WHERE email = $1
       LIMIT 1`,
@@ -85,24 +85,37 @@ export async function login(req: Request, res: Response) {
     passwordIsValid(password, user.password_hash);
     console.log("password is valid");
 
-    // creation du JWT
-    const accesToken = initToken(
+    // creation du refrechToken
+
+    // ash du refrechToken
+
+    //INSERT INTO sessions (refresh_token_hash, expires_at, ...)
+
+    // creation du accessToken
+    const accessToken = initToken(
       user,
       "JWT_ACCESS_SECRET",
       "JWT_ACCESS_EXPIRES_IN",
     );
 
-    // ajout du cookie dans le header de la reponse
-    res.setHeader(
-      "Set-Cookie",
-      serializeCookie(
-        "COOKIE_ACCESS_TOKEN_NAME",
-        "COOKIE_ACCESS_TOKEN_SECURE",
-        "COOKIE_ACCESS_TOKEN_SAME_SITE",
-        accesToken,
-        60 * 60,
-      ),
+    const accessCookie = serializeCookie(
+      "COOKIE_ACCESS_TOKEN_NAME",
+      "COOKIE_ACCESS_TOKEN_SECURE",
+      "COOKIE_ACCESS_TOKEN_SAME_SITE",
+      accessToken,
+      60 * 60, // 1h
     );
+
+    /*const refreshCookie = serializeCookie(
+      "COOKIE_REFRESH_TOKEN_NAME",
+      "COOKIE_REFRESH_TOKEN_SECURE",
+      "COOKIE_REFRESH_TOKEN_SAME_SITE",
+      refreshToken,
+      7 * 24 * 60 * 60, // 7 jours
+    );*/
+
+    // ajout du cookie dans le header de la reponse
+    res.setHeader("Set-Cookie", [accessCookie]);
 
     // reponse avec les informations de l'utilisateur
     return res.status(200).json({
@@ -111,7 +124,7 @@ export async function login(req: Request, res: Response) {
         id: user.id,
         email: user.email,
         displayName: user.display_name,
-        isActive: user.active,
+        isActive: user.is_active,
       },
     });
   } catch (error: any) {

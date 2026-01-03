@@ -2,7 +2,7 @@ import type { StringValue } from "ms";
 import bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { serialize } from "cookie";
-import type { DbUser } from "./type..ts";
+import type { DbUser } from "./type.ts";
 
 export function getEnv(name: string): string {
   const variables = process.env[name];
