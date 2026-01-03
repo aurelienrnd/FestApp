@@ -1,10 +1,12 @@
 import type { Request, Response } from "express";
+import crypto from "crypto";
 import { query } from "../db";
 import {
   userExists,
   passwordIsValid,
   initToken,
   serializeCookie,
+  getEnv,
 } from "../functions";
 import type { DbUser } from "../type.ts";
 
@@ -85,13 +87,18 @@ export async function login(req: Request, res: Response) {
     passwordIsValid(password, user.password_hash);
     console.log("password is valid");
 
-    // creation du refrechToken
+    const refreshToken = crypto.randomBytes(64).toString("hex");
+    const refreshTokenHash = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
 
-    // ash du refrechToken
+    await query(
+      `INSERT INTO sessions (user_id, refresh_token_hash, expires_at) VALUES ($1, $2, $3)`,
+      [user.id, refreshTokenHash, Date.now() + "REFRESH_TOKEN_EXPIRES_IN"],
+    );
 
-    //INSERT INTO sessions (refresh_token_hash, expires_at, ...)
-
-    // creation du accessToken
+    // générer un jwt pour le accessToken
     const accessToken = initToken(
       user,
       "JWT_ACCESS_SECRET",
@@ -106,13 +113,13 @@ export async function login(req: Request, res: Response) {
       60 * 60, // 1h
     );
 
-    /*const refreshCookie = serializeCookie(
+    const refreshCookie = serializeCookie(
       "COOKIE_REFRESH_TOKEN_NAME",
       "COOKIE_REFRESH_TOKEN_SECURE",
       "COOKIE_REFRESH_TOKEN_SAME_SITE",
       refreshToken,
       7 * 24 * 60 * 60, // 7 jours
-    );*/
+    );
 
     // ajout du cookie dans le header de la reponse
     res.setHeader("Set-Cookie", [accessCookie]);
