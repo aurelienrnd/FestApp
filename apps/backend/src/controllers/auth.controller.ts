@@ -86,7 +86,11 @@ export async function login(req: Request, res: Response) {
     console.log("password is valid");
 
     // creation du JWT
-    const token = initToken(user);
+    const accesToken = initToken(
+      user,
+      "JWT_ACCESS_SECRET",
+      "JWT_ACCESS_EXPIRES_IN",
+    );
 
     // ajout du cookie dans le header de la reponse
     res.setHeader(
@@ -95,7 +99,8 @@ export async function login(req: Request, res: Response) {
         "COOKIE_ACCESS_TOKEN_NAME",
         "COOKIE_ACCESS_TOKEN_SECURE",
         "COOKIE_ACCESS_TOKEN_SAME_SITE",
-        token,
+        accesToken,
+        60 * 60,
       ),
     );
 
