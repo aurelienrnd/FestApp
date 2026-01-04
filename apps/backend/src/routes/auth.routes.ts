@@ -4,11 +4,8 @@ import { validateBody } from "../middlewares/validateBody";
 import { hashPassword } from "../middlewares/hashPassword";
 import { rateLimitLogin } from "../middlewares/rateLimitLogin";
 // controllers
-import {
-  testGetUsers,
-  createUser,
-  login,
-} from "../controllers/auth.controller";
+import { testGetUsers, createUser } from "../controllers/auth.controller";
+import { login } from "../controllers/auth/login.controller";
 //shema
 import { createUserSchema, loginSchema } from "../shemas/users.shema";
 
