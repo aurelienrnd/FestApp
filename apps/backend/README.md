@@ -22,7 +22,6 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 - `express-rate-limit` : Middleware de limitation du nombre de requêtes par IP.
 - `zod` : Bibliothèque de validation et de typage des données.
 
-
 **DevDependencies**
 - `@types/bcrypt` : Définitions TypeScript pour bcrypt.
 - `@types/express` : Définitions TypeScript pour express.
@@ -47,7 +46,7 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 ├─ node_modules/
 ├─ src/
 │  ├─ controllers/
-│  │  └─ ...
+│  │  └─ auth/
 │  ├─ middlewares/
 │  │  └─ ...
 │  ├─ routes/
@@ -75,9 +74,21 @@ Ce Dockerfile définit la manière dont l’application backend TypeScript est c
 
 ### 📁 controllers
 
+#### 📁 auth
+
+##### 📄 auth.controllers.ts
+
 ### 📁 middlewares
 
+#### 📄 hashPassword.ts
+
+#### 📄 rateLimitLogin.ts
+
+#### 📄 validateBody.ts
+
 ### 📁 routes
+
+#### 📄 auth.routes.ts
 
 ### 📄 db.ts
 Ce fichier centralise la configuration de la connexion à la base de données PostgreSQL ainsi qu’une fonction utilitaire permettant d’exécuter facilement des requêtes SQL depuis le backend.
@@ -103,9 +114,19 @@ Il est responsable de l’exécution du serveur HTTP, à partir de l’applicati
 - Importer l’application Express depuis app.ts
 - Démarrer le serveur HTTP avec app.listen sur le port configuré
 
+### 📄 functions.ts
+
+### 📄 types.ts 
+
 ## 📁 test
 Ce dossier regroupe les tests automatisés du backend. 
 Les tests d’intégration utilisent Vitest et Supertest pour vérifier le bon fonctionnement des endpoints Express sans lancer un serveur réel (l’application est importée depuis app.ts).
+
+### 📄 health.test.ts
+
+### 📄 debug_db.test.ts
+
+### 📄 auh.test.ts 
 
 ## ESLint & Prettier
 Dans ce projet, deux outils complémentaires assurent la qualité du code :
@@ -126,6 +147,6 @@ Il ne vérifie pas les bugs, il s’occupe uniquement de :
 - trailing commas
 - espaces
 - retours à la ligne
-mise en forme des objets et fonctions
+- mise en forme des objets et fonctions
 
 ## List des routes API
