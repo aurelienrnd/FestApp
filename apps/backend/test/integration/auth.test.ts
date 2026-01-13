@@ -28,7 +28,6 @@ import authRoutes from "../../src/routes/auth.routes";
 const app = express();
 app.use(express.json());
 
-//NOTE cette routes est creer pour tester, elle cera deplacé plus tard avec un middleware d'authentification
 describe("Add_user", () => {
   describe("validateBody (createUserSchema)", () => {
     // creation d'une route de test utilisant le middleware

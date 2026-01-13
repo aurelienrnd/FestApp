@@ -1,5 +1,5 @@
 // Schéma pour la création d'un utilisateur
-import { email, z } from "zod";
+import { z } from "zod";
 
 // Schéma pour la création d'un utilisateur, valide et trime les champs
 export const createUserSchema = z.object({
