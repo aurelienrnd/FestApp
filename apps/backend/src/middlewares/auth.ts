@@ -1,0 +1,68 @@
+// Middleware pour authentifier l'utilisateur via son token
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { getEnv } from "../functions";
+import type { JwtPayload } from "jsonwebtoken";
+import { query } from "../db";
+
+/** Vérifie qu'un token est bien présent dans le header de la requete
+ * @return le token
+ */
+function emptyTokenTest(req: Request) {
+  if (!req.headers.authorization) {
+    throw new Error();
+  }
+
+  const token = req.headers.authorization.split(" ")[1];
+  return token;
+}
+
+/** Decode le token JTW pour récupairer le userId et le sessionId
+ * @return le userId et le sessionId
+ */
+function decodedToken(token: string) {
+  const decodedToken = jwt.verify(
+    token,
+    getEnv("JWT_ACCESS_SECRET"),
+  ) as JwtPayload;
+  const userId = decodedToken.userId;
+  const sessionId = decodedToken.sessionId;
+  return { userId, sessionId };
+}
+
+/** Vérifie que l'utilisateur est autorisé à effectué cette requete
+ * Récupère et code le token
+ * Compare  la recherche de l'utilisateur dans la BDD
+ * Renvoie le user et le sessionId dans le header de la requete
+ * @function emptyTokenTest Vérifie qu'un token est bien présent dans le header de la requete
+ * @function decodedToken Décode le token JTW pour récupérer le userId et le sessionId
+ */
+export async function auth(req: Request, res: Response, next: NextFunction) {
+  try {
+    // Récupération du token et envoi d'une erreur si non trouvé
+    const token = emptyTokenTest(req);
+
+    // Décodage du token en userId
+    const { userId, sessionId } = decodedToken(token);
+
+    // Recherche du userId dans la base de données et envoi d'une erreur si l'utilisateur n'est pas trouvé
+    const user = await query(
+      "SELECT id, display_name FROM users WHERE id = $1",
+      [userId],
+    );
+    if (!user) {
+      throw new Error();
+    }
+
+    // Si l'utilisateur est trouvé on renvoie le header et l'id de la session
+    req.headers.auth = user;
+    req.headers.session = sessionId;
+
+    next();
+  } catch (error: any) {
+    console.error(error);
+    return res
+      .status(error.status || 401)
+      .json({ error: error.message || "Not authorized" });
+  }
+}

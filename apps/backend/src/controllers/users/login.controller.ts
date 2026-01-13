@@ -71,9 +71,13 @@ function initToken(
   JWT_EXPIRES_IN: string,
   sessionId: string,
 ): string {
-  return jwt.sign({ sub: user.id, session: sessionId }, getEnv(JWT_SECRET), {
-    expiresIn: envToStringValue(JWT_EXPIRES_IN), //il peux recevoir des valleur en seconde ou en ms
-  });
+  return jwt.sign(
+    { userId: user.id, sessionId: sessionId },
+    getEnv(JWT_SECRET),
+    {
+      expiresIn: envToStringValue(JWT_EXPIRES_IN), //il peux recevoir des valleur en seconde ou en ms
+    },
+  );
 }
 
 /** Créer un Cookie
@@ -145,6 +149,10 @@ export async function login(req: Request, res: Response) {
       "JWT_ACCESS_EXPIRES_IN",
       sessionId,
     );
+
+    //TODO - remove it
+    console.log(accessToken);
+
     const accessCookie = serializeCookie(
       "COOKIE_ACCESS_TOKEN_NAME",
       "COOKIE_ACCESS_TOKEN_SECURE",
