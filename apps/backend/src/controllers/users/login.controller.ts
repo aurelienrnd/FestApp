@@ -3,7 +3,6 @@ import type { Request, Response } from "express";
 import type { DbUser } from "../../type.ts";
 
 // Import Modul
-import crypto from "crypto";
 import { query } from "../../db";
 import ms from "ms";
 import bcrypt from "bcrypt";
@@ -36,19 +35,44 @@ function passwordIsValid(password: string, passwordHash: string) {
   }
 }
 
+/** Créer la session dans la BDD
+ * @param {DbUser} user l'utilisateur de la requete
+ * @param {string} SESSION_EXPIRES_IN Variable d'environement
+ * @function envToStringValue Permet d'ajouter le Type StringValue à une variable d'environnement
+ * @return l'ID de la session dans la BDD
+ */
+async function generateSession(user: DbUser, SESSION_EXPIRES_IN: string) {
+  // Definie la date d'expiration du token via la variable d'environnement
+  const expiresAt = new Date(
+    Date.now() + ms(envToStringValue(SESSION_EXPIRES_IN)),
+  );
+
+  // lance une requette SQL pour ouvrir la session dans la BDD
+  const rows = await query(
+    `INSERT INTO sessions (user_id, expires_at) VALUES ($1, $2) RETURNING id`,
+    [user.id, expiresAt],
+  );
+
+  const sessionId = rows[0].id;
+
+  return sessionId;
+}
+
 /** Créer un JTW
  * @param {DbUser} user Utilisateur dans la BDD
  * @param {string} JWT_SECRET Variable d'environnement
  * @param {string} JWT_EXPIRES_IN Variable d'environnement
+ * @param {string} sessionId Id de le session dans la BDD
  * @return jwt
  */
 function initToken(
   user: DbUser,
   JWT_SECRET: string,
   JWT_EXPIRES_IN: string,
+  sessionId: string,
 ): string {
-  return jwt.sign({ sub: user.id, role: "admin" }, getEnv(JWT_SECRET), {
-    expiresIn: envToStringValue(JWT_EXPIRES_IN), //il peux recevoir des valleur en seconde ou en ms?
+  return jwt.sign({ sub: user.id, session: sessionId }, getEnv(JWT_SECRET), {
+    expiresIn: envToStringValue(JWT_EXPIRES_IN), //il peux recevoir des valleur en seconde ou en ms
   });
 }
 
@@ -83,74 +107,16 @@ function serializeCookie(
   });
 }
 
-/** Créer la session dans la BDD
- * @param {DbUser} user l'utilisateur de la requete
- * @function envToStringValue Permet d'ajouter le Type StringValue à une variable d'environnement
- * @function serializeCookie Crée un Cookie
- * @return un cookie
+/** Connexion l'utilisateur au service
+ * Verifie si l'utilisateur existe dans la BDD
+ * Cree une session
+ * Renvoie un token et un cookie pour l'authentification
+ * @function userExists Teste si l'utilisateur existe
+ * @function passwordIsValid Compare le mot de passe de la requete avec le hash dans la BDD
+ * @function generateSession Créer la session dans la BDD
+ * @function initToken Créer un JTW
+ * @function serializeCookie Créer un Cookie
  */
-async function generateSession(user: DbUser): Promise<string> {
-  // crée une suite 64 octet et les transforme en hesxadecimal
-  const refreshToken = crypto.randomBytes(64).toString("hex");
-
-  // hash le token et produit un resulta en hexadecimal
-  const refreshTokenHash = crypto
-    .createHash("sha256")
-    .update(refreshToken)
-    .digest("hex");
-
-  // Definie la date d'expiration du token via la variable d'environnement
-  const expiresAt = new Date(
-    Date.now() + ms(envToStringValue("REFRESH_TOKEN_EXPIRES_IN")),
-  );
-
-  // lance une requette SQL pour ouvrir la session dans la BDD
-  await query(
-    `INSERT INTO sessions (user_id, refresh_token_hash, expires_at) VALUES ($1, $2, $3)`,
-    [user.id, refreshTokenHash, expiresAt],
-  );
-
-  // Inserre le token dans un cookie
-  const refreshCookie = serializeCookie(
-    "COOKIE_REFRESH_TOKEN_NAME",
-    "COOKIE_REFRESH_TOKEN_SECURE",
-    "COOKIE_REFRESH_TOKEN_SAME_SITE",
-    refreshToken,
-    "REFRESH_TOKEN_EXPIRES_IN",
-  );
-
-  return refreshCookie;
-}
-
-/**Créer un cookie avec un jwt
- * @param {DbUser} user un utilisateur dans la BDD
- * @function initToken Crée un JTW
- * @function serializeCookie Crée un Cookie
- * @return un cookie
- */
-function generateAccessToken(user: DbUser): string {
-  // générer un jwt pour le accessToken
-  const accessToken = initToken(
-    user,
-    "JWT_ACCESS_SECRET",
-    "JWT_ACCESS_EXPIRES_IN",
-  );
-
-  // Inserre le token dans un cookie
-  const accessCookie = serializeCookie(
-    "COOKIE_ACCESS_TOKEN_NAME",
-    "COOKIE_ACCESS_TOKEN_SECURE",
-    "COOKIE_ACCESS_TOKEN_SAME_SITE",
-    accessToken,
-    "JWT_ACCESS_EXPIRES_IN",
-  );
-
-  return accessCookie;
-}
-
-/**TODO A terminer
- - implementer logique role dans le access token
-*/
 export async function login(req: Request, res: Response) {
   try {
     // on verifie que l'email et le password sont fournis dans le bon format
@@ -171,10 +137,22 @@ export async function login(req: Request, res: Response) {
     userExists(user);
     passwordIsValid(password, user.password_hash);
 
-    //Creation des cookies et ajout du cookie dans le header de la reponse
-    const refreshCookie: string = await generateSession(user);
-    const accessCookie: string = generateAccessToken(user);
-    res.setHeader("Set-Cookie", [accessCookie, refreshCookie]);
+    //Creation du cookies et ajout dans le header de la reponse
+    const sessionId = await generateSession(user, "SESSION_EXPIRES_IN");
+    const accessToken = initToken(
+      user,
+      "JWT_ACCESS_SECRET",
+      "JWT_ACCESS_EXPIRES_IN",
+      sessionId,
+    );
+    const accessCookie = serializeCookie(
+      "COOKIE_ACCESS_TOKEN_NAME",
+      "COOKIE_ACCESS_TOKEN_SECURE",
+      "COOKIE_ACCESS_TOKEN_SAME_SITE",
+      accessToken,
+      "JWT_ACCESS_EXPIRES_IN",
+    );
+    res.setHeader("Set-Cookie", accessCookie);
 
     // Edit la reponsse
     const userSession = await query(
