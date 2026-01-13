@@ -1,26 +1,32 @@
 import type { Request, Response } from "express";
 import { query } from "../../db";
 
+async function existingEmail(email: string) {
+  const existingEmail = await query("SELECT id FROM users WHERE email = $1", [
+    email,
+  ]);
+  if (existingEmail.length > 0) {
+    throw new Error("Email déjà utilisé");
+  }
+}
+
+async function existingDisplayName(email: string) {
+  const existingEmail = await query("SELECT id FROM users WHERE email = $1", [
+    email,
+  ]);
+  if (existingEmail.length > 0) {
+    throw new Error("Nom déjà utilisé");
+  }
+}
+
 export const createUser = async (req: Request, res: Response) => {
   try {
     const { email, password, display_name } = req.body;
 
     // Vérifier si l'email de l'utilisateur existe déjà
-    const existingEmail = await query("SELECT id FROM users WHERE email = $1", [
-      email,
-    ]);
-    if (existingEmail.length > 0) {
-      return res.status(409).json({ error: "Email déjà utilisé" });
-    }
-
+    await existingEmail(email);
     // Vérifier si le nom d'utilisateur existe déjà
-    const existingDisplayName = await query(
-      "SELECT id FROM users WHERE display_name = $1",
-      [display_name],
-    );
-    if (existingDisplayName.length > 0) {
-      return res.status(409).json({ error: "Nom d'utilisateur déjà utilisé" });
-    }
+    await existingDisplayName(email);
 
     // Insertion de l'utilisateur dans la base de données
     const row = await query(
