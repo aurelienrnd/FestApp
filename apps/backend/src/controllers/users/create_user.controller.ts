@@ -1,6 +1,9 @@
 import type { Request, Response } from "express";
 import { query } from "../../db";
 
+/** Verifie que l'email de l'utilsateur existe dans la BDD
+ * @param {string} email email de l'utilsateur dans le body de la requete
+ */
 async function existingEmail(email: string) {
   const existingEmail = await query("SELECT id FROM users WHERE email = $1", [
     email,
@@ -10,23 +13,32 @@ async function existingEmail(email: string) {
   }
 }
 
-async function existingDisplayName(email: string) {
+/** Verifie que l'email de l'utilsateur existe dans la BDD
+ * @param {string} display_name nom de l'utilisateur dans le boddy de la requete
+ */
+async function existingDisplayName(display_name: string) {
   const existingEmail = await query("SELECT id FROM users WHERE email = $1", [
-    email,
+    display_name,
   ]);
   if (existingEmail.length > 0) {
     throw new Error("Nom déjà utilisé");
   }
 }
 
+/** Creation d'un utilisateur dans le service
+ * Verifie si email n'est pas deja utilisé dans la BDD
+ * Vérifie si le display_name n'est pas utilisé dans la BDD
+ * Renvoie utilisateur crées
+ * @function existingEmail Verifie que l'email de l'utilsateur existe dans la BDD
+ * @function existingDisplayName Verifie que l'email de l'utilsateur existe dans la BDD
+ */
 export const createUser = async (req: Request, res: Response) => {
   try {
     const { email, password, display_name } = req.body;
-
     // Vérifier si l'email de l'utilisateur existe déjà
     await existingEmail(email);
     // Vérifier si le nom d'utilisateur existe déjà
-    await existingDisplayName(email);
+    await existingDisplayName(display_name);
 
     // Insertion de l'utilisateur dans la base de données
     const row = await query(
@@ -36,7 +48,7 @@ export const createUser = async (req: Request, res: Response) => {
       [email, password, display_name],
     );
 
-    return res.status(201).json({ message: "Utilisateur créé", user: row[0] });
+    return res.status(201).json({ message: "Utilisateur créé" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
