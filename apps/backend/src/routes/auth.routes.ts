@@ -4,8 +4,8 @@ import { validateBody } from "../middlewares/validateBody";
 import { hashPassword } from "../middlewares/hashPassword";
 import { rateLimitLogin } from "../middlewares/rateLimitLogin";
 // controllers
-import { testGetUsers, createUser } from "../controllers/auth.controller";
-import { login } from "../controllers/auth/login.controller";
+import { createUser } from "../controllers/users/create_user.controller";
+import { login } from "../controllers/users/login.controller";
 //shema
 import { createUserSchema, loginSchema } from "../shemas/users.shema";
 
@@ -16,7 +16,6 @@ router.post(
   hashPassword(),
   createUser,
 );
-router.get("/test-users", testGetUsers); //NOTE cette route est juste pour tester la connexion a la base de donnée, a supprimer plus tard
 
 router.post("/login", rateLimitLogin, validateBody(loginSchema), login);
 

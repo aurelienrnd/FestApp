@@ -71,24 +71,40 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 Ce Dockerfile définit la manière dont l’application backend TypeScript est compilée, puis packagée dans une image Docker.
 
 ## 📁 src / 
-
 ### 📁 controllers
-
+On y retrouve les controllers, divises en plusieurs sections pour chaque route créée
 #### 📁 auth
+On y retrouve les Controllers en charge de l'authentification d'un utilisateur à l'application
 
-##### 📄 auth.controllers.ts
+- 📄 login.controller.ts : Controller utilisée à la connexion d'un utilisateur
+  - Il verifie que l'utilisateur existe, que le mot de passe est correct et que l'utilisateur est actif dans la BDD
+  - Créer la session dans la BDD et creer un refrech token
+  - Créer un Jwt comportant l'id de l'utilisateur et son "role"
+  - Les ajoutes au sien de cookies dans le header et renvoie la réponse
 
 ### 📁 middlewares
+On y retrouve les Middlewares partagés par l'ensemble de l'application
 
-#### 📄 hashPassword.ts
-
-#### 📄 rateLimitLogin.ts
-
-#### 📄 validateBody.ts
+- 📄 rateLimitLogin.ts : est une fonction init avec express-rate-limit qui retourne un middleware express limitant le nombre de requetes possibles depuis la meme adresse ip
+- 📄 validateBody.ts : est une fonction avec un schema en paramètre permerttant grace au package Zod de valider si les donnée envoyées par le front respectent des regles (exemple type de la donnée, taille de la string ou regEx)
 
 ### 📁 routes
+On y retrouve les Routes partagés par l'ensemble de l'application
+### 📄 On y retrouve les Route en charge de l'authentification d'un utilisateur à l'application
+    api/auth/login
+- Routes en charge de l’authentification d’un utilisateur.
 
-#### 📄 auth.routes.ts
+| Méthode | Chemin | Fichier | Contrôleur | Middlewares |
+|---|---|---|---|---|
+| POST | /api/auth/login | `apps/backend/src/routes/auth.routes.ts` | `apps/backend/src/controllers/auth/login.controller.ts` | `validateBody`, `rateLimitLogin` |
+
+| Élément | Description |
+|---|---|
+| Body attendu | `{ email: string, password: string }` |
+| 200 OK | token/session |
+| 400 Bad Request | validation |
+| 401 Unauthorized | identifiants invalides |
+  
 
 ### 📄 db.ts
 Ce fichier centralise la configuration de la connexion à la base de données PostgreSQL ainsi qu’une fonction utilitaire permettant d’exécuter facilement des requêtes SQL depuis le backend.
