@@ -13,8 +13,7 @@ export const pool = new Pool({
   database: process.env.DB_NAME || "vindhellfest",
 });
 
-/**
- * Execute une requete SQL pour recuperer des donnees depuis la base postgresql.
+/** Execute une requete SQL pour recuperer des donnees depuis la base postgresql.
  * @param {string} text Requete SQL exemple : 'SELECT * FROM users WHERE id = $1'
  * @param {any[]} params Parametres de la requete SQL
  * @returns {Promise<T[]>} Liste des lignes retournees par la requete SQL
