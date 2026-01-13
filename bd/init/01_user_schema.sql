@@ -16,7 +16,6 @@ CREATE TABLE users (
   must_change_password BOOLEAN NOT NULL DEFAULT FALSE,  -- Mot de passe provisoire : changement obligatoire au prochain login
   password_changed_at TIMESTAMPTZ NULL,                 -- Date/heure du dernier changement de mot de passe
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),        -- Date de création
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()         -- Dernière mise à jour (mise à jour via trigger)
 );
 
 -- Fonction pour mettre à jour updated_at lors d’un UPDATE
