@@ -2,10 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 // Import function
 import { query } from "../db";
-import {
-  initToken,
-  serializeCookie,
-} from "../controllers/users/login.controller";
+import { initToken, serializeCookie } from "../functions";
 
 /** Compare le sessionId du header avec celui de la BDD pour renouveler ou non le initToken
  * Verifie si la session est valide (non révoquée et non expirée)
