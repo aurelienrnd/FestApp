@@ -42,6 +42,9 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
     // Récupération du token et envoi d'une erreur si non trouvé
     const token = emptyTokenTest(req);
 
+    // TODO -- À supprimer une fois les tests terminés
+    console.log("Token recu dans le header:", token);
+
     // Décodage du token en userId
     const { userId, sessionId } = decodedToken(token);
 
@@ -55,7 +58,8 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
     }
 
     // Si l'utilisateur est trouvé on renvoie le header et l'id de la session
-    req.headers.auth = user;
+    req.headers.userId = user[0].id;
+    req.headers.userdisplayName = user[0].display_name;
     req.headers.session = sessionId;
 
     next();
