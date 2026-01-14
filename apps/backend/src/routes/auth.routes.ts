@@ -3,8 +3,9 @@ import { Router } from "express";
 import { validateBody } from "../middlewares/validateBody";
 import { hashPassword } from "../middlewares/hashPassword";
 import { rateLimitLogin } from "../middlewares/rateLimitLogin";
-// controllers
+import { sessionIsOpen } from "../middlewares/sessionIsOpen";
 import { auth } from "../middlewares/auth";
+// controllers
 import { createUser } from "../controllers/users/create_user.controller";
 import { login } from "../controllers/users/login.controller";
 //shema
@@ -14,6 +15,7 @@ const router = Router();
 router.post(
   "/users",
   auth,
+  sessionIsOpen,
   validateBody(createUserSchema),
   hashPassword(),
   createUser,
