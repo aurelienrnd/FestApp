@@ -65,19 +65,15 @@ async function generateSession(user: DbUser, SESSION_EXPIRES_IN: string) {
  * @param {string} sessionId Id de le session dans la BDD
  * @return jwt
  */
-function initToken(
-  user: DbUser,
+export function initToken(
+  userId: string,
   JWT_SECRET: string,
   JWT_EXPIRES_IN: string,
   sessionId: string,
 ): string {
-  return jwt.sign(
-    { userId: user.id, sessionId: sessionId },
-    getEnv(JWT_SECRET),
-    {
-      expiresIn: envToStringValue(JWT_EXPIRES_IN), //il peux recevoir des valleur en seconde ou en ms
-    },
-  );
+  return jwt.sign({ userId, sessionId }, getEnv(JWT_SECRET), {
+    expiresIn: envToStringValue(JWT_EXPIRES_IN), //il peux recevoir des valleur en seconde ou en ms
+  });
 }
 
 /** Créer un Cookie
@@ -90,7 +86,7 @@ function initToken(
  * @function envToStringValue Permet d'ajouter le Type StringValue a une variable d'environement
  * @return cookie
  */
-function serializeCookie(
+export function serializeCookie(
   EnvName: string,
   envSecure: string,
   envSameSite: string,
@@ -143,15 +139,16 @@ export async function login(req: Request, res: Response) {
 
     //Creation du cookies et ajout dans le header de la reponse
     const sessionId = await generateSession(user, "SESSION_EXPIRES_IN");
+    const userId = user.id;
     const accessToken = initToken(
-      user,
+      userId,
       "JWT_ACCESS_SECRET",
       "JWT_ACCESS_EXPIRES_IN",
       sessionId,
     );
 
     //TODO - remove it
-    console.log(accessToken);
+    console.log("Token a la connexion", accessToken);
 
     const accessCookie = serializeCookie(
       "COOKIE_ACCESS_TOKEN_NAME",
