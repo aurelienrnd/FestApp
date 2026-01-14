@@ -44,7 +44,7 @@ export const createUser = async (req: Request, res: Response) => {
     const row = await query(
       `INSERT INTO users (email, password_hash, display_name, must_change_password, is_active)
        VALUES ($1, $2, $3, TRUE, TRUE)
-       RETURNING id, email, display_name, is_active, must_change_password, created_at, updated_at`,
+       RETURNING id, email, display_name, is_active, must_change_password, created_at`,
       [email, password, display_name],
     );
 
