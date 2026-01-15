@@ -15,10 +15,10 @@ CREATE TABLE users (
   is_active BOOLEAN NOT NULL DEFAULT TRUE,              -- Permet de désactiver un compte sans le supprimer
   must_change_password BOOLEAN NOT NULL DEFAULT FALSE,  -- Mot de passe provisoire : changement obligatoire au prochain login
   password_changed_at TIMESTAMPTZ NULL,                 -- Date/heure du dernier changement de mot de passe
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()        -- Date de création
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()         -- Date de création
 );
 
-
+-- //NOTE : Utiliser uniquement en phase de développement.
 INSERT INTO users (email, password_hash, display_name, is_active, must_change_password)
 VALUES (
   'admin@example.com',
