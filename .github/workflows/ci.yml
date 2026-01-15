@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare env files
+        run: |
+          cat > .env <<'EOF'
+          POSTGRES_USER=postgres
+          POSTGRES_PASSWORD=postgres
+          POSTGRES_DB=vindhellfest
+          EOF
+          cat > .env.backend <<'EOF'
+          PORT=4000
+          DB_HOST=db
+          DB_PORT=5432
+          DB_USER=postgres
+          DB_PASSWORD=postgres
+          DB_NAME=vindhellfest
+          JWT_ACCESS_SECRET=test-secret
+          JWT_ACCESS_EXPIRES_IN=1h
+          COOKIE_ACCESS_TOKEN_NAME=access_token
+          COOKIE_ACCESS_TOKEN_SECURE=false
+          COOKIE_ACCESS_TOKEN_SAME_SITE=lax
+          SESSION_EXPIRES_IN=1h
+          EOF
+          cat > .env.frontend <<'EOF'
+          EOF
+
+      - name: Build backend image
+        run: docker compose build backend
+
+      - name: Start database
+        run: docker compose up -d db
+
+      - name: Wait for database
+        run: |
+          for i in {1..20}; do
+            docker compose exec -T db pg_isready -U postgres -d vindhellfest && exit 0
+            sleep 3
+          done
+          echo "Postgres did not become ready in time" >&2
+          exit 1
+
+      - name: Install dependencies
+        run: docker compose run --rm backend npm ci
+
+      - name: Lint
+        run: docker compose run --rm backend npm run lint
+
+      - name: Test
+        run: docker compose run --rm backend npm test
+
+      - name: Build
+        run: docker compose run --rm backend npm run build
+
+      - name: Shutdown
+        if: always()
+        run: docker compose down -v
