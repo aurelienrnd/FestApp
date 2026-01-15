@@ -10,7 +10,7 @@ import { query } from "../db";
  */
 function emptyTokenTest(req: Request) {
   if (!req.headers.authorization) {
-    throw new Error();
+    throw new Error("missing authorization");
   }
 
   const token = req.headers.authorization.split(" ")[1];
@@ -53,8 +53,8 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
       "SELECT id, display_name FROM users WHERE id = $1",
       [userId],
     );
-    if (!user) {
-      throw new Error();
+    if (!user[0]) {
+      throw new Error("User not found");
     }
 
     // Si l'utilisateur est trouvé on renvoie le header et l'id de la session
