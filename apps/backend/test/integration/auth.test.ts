@@ -30,9 +30,6 @@ function createApp() {
 }
 
 describe("auth middleware", () => {
-  //NOTE ou c'est rapeller dans mon code?
-  const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
   // Reinitialisation des mocks et des variables d'environement avant chaque test
   beforeEach(() => {
     vi.clearAllMocks();

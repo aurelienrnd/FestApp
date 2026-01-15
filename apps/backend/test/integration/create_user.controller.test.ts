@@ -20,9 +20,6 @@ function createApp() {
 }
 
 describe("createUser controller (integration)", () => {
-  // NOTE ou c'est rapeller dans mon code?
-  const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
   // Reinitialisation des mocks avant chaque test
   beforeEach(() => {
     vi.clearAllMocks();
