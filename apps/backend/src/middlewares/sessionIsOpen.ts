@@ -32,12 +32,12 @@ export async function sessionIsOpen(
 
     // Verifie si la session est valide
     if (!sessionBdd) {
-      return next(new Error("session not found"));
+      throw new Error("session not found");
     } else if (
       sessionBdd.revoked_at !== null ||
       new Date(sessionBdd.expires_at) < new Date()
     ) {
-      return next(new Error("session  already closed"));
+      throw new Error("session already closed");
     }
 
     // Si la session est valide, on renouvelle le token et le cookie
