@@ -17,7 +17,7 @@ export function hashPassword(field = "password") {
       // verifie que le mot de passe existe et est bien une chaine de caractere
       const password = req.body?.[field];
       if (typeof password !== "string") {
-        return res.status(400).json({ error: "Mot de passe manquant" });
+        throw new Error("Mot de passe non conforme");
       }
 
       // hache le mot de passe avec bcrypt et le remplace dans req.body
@@ -25,11 +25,10 @@ export function hashPassword(field = "password") {
       req.body[field] = hashed;
 
       return next();
-    } catch (err) {
-      console.error(err);
-      return res
-        .status(500)
-        .json({ error: "Erreur lors du hash du mot de passe" });
+    } catch (error: any) {
+      return res.status(500).json({
+        error: error.message || "Erreur lors du hash du mot de passe",
+      });
     }
   };
 }
