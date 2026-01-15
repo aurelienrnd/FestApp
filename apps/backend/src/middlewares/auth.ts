@@ -32,7 +32,7 @@ function decodedToken(token: string) {
 
 /** Vérifie que l'utilisateur est autorisé à effectué cette requete
  * Récupère et code le token
- * Compare  la recherche de l'utilisateur dans la BDD
+ * Recherche l'utilisateur dans la BDD
  * Renvoie le user et le sessionId dans le header de la requete
  * @function emptyTokenTest Vérifie qu'un token est bien présent dans le header de la requete
  * @function decodedToken Décode le token JTW pour récupérer le userId et le sessionId
