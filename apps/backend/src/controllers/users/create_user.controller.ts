@@ -49,10 +49,12 @@ export const createUser = async (req: Request, res: Response) => {
     );
 
     return res.status(201).json({ message: "Utilisateur créé" });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    return res.status(500).json({
-      error: "Erreur lors de la création de l'utilisateur",
-    });
+    return res
+      .status(500)
+      .json({
+        error: error.message || "Problème lors de la création de l'utilisateur",
+      });
   }
 };
