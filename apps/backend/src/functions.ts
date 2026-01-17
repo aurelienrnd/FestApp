@@ -36,7 +36,6 @@ export function envToStringValue(name: string): StringValue {
  */
 export function userExists(user: DbUser | undefined) {
   if (!user) {
-    const message: string = "email ou mot de passe incorrect";
     throw new Error("email ou mot de passe incorrect");
   }
 }
