@@ -6,6 +6,6 @@ const router = Router();
 //router.get("/admin/artists", notImplemented); // Lister les artistes
 //router.post("/admin/artists", notImplemented); // Creer un artiste
 //router.put("/admin/artists/:id", notImplemented); // Modifier un artiste
-//router.delete("/admin/artists/:id", notImplemented); // Supprimer / desactiver un artiste
+//router.delete("/admin/artists/:id", notImplemented); // Supprimer un artiste
 
 export default router;

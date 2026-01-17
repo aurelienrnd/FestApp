@@ -6,6 +6,6 @@ const router = Router();
 //router.get("/concerts", notImplemented); // Lister les concerts
 //router.post("/concerts", notImplemented); // Creer un concert (validation horaires)
 //router.put("/concerts/:id", notImplemented); // Modifier un concert
-//router.delete("/concerts/:id", notImplemented); // Supprimer / desactiver un concert
+//router.delete("/concerts/:id", notImplemented); // Supprimer un concert
 
 export default router;
