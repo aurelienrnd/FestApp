@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { query } from "../../db";
+import { query } from "../../../db";
 
 /** Verifie que l'email de l'utilsateur existe dans la BDD
  * @param {string} email email de l'utilsateur dans le body de la requete
@@ -51,10 +51,8 @@ export const createUser = async (req: Request, res: Response) => {
     return res.status(201).json({ message: "Utilisateur créé" });
   } catch (error: any) {
     console.error(error);
-    return res
-      .status(500)
-      .json({
-        error: error.message || "Problème lors de la création de l'utilisateur",
-      });
+    return res.status(500).json({
+      error: error.message || "Problème lors de la création de l'utilisateur",
+    });
   }
 };

@@ -1,9 +1,9 @@
 // Import type
 import type { Request, Response } from "express";
-import type { DbUser } from "../../type.ts";
+import type { DbUser } from "../../../type.js";
 
 // Import Modul
-import { query } from "../../db";
+import { query } from "../../../db";
 import ms from "ms";
 
 // Import function
@@ -13,7 +13,7 @@ import {
   passwordIsValid,
   initToken,
   serializeCookie,
-} from "../../functions";
+} from "../../../functions";
 
 /** Créer la session dans la BDD
  * @param {DbUser} user l'utilisateur de la requete
