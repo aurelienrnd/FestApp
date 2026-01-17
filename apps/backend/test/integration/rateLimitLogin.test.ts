@@ -2,8 +2,6 @@ import { describe, it, expect } from "vitest";
 import request from "supertest";
 import express from "express";
 import { rateLimitLogin } from "../../src/middlewares/rateLimitLogin";
-import { validateBody } from "../../src/middlewares/validateBody";
-import { createUserSchema, loginSchema } from "../../src/shemas/users.shema";
 
 /** Creation d'une application Express pour les tests
  * @returns app
@@ -19,11 +17,8 @@ describe("rateLimitLogin middleware", () => {
   it("should limit after 5 requests", async () => {
     // creation d'une application express pour le test
     const app = createApp();
-    app.post(
-      "/test-create",
-      validateBody(createUserSchema),
-      rateLimitLogin,
-      (req, res) => res.status(200).json({ success: true }),
+    app.post("/test-create", rateLimitLogin, (req, res) =>
+      res.status(200).json({ success: true }),
     );
 
     //init d'une IP et d'un body valide
