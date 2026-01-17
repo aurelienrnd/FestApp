@@ -104,10 +104,14 @@ export async function login(req: Request, res: Response) {
       message: "Authentification réussie",
       userSession,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error(error);
-    return res
-      .status(error.status || 401)
-      .json({ error: error.message || "Internal Server Error" });
+    const err =
+      error instanceof Error ? error : new Error("Internal Server Error");
+    const status =
+      typeof (error as { status?: unknown }).status === "number"
+        ? (error as { status: number }).status
+        : 401;
+    return res.status(status).json({ error: err.message });
   }
 }

@@ -59,9 +59,11 @@ export async function sessionIsOpen(
     res.setHeader("Set-Cookie", accessCookie);
 
     next();
-  } catch (error: any) {
+  } catch (error) {
+    const err =
+      error instanceof Error ? error : new Error("Unauthorized access");
     return res.status(401).json({
-      error: error.message || "Unauthorized access",
+      error: err.message,
     });
   }
 }

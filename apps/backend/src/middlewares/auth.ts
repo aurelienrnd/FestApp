@@ -63,10 +63,13 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
     req.headers.session = sessionId;
 
     next();
-  } catch (error: any) {
+  } catch (error) {
     console.error(error);
-    return res
-      .status(error.status || 401)
-      .json({ error: error.message || "Not authorized" });
+    const err = error instanceof Error ? error : new Error("Not authorized");
+    const status =
+      typeof (error as { status?: unknown }).status === "number"
+        ? (error as { status: number }).status
+        : 401;
+    return res.status(status).json({ error: err.message });
   }
 }

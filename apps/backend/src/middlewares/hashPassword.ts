@@ -25,9 +25,13 @@ export function hashPassword(field = "password") {
       req.body[field] = hashed;
 
       return next();
-    } catch (error: any) {
+    } catch (error) {
+      const err =
+        error instanceof Error
+          ? error
+          : new Error("Erreur lors du hash du mot de passe");
       return res.status(500).json({
-        error: error.message || "Erreur lors du hash du mot de passe",
+        error: err.message,
       });
     }
   };

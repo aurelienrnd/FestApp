@@ -13,7 +13,7 @@ async function existingEmail(email: string) {
   }
 }
 
-/** Verifie que l'email de l'utilsateur existe dans la BDD
+/** Verifie que le nom d'utilisateur existe dans la BDD
  * @param {string} display_name nom de l'utilisateur dans le boddy de la requete
  */
 async function existingDisplayName(display_name: string) {
@@ -28,9 +28,9 @@ async function existingDisplayName(display_name: string) {
 /** Creation d'un utilisateur dans le service
  * Verifie si email n'est pas deja utilisé dans la BDD
  * Vérifie si le display_name n'est pas utilisé dans la BDD
- * Renvoie utilisateur crées
- * @function existingEmail Verifie que l'email de l'utilsateur existe dans la BDD
- * @function existingDisplayName Verifie que l'email de l'utilsateur existe dans la BDD
+ * Renvoie utilisateur créé
+ * @function existingEmail Verifie que l'email de l'utilisateur existe dans la BDD
+ * @function existingDisplayName Verifie que le nom d'utilisateur existe dans la BDD
  */
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -48,11 +48,15 @@ export const createUser = async (req: Request, res: Response) => {
       [email, password, display_name],
     );
 
-    return res.status(201).json({ message: "Utilisateur créé" });
-  } catch (error: any) {
+    return res.status(201).json({ message: "Utilisateur crée" });
+  } catch (error) {
     console.error(error);
+    const err =
+      error instanceof Error
+        ? error
+        : new Error("Problème lors de la création de l'utilisateur");
     return res.status(500).json({
-      error: error.message || "Problème lors de la création de l'utilisateur",
+      error: err.message,
     });
   }
 };

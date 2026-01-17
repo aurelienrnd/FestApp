@@ -10,6 +10,7 @@ vi.mock("../../src/db", () => ({
   query: vi.fn(),
 }));
 const mockQuery = vi.mocked(query);
+type UserRow = { id: string; display_name: string };
 
 /** Creation d'une application Express pour les tests
  * Creation d'une route de test protégée par le middleware d'authentification
@@ -62,7 +63,7 @@ describe("auth middleware", () => {
     );
 
     // simuler une réponse vide de la base de données
-    mockQuery.mockResolvedValueOnce([] as any);
+    mockQuery.mockResolvedValueOnce([] as UserRow[]);
 
     const app = createApp();
     const res = await request(app)
@@ -83,7 +84,7 @@ describe("auth middleware", () => {
     // simuler une réponse de la base de données avec un utilisateur
     mockQuery.mockResolvedValueOnce([
       { id: "user-1", display_name: "TestUser" },
-    ] as any);
+    ] as UserRow[]);
 
     const app = createApp();
     const res = await request(app)
