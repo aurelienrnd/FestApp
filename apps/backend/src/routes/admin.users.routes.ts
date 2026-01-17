@@ -7,7 +7,7 @@ import { hashPassword } from "../middlewares/hashPassword";
 // controllers
 import { createUser } from "../controllers/admin/users/create_user.controller";
 //shema
-import { createUserSchema } from "../shemas/users.shema";
+import { createUserSchema } from "../shemas/shema";
 
 const router = Router();
 
@@ -22,6 +22,6 @@ router.post(
   createUser,
 ); // Créer un administrateur
 //router.put("/users/:id", notImplemented); // Modifier un administrateur
-//router.delete("/users/:id", notImplemented); // Desactiver / supprimer un administrateur
+//router.delete("/users/:id", notImplemented); // Desactiver un administrateur //NOTE a verifier l'utilisation de delate
 
 export default router;
