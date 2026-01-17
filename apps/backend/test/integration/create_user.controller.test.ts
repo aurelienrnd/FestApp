@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import request from "supertest";
 import express from "express";
-import { createUser } from "../../src/controllers/users/create_user.controller";
+import { createUser } from "../../src/controllers/admin/users/create_user.controller";
 import { query } from "../../src/db";
 
 // Mock de la fonction query
