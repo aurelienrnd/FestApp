@@ -2,7 +2,15 @@ import express from "express";
 import { query } from "./db";
 
 // Importation des routes
-import authRoutes from "./routes/auth.routes";
+import adminArticles from "./routes/admin.artists.routes";
+import adminArtists from "./routes/admin.artists.routes";
+import adminAuth from "./routes/admin.auth.routes";
+import adminConcerts from "./routes/admin.concerts.routes";
+import adminUser from "./routes/admin.users.routes";
+import contact from "./routes/contact.routes";
+import publicArticle from "./routes/public.articles.routes";
+import publicArtists from "./routes/public.artists.routes";
+import publicProgramming from "./routes/public.programming.routes";
 
 // Création de l’application Express
 export function createApp() {
@@ -34,7 +42,15 @@ export function createApp() {
   });
 
   //routes API (auth, admin, public, etc.)
-  app.use("/api/auth", authRoutes);
+  app.use("/admin", adminArticles);
+  app.use("/admin", adminArtists);
+  app.use("/admin", adminAuth);
+  app.use("/admin", adminConcerts);
+  app.use("/admin", adminUser);
+  app.use("/contact", contact);
+  app.use("/public", publicArticle);
+  app.use("/public", publicArtists);
+  app.use("/public", publicProgramming);
 
   return app;
 }
