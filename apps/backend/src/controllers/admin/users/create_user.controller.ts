@@ -48,7 +48,7 @@ export const createUser = async (req: Request, res: Response) => {
       [email, password, display_name],
     );
 
-    return res.status(201).json({ message: "Utilisateur crée" });
+    return res.status(201).json({ message: "Utilisateur créé" });
   } catch (error) {
     console.error(error);
     const err =
