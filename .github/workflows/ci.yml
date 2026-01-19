@@ -1,0 +1,93 @@
+name: CI
+# Nom du workflow tel qu’il apparaît dans GitHub Actions
+
+on:
+# Définit quand le workflow se déclenche
+  
+  push:   # Se déclenche à chaque push
+    branches:       # Sur toutes les branches
+      - "**"
+  pull_request:   # Se déclenche aussi lors d’une Pull Request
+
+    branches:   # Peu importe la branche cible de la PR
+      - "**"
+
+jobs:
+# Contient tous les jobs du workflow
+
+  backend:
+   # Nom du job (ici: backend)
+
+    runs-on: ubuntu-latest
+    # Le job s’exécute sur une VM Ubuntu
+
+    steps:
+    # Liste des étapes du job, exécutées dans l’ordre
+
+      # Clone le repo dans la VM
+      - name: Checkout
+        uses: actions/checkout@v4
+
+       # Créer les fichiers .env nécessaires au projet
+      - name: Prepare env files
+        run: |
+          cat > .env <<'EOF'
+          POSTGRES_USER=postgres
+          POSTGRES_PASSWORD=postgres
+          POSTGRES_DB=vindhellfest
+          EOF
+          cat > .env.backend <<'EOF'
+          PORT=4000
+          DB_HOST=db
+          DB_PORT=5432
+          DB_USER=postgres
+          DB_PASSWORD=postgres
+          DB_NAME=vindhellfest
+          JWT_ACCESS_SECRET=test-secret
+          JWT_ACCESS_EXPIRES_IN=1h
+          COOKIE_ACCESS_TOKEN_NAME=access_token
+          COOKIE_ACCESS_TOKEN_SECURE=false
+          COOKIE_ACCESS_TOKEN_SAME_SITE=lax
+          SESSION_EXPIRES_IN=1h
+          EOF
+          cat > .env.frontend <<'EOF'
+          EOF
+
+      # Construit l’image Docker du backend
+      - name: Build backend image
+        run: docker compose build backend
+
+       # Lance la base de données en arrière-plan
+      - name: Start database
+        run: docker compose up -d db
+
+      # Attend que la BDD soit prête
+      - name: Wait for database
+        run: |
+          for i in {1..20}; do
+            docker compose exec -T db pg_isready -U postgres -d vindhellfest && exit 0
+            sleep 3
+          done
+          echo "Postgres did not become ready in time" >&2
+          exit 1
+
+      # Installe les dépendances npm
+      - name: Install dependencies
+        run: docker compose run --rm backend npm ci
+
+      # Vérifie la qualité du code avec Lint
+      - name: Lint
+        run: docker compose run --rm backend npm run lint
+
+      # Lance les tests automatisés
+      - name: Test
+        run: docker compose run --rm backend npm test
+
+      # Construit le projet pour la production
+      - name: Build
+        run: docker compose run --rm backend npm run build
+
+      # Arrête et supprime les conteneurs, réseaux et volumes créés
+      - name: Shutdown
+        if: always()
+        run: docker compose down -v

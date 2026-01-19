@@ -13,15 +13,14 @@ export const pool = new Pool({
   database: process.env.DB_NAME || "vindhellfest",
 });
 
-/**
- * Execute une requete SQL pour recuperer des donnees depuis la base postgresql.
+/** Execute une requete SQL pour recuperer des donnees depuis la base postgresql.
  * @param {string} text Requete SQL exemple : 'SELECT * FROM users WHERE id = $1'
- * @param {any[]} params Parametres de la requete SQL
+ * @param {unknown[]} params Parametres de la requete SQL
  * @returns {Promise<T[]>} Liste des lignes retournees par la requete SQL
  */
-export async function query<T extends QueryResultRow = any>(
+export async function query<T extends QueryResultRow = QueryResultRow>(
   text: string,
-  params?: any[],
+  params?: unknown[],
 ): Promise<T[]> {
   const result = await pool.query<T>(text, params);
   //console.log(result.rows);

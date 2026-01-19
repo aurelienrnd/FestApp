@@ -9,7 +9,6 @@ DROP TABLE IF EXISTS sessions CASCADE;
 CREATE TABLE sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),                -- Identifiant unique généré automatiquement
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- Référence à l’utilisateur, suppression en cascade
-  refresh_token_hash VARCHAR(128) NOT NULL UNIQUE,              -- Hash du token de rafraîchissement, doit être unique
   expires_at TIMESTAMPTZ NOT NULL,                              -- Date/heure d’expiration de la session
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),                -- Date de création
   revoked_at TIMESTAMPTZ NULL,                                  -- Date/heure de révocation de la session (NULL si active)

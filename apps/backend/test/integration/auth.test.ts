@@ -1,206 +1,99 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import request from "supertest";
 import express from "express";
-
-import { validateBody } from "../../src/middlewares/validateBody";
-import { createUserSchema, loginSchema } from "../../src/shemas/users.shema";
-import { hashPassword } from "../../src/middlewares/hashPassword";
-import { rateLimitLogin } from "../../src/middlewares/rateLimitLogin";
-
-// Mock de la base de données
-vi.mock("../../src/db", () => {
-  return {
-    query: vi.fn(), // la fonction query sera remplacée par une fonction Fake (un mock)
-  };
-});
-
-// reinitialisation de tout les mocks avant chaque test
-beforeEach(() => {
-  vi.clearAllMocks();
-});
-
+import jwt from "jsonwebtoken";
+import { auth } from "../../src/middlewares/auth";
 import { query } from "../../src/db";
 
-// routes
-import authRoutes from "../../src/routes/auth.routes";
+// mock de la fonction query
+vi.mock("../../src/db", () => ({
+  query: vi.fn(),
+}));
+const mockQuery = vi.mocked(query);
+type UserRow = { id: string; display_name: string };
 
-// creation d'une application express pour les tests
-const app = express();
-app.use(express.json());
-
-//NOTE cette routes est creer pour tester, elle cera deplacé plus tard avec un middleware d'authentification
-describe("Add_user", () => {
-  describe("validateBody (createUserSchema)", () => {
-    // creation d'une route de test utilisant le middleware
-    app.post("/test-validate", validateBody(createUserSchema), (req, res) => {
-      return res.status(200).json({ success: true, data: req.body });
-    });
-
-    it("should be 200 if body is valid even with whitespace in display_name, zod shema should trim() it", async () => {
-      const res = await request(app).post("/test-validate").send({
-        email: "admin@test.fr",
-        password: "Test1234!",
-        display_name: " TestAdmin ",
-      });
-
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-      expect(res.body.data.email).toBe("admin@test.fr");
-      expect(res.body.data.display_name).toBe("TestAdmin");
-      expect(res.body.data).toHaveProperty("password"); // Le mots de passe pourait etre hashé du coup je ne controle pas sa valeur exacte mais sont existence
-      expect(res.body.data.password.length).toBeGreaterThan(7); // je verifie que le mot de passe a au moins 8 caracteres comme dans le schema
-    });
-
-    it("should be 400 if email the email not corespond to the regex zod expression", async () => {
-      const res = await request(app).post("/test-validate").send({
-        email: "pas-un-email",
-        password: "Test1234!",
-        display_name: "TestAdmin",
-      });
-
-      expect(res.status).toBe(400);
-      expect(res.body.error).toBe("Données invalides");
-    });
-
-    it("should be 400 if password is too short", async () => {
-      const res = await request(app).post("/test-validate").send({
-        email: "admin@test.fr",
-        password: "123",
-        display_name: "TestAdmin",
-      });
-
-      expect(res.status).toBe(400);
-      expect(res.body.error).toBe("Données invalides");
+/** Creation d'une application Express pour les tests
+ * Creation d'une route de test protégée par le middleware d'authentification
+ * @return les information enregisterts dans les headers par le middleware
+ * @return l'aplication Express
+ */
+function createApp() {
+  const app = express();
+  app.use(express.json());
+  app.get("/test", auth, (req, res) => {
+    return res.status(200).json({
+      userId: req.headers.userId,
+      session: req.headers.session,
+      displayName: req.headers.userdisplayName,
     });
   });
+  return app;
+}
 
-  describe("hashPassword", () => {
-    app.post("/test-hash", hashPassword(), (req, res) => {
-      return res.status(200).json({ success: true, data: req.body });
-    });
-
-    it("should be 200 and replace password with a bcrypt hash", async () => {
-      const res = await request(app).post("/test-hash").send({
-        password: "Test1234!",
-      });
-
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-      expect(res.body.data).toHaveProperty("password"); // le mot de pass existe toujours
-      expect(res.body.data.password).not.toBe("Test1234!"); //  le mot de passe a ete hashé donc il ne doit pas etre identique
-    });
-
-    it("should return 400 if password is missing", async () => {
-      const res = await request(app).post("/test-hash").send({});
-
-      expect(res.status).toBe(400);
-      expect(res.body.error).toBe("Mot de passe manquant");
-    });
-
-    it("should return 400 if password is not a string", async () => {
-      const res = await request(app).post("/test-hash").send({
-        password: 12345,
-      });
-
-      expect(res.status).toBe(400);
-      expect(res.body.error).toBe("Mot de passe manquant");
-    });
+describe("auth middleware", () => {
+  // Reinitialisation des mocks et des variables d'environement avant chaque test
+  beforeEach(() => {
+    vi.clearAllMocks();
+    process.env.JWT_ACCESS_SECRET = "test-secret";
   });
 
-  describe("POST /api/v1/auth/users", () => {
-    app.use("/api/v1/auth", authRoutes);
+  it("should return 401 if authorization header is missing", async () => {
+    const app = createApp();
+    const res = await request(app).get("/test");
 
-    it("201 crée un user in bd", async () => {
-      //  Simule les réponses de la base de données pour les vérifications d'unicité et l'insertion
-      (query as any)
-        .mockResolvedValueOnce([]) // simule qu'aucun email n'existe
-        .mockResolvedValueOnce([]) //simule qu'aucun display_name n'existe
-        .mockResolvedValueOnce([
-          //simule l'insertion réussie de l'utilisateur
-          {
-            id: "uuid-123",
-            email: "admin@test.fr",
-            display_name: "TestAdmin",
-            is_active: true,
-            must_change_password: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-        ]);
-
-      // creation de la requete
-      const res = await request(app).post("/api/v1/auth/users").send({
-        email: "admin@test.fr",
-        password: "Test1234!",
-        display_name: "TestAdmin",
-      });
-
-      expect(res.status).toBe(201);
-    });
-  });
-});
-
-describe("login", () => {
-  describe("rateLimitLogin middleware", () => {
-    app.post("/test-rate-limit", rateLimitLogin, (req, res) => {
-      return res.status(200).json({ success: true });
-    });
-
-    it("should allow 5 requests and block the 6th within 10 minutes", async () => {
-      // on fait 5 requetes qui doivent passer
-      for (let i = 0; i < 5; i++) {
-        const res = await request(app).post("/test-rate-limit");
-        expect(res.status).toBe(200);
-        expect(res.body.success).toBe(true);
-      }
-
-      // on fait une 6eme requete qui doit etre bloquée
-      const res6 = await request(app).post("/test-rate-limit");
-      expect(res6.status).toBe(429);
-      expect(res6.body).toEqual({
-        error: "Trop de tentatives, réessayer plus tard",
-      });
-    });
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe("missing authorization");
   });
 
-  describe("validateBody (loginSchema)", () => {
-    // creation d'une route de test utilisant le middleware
-    app.post("/test-validate", validateBody(loginSchema), (req, res) => {
-      return res.status(200).json({ success: true, data: req.body });
-    });
+  it("should return 401 if token is invalid", async () => {
+    const app = createApp();
+    const res = await request(app)
+      .get("/test")
+      .set("Authorization", "Bearer invalidToken");
 
-    it("should be 200 if body is valid even with whitespace in display_name, zod shema should trim() it", async () => {
-      const res = await request(app).post("/test-validate").send({
-        email: "admin@test.fr",
-        password: "Test1234!",
-        display_name: " TestAdmin ",
-      });
+    expect(res.status).toBe(401);
+    expect(res.body.error); // message généré par jsonwebtoken
+  });
 
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-      expect(res.body.data.email).toBe("admin@test.fr");
-      expect(res.body.data).toHaveProperty("password"); // Le mots de passe pourait etre hashé du coup je ne controle pas sa valeur exacte mais sont existence
-      expect(res.body.data.password.length).toBeGreaterThan(7); // je verifie que le mot de passe a au moins 8 caracteres comme dans le schema
-    });
+  it("should return 401 if user is not found", async () => {
+    // creation d'un token valide
+    const token = jwt.sign(
+      { userId: "user-1", sessionId: "sess-1" },
+      process.env.JWT_ACCESS_SECRET as string,
+    );
 
-    it("should be 400 if email the email not corespond to the regex zod expression", async () => {
-      const res = await request(app).post("/test-validate").send({
-        email: "pas-un-email",
-        password: "Test1234!",
-      });
+    // simuler une réponse vide de la base de données
+    mockQuery.mockResolvedValueOnce([] as UserRow[]);
 
-      expect(res.status).toBe(400);
-      expect(res.body.error).toBe("Données invalides");
-    });
+    const app = createApp();
+    const res = await request(app)
+      .get("/test")
+      .set("Authorization", `Bearer ${token}`);
 
-    it("should be 400 if password is too short", async () => {
-      const res = await request(app).post("/test-validate").send({
-        email: "admin@test.fr",
-        password: "123",
-      });
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe("User not found");
+  });
 
-      expect(res.status).toBe(400);
-      expect(res.body.error).toBe("Données invalides");
-    });
+  it("should set headers and continue when token is valid", async () => {
+    // creation d'un token valide
+    const token = jwt.sign(
+      { userId: "user-1", sessionId: "sess-1" },
+      process.env.JWT_ACCESS_SECRET as string,
+    );
+
+    // simuler une réponse de la base de données avec un utilisateur
+    mockQuery.mockResolvedValueOnce([
+      { id: "user-1", display_name: "TestUser" },
+    ] as UserRow[]);
+
+    const app = createApp();
+    const res = await request(app)
+      .get("/test")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.userId).toBe("user-1");
+    expect(res.body.session).toBe("sess-1"); // l'id de session est present dans la réponse car utile au middleware suivant pour verifier la session
+    expect(res.body.displayName).toBe("TestUser");
   });
 });

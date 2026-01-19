@@ -15,21 +15,15 @@ CREATE TABLE users (
   is_active BOOLEAN NOT NULL DEFAULT TRUE,              -- Permet de désactiver un compte sans le supprimer
   must_change_password BOOLEAN NOT NULL DEFAULT FALSE,  -- Mot de passe provisoire : changement obligatoire au prochain login
   password_changed_at TIMESTAMPTZ NULL,                 -- Date/heure du dernier changement de mot de passe
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),        -- Date de création
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()         -- Dernière mise à jour (mise à jour via trigger)
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()         -- Date de création
 );
 
--- Fonction pour mettre à jour updated_at lors d’un UPDATE
-CREATE OR REPLACE FUNCTION update_timestamp()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();       -- Mise à jour automatique du timestamp
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Trigger pour lancer update_timestamp a chaque modification de la table
-CREATE TRIGGER tg_update_timestamp
-BEFORE UPDATE ON users
-FOR EACH ROW
-EXECUTE FUNCTION update_timestamp();     -- Appelé automatiquement par PostgreSQL avant chaque UPDATE
+-- //NOTE : Utiliser uniquement en phase de développement.
+INSERT INTO users (email, password_hash, display_name, is_active, must_change_password)
+VALUES (
+  'admin@example.com',
+  '$2b$10$GwPZLi7S9h9O/Y9zljjQzesw2SIUr3APiro6Yz3/HamsQN.TyPj.C', -- Hash bcrypt du mot de passe 'MyPassword'
+  'Admin',
+  TRUE,
+  FALSE
+);

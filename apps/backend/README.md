@@ -5,7 +5,6 @@
 - `docker compose logs -f backend` : Consulter les logs
 
 Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfest-backend`
-- `npm test	Placeholder` :  (aucun test configuré)
 - `npm run lint` : 	Vérifier le code (ESLint)
 - `npm run lint:fix` : 	Corriger automatiquement les erreurs ESLint
 - `npm run format` : 	Formater ton code auto avec Prettier
@@ -46,24 +45,45 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 ├─ node_modules/
 ├─ src/
 │  ├─ controllers/
-│  │  └─ auth/
+│  │  ├─ admin/
+│  │  │  ├─ articles/
+│  │  │  │  └─ ...
+│  │  │  ├─ artists/
+│  │  │  │  └─ ...
+│  │  │  ├─ auth/
+│  │  │  │  └─ ...
+│  │  │  ├─ concerts/
+│  │  │  │  └─ ...
+│  │  │  └─ users/
+│  │  │     └─ ...
+│  │  └─ public/
+│  │     ├─ articles/
+│  │     │  └─ ...
+│  │     ├─ artists/
+│  │     │  └─ ...
+│  │     └─ programation/
+│  │        └─ ...
 │  ├─ middlewares/
 │  │  └─ ...
 │  ├─ routes/
 │  │  └─ ...
+│  ├─ shemas/
+│  │  └─ ...
 │  ├─ db.ts
 │  ├─ app.ts
 │  └─ index.ts/
-│
 ├─ test/
-│  └─ integration/
+│  ├─ integration/
+│  │  └─ ...
+│  └─ unitaire/
 │     └─ ...
-│
 ├─ .eslintrc.json
 ├─ .prettierignore
 ├─ .prettierc
 ├─ Dockerfile
+├─ eslint.config.cjs
 ├─ .package-lock.json
+├─ .package.json
 ├─ README.MD
 └─ tsconfig.json
 ```
@@ -71,24 +91,10 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 Ce Dockerfile définit la manière dont l’application backend TypeScript est compilée, puis packagée dans une image Docker.
 
 ## 📁 src / 
-
 ### 📁 controllers
-
-#### 📁 auth
-
-##### 📄 auth.controllers.ts
-
 ### 📁 middlewares
-
-#### 📄 hashPassword.ts
-
-#### 📄 rateLimitLogin.ts
-
-#### 📄 validateBody.ts
-
 ### 📁 routes
 
-#### 📄 auth.routes.ts
 
 ### 📄 db.ts
 Ce fichier centralise la configuration de la connexion à la base de données PostgreSQL ainsi qu’une fonction utilitaire permettant d’exécuter facilement des requêtes SQL depuis le backend.
@@ -119,14 +125,7 @@ Il est responsable de l’exécution du serveur HTTP, à partir de l’applicati
 ### 📄 types.ts 
 
 ## 📁 test
-Ce dossier regroupe les tests automatisés du backend. 
-Les tests d’intégration utilisent Vitest et Supertest pour vérifier le bon fonctionnement des endpoints Express sans lancer un serveur réel (l’application est importée depuis app.ts).
 
-### 📄 health.test.ts
-
-### 📄 debug_db.test.ts
-
-### 📄 auh.test.ts 
 
 ## ESLint & Prettier
 Dans ce projet, deux outils complémentaires assurent la qualité du code :
@@ -148,5 +147,3 @@ Il ne vérifie pas les bugs, il s’occupe uniquement de :
 - espaces
 - retours à la ligne
 - mise en forme des objets et fonctions
-
-## List des routes API
