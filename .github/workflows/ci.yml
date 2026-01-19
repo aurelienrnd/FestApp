@@ -1,20 +1,34 @@
 name: CI
+# Nom du workflow tel qu’il apparaît dans GitHub Actions
 
 on:
-  push:
-    branches:
+# Définit quand le workflow se déclenche
+  
+  push:   # Se déclenche à chaque push
+    branches:       # Sur toutes les branches
       - "**"
-  pull_request:
-    branches:
+  pull_request:   # Se déclenche aussi lors d’une Pull Request
+
+    branches:   # Peu importe la branche cible de la PR
       - "**"
 
 jobs:
+# Contient tous les jobs du workflow
+
   backend:
+   # Nom du job (ici: backend)
+
     runs-on: ubuntu-latest
+    # Le job s’exécute sur une VM Ubuntu
+
     steps:
+    # Liste des étapes du job, exécutées dans l’ordre
+
+      # Clone le repo dans la VM
       - name: Checkout
         uses: actions/checkout@v4
 
+       # Créer les fichiers .env nécessaires au projet
       - name: Prepare env files
         run: |
           cat > .env <<'EOF'
@@ -39,12 +53,15 @@ jobs:
           cat > .env.frontend <<'EOF'
           EOF
 
+      # Construit l’image Docker du backend
       - name: Build backend image
         run: docker compose build backend
 
+       # Lance la base de données en arrière-plan
       - name: Start database
         run: docker compose up -d db
 
+      # Attend que la BDD soit prête
       - name: Wait for database
         run: |
           for i in {1..20}; do
@@ -54,18 +71,24 @@ jobs:
           echo "Postgres did not become ready in time" >&2
           exit 1
 
+      # Installe les dépendances npm
       - name: Install dependencies
         run: docker compose run --rm backend npm ci
 
+      # Vérifie la qualité du code avec Lint
       - name: Lint
         run: docker compose run --rm backend npm run lint
 
+      # Lance les tests automatisés
       - name: Test
         run: docker compose run --rm backend npm test
 
+      # Construit le projet pour la production
       - name: Build
         run: docker compose run --rm backend npm run build
 
+      # Arrête et supprime les conteneurs, réseaux et volumes créés
       - name: Shutdown
         if: always()
         run: docker compose down -v
+74
