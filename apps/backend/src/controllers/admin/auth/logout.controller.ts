@@ -2,11 +2,9 @@
 import type { Request, Response } from "express";
 import type { SessionRow } from "../../../type";
 
-// Import module
-import { query } from "../../../db";
-
 // Import fonctions
 import { sessionExists, sessionRevoked } from "../../../functions";
+import { query } from "../../../db";
 
 /** Deconnecte l'utilisateur du service
  * Verifie si la session existe

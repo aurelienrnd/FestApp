@@ -102,7 +102,9 @@ export function serializeCookie(
   });
 }
 
-//TODO A COMMENTAER ET TESTER
+/** Verifie si la session existe
+ * @param {SessionRow} sessionBdd Session dans la BDD
+ */
 export function sessionExists(sessionBdd: SessionRow) {
   if (!sessionBdd) {
     const err = new Error("session not found");
@@ -111,7 +113,9 @@ export function sessionExists(sessionBdd: SessionRow) {
   }
 }
 
-//TODO A COMMENTAER ET TESTER
+/** Verifie si la session est deja revoquee ou expiree
+ * @param {SessionRow} sessionBdd Session dans la BDD
+ */
 export function sessionRevoked(sessionBdd: SessionRow) {
   if (
     sessionBdd.revoked_at !== null ||
