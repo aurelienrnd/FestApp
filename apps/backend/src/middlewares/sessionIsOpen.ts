@@ -60,10 +60,13 @@ export async function sessionIsOpen(
 
     next();
   } catch (error) {
+    console.error(error);
     const err =
-      error instanceof Error ? error : new Error("Unauthorized access");
-    return res.status(401).json({
-      error: err.message,
-    });
+      error instanceof Error ? error : new Error("Session non autorisée");
+    const status =
+      typeof (error as { status?: unknown }).status === "number"
+        ? (error as { status: number }).status
+        : 401;
+    return res.status(status).json({ error: err.message });
   }
 }

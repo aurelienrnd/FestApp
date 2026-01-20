@@ -26,13 +26,16 @@ export function hashPassword(field = "password") {
 
       return next();
     } catch (error) {
+      console.error(error);
       const err =
         error instanceof Error
           ? error
           : new Error("Erreur lors du hash du mot de passe");
-      return res.status(500).json({
-        error: err.message,
-      });
+      const status =
+        typeof (error as { status?: unknown }).status === "number"
+          ? (error as { status: number }).status
+          : 500;
+      return res.status(status).json({ error: err.message });
     }
   };
 }
