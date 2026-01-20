@@ -55,7 +55,7 @@ describe("createUser controller (integration)", () => {
     expect(res.body.message).toBe("Utilisateur créé");
   });
 
-  it("should return 500 when email already exists", async () => {
+  it("should return 409 when email already exists", async () => {
     // simuler que l'email existe déjà
     mockQuery.mockResolvedValueOnce([{ id: "user-1" }]);
 
@@ -68,11 +68,11 @@ describe("createUser controller (integration)", () => {
       display_name: "TestAdmin",
     });
 
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(409);
     expect(res.body.error).toBe("Email déjà utilisé");
   });
 
-  it("should return 500 when display_name already exists", async () => {
+  it("should return 409 when display_name already exists", async () => {
     // simuler la reponse de la base de données
     mockQuery
       .mockResolvedValueOnce([]) // l'email n'existe pas
@@ -87,7 +87,7 @@ describe("createUser controller (integration)", () => {
       display_name: "TestAdmin",
     });
 
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(409);
     expect(res.body.error).toBe("Nom déjà utilisé");
   });
 

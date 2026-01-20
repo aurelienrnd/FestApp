@@ -9,7 +9,9 @@ async function existingEmail(email: string) {
     email,
   ]);
   if (existingEmail.length > 0) {
-    throw new Error("Email déjà utilisé");
+    const err = new Error("Email déjà utilisé");
+    (err as { status?: number }).status = 409;
+    throw err;
   }
 }
 
@@ -21,7 +23,9 @@ async function existingDisplayName(display_name: string) {
     display_name,
   ]);
   if (existingEmail.length > 0) {
-    throw new Error("Nom déjà utilisé");
+    const err = new Error("Nom déjà utilisé");
+    (err as { status?: number }).status = 409;
+    throw err;
   }
 }
 
@@ -55,7 +59,11 @@ export const createUser = async (req: Request, res: Response) => {
       error instanceof Error
         ? error
         : new Error("Problème lors de la création de l'utilisateur");
-    return res.status(500).json({
+    const status =
+      typeof (error as { status?: unknown }).status === "number"
+        ? (error as { status: number }).status
+        : 500;
+    return res.status(status).json({
       error: err.message,
     });
   }
