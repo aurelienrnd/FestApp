@@ -8,7 +8,10 @@ import {
   passwordIsValid,
   initToken,
   serializeCookie,
+  sessionExists,
+  sessionRevoked,
 } from "../../src/functions";
+import type { SessionRow } from "../../src/type";
 
 let originalEnv: NodeJS.ProcessEnv;
 
@@ -114,5 +117,55 @@ describe("serializeCookie", () => {
     expect(cookie).toContain("Secure");
     expect(cookie).toContain("SameSite=Lax");
     expect(cookie).toContain("Path=/");
+  });
+});
+
+describe("sessionExists", () => {
+  it("does not throw when session exists", () => {
+    const session: SessionRow = {
+      id: "sess-1",
+      revoked_at: null,
+      expires_at: new Date(Date.now() + 60_000),
+    };
+
+    expect(() => sessionExists(session)).not.toThrow();
+  });
+
+  it("throws when session is missing", () => {
+    expect(() => sessionExists(undefined as unknown as SessionRow)).toThrow(
+      /session not found/,
+    );
+  });
+});
+
+describe("sessionRevoked", () => {
+  it("does not throw when session is active", () => {
+    const session: SessionRow = {
+      id: "sess-2",
+      revoked_at: null,
+      expires_at: new Date(Date.now() + 60_000),
+    };
+
+    expect(() => sessionRevoked(session)).not.toThrow();
+  });
+
+  it("throws when session is revoked", () => {
+    const session: SessionRow = {
+      id: "sess-3",
+      revoked_at: new Date(),
+      expires_at: new Date(Date.now() + 60_000),
+    };
+
+    expect(() => sessionRevoked(session)).toThrow(/session already closed/);
+  });
+
+  it("throws when session is expired", () => {
+    const session: SessionRow = {
+      id: "sess-4",
+      revoked_at: null,
+      expires_at: new Date(Date.now() - 60_000),
+    };
+
+    expect(() => sessionRevoked(session)).toThrow(/session already closed/);
   });
 });
