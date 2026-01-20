@@ -6,3 +6,9 @@ export type DbUser = {
   display_name: string | null;
   is_active: boolean;
 };
+
+export type SessionRow = {
+  id: string;
+  revoked_at: Date | string | null;
+  expires_at: Date | string;
+};
