@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { serialize } from "cookie";
 import type { DbUser } from "../src/type";
+import type { SessionRow } from "../src/type";
 
 /** Verifie si la variable d'environnement existe et renvoie une erreur si non
  * Permet de gérer le typage
@@ -99,4 +100,25 @@ export function serializeCookie(
     path: "/", // rend le cookie accessible sur l'ensemble du site
     maxAge: timeS, // durée de vie du cookie en secondes (ici 1 heure)
   });
+}
+
+//TODO A COMMENTAER ET TESTER
+export function sessionExists(sessionBdd: SessionRow) {
+  if (!sessionBdd) {
+    const err = new Error("session not found");
+    (err as { status?: number }).status = 401;
+    throw err;
+  }
+}
+
+//TODO A COMMENTAER ET TESTER
+export function sessionRevoked(sessionBdd: SessionRow) {
+  if (
+    sessionBdd.revoked_at !== null ||
+    new Date(sessionBdd.expires_at) < new Date()
+  ) {
+    const err = new Error("session already closed");
+    (err as { status?: number }).status = 401;
+    throw err;
+  }
 }
