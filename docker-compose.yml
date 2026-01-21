@@ -45,17 +45,29 @@ services:
     build:
       context: ./apps/frontend
       dockerfile: Dockerfile
+      target: dev
     container_name: vindhellfest-frontend
     restart: always
     env_file:
       - .env
       - .env.frontend
+    environment:
+      - WATCHPACK_POLLING=true
+      - WATCHPACK_POLLING_INTERVAL=1000
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=1000
+      - NEXT_DISABLE_TURBOPACK=1
+    command: ["npm", "run", "dev", "--", "--webpack", "-H", "0.0.0.0", "-p", "3000"]
     depends_on:
-      - backend # attend que le backend soit démarré avant de démarrer le frontend.
+      - backend
     ports:
-      - "3000:3000" # # exposes le port 3000 du conteneur sur le port 3000 de ta machine. http://localhost:3000
+      - "3000:3000"
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
+      - /app/.next
     networks:
-      - app-net # Permet au frontend d’appeler le backend via le hostname backend
+      - app-net
 
 networks:
   app-net: # Déclare un réseau Docker interne nommé app-net
