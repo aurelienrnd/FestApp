@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📦 Frontend Projet Vindhellfest - Architecture & Documentation
+## Script :
+- `docker compose up -d frontend` : Demarrer le frontend
+- `docker compose restart frontend` : Redemarrer uniquement le frontend
+- `docker compose logs -f frontend` : Consulter les logs
 
-## Getting Started
+Pour executer une commande npm dans le conteneur : `docker exec -it vindhellfest-frontend`
+- `npm run dev` : Lancer le serveur Next.js en developpement
+- `npm run build` : Construire l'application
+- `npm run start` : Demarrer l'application en production
+- `npm run lint` : Verifier le code (ESLint)
 
-First, run the development server:
+## Stack technique
+**Dependencies**
+- `next` : Framework React pour le rendu hybride (SSR/SSG).
+- `react` : Bibliotheque UI.
+- `react-dom` : Rendu React dans le navigateur.
 
+**DevDependencies**
+- `@types/node` : Definitions TypeScript pour Node.js.
+- `@types/react` : Definitions TypeScript pour React.
+- `@types/react-dom` : Definitions TypeScript pour React DOM.
+- `eslint` : Analyse statique du code.
+- `eslint-config-next` : Regles ESLint pour Next.js.
+- `tailwindcss` : Framework CSS utilitaire.
+- `@tailwindcss/postcss` : Integration Tailwind via PostCSS.
+- `typescript` : Compilateur TypeScript.
+
+## Architecture
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+├─ .next/
+├─ node_modules/
+├─ public/
+├─ src/
+│  ├─ app/
+│  │  └─ admin/
+│  │     ├─ dashboard/
+│  │     │  ├─ lineup/
+│  │     │  ├─ news/
+│  │     │  └─ users/
+│  │     ├─ lineup/
+│  │     ├─ login/
+│  │     ├─ news/
+│  │     └─ practical-info/
+│  ├─ favicon.ico
+│  ├─ globals.css
+│  ├─ layout.tsx
+│  └─ page.tsx
+├─ .dockerignore
+├─ .gitignore
+├─ Dockerfile
+├─ eslint.config.mjs
+├─ next.config.ts
+├─ package.json
+├─ package-lock.json
+├─ postcss.config.mjs
+├─ tsconfig.json
+└─ README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Dockerfile
+Ce Dockerfile definit la maniere dont l'application Next.js est installee, build, puis lancee.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## src/app/
+- `page.tsx` : Page d'accueil.
+- `layout.tsx` : Layout global (structure de base).
+- `globals.css` : Styles globaux.
+- Dossiers `admin`, `news`, `lineup`, `login`, `practical-info` : pages et sections principales.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ESLint
+ESLint verifie le code pour detecter les erreurs et maintenir un style coherent.
