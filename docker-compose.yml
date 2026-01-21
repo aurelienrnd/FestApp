@@ -51,13 +51,13 @@ services:
     env_file:
       - .env
       - .env.frontend
-    environment:
+    environment: # env variables pour forcer le polling (utile dans Docker)
       - WATCHPACK_POLLING=true
       - WATCHPACK_POLLING_INTERVAL=1000
       - CHOKIDAR_USEPOLLING=true
       - CHOKIDAR_INTERVAL=1000
-      - NEXT_DISABLE_TURBOPACK=1
-    command: ["npm", "run", "dev", "--", "--webpack", "-H", "0.0.0.0", "-p", "3000"]
+      - NEXT_DISABLE_TURBOPACK=1 # Desactive Turbopack pour Next.js en dev
+    command: ["npm", "run", "dev", "--", "--webpack", "-H", "0.0.0.0", "-p", "3000"] # run dev avec webpack
     depends_on:
       - backend
     ports:
