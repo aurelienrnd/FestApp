@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+:root {
+  --hellfest-red: #cb3346;
+}
+
+@layer components {
+  .btn-cta {
+    @apply inline-flex rounded bg-(--hellfest-red) px-5 py-1 text-white transition-transform duration-200 hover:scale-110;
+  }
+}
+
 .section-min-screen {
   min-height: 100vh;
 }
