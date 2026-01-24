@@ -6,8 +6,24 @@ import { usePathname } from "next/navigation";
 import { navItems, type NavItem } from "../config/navigation";
 import logo from "../../public/header_logo.png";
 
+function BtnTiket() {
+  return (
+    <li>
+      <a
+        href="https://www.google.com/search?q=tiket+master&rlz=1C1ONGR_frFR1184FR1184&oq=tiket+master&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDM1ODJqMGo3qAIIsAIB&sourceid=chrome&ie=UTF-8"
+        className="btn-cta"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Billetterie
+      </a>
+    </li>
+  );
+}
+
 function DesktopNav({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
+  const isAdminPath = pathname?.includes("/admin");
 
   return (
     <nav>
@@ -30,16 +46,7 @@ function DesktopNav({ items }: { items: NavItem[] }) {
             </li>
           );
         })}
-        <li>
-          <a
-            href="https://www.google.com/search?q=tiket+master&rlz=1C1ONGR_frFR1184FR1184&oq=tiket+master&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDM1ODJqMGo3qAIIsAIB&sourceid=chrome&ie=UTF-8"
-            className="btn-cta"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Billetterie
-          </a>
-        </li>
+        {isAdminPath ? null : <BtnTiket />}
       </ul>
     </nav>
   );
