@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Koulen } from "next/font/google";
+import { AppUiProvider } from "../components/AppUiProvider";
 import Banner from "../components/Banner";
 import Footer from "../components/Footer";
 import ThemeVars from "../components/ThemeVars";
@@ -30,10 +31,12 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${koulen.className}`}>
       <body className="bg-(--collor-bg) text-(--collor-text)">
-        <ThemeVars />
-        <Banner />
-        <main>{children}</main>
-        <Footer />
+        <AppUiProvider>
+          <ThemeVars />
+          <Banner />
+          <main>{children}</main>
+          <Footer />
+        </AppUiProvider>
       </body>
     </html>
   );

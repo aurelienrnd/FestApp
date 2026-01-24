@@ -1,7 +1,7 @@
 "use client";
 // Import
-import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { useAppUi } from "./AppUiProvider";
 
 /** Change le thème de l’application (admin ou visitor) en fonction de l’URL.
  * Utilise usePathname pour récupérer l’URL de la page.
@@ -9,14 +9,15 @@ import { useEffect } from "react";
  * Modifie la balise <html> via root pour ajuster le thème (couleurs, styles, etc.).
  */
 export default function ThemeVars() {
-  const pathname = usePathname() ?? "";
+  const { pathname } = useAppUi();
+  const path = pathname ?? "";
 
   useEffect(() => {
-    const isAdmin = pathname.includes("/admin") || pathname.includes("/login");
+    const isAdmin = path.includes("/admin") || path.includes("/login");
     const root = document.documentElement;
 
     root.dataset.theme = isAdmin ? "admin" : "visitor";
-  }, [pathname]);
+  }, [path]);
 
   return null;
 }

@@ -2,7 +2,6 @@
 // Import
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import {
@@ -13,6 +12,7 @@ import {
 import logo from "../../public/header_logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faX } from "@fortawesome/free-solid-svg-icons";
+import { useAppUi } from "./AppUiProvider";
 
 /** Affiche un bouton de billetterie
  * Contient un lien externe vers un site de recherche de billetterie
@@ -163,20 +163,8 @@ export function MobilNav({
  * @children MobilNav :  Affiche le menu de navigation pour l’affichage mobile
  */
 export default function Banner() {
-  const pathname = usePathname();
-  const isAdminPath = pathname?.includes("/admin") ?? false;
+  const { pathname, isAdminPath, isDesktop } = useAppUi();
   const items = isAdminPath ? navAdminItems : navVisitorItems;
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const media = window.matchMedia("(min-width: 768px)");
-    const handleChange = () => setIsDesktop(media.matches);
-
-    handleChange();
-    media.addEventListener("change", handleChange);
-
-    return () => media.removeEventListener("change", handleChange);
-  }, []);
 
   return (
     <header className="mx-auto flex w-full items-center justify-between px-4 py-2">
