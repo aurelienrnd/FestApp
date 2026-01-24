@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import Modal from "react-modal";
 import {
   navVisitorItems,
   navAdminItems,
@@ -59,15 +61,35 @@ function DesktopNav({ items }: { items: NavItem[] }) {
 function MobilNav({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
   const isAdminPath = pathname?.includes("/admin");
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    Modal.setAppElement("body");
+  }, []);
 
   return (
     <nav>
       <ul className="flex items-center gap-6 tracking-wides">
         <li>
-          <div className="mobil-menu ">M</div>
+          <button
+            className="mobil-menu"
+            type="button"
+            onClick={() => setIsOpen(true)}
+          >
+            M
+          </button>
         </li>
         {isAdminPath ? null : <BtnTiket />}
       </ul>
+      <Modal
+        isOpen={isOpen}
+        onRequestClose={() => setIsOpen(false)}
+        contentLabel="Menu"
+      >
+        <button type="button" onClick={() => setIsOpen(false)}>
+          Fermer
+        </button>
+      </Modal>
     </nav>
   );
 }
