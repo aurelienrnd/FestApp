@@ -3,7 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { navItems, type NavItem } from "../config/navigation";
+import {
+  navVisitorItems,
+  navAdminItems,
+  type NavItem,
+} from "../config/navigation";
 import logo from "../../public/header_logo.png";
 
 function BtnTiket() {
@@ -37,8 +41,8 @@ function DesktopNav({ items }: { items: NavItem[] }) {
                 href={item.path}
                 className={
                   isActive
-                    ? "border-b border-(--hellfest-red)"
-                    : "border-b border-transparent transition-colors hover:border-(--hellfest-red)"
+                    ? "border-b border-(--collor-1)"
+                    : "border-b border-transparent transition-colors hover:border-(--collor-1)"
                 }
               >
                 {item.label}
@@ -53,10 +57,14 @@ function DesktopNav({ items }: { items: NavItem[] }) {
 }
 
 export default function Banner() {
+  const pathname = usePathname();
+  const isAdminPath = pathname?.includes("/admin");
+  const items = isAdminPath ? navAdminItems : navVisitorItems;
+
   return (
     <header className="mx-auto flex w-full items-center justify-between px-4 py-2">
       <Image src={logo} alt="Logo Hellfest" width={90} height={90} />
-      <DesktopNav items={navItems} />
+      <DesktopNav items={items} />
     </header>
   );
 }
