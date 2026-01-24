@@ -3,7 +3,6 @@ import { Koulen } from "next/font/google";
 import { AppUiProvider } from "../components/AppUiProvider";
 import Banner from "../components/Banner";
 import Footer from "../components/Footer";
-import ThemeVars from "../components/ThemeVars";
 import "./globals.css";
 
 // Police Google
@@ -32,7 +31,6 @@ export default function RootLayout({
     <html lang="fr" className={`${koulen.className}`}>
       <body className="bg-(--collor-bg) text-(--collor-text)">
         <AppUiProvider>
-          <ThemeVars />
           <Banner />
           <main>{children}</main>
           <Footer />
