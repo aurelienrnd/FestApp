@@ -98,11 +98,22 @@ export default function Banner() {
   const pathname = usePathname();
   const isAdminPath = pathname?.includes("/admin");
   const items = isAdminPath ? navAdminItems : navVisitorItems;
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 768px)");
+    const handleChange = () => setIsDesktop(media.matches);
+
+    handleChange();
+    media.addEventListener("change", handleChange);
+
+    return () => media.removeEventListener("change", handleChange);
+  }, []);
 
   return (
     <header className="mx-auto flex w-full items-center justify-between px-4 py-2">
       <Image src={logo} alt="Logo Hellfest" width={90} height={90} />
-      <MobilNav items={items} />
+      {isDesktop ? <DesktopNav items={items} /> : <MobilNav items={items} />}
     </header>
   );
 }
