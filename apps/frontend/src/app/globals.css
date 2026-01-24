@@ -1,12 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  --hellfest-red: #cb3346;
+  --collor-1: #cb3346;
+  --collor-text-visitor: #ffffff;
+  --collor-bg-visitor: black;
+  --collor-bg-admin: #ffffff;
+  --collor-text-admin: black;
+}
+
+:root[data-theme="admin"] {
+  --collor-text: var(--collor-text-admin);
+  --collor-bg: var(--collor-bg-admin);
+}
+
+:root[data-theme="visitor"] {
+  --collor-text: var(--collor-text-visitor);
+  --collor-bg: var(--collor-bg-visitor);
 }
 
 @layer components {
   .btn-cta {
-    @apply inline-flex rounded bg-(--hellfest-red) px-5 py-1 text-white transition-transform duration-200 hover:scale-110;
+    @apply inline-flex rounded bg-(--collor-1) px-5 py-1 text-(--collor-text) transition-transform duration-200 hover:scale-110;
   }
 }
 

@@ -2,18 +2,26 @@ import type { Metadata } from "next";
 import { Koulen } from "next/font/google";
 import Banner from "../components/Banner";
 import Footer from "../components/Footer";
+import ThemeVars from "../components/ThemeVars";
 import "./globals.css";
 
+// Police Google
 const koulen = Koulen({
   subsets: ["latin"],
   weight: "400", // OBLIGATOIRE pour Koulen
 });
 
+// Métadonnées SEO
 export const metadata: Metadata = {
   title: "Vindellfest",
   description: "A music festival website built with Next.js", //TODO a modifier
 };
 
+/**Layout global de l'aplication
+ * @Composent ThemeVars :définit les variables CSS pour la gestion des page admin et visiteur
+ * @Composent Banner : Affiché sur toutes les pages
+ * @Composent Footer : Affiché sur toutes les pages
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,7 +29,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={`${koulen.className}`}>
-      <body className="bg-black text-white">
+      <body className="bg-(--collor-bg) text-(--collor-text)">
+        <ThemeVars />
         <Banner />
         <main>{children}</main>
         <Footer />
