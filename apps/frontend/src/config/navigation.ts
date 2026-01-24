@@ -11,9 +11,9 @@ export const navVisitorItems: NavItem[] = [
 ];
 
 export const navAdminItems: NavItem[] = [
-  { label: "Dashboard", path: "/" },
-  { label: "Programmation", path: "/lineup" },
-  { label: "Articles", path: "/news" },
-  { label: "Utilisateurs", path: "/practical-info" },
+  { label: "Dashboard", path: "/admin/dashboard" },
+  { label: "Programmation", path: "/admin/lineup" },
+  { label: "Articles", path: "/admin/news" },
+  { label: "Utilisateurs", path: "/admin/users" },
   { label: "Logout", path: "/../login" },
 ];

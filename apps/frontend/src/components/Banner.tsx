@@ -96,10 +96,66 @@ function MobilNav({
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
         contentLabel="Menu"
+        className="mobile-nav-modal"
+        overlayClassName="mobile-nav-modal-overlay"
       >
-        <button type="button" onClick={() => setIsOpen(false)}>
-          Fermer
-        </button>
+        <Modal
+          isOpen={isOpen}
+          onRequestClose={() => setIsOpen(false)}
+          contentLabel="Menu"
+          className="mobile-nav-modal"
+          overlayClassName="mobile-nav-modal-overlay"
+        >
+          <div className="flex w-full justify-end">
+            <button type="button" onClick={() => setIsOpen(false)}>
+              X
+            </button>
+          </div>
+
+          <nav>
+            <ul className="flex flex-col gap-6">
+              {items.map((item) => {
+                const isActive = pathname === item.path;
+                return (
+                  <li
+                    key={item.path}
+                    className={
+                      isActive
+                        ? "bg-(--collor-1) w-50 p-2"
+                        : "bg-black text-white w-30 p-2"
+                    }
+                  >
+                    <Link href={item.path} className="block w-full text-right">
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        </Modal>
+
+        <nav>
+          <ul className="flex flex-col gap-6">
+            {items.map((item) => {
+              const isActive = pathname === item.path;
+              return (
+                <li key={item.path}>
+                  <Link
+                    href={item.path}
+                    className={
+                      isActive
+                        ? "bg-(--collor-1) px-2"
+                        : "bg-black text-white hover:bg-(--collor-1) px-2"
+                    }
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
       </Modal>
     </nav>
   );
@@ -131,11 +187,7 @@ export default function Banner() {
           isAdminPath={isAdminPath}
         />
       ) : (
-        <MobilNav
-          items={items}
-          pathname={pathname}
-          isAdminPath={isAdminPath}
-        />
+        <MobilNav items={items} pathname={pathname} isAdminPath={isAdminPath} />
       )}
     </header>
   );
