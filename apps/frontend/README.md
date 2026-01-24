@@ -68,4 +68,4 @@ Ce Dockerfile definit la maniere dont l'application Next.js est installee, build
 - Dossiers `admin`, `news`, `lineup`, `login`, `practical-info` : pages et sections principales.
 
 ## ESLint
-ESLint verifie le code pour detecter les erreurs et maintenir un style coherent.
+ESLint verifie le code pour detecter les erreurs et maintenir un style coherent
