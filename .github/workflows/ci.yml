@@ -91,3 +91,45 @@ jobs:
       - name: Shutdown
         if: always()
         run: docker compose down -v
+
+  frontend:
+   # Nom du job (ici: frontend)
+
+    runs-on: ubuntu-latest
+    # Le job s’exécute sur une VM Ubuntu
+
+    steps:
+    # Liste des étapes du job, exécutées dans l’ordre
+
+      # Clone le repo dans la VM
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Créer les fichiers .env nécessaires au projet
+      - name: Prepare env files
+        run: 
+
+      # Construit l'image Docker du frontend
+      - name: Build frontend image
+        run: docker compose build frontend
+
+      # Installe les dépendances npm
+      - name: Install dependencies
+        run: docker compose run --rm --no-deps frontend npm ci
+
+      # Vérifie la qualité du code avec Lint
+      - name: Lint
+        run: docker compose run --rm --no-deps frontend npm run lint
+
+      # Lance les tests automatisé
+      - name: Test
+        run: docker compose run --rm --no-deps frontend npm run test:run
+
+      # Construit le projet pour la production
+      - name: Build
+        run: docker compose run --rm --no-deps frontend npm run build
+
+      # Arréte et supprime les conteneurs
+      - name: Shutdown
+        if: always()
+        run: docker compose down -v
