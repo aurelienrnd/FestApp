@@ -56,6 +56,22 @@ function DesktopNav({ items }: { items: NavItem[] }) {
   );
 }
 
+function MobilNav({ items }: { items: NavItem[] }) {
+  const pathname = usePathname();
+  const isAdminPath = pathname?.includes("/admin");
+
+  return (
+    <nav>
+      <ul className="flex items-center gap-6 tracking-wides">
+        <li>
+          <div className="mobil-menu ">M</div>
+        </li>
+        {isAdminPath ? null : <BtnTiket />}
+      </ul>
+    </nav>
+  );
+}
+
 export default function Banner() {
   const pathname = usePathname();
   const isAdminPath = pathname?.includes("/admin");
@@ -64,7 +80,7 @@ export default function Banner() {
   return (
     <header className="mx-auto flex w-full items-center justify-between px-4 py-2">
       <Image src={logo} alt="Logo Hellfest" width={90} height={90} />
-      <DesktopNav items={items} />
+      <MobilNav items={items} />
     </header>
   );
 }
