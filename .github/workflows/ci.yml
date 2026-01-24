@@ -113,6 +113,8 @@ jobs:
           POSTGRES_PASSWORD=postgres
           POSTGRES_DB=vindhellfest
           EOF
+          cat > .env.backend <<'EOF'
+          EOF
           cat > .env.frontend <<'EOF'
           EOF
 
