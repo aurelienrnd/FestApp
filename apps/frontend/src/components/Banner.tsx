@@ -11,6 +11,8 @@ import {
   type NavItem,
 } from "../config/navigation";
 import logo from "../../public/header_logo.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faX } from "@fortawesome/free-solid-svg-icons";
 
 function BtnTiket() {
   return (
@@ -81,17 +83,14 @@ function MobilNav({
   return (
     <nav>
       <ul className="flex items-center gap-6 tracking-wides">
-        <li>
-          <button
-            className="mobil-menu"
-            type="button"
-            onClick={() => setIsOpen(true)}
-          >
-            M
+        <li className="mobil-menu">
+          <button type="button" onClick={() => setIsOpen(true)}>
+            <FontAwesomeIcon icon={faBars} />
           </button>
         </li>
         {isAdminPath ? null : <BtnTiket />}
       </ul>
+
       <Modal
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
@@ -99,56 +98,26 @@ function MobilNav({
         className="mobile-nav-modal"
         overlayClassName="mobile-nav-modal-overlay"
       >
-        <Modal
-          isOpen={isOpen}
-          onRequestClose={() => setIsOpen(false)}
-          contentLabel="Menu"
-          className="mobile-nav-modal"
-          overlayClassName="mobile-nav-modal-overlay"
-        >
-          <div className="flex w-full justify-end">
-            <button type="button" onClick={() => setIsOpen(false)}>
-              X
-            </button>
-          </div>
-
-          <nav>
-            <ul className="flex flex-col gap-6">
-              {items.map((item) => {
-                const isActive = pathname === item.path;
-                return (
-                  <li
-                    key={item.path}
-                    className={
-                      isActive
-                        ? "bg-(--collor-1) w-50 p-2"
-                        : "bg-black text-white w-30 p-2"
-                    }
-                  >
-                    <Link href={item.path} className="block w-full text-right">
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-        </Modal>
+        <div className="flex w-full justify-end">
+          <button type="button" onClick={() => setIsOpen(false)}>
+            <FontAwesomeIcon icon={faX} />
+          </button>
+        </div>
 
         <nav>
           <ul className="flex flex-col gap-6">
             {items.map((item) => {
               const isActive = pathname === item.path;
               return (
-                <li key={item.path}>
-                  <Link
-                    href={item.path}
-                    className={
-                      isActive
-                        ? "bg-(--collor-1) px-2"
-                        : "bg-black text-white hover:bg-(--collor-1) px-2"
-                    }
-                  >
+                <li
+                  key={item.path}
+                  className={
+                    isActive
+                      ? "bg-(--collor-1) w-50 p-2"
+                      : "bg-black text-white w-30 p-2"
+                  }
+                >
+                  <Link href={item.path} className="block w-full text-right">
                     {item.label}
                   </Link>
                 </li>
