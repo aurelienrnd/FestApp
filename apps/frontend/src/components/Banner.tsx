@@ -1,5 +1,5 @@
 "use client";
-
+// Import
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,6 +14,11 @@ import logo from "../../public/header_logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faX } from "@fortawesome/free-solid-svg-icons";
 
+/** Affiche un bouton de billetterie
+ * Contient un lien externe vers un site de recherche de billetterie
+ * Le lien s’ouvre dans un nouvel onglet grâce à target="_blank"
+ * Utilise rel="noopener noreferrer" pour des raisons de sécurité
+ */
 function BtnTiket() {
   return (
     <li>
@@ -29,6 +34,15 @@ function BtnTiket() {
   );
 }
 
+/** Affiche le menu de navigation pour l’affichage desktop
+ * Compare chaque lien avec l’URL pour déterminer lequel est actif et y appliquer un style
+ * Affiche le bouton de billetterie uniquement si l’on n’est pas sur une page admin
+ * @param {Object} props
+ * @param {NavItem[]} props.items
+ * @param {string | null} [props.pathname]
+ * @param {boolean} props.isAdminPath
+ * @children BtnTiket Affiche un bouton de billetterie
+ */
 function DesktopNav({
   items,
   pathname,
@@ -65,6 +79,16 @@ function DesktopNav({
   );
 }
 
+/** Affiche le menu de navigation pour l’affichage mobile
+ * Ouvre/ferme un menu via une modale (react-modal) grâce à un state `isOpen`
+ * Compare chaque lien avec l’URL pour déterminer lequel est actif et lui appliquer un style
+ * Affiche le bouton de billetterie (BtnTiket) uniquement si l’on n’est pas sur une page admin
+ * @param {Object} props - Propriétés du composant
+ * @param {NavItem[]} props.items - Liste des liens de navigation
+ * @param {string | null} [props.pathname] - URL courante pour déterminer le lien actif
+ * @param {boolean} props.isAdminPath - Indique si la page actuelle est une page admin
+ * @children BtnTiket : Affiche un bouton de billetterie
+ */
 function MobilNav({
   items,
   pathname,
@@ -130,6 +154,14 @@ function MobilNav({
   );
 }
 
+/** Affiche le header avec un logo et la navigation
+ * Détecte si l’URL correspond à une page admin pour choisir les bons items de navigation
+ * Détermine si l’affichage est en mode desktop ou mobile via matchMedia (min-width: 768px)
+ * Écoute les changements de taille d’écran pour mettre à jour l’état `isDesktop`
+ * Affiche DesktopNav sur écran large, sinon MobilNav
+ * @children DesktopNav :  Affiche le menu de navigation pour l’affichage desktop
+ * @children MobilNav :  Affiche le menu de navigation pour l’affichage mobile
+ */
 export default function Banner() {
   const pathname = usePathname();
   const isAdminPath = pathname?.includes("/admin") ?? false;

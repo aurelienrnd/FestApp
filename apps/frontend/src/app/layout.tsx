@@ -18,9 +18,9 @@ export const metadata: Metadata = {
 };
 
 /**Layout global de l'aplication
- * @Composent ThemeVars :définit les variables CSS pour la gestion des page admin et visiteur
- * @Composent Banner : Affiché sur toutes les pages
- * @Composent Footer : Affiché sur toutes les pages
+ * @children ThemeVars : Définit les variables CSS pour la gestion des page admin et visiteur
+ * @children Banner : Affiché sur toutes les pages
+ * @children Footer : Affiché sur toutes les pages
  */
 export default function RootLayout({
   children,
