@@ -106,8 +106,8 @@ jobs:
         uses: actions/checkout@v4
 
       # Créer les fichiers .env nécessaires au projet
-      - name: Prepare env files
-        run: 
+      #- name: Prepare env files
+        #run: 
 
       # Construit l'image Docker du frontend
       - name: Build frontend image
