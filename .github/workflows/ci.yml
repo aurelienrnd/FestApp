@@ -105,6 +105,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Créer les fichiers .env nécessaires au projet
+      - name: Prepare env file
+        run: |
+          cat > .env <<'EOF'
+          POSTGRES_USER=postgres
+          POSTGRES_PASSWORD=postgres
+          POSTGRES_DB=vindhellfest
+          EOF
+
       # Construit l'image Docker du frontend
       - name: Build frontend image
         run: docker compose build frontend
