@@ -89,7 +89,7 @@ function DesktopNav({
  * @param {boolean} props.isAdminPath - Indique si la page actuelle est une page admin
  * @children BtnTiket : Affiche un bouton de billetterie
  */
-function MobilNav({
+export function MobilNav({
   items,
   pathname,
   isAdminPath,
