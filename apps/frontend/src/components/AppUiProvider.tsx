@@ -62,5 +62,10 @@ export function AppUiProvider({ children }: { children: React.ReactNode }) {
  */
 export function useAppUi() {
   const context = useContext(AppUiContext);
+
+  if (!context) {
+    throw new Error("useAppUi must be used within AppUiProvider");
+  }
+
   return context;
 }
