@@ -71,6 +71,8 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 │  │  └─ ...
 │  ├─ db.ts
 │  ├─ app.ts
+│  ├─ type.ts
+│  ├─ function.ts
 │  └─ index.ts/
 ├─ test/
 │  ├─ integration/
@@ -88,13 +90,20 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 └─ tsconfig.json
 ```
 ## 📄 Dockerfile
-Ce Dockerfile définit la manière dont l’application backend TypeScript est compilée, puis packagée dans une image Docker.
+Le projet utilise un Dockerfile multi-stage permettant de générer deux types d’images à partir du même fichier : 
+une image pour le développement et une image pour la production.
+- L’image de développement inclut  le rechargement automatique et permet de lancer l’application directement depuis le code source
+- L’image de production, quant à elle, utilise la version compilée de l’application et n’embarque que les dépendances strictement nécessaires à l’exécution
 
-## 📁 src / 
+## 📁 src /
 ### 📁 controllers
-### 📁 middlewares
-### 📁 routes
+Contient la logique métier des endpoints et la gestion des requêtes/réponses.
 
+### 📁 middlewares
+Contient les middlewares transverses (auth, validation, logs, erreurs).
+
+### 📁 routes
+Déclare les routes HTTP et connecte chaque endpoint à son contrôleur.
 
 ### 📄 db.ts
 Ce fichier centralise la configuration de la connexion à la base de données PostgreSQL ainsi qu’une fonction utilitaire permettant d’exécuter facilement des requêtes SQL depuis le backend.
@@ -120,18 +129,22 @@ Il est responsable de l’exécution du serveur HTTP, à partir de l’applicati
 - Importer l’application Express depuis app.ts
 - Démarrer le serveur HTTP avec app.listen sur le port configuré
 
-### 📄 functions.ts
+### 📄 type.ts
+Définit les types et interfaces partagés du backend.
 
-### 📄 types.ts 
+### 📄 function.ts
+Centralise les fonctions utilitaires réutilisables.
 
 ## 📁 test
-
+Ce dossier regroupe les tests unitaires et d’intégration : Vitest exécute les tests tandis que Supertest permet de simuler des appels HTTP sur l’API. 
+- Les tests unitaires ciblent les fonctions/modules isolés
+- Les tests d’intégration valident plusieurs couches ensemble (middelwares + contrôleurs) utilisant plusieurs fonctions.
 
 ## ESLint & Prettier
 Dans ce projet, deux outils complémentaires assurent la qualité du code :
 
 ### ESLint — Analyseur de code
-ESLint est un analyseur statique qui vérifie ton code TypeScript/JavaScript pour détecter :
+ESLint est un analyseur statique qui vérifie le code TypeScript/JavaScript pour détecter :
 - erreurs de logique
 - mauvaises pratiques
 - variables non utilisées

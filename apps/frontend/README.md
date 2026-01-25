@@ -5,26 +5,36 @@
 - `docker compose logs -f frontend` : Consulter les logs
 
 Pour executer une commande npm dans le conteneur : `docker exec -it vindhellfest-frontend`
-- `npm run dev` : Lancer le serveur Next.js en developpement
-- `npm run build` : Construire l'application
-- `npm run start` : Demarrer l'application en production
-- `npm run lint` : Verifier le code (ESLint)
+- `npm run lint` : 	Vérifier le code (ESLint)
+- `npm run format` : 	Formater ton code auto avec Prettier
+- `npm test` : Lancer les tests vitetest
 
 ## Stack technique
 **Dependencies**
 - `next` : Framework React pour le rendu hybride (SSR/SSG).
-- `react` : Bibliotheque UI.
+- `react` : Bibliothèque UI.
 - `react-dom` : Rendu React dans le navigateur.
+- `react-modal` : Composant de modale accessible.
+- `@fortawesome/react-fontawesome` : Composants Font Awesome pour React.
+- `@fortawesome/free-solid-svg-icons` : Pack d’icônes solid Font Awesome.
+- `@fortawesome/fontawesome-svg-core` : Cœur Font Awesome.
 
 **DevDependencies**
-- `@types/node` : Definitions TypeScript pour Node.js.
-- `@types/react` : Definitions TypeScript pour React.
-- `@types/react-dom` : Definitions TypeScript pour React DOM.
+- `@types/node` : Définitions TypeScript pour Node.js.
+- `@types/react` : Définitions TypeScript pour React.
+- `@types/react-dom` : Définitions TypeScript pour React DOM.
+- `@types/react-modal` : Définitions TypeScript pour React Modal.
 - `eslint` : Analyse statique du code.
-- `eslint-config-next` : Regles ESLint pour Next.js.
-- `tailwindcss` : Framework CSS utilitaire.
-- `@tailwindcss/postcss` : Integration Tailwind via PostCSS.
+- `eslint-config-next` : Règles ESLint pour Next.js.
+- `tailwindcss`: Framework CSS utilitaire.
+- `@tailwindcss/postcss` : Intégration Tailwind via PostCSS.
 - `typescript` : Compilateur TypeScript.
+- `vitest` : Runner de tests.
+- `@testing-library/react` : Tests de composants React.
+- `@testing-library/jest-dom` : Matchers DOM pour tests.
+- `@testing-library/user-event` : Simulation d’interactions utilisateur.
+- `jsdom` : Environnement DOM pour tests.
+- `prettier` : Formateur de code automatique.
 
 ## Architecture
 ```bash
@@ -58,14 +68,49 @@ Pour executer une commande npm dans le conteneur : `docker exec -it vindhellfest
 └─ README.md
 ```
 
-## Dockerfile
-Ce Dockerfile definit la maniere dont l'application Next.js est installee, build, puis lancee.
+## 📄 Dockerfile
+Le projet utilise un Dockerfile multi-stage permettant de générer deux types d’images à partir du même fichier : 
+une image pour le développement et une image pour la production.
+- L’image de développement inclut  le rechargement automatique et permet de lancer l’application directement depuis le code source
+- L’image de production, quant à elle, utilise la version compilée de l’application et n’embarque que les dépendances strictement nécessaires à l’exécution
 
-## src/app/
-- `page.tsx` : Page d'accueil.
-- `layout.tsx` : Layout global (structure de base).
-- `globals.css` : Styles globaux.
-- Dossiers `admin`, `news`, `lineup`, `login`, `practical-info` : pages et sections principales.
+## 📁 src/
+### 📁 app/
+- **📄 globals.css :** 
+Déclare les variables CSS globales, les thèmes admin/visitor et quelques utilitaires Tailwind.
 
-## ESLint
-ESLint verifie le code pour detecter les erreurs et maintenir un style coherent
+- **📄 layout.tsx :** Layout racine Next.js : charge la police Google, définit les métadonnées SEO et enveloppe l’app avec le provider + bannière + footer.
+
+- **📄 page.tsx :** Page d’accueil par défaut (route /).
+
+Les autres dossiers regroupent les routes Next.js de l’app (pages)
+
+### 📁 components/
+Contient les composants UI réutilisables (Banner, footer, navigation, provider).
+
+### 📁 config/
+Centralise les constantes et paramètres de configuration du frontend.
+
+## 📁 test
+Ce dossier regroupe les tests unitaires et d’intégration côté front : Vitest exécute les tests et les assertions, tandis que Testing Library valide le rendu et les interactions. Les tests s’appuient sur jsdom pour simuler le navigateur et vérifier le comportement des composants et des pages dans un environnement contrôlé.
+
+## ESLint & Prettier
+Dans ce projet, deux outils complémentaires assurent la qualité du code :
+
+### ESLint — Analyseur de code
+ESLint est un analyseur statique qui vérifie le code TypeScript/JavaScript pour détecter :
+- erreurs de logique
+- mauvaises pratiques
+- variables non utilisées
+- types incorrects
+- règles de style définies par l’équipe
+- incohérences dans l’organisation du code
+
+### Prettier — Formateur automatique (style du code uniquement)
+Il ne vérifie pas les bugs, il s’occupe uniquement de :
+- indentation
+- guillemets
+- trailing commas
+- espaces
+- retours à la ligne
+- mise en forme des objets et fonctions
