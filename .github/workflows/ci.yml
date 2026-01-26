@@ -30,7 +30,8 @@ jobs:
 
       # Creer les fichiers .env necessaires au projet.
       # .env est lu par docker compose pour configurer la BDD,
-      # tandis que .env.backend et .env.frontend sont crees pour eviter des erreurs de fichier manquant.
+      # .env.backend et utiliser par le backend
+      # .env.frontend sont crees pour eviter des erreurs de fichier manquant.
       - name: Prepare env files
         run: |
           cat > .env <<'EOF'
@@ -106,8 +107,8 @@ jobs:
         uses: actions/checkout@v4
 
       # Creer les fichiers .env necessaires au projet.
-      # .env est lu par docker compose pour configurer la BDD,
-      # tandis que .env.backend et .env.frontend sont crees pour eviter des erreurs de fichier manquant.
+      # .env et .env.backend sont crees pour eviter des erreurs de fichier manquant
+      # .env.frontend pouras etre completé au fur et a mesure du developement 
       - name: Prepare env file
         run: |
           cat > .env <<'EOF'
