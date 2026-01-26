@@ -90,10 +90,11 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 └─ tsconfig.json
 ```
 ## 📄 Dockerfile
-Le projet utilise un Dockerfile multi-stage permettant de générer deux types d’images à partir du même fichier : 
-une image pour le développement et une image pour la production.
-- L’image de développement inclut  le rechargement automatique et permet de lancer l’application directement depuis le code source
-- L’image de production, quant à elle, utilise la version compilée de l’application et n’embarque que les dépendances strictement nécessaires à l’exécution
+Le projet utilise un Dockerfile multi-stage pour generer deux types d'images a partir du meme fichier :
+une image de developpement et une image de production.
+- Stage `builder` utilise `node:20-alpine`
+- Image de production (`runner`)
+- Image de developpement (`dev`)
 
 ## 📁 src /
 ### 📁 controllers
@@ -160,3 +161,5 @@ Il ne vérifie pas les bugs, il s’occupe uniquement de :
 - espaces
 - retours à la ligne
 - mise en forme des objets et fonctions
+
+

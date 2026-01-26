@@ -69,10 +69,14 @@ Pour executer une commande npm dans le conteneur : `docker exec -it vindhellfest
 ```
 
 ## 📄 Dockerfile
-Le projet utilise un Dockerfile multi-stage permettant de générer deux types d’images à partir du même fichier : 
-une image pour le développement et une image pour la production.
-- L’image de développement inclut  le rechargement automatique et permet de lancer l’application directement depuis le code source
-- L’image de production, quant à elle, utilise la version compilée de l’application et n’embarque que les dépendances strictement nécessaires à l’exécution
+Le projet utilise un Dockerfile multi-stage pour generer deux types d'images a partir du meme fichier :
+une image de developpement et une image de production.
+Le front beneficie de 5 stages car il possaide plus de dependances, ce qui optimise la taille et le temps de rebuild, alors que le back se contente de 3 stages.
+- Base commune : `node:20-alpine`.
+- Stage `deps` : installation des dependances.
+- Stage `builder` : copie des dependances, copie du code et lancement du build.
+- Image de production (`runner`)
+- Image de developpement (`dev`)
 
 ## 📁 src/
 ### 📁 app/
@@ -114,3 +118,7 @@ Il ne vérifie pas les bugs, il s’occupe uniquement de :
 - espaces
 - retours à la ligne
 - mise en forme des objets et fonctions
+
+
+
+

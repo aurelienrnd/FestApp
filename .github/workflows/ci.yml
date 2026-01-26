@@ -28,7 +28,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-       # Créer les fichiers .env nécessaires au projet
+      # Creer les fichiers .env necessaires au projet.
+      # .env est lu par docker compose pour configurer la BDD,
+      # tandis que .env.backend et .env.frontend sont crees pour eviter des erreurs de fichier manquant.
       - name: Prepare env files
         run: |
           cat > .env <<'EOF'
@@ -36,6 +38,7 @@ jobs:
           POSTGRES_PASSWORD=postgres
           POSTGRES_DB=vindhellfest
           EOF
+
           cat > .env.backend <<'EOF'
           PORT=4000
           DB_HOST=db
@@ -50,6 +53,7 @@ jobs:
           COOKIE_ACCESS_TOKEN_SAME_SITE=lax
           SESSION_EXPIRES_IN=1h
           EOF
+
           cat > .env.frontend <<'EOF'
           EOF
 
@@ -101,7 +105,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Créer les fichiers .env nécessaires au projet
+      # Creer les fichiers .env necessaires au projet.
+      # .env est lu par docker compose pour configurer la BDD,
+      # tandis que .env.backend et .env.frontend sont crees pour eviter des erreurs de fichier manquant.
       - name: Prepare env file
         run: |
           cat > .env <<'EOF'
@@ -109,8 +115,10 @@ jobs:
           POSTGRES_PASSWORD=postgres
           POSTGRES_DB=vindhellfest
           EOF
+
           cat > .env.backend <<'EOF'
           EOF
+
           cat > .env.frontend <<'EOF'
           EOF
 
