@@ -113,9 +113,6 @@ jobs:
           cat > .env <<'EOF'
           EOF
 
-          cat > .env.backend <<'EOF'
-          EOF
-
           cat > .env.frontend <<'EOF'
           EOF
 
