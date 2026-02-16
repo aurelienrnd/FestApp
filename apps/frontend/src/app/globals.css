@@ -48,7 +48,3 @@
   z-index: 10;
   background: var(--background);
 }
-
-.section-footer {
-  @apply w-full border-t border-(--collor-2) bg-(--collor-bg) text-(--collor-text);
-}

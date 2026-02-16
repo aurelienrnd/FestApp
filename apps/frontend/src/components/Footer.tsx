@@ -25,10 +25,9 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t border-(--collor-2) bg-(--collor-bg) text-(--collor-text)">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8 md:flex-row md:items-center md:justify-between">
+    <footer className="w-full bg-(--collor-bg) text-(--collor-text) flex flex-col gap-6 px-6 py-8 min-md:flex-row min-md:items-center min-md:justify-between">
         <nav>
-          <ul className="flex flex-wrap items-center gap-6 text-xs uppercase tracking-wide md:text-sm">
+          <ul className="flex flex-wrap items-center gap-6 text-xs uppercase tracking-wide md:text-sm justify-center ">
             {legalLinks.map((item) => (
               <li key={item.href}>
                 <Link
@@ -42,9 +41,9 @@ export default function Footer() {
           </ul>
         </nav>
 
-        <div className="h-0.5 w-40 bg-(--collor-3) md:w-80" aria-hidden="true" />
+        <div className="h-0.5 w-40 bg-(--collor-3) mx-auto md:mx-0 md:w-80" aria-hidden="true"/>
 
-        <ul className="flex items-center gap-4">
+        <ul className="flex items-center justify-center gap-4">
           {socialLinks.map((item) => (
             <li key={item.label}>
               <a
@@ -59,7 +58,6 @@ export default function Footer() {
             </li>
           ))}
         </ul>
-      </div>
     </footer>
   );
 }
