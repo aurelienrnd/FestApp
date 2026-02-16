@@ -3,6 +3,7 @@
 :root {
   --collor-1: #cb3346;
   --collor-2: #767676;
+  --collor-3: #0ea5e9;
   --collor-text-visitor: #ffffff;
   --collor-bg-visitor: black;
   --collor-bg-admin: #ffffff;
@@ -46,4 +47,8 @@
   top: 0;
   z-index: 10;
   background: var(--background);
+}
+
+.section-footer {
+  @apply w-full border-t border-(--collor-2) bg-(--collor-bg) text-(--collor-text);
 }
