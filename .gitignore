@@ -1,4 +1,4 @@
-# Ne pas versionner les variables d'environnement
+﻿# Ne pas versionner les variables d'environnement
 .env
 .env.backend
 .env.frontend
@@ -9,3 +9,4 @@
 # A rajouter si besoin, les fichiers ou dossiers à ignorer
 apps/backend/src/middlewares/errorHandler.ts
 apps/backend/src/middlewares/notFound.ts
+.vscode/

@@ -1,5 +1,5 @@
-# Ignore environment files from Docker build context 
-# (Ils contiennent des informations sensibles et n'ont pas besoin d’être copiés dans l’image)
+﻿# Ignore environment files from Docker build context
+# (Ils contiennent des informations sensibles et n'ont pas besoin d'être copiés dans l'image)
 .env
 .env.backend
 .env.frontend
@@ -20,6 +20,9 @@ dist
 .git
 .gitignore
 
-# Ignorer les fichiers liés à la configuration Docker  (Ils ne doivent pas être copiés dans l’image)
+# Ignorer les fichiers liés à la configuration Docker (ils ne doivent pas être copiés dans l'image)
 Dockerfile
 docker-compose.yml
+
+# Ignorer les fichiers liés à la configuration vscode
+.vscode/
