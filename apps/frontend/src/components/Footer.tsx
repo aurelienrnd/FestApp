@@ -1,18 +1,11 @@
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faInstagram,
   faFacebookF,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
-
-const byPrefixAndName = {
-  fab: {
-    instagram: faInstagram,
-    facebook: faFacebookF,
-    youtube: faYoutube,
-  },
-};
 
 const legalLinks = [
   { label: "Mentions legales", href: "/mentions-legales" },
@@ -23,17 +16,17 @@ const socialLinks = [
   {
     label: "Instagram",
     href: "https://www.instagram.com/",
-    shortLabel: "IG",
+    icon: faInstagram as unknown as IconProp,
   },
   {
     label: "Facebook",
     href: "https://www.facebook.com/",
-    shortLabel: "FB",
+    icon: faFacebookF as unknown as IconProp,
   },
   {
     label: "YouTube",
     href: "https://www.youtube.com/",
-    shortLabel: "YT",
+    icon: faYoutube as unknown as IconProp,
   },
 ];
 
@@ -65,17 +58,9 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={item.label}
-              className="inline-flex h-9 w-9 items-center justify-center rounded bg-(--collor-1) text-xs text-white transition-transform duration-200 hover:scale-110"
+              className="inline-flex h-9 w-9 items-center justify-center rounded bg-(--collor-1) text-xs text-white transition-(--btn-anim-transition) duration-(--btn-anim-duration) hover:scale-(--btn-anim-scale)"
             >
-              {item.label === "Instagram" ? (
-                <FontAwesomeIcon icon={byPrefixAndName.fab["instagram"]} />
-              ) : item.label === "Facebook" ? (
-                <FontAwesomeIcon icon={byPrefixAndName.fab["facebook"]} />
-              ) : item.label === "YouTube" ? (
-                <FontAwesomeIcon icon={byPrefixAndName.fab["youtube"]} />
-              ) : (
-                item.shortLabel
-              )}
+              <FontAwesomeIcon icon={item.icon} />
             </a>
           </li>
         ))}

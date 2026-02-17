@@ -20,12 +20,25 @@
   --collor-bg: var(--collor-bg-visitor);
 }
 
+:root {
+  --btn-anim-transition: 'transform';
+  --btn-anim-duration: 200ms;
+  --btn-anim-scale: 1.10;
+}
+
 @layer components {
   .btn-cta {
-    @apply inline-flex rounded bg-(--collor-1) px-5 py-1 text-(--collor-text) transition-transform duration-200 hover:scale-110;
+    @apply inline-flex rounded bg-(--collor-1) px-5 py-1 text-(--collor-text) transition-(--btn-anim-transition) duration-(--btn-anim-duration);
   }
+  .btn-cta:hover {
+    @apply scale-(--btn-anim-scale);
+  }
+
   .mobil-menu {
-    @apply inline-flex rounded bg-(--collor-2) px-2 py-1 text-(--collor-text) transition-transform duration-200 hover:scale-110;
+    @apply inline-flex rounded bg-(--collor-2) px-2 py-1 text-(--collor-text) transition-(--btn-anim-transition) duration-(--btn-anim-duration);
+  }
+  .mobil-menu:hover {
+  @apply scale-(--btn-anim-scale);
   }
 
   .mobile-nav-modal-overlay {
