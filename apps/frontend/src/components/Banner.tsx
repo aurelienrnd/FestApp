@@ -11,8 +11,9 @@ import {
 } from "../config/navigation";
 import logo from "../../public/header_logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faX } from "@fortawesome/free-solid-svg-icons";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { useAppUi } from "./AppUiProvider";
+import ModalCloseButton from "./ModalCloseButton";
 
 /** Affiche un bouton de billetterie
  * Contient un lien externe vers un site de recherche de billetterie
@@ -122,11 +123,7 @@ export function MobilNav({
         className="mobile-nav-modal"
         overlayClassName="mobile-nav-modal-overlay"
       >
-        <div className="flex w-full justify-end">
-          <button type="button" onClick={() => setIsOpen(false)}>
-            <FontAwesomeIcon icon={faX} />
-          </button>
-        </div>
+        <ModalCloseButton onClose={() => setIsOpen(false)} />
 
         <nav>
           <ul className="flex flex-col gap-6">
