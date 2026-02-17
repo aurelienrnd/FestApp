@@ -21,9 +21,13 @@
 }
 
 :root {
-  --btn-anim-transition: 'transform';
+  --btn-anim-transition: "transform";
   --btn-anim-duration: 200ms;
-  --btn-anim-scale: 1.10;
+  --btn-anim-scale: 1.1;
+}
+
+:root {
+  --container-margin-modal: 1.5rem;
 }
 
 @layer components {
@@ -38,7 +42,7 @@
     @apply inline-flex rounded bg-(--collor-2) px-2 py-1 text-(--collor-text) transition-(--btn-anim-transition) duration-(--btn-anim-duration);
   }
   .mobil-menu:hover {
-  @apply scale-(--btn-anim-scale);
+    @apply scale-(--btn-anim-scale);
   }
 
   .modal-overlay {
@@ -46,7 +50,7 @@
   }
 
   .modal {
-    @apply w-4xl rounded-2xl bg-[#fbfbfb] text-[#111111] outline-none pt-3 pr-6 pb-6 pl-0;
+    @apply w-4xl rounded-2xl bg-[#fbfbfb] text-[#111111] outline-none pt-3 pb-6;
   }
 }
 

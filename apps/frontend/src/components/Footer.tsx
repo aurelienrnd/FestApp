@@ -10,6 +10,8 @@ import {
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
 import ModalCloseButton from "./ModalCloseButton";
+import LegalMention from "./LegalMention";
+import ContactUs from "./ContactUs";
 
 // Lien btn
 const legalLinks = [
@@ -99,9 +101,12 @@ export default function Footer() {
       >
         <ModalCloseButton onClose={() => setActiveModal(null)} />
 
-        <h2 className="text-4xl font-black uppercase">
+        <h2 className="text-center text-4xl font-black uppercase">
           {activeModal === "mentions" ? "Mentions legales" : "Nous contacter"}
         </h2>
+
+        {activeModal === "mentions" ? <LegalMention /> : null}
+        {activeModal === "contact" ? <ContactUs /> : null}
       </Modal>
     </>
   );
