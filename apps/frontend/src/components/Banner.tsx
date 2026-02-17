@@ -120,8 +120,8 @@ export function MobilNav({
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
         contentLabel="Menu"
-        className="mobile-nav-modal"
-        overlayClassName="mobile-nav-modal-overlay"
+        className="modal"
+        overlayClassName="modal-overlay"
       >
         <ModalCloseButton onClose={() => setIsOpen(false)} />
 

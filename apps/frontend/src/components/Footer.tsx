@@ -94,8 +94,8 @@ export default function Footer() {
         isOpen={activeModal !== null}
         onRequestClose={() => setActiveModal(null)}
         contentLabel={activeModal === "mentions" ? "Mentions legales" : "Nous contacter"}
-        className="mobile-nav-modal"
-        overlayClassName="mobile-nav-modal-overlay"
+        className="modal"
+        overlayClassName="modal-overlay"
       >
         <ModalCloseButton onClose={() => setActiveModal(null)} />
 

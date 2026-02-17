@@ -41,13 +41,12 @@
   @apply scale-(--btn-anim-scale);
   }
 
-  .mobile-nav-modal-overlay {
+  .modal-overlay {
     @apply fixed inset-0 flex items-center justify-center pt-20 bg-gray-400/30;
   }
 
-  .mobile-nav-modal {
-    @apply w-full rounded-2xl bg-[#fbfbfb] text-[#111111] outline-none;
-    padding: 12px 24px 24px 0;
+  .modal {
+    @apply w-4xl rounded-2xl bg-[#fbfbfb] text-[#111111] outline-none pt-3 pr-6 pb-6 pl-0;
   }
 }
 
