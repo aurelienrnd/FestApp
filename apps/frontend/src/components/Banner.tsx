@@ -165,7 +165,14 @@ export default function Banner() {
 
   return (
     <header className="mx-auto flex w-full items-center justify-between px-4 py-2">
-      <Image src={logo} alt="Logo Hellfest" width={90} height={90} />
+      <Image
+        src={logo}
+        alt="Logo Hellfest"
+        width={90}
+        height={90}
+        priority
+        style={{ width: "auto", height: "auto" }}
+      />
       {isDesktop ? (
         <DesktopNav
           items={items}
