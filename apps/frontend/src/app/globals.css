@@ -34,6 +34,10 @@
   --spacing-padding-input-y: 0.5rem;
 }
 
+:root {
+  --font-family-input: Arial, sans-serif;
+}
+
 @layer components {
   .btn-cta {
     @apply inline-flex rounded bg-(--collor-1) px-5 py-1 text-(--collor-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration);
@@ -52,17 +56,17 @@
   .modal-overlay {
     @apply fixed inset-0 flex items-center justify-center pt-20 bg-gray-400/30;
   }
-
   .modal {
     @apply w-4xl rounded-2xl bg-[#fbfbfb] text-[#111111] outline-none pt-3 pb-3;
   }
 
   .input {
     @apply w-full rounded-md border border-(--collor-text-input) bg-(--collor-bg-input) px-(--spacing-padding-input-x) py-(--spacing-padding-input-y) text-sm placeholder:text-(--collor-text-input);
+    font-family: var(--font-family-input);
   }
-
   .text-area {
     @apply h-56 w-full resize-none rounded-md border border-(--collor-text-input) bg-(--collor-bg-input) px-(--spacing-padding-input-x) py-(--spacing-padding-input-y) text-sm placeholder:text-(--collor-text-input) md:h-44;
+    font-family: var(--font-family-input);
   }
 }
 
