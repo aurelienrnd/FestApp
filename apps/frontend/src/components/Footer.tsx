@@ -44,8 +44,8 @@ const socialLinks = [
  * @children Modal Fenêtre modale partagée dont le titre dépend de `activeModal`.
  */
 export default function Footer() {
+  // Stocke ci la modal est ouverte et initialise react-modal sur body.
   const [activeModal, setActiveModal] = useState<LegalLinkId | null>(null);
-
   useEffect(() => {
     Modal.setAppElement("body");
   }, []);

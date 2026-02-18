@@ -1,3 +1,4 @@
+/** Affiche le contenu des mentions légales dans un conteneur avec marge interne*/
 export default function LegalMention() {
   return (
     <div className="m-(--spacing-container-modal)">

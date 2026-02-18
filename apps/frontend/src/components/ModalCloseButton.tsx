@@ -5,6 +5,11 @@ type ModalCloseButtonProps = {
   onClose: () => void;
 };
 
+/** Affiche un bouton de fermeture aligné à droite pour une fenêtre modale
+ * Reçoit une callback `onClose` appelée au clic sur le bouton
+ * Ajoute `aria-label` pour rendre le bouton accessible aux lecteurs d’écran
+ * @prop onClose : Fonction exécutée pour fermer la modal
+ */
 export default function ModalCloseButton({ onClose }: ModalCloseButtonProps) {
   return (
     <div className="flex w-full justify-end pr-(--spacing-container-modal)">

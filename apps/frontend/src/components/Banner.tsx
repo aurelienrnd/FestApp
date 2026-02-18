@@ -58,7 +58,6 @@ function DesktopNav({
       <ul className="flex items-center gap-6 tracking-wides">
         {items.map((item) => {
           const isActive = pathname === item.path;
-
           return (
             <li key={item.path}>
               <Link
@@ -99,8 +98,8 @@ export function MobilNav({
   pathname?: string | null;
   isAdminPath: boolean;
 }) {
+  // verifie ci la modal est ouverte
   const [isOpen, setIsOpen] = useState(false);
-
   useEffect(() => {
     Modal.setAppElement("body");
   }, []);
@@ -115,7 +114,6 @@ export function MobilNav({
         </li>
         {isAdminPath ? null : <BtnTiket />}
       </ul>
-
       <Modal
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
@@ -124,7 +122,6 @@ export function MobilNav({
         overlayClassName="modal-overlay"
       >
         <ModalCloseButton onClose={() => setIsOpen(false)} />
-
         <nav>
           <ul className="flex flex-col gap-6">
             {items.map((item) => {
@@ -160,6 +157,7 @@ export function MobilNav({
  * @children MobilNav :  Affiche le menu de navigation pour l’affichage mobile
  */
 export default function Banner() {
+  // Fournit l’état UI puis choisit automatiquement la navigation admin ou visiteur.
   const { pathname, isAdminPath, isDesktop } = useAppUi();
   const items = isAdminPath ? navAdminItems : navVisitorItems;
 

@@ -22,25 +22,33 @@ const AppUiContext = createContext<AppUiState | null>(null);
  * @param {React.ReactNode} props.children - Composants enfants ayant accès au contexte.
  */
 export function AppUiProvider({ children }: { children: React.ReactNode }) {
+  // Récupèrent l’URL, détectent si on est sur une route admin (isAdminPath), et determine si l’écran est en mode desktop (isDesktop).
   const pathname = usePathname();
   const isAdminPath = pathname?.includes("/admin") ?? false;
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
+    // Crée un objet qui surveille si l’écran fait au moins
     const media = window.matchMedia("(min-width: 768px)");
-    const handleChange = () => setIsDesktop(media.matches);
 
+    // Définit une fonction qui met isDesktop à true ou false Puis l'exécute pour initialiser l’état tout de suite.
+    const handleChange = () => setIsDesktop(media.matches);
     handleChange();
+
+    // declanche handleChange si l'ecran change
     media.addEventListener("change", handleChange);
 
+    // Nettoie l’écouteur quand le composant est démonté.
     return () => media.removeEventListener("change", handleChange);
   }, []);
 
   useEffect(() => {
+    // vérifie si la route est admin/login.
     const path = pathname ?? "";
     const isAdmin = path.includes("/admin") || path.includes("/login");
-    const root = document.documentElement;
 
+    // Définit data-theme à admin ou visitor selon la route.
+    const root = document.documentElement;
     root.dataset.theme = isAdmin ? "admin" : "visitor";
   }, [pathname]);
 
@@ -60,7 +68,7 @@ export function AppUiProvider({ children }: { children: React.ReactNode }) {
 /** Accéde au contexte AppUiContext
  * @returns {AppUiContextType} Données UI partagées (pathname, isAdminPath, isDesktop, etc.).
  */
-export function useAppUi() {
+export function useAppUi(): AppUiState {
   const context = useContext(AppUiContext);
 
   if (!context) {

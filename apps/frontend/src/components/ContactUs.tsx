@@ -1,3 +1,9 @@
+//TODO - SRONLY ?
+
+/** Affiche un formulaire de contact avec les champs nom, email, sujet et message
+ * Organise les champs nom et email sur 2 colonnes en desktop, 1 colonne en mobile
+ * Affiche un bouton d’envoi centré en bas du formulaire
+ */
 export default function ContactUs() {
   return (
     <div className="m-(--spacing-container-modal)">
@@ -16,7 +22,6 @@ export default function ContactUs() {
               className="input"
             />
           </div>
-
           <div>
             <label htmlFor="contactEmail" className="sr-only">
               Votre email
@@ -31,7 +36,6 @@ export default function ContactUs() {
             />
           </div>
         </div>
-
         <div>
           <label htmlFor="contactSubject" className="sr-only">
             Sujet
@@ -44,7 +48,6 @@ export default function ContactUs() {
             className="input"
           />
         </div>
-
         <div>
           <label htmlFor="contactMessage" className="sr-only">
             Message
@@ -56,7 +59,6 @@ export default function ContactUs() {
             className="text-area"
           />
         </div>
-
         <div className="flex justify-center pt-1">
           <button type="submit" className="btn-cta">
             Envoyer

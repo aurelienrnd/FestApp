@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 /**Layout global de l'aplication
- * @children ThemeVars : Définit les variables CSS pour la gestion des page admin et visiteur
+ * @children AppUiProvider : Fournit un contexte global d’interface utilisateur (UI) à l’application.
  * @children Banner : Affiché sur toutes les pages
  * @children Footer : Affiché sur toutes les pages
  */
