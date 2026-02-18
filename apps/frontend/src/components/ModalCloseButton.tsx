@@ -7,7 +7,7 @@ type ModalCloseButtonProps = {
 
 export default function ModalCloseButton({ onClose }: ModalCloseButtonProps) {
   return (
-    <div className="flex w-full justify-end">
+    <div className="flex w-full justify-end pr-(--container-spacing-modal)">
       <button type="button" onClick={onClose} aria-label="Fermer la modal">
         <FontAwesomeIcon icon={faX} />
       </button>

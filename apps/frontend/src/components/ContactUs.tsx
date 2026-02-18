@@ -1,6 +1,6 @@
 export default function ContactUs() {
   return (
-    <div className="m-(--container-margin-modal)">
+    <div className="m-(--container-spacing-modal)">
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id
         posuere tortor. Integer rhoncus nibh id augue pulvinar, vitae accumsan

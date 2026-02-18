@@ -27,7 +27,7 @@
 }
 
 :root {
-  --container-margin-modal: 1.5rem;
+  --container-spacing-modal: 1.5rem;
 }
 
 @layer components {
