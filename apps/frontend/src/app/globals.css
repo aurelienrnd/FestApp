@@ -8,6 +8,8 @@
   --collor-bg-visitor: black;
   --collor-bg-admin: #ffffff;
   --collor-text-admin: black;
+  --collor-bg-input: #e4e4e7;
+  --collor-text-input: #47474f;
 }
 
 :root[data-theme="admin"] {
@@ -21,28 +23,30 @@
 }
 
 :root {
-  --btn-anim-transition: "transform";
-  --btn-anim-duration: 200ms;
-  --btn-anim-scale: 1.1;
+  --anim-btn-transition: "transform";
+  --anim-btn-duration: 200ms;
+  --anim-btn-scale: 1.1;
 }
 
 :root {
-  --container-spacing-modal: 1.5rem;
+  --spacing-container-modal: 1.5rem;
+  --spacing-padding-input-x: 0.75rem;
+  --spacing-padding-input-y: 0.5rem;
 }
 
 @layer components {
   .btn-cta {
-    @apply inline-flex rounded bg-(--collor-1) px-5 py-1 text-(--collor-text) transition-(--btn-anim-transition) duration-(--btn-anim-duration);
+    @apply inline-flex rounded bg-(--collor-1) px-5 py-1 text-(--collor-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration);
   }
   .btn-cta:hover {
-    @apply scale-(--btn-anim-scale);
+    @apply scale-(--anim-btn-scale);
   }
 
   .mobil-menu {
-    @apply inline-flex rounded bg-(--collor-2) px-2 py-1 text-(--collor-text) transition-(--btn-anim-transition) duration-(--btn-anim-duration);
+    @apply inline-flex rounded bg-(--collor-2) px-2 py-1 text-(--collor-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration);
   }
   .mobil-menu:hover {
-    @apply scale-(--btn-anim-scale);
+    @apply scale-(--anim-btn-scale);
   }
 
   .modal-overlay {
@@ -50,7 +54,15 @@
   }
 
   .modal {
-    @apply w-4xl rounded-2xl bg-[#fbfbfb] text-[#111111] outline-none pt-3 pb-6;
+    @apply w-4xl rounded-2xl bg-[#fbfbfb] text-[#111111] outline-none pt-3 pb-3;
+  }
+
+  .input {
+    @apply w-full rounded-md border border-(--collor-text-input) bg-(--collor-bg-input) px-(--spacing-padding-input-x) py-(--spacing-padding-input-y) text-sm placeholder:text-(--collor-text-input);
+  }
+
+  .text-area {
+    @apply h-56 w-full resize-none rounded-md border border-(--collor-text-input) bg-(--collor-bg-input) px-(--spacing-padding-input-x) py-(--spacing-padding-input-y) text-sm placeholder:text-(--collor-text-input) md:h-44;
   }
 }
 

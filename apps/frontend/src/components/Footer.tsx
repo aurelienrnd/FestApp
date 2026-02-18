@@ -39,7 +39,6 @@ const socialLinks = [
   },
 ];
 
-
 /** Affiche le footer avec les liens légaux et les réseaux sociaux.
  * Ouvre une modal unique au clic sur "Mentions legales" ou "Nous contacter"
  * @children Modal Fenêtre modale partagée dont le titre dépend de `activeModal`.
@@ -83,7 +82,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={item.label}
-                className="inline-flex h-9 w-9 items-center justify-center rounded bg-(--collor-1) text-xs text-white transition-(--btn-anim-transition) duration-(--btn-anim-duration) hover:scale-(--btn-anim-scale)"
+                className="inline-flex h-9 w-9 items-center justify-center rounded bg-(--collor-1) text-xs text-white transition-(--anim-btn-transition) duration-(--anim-btn-duration) hover:scale-(--anim-btn-scale)"
               >
                 <FontAwesomeIcon icon={item.icon} />
               </a>
@@ -95,7 +94,9 @@ export default function Footer() {
       <Modal
         isOpen={activeModal !== null}
         onRequestClose={() => setActiveModal(null)}
-        contentLabel={activeModal === "mentions" ? "Mentions legales" : "Nous contacter"}
+        contentLabel={
+          activeModal === "mentions" ? "Mentions legales" : "Nous contacter"
+        }
         className="modal"
         overlayClassName="modal-overlay"
       >

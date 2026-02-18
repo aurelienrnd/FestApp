@@ -1,6 +1,6 @@
 export default function LegalMention() {
   return (
-    <div className="m-(--container-spacing-modal)">
+    <div className="m-(--spacing-container-modal)">
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent
         vehicula, tortor at eleifend varius, lorem neque convallis augue, sit
