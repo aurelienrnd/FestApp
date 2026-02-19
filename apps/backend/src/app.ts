@@ -15,8 +15,33 @@ import publicProgramming from "./routes/public.programming.routes";
 // Création de l’application Express
 export function createApp() {
   const app = express();
+  const frontendOrigin = process.env.FRONTEND_ORIGIN || "http://localhost:3000";
 
   app.use(express.json()); // permet de lire le JSON envoyé par le client dans le body des requêtes HTTP.
+
+  // Autorise le frontend a appeler l'API backend en local.
+  app.use((req, res, next) => {
+    const requestOrigin = req.headers.origin;
+
+    if (requestOrigin && requestOrigin === frontendOrigin) {
+      res.header("Access-Control-Allow-Origin", requestOrigin); // Autorise cette origine à accéder à l’API.
+      res.header("Vary", "Origin"); // Indique aux caches que la réponse dépend de l’en-tête Origin
+      res.header("Access-Control-Allow-Credentials", "true"); // Autorise l’envoi des credentials (cookies, auth headers) côté navigateur.
+    }
+
+    res.header(
+      "Access-Control-Allow-Methods",
+      "GET,POST,PUT,PATCH,DELETE,OPTIONS", // Liste les méthodes HTTP permises en CORS.
+    );
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Autorise les en-têtes que le front peut envoyer.
+
+    if (req.method === "OPTIONS") {
+      // Détecte la requête preflight (vérification CORS avant la vraie requête).
+      return res.sendStatus(204);
+    }
+
+    next();
+  });
 
   // test de demmarrage du serveur
   app.get("/health", (req, res) => {

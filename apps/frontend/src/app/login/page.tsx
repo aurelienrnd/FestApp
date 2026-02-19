@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { type FormEvent, useState } from "react";
 
 export default function Page() {
@@ -9,15 +8,37 @@ export default function Page() {
 
   const isFormInvalid = email.trim() === "" || password.trim() === "";
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (isFormInvalid) {
       return;
     }
 
-    // TODO: brancher la requete de connexion ici
-    console.log({ email, password });
+    const apiBaseUrl = process.env.API_URL ?? "http://localhost:4000";
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/admin/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error("login failed");
+        return;
+      }
+
+      console.log("sucess");
+    } catch (error) {
+      console.error("login request error", error);
+    }
   };
 
   return (
