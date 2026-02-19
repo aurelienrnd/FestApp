@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from "react";
-
 //TODO - SRONLY ?
 
 /** Affiche un formulaire de contact avec les champs nom, email, sujet et message */
