@@ -31,9 +31,11 @@ export default function RootLayout({
     <html lang="fr" className={`${koulen.className}`}>
       <body className="min-h-screen bg-(--collor-bg) text-(--collor-text) flex flex-col">
         <AppUiProvider>
+          <div id="app-root" className="flex min-h-screen flex-col">
           <Banner />
           <main className="flex-1">{children}</main>
           <Footer />
+          </div>
         </AppUiProvider>
       </body>
     </html>

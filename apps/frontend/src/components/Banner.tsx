@@ -101,7 +101,7 @@ export function MobilNav({
   // verifie ci la modal est ouverte
   const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
-    Modal.setAppElement("body");
+    Modal.setAppElement("#app-root");
   }, []);
 
   return (
