@@ -52,7 +52,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="w-full bg-(--collor-bg) text-(--collor-text) flex flex-col gap-6 px-6 py-8 min-md:flex-row min-md:items-center min-md:justify-between">
+      <footer className="w-full bg-(--collor-bg) flex flex-col gap-6 px-6 py-8 min-md:flex-row min-md:items-center min-md:justify-between">
         <nav>
           <ul className="flex flex-wrap items-center gap-6 text-xs uppercase tracking-wide md:text-sm justify-center ">
             {legalLinks.map((item) => (
@@ -60,7 +60,7 @@ export default function Footer() {
                 <button
                   type="button"
                   onClick={() => setActiveModal(item.id)}
-                  className="transition-opacity hover:opacity-70"
+                  className="btn-type-2"
                 >
                   {item.label}
                 </button>

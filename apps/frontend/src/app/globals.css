@@ -32,6 +32,10 @@
   --spacing-container-modal: 1.5rem;
   --spacing-padding-input-x: 0.75rem;
   --spacing-padding-input-y: 0.5rem;
+
+  --spacing-section-page-x: 1.5rem;
+  --spacing-mobil-section-page-y: 2.5rem;
+  --spacing-desktop-section-page-y: 3.5rem;
 }
 
 :root {
@@ -40,10 +44,14 @@
 
 @layer components {
   .btn-cta {
-    @apply inline-flex rounded bg-(--collor-1) px-5 py-1 text-(--collor-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration);
+    @apply text-white inline-flex rounded bg-(--collor-1) px-5 py-1 text-(--collor-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration) disabled:cursor-not-allowed disabled:opacity-60;
   }
   .btn-cta:hover {
     @apply scale-(--anim-btn-scale);
+  }
+
+  .btn-type-2 {
+    @apply transition-opacity hover:opacity-70;
   }
 
   .mobil-menu {
@@ -68,15 +76,8 @@
     @apply h-56 w-full resize-none rounded-md border border-(--collor-text-input) bg-(--collor-bg-input) px-(--spacing-padding-input-x) py-(--spacing-padding-input-y) text-sm placeholder:text-(--collor-text-input) md:h-44;
     font-family: var(--font-family-input);
   }
-}
 
-.section-min-screen {
-  min-height: 100vh;
-}
-
-.section-sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--background);
+  .section-page {
+    @apply h-full px-(--spacing-section-page-x) py-(--spacing-mobil-section-page-y) md:py-(--spacing-desktop-section-page-y);
+  }
 }
