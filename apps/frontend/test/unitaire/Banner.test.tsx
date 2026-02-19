@@ -29,6 +29,19 @@ vi.mock("next/link", () => ({
   ),
 }));
 
+// Mock de react-modal
+vi.mock("react-modal", () => {
+  const Modal = ({
+    isOpen,
+    children,
+  }: {
+    isOpen: boolean;
+    children: React.ReactNode;
+  }) => (isOpen ? <div data-testid="modal">{children}</div> : null);
+  Modal.setAppElement = () => {};
+  return { default: Modal };
+});
+
 describe("Banner", () => {
   // Réinitialise le mock apres chaque utilisation
   afterEach(() => {
