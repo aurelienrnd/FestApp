@@ -1,44 +1,79 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 
+type ApiError = { error: string };
+
+type ApiRequestResult<T> = {
+  data: T | null;
+  error: ApiError | null;
+};
+
+async function apiRequest<T>(
+  path: string,
+  init?: RequestInit,
+): Promise<ApiRequestResult<T>> {
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  try {
+    const response = await fetch(`${apiBaseUrl}${path}`, {
+      credentials: "include",
+      ...init,
+    });
+
+    const payload = await response.json();
+
+    if (!response.ok) {
+      return {
+        data: null,
+        error: { error: payload?.error ?? "Donnees invalides" },
+      };
+    }
+
+    return { data: payload as T, error: null };
+  } catch (error) {
+    console.error("request error", error);
+    return { data: null, error: { error: "login request error" } };
+  }
+}
+
 export default function Page() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<ApiError | null>(null);
 
   const isFormInvalid = email.trim() === "" || password.trim() === "";
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setError(null);
 
     if (isFormInvalid) {
       return;
     }
 
-    const apiBaseUrl = process.env.API_URL ?? "http://localhost:4000";
+    const result = await apiRequest<{
+      message?: string;
+      userSession?: unknown;
+    }>("/admin/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email.trim(),
+        password,
+      }),
+    });
 
-    try {
-      const response = await fetch(`${apiBaseUrl}/admin/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          email: email.trim(),
-          password,
-        }),
-      });
-
-      if (!response.ok) {
-        console.error("login failed");
-        return;
-      }
-
-      console.log("sucess");
-    } catch (error) {
-      console.error("login request error", error);
+    if (result.error) {
+      setError(result.error);
+      return;
     }
+
+    router.push("/admin/dashboard");
   };
 
   return (
@@ -80,7 +115,10 @@ export default function Page() {
           />
         </div>
 
-        <div className="flex justify-center pt-2">
+        <div className="flex flex-col items-center gap-2 pt-2">
+          {error ? (
+            <p className="mb-3 text-sm text-(--collor-1)">{error.error}</p>
+          ) : null}
           <button type="submit" className="btn-cta" disabled={isFormInvalid}>
             Envoyer
           </button>
