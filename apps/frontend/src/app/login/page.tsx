@@ -9,28 +9,43 @@ import { apiRequest } from "../../functions/apiRequest";
 
 type ApiError = { message?: string; status?: number };
 
+/** Affiche la page de connexion admin avec un formulaire email/mot de passe.
+ * Envoie la requête de connexion via `apiRequest` avec les credentials inclus.
+ * Affiche le message d’erreur API au-dessus du bouton en cas d’échec.
+ * Redirige vers `/admin/dashboard` si la connexion réussit.
+ * Ouvre une modale "Mot de passe oublie" au clic sur le bouton dédié.
+ * @function apiRequest :
+ * @children ForgotPassword : Affiche le formulaire d’initialisation de réinitialisation du mot de passe.
+ */
 export default function Page() {
+  // Permet de rediriger vers une autre page
   const router = useRouter();
+
+  // initialise les champs du formulaire, le message d’erreur et l'etat d’ouverture de la modale
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<ApiError | null>(null);
   const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
     useState(false);
 
+  // Définit la racine pour l’accessibilité de react-modal.
   useEffect(() => {
     Modal.setAppElement("#app-root");
   }, []);
 
+  // Valide le contenue du form.
   const isFormInvalid = email.trim() === "" || password.trim() === "";
 
+  // Gère l’envoi du login et affiche l’erreur si échec
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    // Empêche le rechargement de page, reset l’erreur, puis stoppe si formulaire invalide.
     event.preventDefault();
     setError(null);
-
     if (isFormInvalid) {
       return;
     }
 
+    // Envoie la requête de connexion avec email/mot de passe au format JSON.
     const result = await apiRequest("/admin/auth/login", {
       method: "POST",
       headers: {
@@ -42,11 +57,11 @@ export default function Page() {
       }),
     });
 
+    // Si l’API renvoie une erreur, on l’affiche autrement autrement on redirige l’utilisateur vers le dashboard
     if (result.error) {
       setError(result.error);
       return;
     }
-
     router.push("/admin/dashboard");
   };
 
