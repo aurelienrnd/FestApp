@@ -55,7 +55,7 @@ function DesktopNav({
 }) {
   return (
     <nav>
-      <ul className="flex items-center gap-6 tracking-wides">
+      <ul className="nav-list">
         {items.map((item) => {
           const isActive = pathname === item.path;
           return (

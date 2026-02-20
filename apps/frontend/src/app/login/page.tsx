@@ -116,9 +116,7 @@ export default function Page() {
       >
         <ModalCloseButton onClose={() => setIsForgotPasswordModalOpen(false)} />
 
-        <h2 className="text-center text-4xl font-black uppercase">
-          Mot de passe oublie
-        </h2>
+        <h2 className="title-modal">Mot de passe oublie</h2>
 
         <ForgotPassword />
       </Modal>

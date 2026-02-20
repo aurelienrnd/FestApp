@@ -15,11 +15,11 @@ export default function ForgotPassword() {
 
   return (
     <div className="m-(--spacing-container-modal)">
-      <p className="mt-4 text-center text-sm">
+      <p className="mt-(--spacing-paraf-modal) text-center">
         Nous vous enverrons un nouveau mot de passe sur votre boite mail
       </p>
 
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+      <form className="form-modal" onSubmit={handleSubmit}>
         <div>
           <label htmlFor="forgotPasswordEmail" className="sr-only">
             Votre email
@@ -36,7 +36,7 @@ export default function ForgotPassword() {
           />
         </div>
 
-        <div className="flex justify-center pt-1">
+        <div className="submit-modal-area">
           <button type="submit" className="btn-cta" disabled={isFormInvalid}>
             Envoyer
           </button>

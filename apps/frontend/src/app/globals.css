@@ -30,6 +30,8 @@
 
 :root {
   --spacing-container-modal: 1.5rem;
+  --spacing-paraf-modal: 1rem;
+
   --spacing-padding-input-x: 0.75rem;
   --spacing-padding-input-y: 0.5rem;
 
@@ -43,6 +45,14 @@
 }
 
 @layer components {
+  .title-modal {
+    @apply text-center text-4xl font-black;
+  }
+
+  .nav-list {
+    @apply flex items-center gap-(--spacing-container-modal) tracking-wide;
+  }
+
   .btn-cta {
     @apply text-white inline-flex rounded bg-(--collor-1) px-5 py-1 text-(--collor-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration) disabled:cursor-not-allowed disabled:opacity-60;
   }
@@ -68,6 +78,9 @@
     @apply w-4xl rounded-2xl bg-[#fbfbfb] text-[#111111] outline-none pt-3 pb-3;
   }
 
+  .form-modal {
+    @apply mt-4 space-y-4;
+  }
   .input {
     @apply w-full rounded-md border border-(--collor-text-input) bg-(--collor-bg-input) px-(--spacing-padding-input-x) py-(--spacing-padding-input-y) text-sm placeholder:text-(--collor-text-input);
     font-family: var(--font-family-input);
@@ -75,6 +88,9 @@
   .text-area {
     @apply h-56 w-full resize-none rounded-md border border-(--collor-text-input) bg-(--collor-bg-input) px-(--spacing-padding-input-x) py-(--spacing-padding-input-y) text-sm placeholder:text-(--collor-text-input) md:h-44;
     font-family: var(--font-family-input);
+  }
+  .submit-modal-area {
+    @apply flex justify-center pt-1;
   }
 
   .section-page {

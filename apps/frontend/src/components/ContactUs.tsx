@@ -36,9 +36,11 @@ export default function ContactUs() {
   return (
     <div className="m-(--spacing-container-modal)">
       {isSubmit ? (
-        <p className="mt-4 text-center">votres message est envoyer</p>
+        <p className="mt-(--spacing-paraf-modal) text-center">
+          votres message est envoyer
+        </p>
       ) : (
-        <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
+        <form className="form-modal" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label htmlFor="contactName" className="sr-only">
@@ -98,7 +100,7 @@ export default function ContactUs() {
               onChange={(event) => setMessage(event.target.value)}
             />
           </div>
-          <div className="flex justify-center pt-1">
+          <div className="submit-modal-area">
             <button type="submit" className="btn-cta" disabled={isFormInvalid}>
               Envoyer
             </button>

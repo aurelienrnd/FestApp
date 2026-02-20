@@ -54,7 +54,7 @@ export default function Footer() {
     <>
       <footer className="w-full bg-(--collor-bg) flex flex-col gap-6 px-6 py-8 min-md:flex-row min-md:items-center min-md:justify-between">
         <nav>
-          <ul className="flex flex-wrap items-center gap-6 text-xs uppercase tracking-wide md:text-sm justify-center ">
+          <ul className="nav-list justify-center ">
             {legalLinks.map((item) => (
               <li key={item.id}>
                 <button
@@ -102,7 +102,7 @@ export default function Footer() {
       >
         <ModalCloseButton onClose={() => setActiveModal(null)} />
 
-        <h2 className="text-center text-4xl font-black uppercase">
+        <h2 className="title-modal">
           {activeModal === "mentions" ? "Mentions legales" : "Nous contacter"}
         </h2>
 
