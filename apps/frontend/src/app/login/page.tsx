@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 
-type ApiError = { error: string };
+type ApiError = { message?: string; status?: number };
 
 type ApiRequestResult<T> = {
   data: T | null;
@@ -22,19 +22,19 @@ async function apiRequest<T>(
       ...init,
     });
 
-    const payload = await response.json();
+    const data = await response.json().catch(() => null);
 
     if (!response.ok) {
-      return {
-        data: null,
-        error: { error: payload?.error ?? "Donnees invalides" },
-      };
+      const message = data.error;
+      const status = response.status;
+      throw { message, status } as ApiError;
     }
 
-    return { data: payload as T, error: null };
-  } catch (error) {
-    console.error("request error", error);
-    return { data: null, error: { error: "login request error" } };
+    return { data, error: null };
+  } catch (error: unknown) {
+    const err = error as { message?: string; status?: number };
+    console.log(err.message, err.status);
+    return { data: null, error: err };
   }
 }
 
@@ -117,7 +117,7 @@ export default function Page() {
 
         <div className="flex flex-col items-center gap-2 pt-2">
           {error ? (
-            <p className="mb-3 text-sm text-(--collor-1)">{error.error}</p>
+            <p className="mb-3 text-sm text-(--collor-1)">{error.message}</p>
           ) : null}
           <button type="submit" className="btn-cta" disabled={isFormInvalid}>
             Envoyer
