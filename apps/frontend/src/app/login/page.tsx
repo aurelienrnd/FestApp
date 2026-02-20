@@ -2,41 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
+import { apiRequest } from "../../functions/apiRequest";
 
 type ApiError = { message?: string; status?: number };
-
-type ApiRequestResult<T> = {
-  data: T | null;
-  error: ApiError | null;
-};
-
-async function apiRequest<T>(
-  path: string,
-  init?: RequestInit,
-): Promise<ApiRequestResult<T>> {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
-
-  try {
-    const response = await fetch(`${apiBaseUrl}${path}`, {
-      credentials: "include",
-      ...init,
-    });
-
-    const data = await response.json().catch(() => null);
-
-    if (!response.ok) {
-      const message = data.error;
-      const status = response.status;
-      throw { message, status } as ApiError;
-    }
-
-    return { data, error: null };
-  } catch (error: unknown) {
-    const err = error as { message?: string; status?: number };
-    console.log(err.message, err.status);
-    return { data: null, error: err };
-  }
-}
 
 export default function Page() {
   const router = useRouter();
@@ -54,10 +22,7 @@ export default function Page() {
       return;
     }
 
-    const result = await apiRequest<{
-      message?: string;
-      userSession?: unknown;
-    }>("/admin/auth/login", {
+    const result = await apiRequest("/admin/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
