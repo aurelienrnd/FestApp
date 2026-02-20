@@ -1,7 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
+import Modal from "react-modal";
+import ModalCloseButton from "../../components/ModalCloseButton";
+import ForgotPassword from "../../components/ForgotPassword";
 import { apiRequest } from "../../functions/apiRequest";
 
 type ApiError = { message?: string; status?: number };
@@ -11,6 +14,12 @@ export default function Page() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<ApiError | null>(null);
+  const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
+    useState(false);
+
+  useEffect(() => {
+    Modal.setAppElement("#app-root");
+  }, []);
 
   const isFormInvalid = email.trim() === "" || password.trim() === "";
 
@@ -90,7 +99,29 @@ export default function Page() {
         </div>
       </form>
 
-      <button className="mt-10 btn-type-2">Mot de passe oublie</button>
+      <button
+        type="button"
+        className="mt-10 btn-type-2"
+        onClick={() => setIsForgotPasswordModalOpen(true)}
+      >
+        Mot de passe oublie
+      </button>
+
+      <Modal
+        isOpen={isForgotPasswordModalOpen}
+        onRequestClose={() => setIsForgotPasswordModalOpen(false)}
+        contentLabel="Mot de passe oublie"
+        className="modal"
+        overlayClassName="modal-overlay"
+      >
+        <ModalCloseButton onClose={() => setIsForgotPasswordModalOpen(false)} />
+
+        <h2 className="text-center text-4xl font-black uppercase">
+          Mot de passe oublie
+        </h2>
+
+        <ForgotPassword />
+      </Modal>
     </section>
   );
 }
