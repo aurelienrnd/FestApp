@@ -2,9 +2,9 @@
  * Si la réponse HTTP est en erreur (`!response.ok`), remonte un objet `{ message, status }`.
  * Retourne `{ data, error: null }` en succès, sinon `{ data: null, error }` en échec.
  * @param {string} path : Chemin de l’endpoint API (ex: `/admin/auth/login`).
- * @param {RequestInit} init : Options de requête `fetch` (method, headers, body, etc.).
+ * @param {RequestInit} [init] : Options de requête `fetch` (method, headers, body, etc.).
  */
-export async function apiRequest(path, init) {
+export async function apiRequest(path, init = {}) {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   try {
@@ -29,3 +29,4 @@ export async function apiRequest(path, init) {
     return { data: null, error: err };
   }
 }
+
