@@ -1,23 +1,31 @@
 // Middleware pour authentifier l'utilisateur via son token
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { parse } from "cookie";
 import { getEnv } from "../functions";
 import type { JwtPayload } from "jsonwebtoken";
 import { query } from "../db";
 
-/** Vérifie qu'un token est bien présent dans le header de la requete
+/** Verifie qu'un token est bien present dans le cookie de la requete
  * @return le token
  */
-function emptyTokenTest(req: Request) {
-  if (!req.headers.authorization) {
-    throw new Error("missing authorization");
+function getTokenFromCookie(req: Request) {
+  if (!req.headers.cookie) {
+    throw new Error("missing cookie");
   }
 
-  const token = req.headers.authorization.split(" ")[1];
+  const cookies = parse(req.headers.cookie);
+  const cookieName = getEnv("COOKIE_ACCESS_TOKEN_NAME");
+  const token = cookies[cookieName];
+
+  if (!token) {
+    throw new Error("missing access token");
+  }
+
   return token;
 }
 
-/** Decode le token JTW pour récupairer le userId et le sessionId
+/** Decode le token JWT pour recuperer le userId et le sessionId
  * @return le userId et le sessionId
  */
 function decodedToken(token: string) {
@@ -30,25 +38,22 @@ function decodedToken(token: string) {
   return { userId, sessionId };
 }
 
-/** Vérifie que l'utilisateur est autorisé à effectué cette requete
- * Récupère et code le token
+/** Verifie que l'utilisateur est autorise a effectuer cette requete
+ * Recupere et decode le token
  * Recherche l'utilisateur dans la BDD
  * Renvoie le user et le sessionId dans le header de la requete
- * @function emptyTokenTest Vérifie qu'un token est bien présent dans le header de la requete
- * @function decodedToken Décode le token JTW pour récupérer le userId et le sessionId
+ * @function getTokenFromCookie Verifie qu'un token est bien present dans le cookie de la requete
+ * @function decodedToken Decode le token JWT pour recuperer le userId et le sessionId
  */
 export async function auth(req: Request, res: Response, next: NextFunction) {
   try {
-    // Récupération du token et envoi d'une erreur si non trouvé
-    const token = emptyTokenTest(req);
+    // Recuperation du token et envoi d'une erreur si non trouve
+    const token = getTokenFromCookie(req);
 
-    // TODO -- À supprimer une fois les tests terminés
-    console.log("Token recu dans le header:", token);
-
-    // Décodage du token en userId
+    // Decodage du token en userId
     const { userId, sessionId } = decodedToken(token);
 
-    // Recherche du userId dans la base de données et envoi d'une erreur si l'utilisateur n'est pas trouvé
+    // Recherche du userId dans la base de donnees et envoi d'une erreur si l'utilisateur n'est pas trouve
     const user = await query(
       "SELECT id, display_name FROM users WHERE id = $1",
       [userId],
@@ -57,7 +62,7 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
       throw new Error("User not found");
     }
 
-    // Si l'utilisateur est trouvé on renvoie le header et l'id de la session
+    // Si l'utilisateur est trouve on renvoie le header et l'id de la session
     req.headers.userId = user[0].id;
     req.headers.userdisplayName = user[0].display_name;
     req.headers.session = sessionId;

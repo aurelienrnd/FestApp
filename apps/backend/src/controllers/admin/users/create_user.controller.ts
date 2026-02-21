@@ -9,7 +9,7 @@ async function existingEmail(email: string) {
     email,
   ]);
   if (existingEmail.length > 0) {
-    const err = new Error("Email déjà utilisé");
+    const err = new Error("Email deja utilise");
     (err as { status?: number }).status = 409;
     throw err;
   }
@@ -19,32 +19,33 @@ async function existingEmail(email: string) {
  * @param {string} display_name nom de l'utilisateur dans le boddy de la requete
  */
 async function existingDisplayName(display_name: string) {
-  const existingEmail = await query("SELECT id FROM users WHERE email = $1", [
-    display_name,
-  ]);
-  if (existingEmail.length > 0) {
-    const err = new Error("Nom déjà utilisé");
+  const existingDisplayName = await query(
+    "SELECT id FROM users WHERE display_name = $1",
+    [display_name],
+  );
+  if (existingDisplayName.length > 0) {
+    const err = new Error("Nom deja utilise");
     (err as { status?: number }).status = 409;
     throw err;
   }
 }
 
 /** Creation d'un utilisateur dans le service
- * Verifie si email n'est pas deja utilisé dans la BDD
- * Vérifie si le display_name n'est pas utilisé dans la BDD
- * Renvoie utilisateur créé
+ * Verifie si email n'est pas deja utilise dans la BDD
+ * Verifie si le display_name n'est pas utilise dans la BDD
+ * Renvoie utilisateur cree
  * @function existingEmail Verifie que l'email de l'utilisateur existe dans la BDD
  * @function existingDisplayName Verifie que le nom d'utilisateur existe dans la BDD
  */
 export const createUser = async (req: Request, res: Response) => {
   try {
     const { email, password, display_name } = req.body;
-    // Vérifier si l'email de l'utilisateur existe déjà
+    // Verifier si l'email de l'utilisateur existe deja
     await existingEmail(email);
-    // Vérifier si le nom d'utilisateur existe déjà
+    // Verifier si le nom d'utilisateur existe deja
     await existingDisplayName(display_name);
 
-    // Insertion de l'utilisateur dans la base de données
+    // Insertion de l'utilisateur dans la base de donnees
     await query(
       `INSERT INTO users (email, password_hash, display_name, must_change_password, is_active)
        VALUES ($1, $2, $3, TRUE, TRUE)
@@ -52,13 +53,13 @@ export const createUser = async (req: Request, res: Response) => {
       [email, password, display_name],
     );
 
-    return res.status(201).json({ message: "Utilisateur créé" });
+    return res.status(201).json({ message: "Utilisateur cree" });
   } catch (error) {
     console.error(error);
     const err =
       error instanceof Error
         ? error
-        : new Error("Problème lors de la création de l'utilisateur");
+        : new Error("Probleme lors de la creation de l'utilisateur");
     const status =
       typeof (error as { status?: unknown }).status === "number"
         ? (error as { status: number }).status

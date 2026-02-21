@@ -2,7 +2,7 @@ import express from "express";
 import { query } from "./db";
 
 // Importation des routes
-import adminArticles from "./routes/admin.artists.routes";
+import adminArticles from "./routes/admin.articles.routes";
 import adminArtists from "./routes/admin.artists.routes";
 import adminAuth from "./routes/admin.auth.routes";
 import adminConcerts from "./routes/admin.concerts.routes";
@@ -79,3 +79,4 @@ export function createApp() {
 
   return app;
 }
+
