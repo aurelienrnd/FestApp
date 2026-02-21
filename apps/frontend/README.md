@@ -7,7 +7,7 @@
 Pour executer une commande npm dans le conteneur : `docker exec -it vindhellfest-frontend`
 - `npm run lint` : 	Vérifier le code (ESLint)
 - `npm run format` : 	Formater ton code auto avec Prettier
-- `npm test` : Lancer les tests vitetest
+- `npm test` : Lancer les tests vitest
 
 ## Stack technique
 **Dependencies**
@@ -69,14 +69,14 @@ Pour executer une commande npm dans le conteneur : `docker exec -it vindhellfest
 ```
 
 ## 📄 Dockerfile
-Le projet utilise un Dockerfile multi-stage pour generer deux types d'images a partir du meme fichier :
+Le projet utilise un Dockerfile multi-stage pour générer deux types d'images a partir du meme fichier :
 une image de developpement et une image de production.
-Le front beneficie de 5 stages car il possaide plus de dependances, ce qui optimise la taille et le temps de rebuild, alors que le back se contente de 3 stages.
+Le front beneficie de 5 stages car il possède plus de dependances, ce qui optimise la taille et le temps de rebuild, alors que le back se contente de 3 stages.
 - Base commune : `node:20-alpine`.
 - Stage `deps` : installation des dependances.
 - Stage `builder` : copie des dependances, copie du code et lancement du build.
 - Image de production (`runner`)
-- Image de developpement (`dev`)
+- Image de développement (`dev`)
 
 ## 📁 src/
 ### 📁 app/

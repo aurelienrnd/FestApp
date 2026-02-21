@@ -105,6 +105,9 @@ Contient les middlewares transverses (auth, validation, logs, erreurs).
 
 ### 📁 routes
 Déclare les routes HTTP et connecte chaque endpoint à son contrôleur.
+POST /admin/auth/login
+POST /admin/auth/logout
+POST /admin/users
 
 ### 📄 db.ts
 Ce fichier centralise la configuration de la connexion à la base de données PostgreSQL ainsi qu’une fonction utilitaire permettant d’exécuter facilement des requêtes SQL depuis le backend.
