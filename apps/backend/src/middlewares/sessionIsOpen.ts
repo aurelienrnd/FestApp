@@ -47,8 +47,7 @@ export async function sessionIsOpen(
       "JWT_ACCESS_EXPIRES_IN",
       reqSessionId as string,
     );
-    //TODO - remove it
-    console.log("nouveau token", accessToken);
+
     const accessCookie = serializeCookie(
       "COOKIE_ACCESS_TOKEN_NAME",
       "COOKIE_ACCESS_TOKEN_SECURE",
