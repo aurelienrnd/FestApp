@@ -2,6 +2,7 @@
 // Import
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import {
@@ -14,6 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { useAppUi } from "./AppUiProvider";
 import ModalCloseButton from "./ModalCloseButton";
+import { apiRequest } from "../functions/apiRequest";
 
 /** Affiche un bouton de billetterie
  * Contient un lien externe vers un site de recherche de billetterie
@@ -48,16 +50,38 @@ function DesktopNav({
   items,
   pathname,
   isAdminPath,
+  onLogout,
 }: {
   items: NavItem[];
   pathname?: string | null;
   isAdminPath: boolean;
+  onLogout: () => void;
 }) {
   return (
     <nav>
       <ul className="nav-list">
         {items.map((item) => {
           const isActive = pathname === item.path;
+          const isLogoutItem = isAdminPath && item.label === "Logout";
+
+          if (isLogoutItem) {
+            return (
+              <li key={item.path}>
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  className={
+                    isActive
+                      ? "border-b border-(--color-1)"
+                      : "border-b border-transparent transition-colors hover:border-(--color-1)"
+                  }
+                >
+                  {item.label}
+                </button>
+              </li>
+            );
+          }
+
           return (
             <li key={item.path}>
               <Link
@@ -93,10 +117,12 @@ export function MobilNav({
   items,
   pathname,
   isAdminPath,
+  onLogout,
 }: {
   items: NavItem[];
   pathname?: string | null;
   isAdminPath: boolean;
+  onLogout: () => void;
 }) {
   // Verifie si la modale est ouverte
   const [isOpen, setIsOpen] = useState(false);
@@ -126,6 +152,25 @@ export function MobilNav({
           <ul className="flex flex-col gap-6">
             {items.map((item) => {
               const isActive = pathname === item.path;
+              const isLogoutItem = isAdminPath && item.label === "Logout";
+
+              if (isLogoutItem) {
+                return (
+                  <li key={item.path} className="bg-black text-white w-30 p-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsOpen(false);
+                        onLogout();
+                      }}
+                      className="block w-full text-right"
+                    >
+                      {item.label}
+                    </button>
+                  </li>
+                );
+              }
+
               return (
                 <li
                   key={item.path}
@@ -157,9 +202,23 @@ export function MobilNav({
  * @children MobilNav Affiche le menu de navigation pour l'affichage mobile
  */
 export default function Banner() {
+  const router = useRouter();
   // Fournit l'etat UI puis choisit automatiquement la navigation admin ou visiteur.
   const { pathname, isAdminPath, isDesktop } = useAppUi();
   const items = isAdminPath ? navAdminItems : navVisitorItems;
+
+  const handleLogout = async () => {
+    const result = await apiRequest("/admin/auth/logout", { method: "POST" });
+
+    if (result.error) {
+      const apiError = result.error as { status?: number; message?: string };
+      console.log(apiError.status, apiError.message);
+      return;
+    }
+
+    console.log(200, result.data?.message);
+    router.push("/login");
+  };
 
   return (
     <header className="mx-auto flex w-full items-center justify-between px-4 py-2">
@@ -176,9 +235,15 @@ export default function Banner() {
           items={items}
           pathname={pathname}
           isAdminPath={isAdminPath}
+          onLogout={handleLogout}
         />
       ) : (
-        <MobilNav items={items} pathname={pathname} isAdminPath={isAdminPath} />
+        <MobilNav
+          items={items}
+          pathname={pathname}
+          isAdminPath={isAdminPath}
+          onLogout={handleLogout}
+        />
       )}
     </header>
   );

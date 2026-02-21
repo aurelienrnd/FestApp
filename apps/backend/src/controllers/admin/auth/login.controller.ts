@@ -83,7 +83,7 @@ export async function login(req: Request, res: Response) {
     );
 
     return res.status(200).json({
-      message: "Authentification r�ussie",
+      message: "Authentification réussie",
       userSession,
     });
   } catch (error) {

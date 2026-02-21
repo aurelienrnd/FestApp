@@ -58,9 +58,13 @@ export default function Page() {
 
     // Si l'API renvoie une erreur, on l'affiche, sinon on redirige l'utilisateur vers le dashboard.
     if (result.error) {
-      setError(result.error);
+      const apiError = result.error as ApiError;
+      console.log(apiError.status, apiError.message);
+      setError(apiError);
       return;
     }
+
+    console.log(200, result.data?.message);
     router.push("/admin/dashboard");
   };
 
