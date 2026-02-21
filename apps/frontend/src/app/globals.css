@@ -1,25 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  --collor-1: #cb3346;
-  --collor-2: #767676;
-  --collor-3: #0ea5e9;
-  --collor-text-visitor: #ffffff;
-  --collor-bg-visitor: black;
-  --collor-bg-admin: #ffffff;
-  --collor-text-admin: black;
-  --collor-bg-input: #e4e4e7;
-  --collor-text-input: #47474f;
+  --color-1: #cb3346;
+  --color-2: #767676;
+  --color-3: #0ea5e9;
+  --color-text-visitor: #ffffff;
+  --color-bg-visitor: black;
+  --color-bg-admin: #ffffff;
+  --color-text-admin: black;
+  --color-bg-input: #e4e4e7;
+  --color-text-input: #47474f;
 }
 
 :root[data-theme="admin"] {
-  --collor-text: var(--collor-text-admin);
-  --collor-bg: var(--collor-bg-admin);
+  --color-text: var(--color-text-admin);
+  --color-bg: var(--color-bg-admin);
 }
 
 :root[data-theme="visitor"] {
-  --collor-text: var(--collor-text-visitor);
-  --collor-bg: var(--collor-bg-visitor);
+  --color-text: var(--color-text-visitor);
+  --color-bg: var(--color-bg-visitor);
 }
 
 :root {
@@ -54,7 +54,7 @@
   }
 
   .btn-cta {
-    @apply text-white inline-flex rounded bg-(--collor-1) px-5 py-1 text-(--collor-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration) disabled:cursor-not-allowed disabled:opacity-60;
+    @apply text-white inline-flex rounded bg-(--color-1) px-5 py-1 text-(--color-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration) disabled:cursor-not-allowed disabled:opacity-60;
   }
   .btn-cta:hover {
     @apply scale-(--anim-btn-scale);
@@ -65,7 +65,7 @@
   }
 
   .mobil-menu {
-    @apply inline-flex rounded bg-(--collor-2) px-2 py-1 text-(--collor-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration);
+    @apply inline-flex rounded bg-(--color-2) px-2 py-1 text-(--color-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration);
   }
   .mobil-menu:hover {
     @apply scale-(--anim-btn-scale);
@@ -82,11 +82,11 @@
     @apply mt-4 space-y-4;
   }
   .input {
-    @apply w-full rounded-md border border-(--collor-text-input) bg-(--collor-bg-input) px-(--spacing-padding-input-x) py-(--spacing-padding-input-y) text-sm placeholder:text-(--collor-text-input);
+    @apply w-full rounded-md border border-(--color-text-input) bg-(--color-bg-input) px-(--spacing-padding-input-x) py-(--spacing-padding-input-y) text-sm placeholder:text-(--color-text-input);
     font-family: var(--font-family-input);
   }
   .text-area {
-    @apply h-56 w-full resize-none rounded-md border border-(--collor-text-input) bg-(--collor-bg-input) px-(--spacing-padding-input-x) py-(--spacing-padding-input-y) text-sm placeholder:text-(--collor-text-input) md:h-44;
+    @apply h-56 w-full resize-none rounded-md border border-(--color-text-input) bg-(--color-bg-input) px-(--spacing-padding-input-x) py-(--spacing-padding-input-y) text-sm placeholder:text-(--color-text-input) md:h-44;
     font-family: var(--font-family-input);
   }
   .submit-modal-area {

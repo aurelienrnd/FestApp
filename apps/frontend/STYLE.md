@@ -1,29 +1,29 @@
-# Guide Style Frontend
+ï»¿# Guide Style Frontend
 
-Ce document décrit le style réellement utilisé dans `apps/frontend`.
+Ce document dÃ©crit le style rÃ©ellement utilisÃ© dans `apps/frontend`.
 
 ## 1. Fichier central
 
-Le style global est centralisé dans:
+Le style global est centralisÃ© dans:
 - `apps/frontend/src/app/globals.css`
 
 Ce fichier contient:
 - les variables CSS (`:root`)
-- les thèmes (`:root[data-theme="..."]`)
-- les classes composants réutilisables (`@layer components`)
+- les thÃ¨mes (`:root[data-theme="..."]`)
+- les classes composants rÃ©utilisables (`@layer components`)
 
 ## 2. Design tokens (`:root`)
 
-Les tokens sont définis en variables CSS pour éviter les valeurs dupliquées.
+Les tokens sont dÃ©finis en variables CSS pour Ã©viter les valeurs dupliquÃ©es.
 
 ### Couleurs
-- `--collor-1`, `--collor-2`, `--collor-3`
-- `--collor-bg-input`, `--collor-text-input`
-- `--collor-text-visitor`, `--collor-bg-visitor`
-- `--collor-text-admin`, `--collor-bg-admin`
-- `--collor-text`, `--collor-bg` (variables actives selon le thème)
+- `--color-1`, `--color-2`, `--color-3`
+- `--color-bg-input`, `--color-text-input`
+- `--color-text-visitor`, `--color-bg-visitor`
+- `--color-text-admin`, `--color-bg-admin`
+- `--color-text`, `--color-bg` (variables actives selon le thÃ¨me)
 
-Note: le préfixe `collor` est conservé tel quel pour rester aligné avec le code actuel.
+Note: le prÃ©fixe `color` est conservÃ© tel quel pour rester alignÃ© avec le code actuel.
 
 ### Animation
 - `--anim-btn-transition`
@@ -42,29 +42,29 @@ Note: le préfixe `collor` est conservé tel quel pour rester aligné avec le code 
 ### Typographie
 - `--font-family-input` (actuellement `Arial, sans-serif`)
 
-## 3. Système de thème
+## 3. SystÃ¨me de thÃ¨me
 
-Le projet utilise deux thèmes pilotés par l'attribut `data-theme`:
+Le projet utilise deux thÃ¨mes pilotÃ©s par l'attribut `data-theme`:
 - `:root[data-theme="admin"]`
 - `:root[data-theme="visitor"]`
 
 Les composants s'appuient ensuite sur:
-- `bg-(--collor-bg)`
-- `text-(--collor-text)`
+- `bg-(--color-bg)`
+- `text-(--color-text)`
 
-## 4. Classes réutilisables (`@layer components`)
+## 4. Classes rÃ©utilisables (`@layer components`)
 
-Classes actuellement définies dans `globals.css`:
+Classes actuellement dÃ©finies dans `globals.css`:
 - `.title-modal`: titre principal des modales
 - `.nav-list`: liste de navigation horizontale (alignement + gap + tracking)
-- `.btn-cta`: bouton principal (couleur marque, transitions, état disabled)
-- `.btn-type-2`: bouton secondaire (variation d'opacité)
+- `.btn-cta`: bouton principal (couleur marque, transitions, Ã©tat disabled)
+- `.btn-type-2`: bouton secondaire (variation d'opacitÃ©)
 - `.mobil-menu`: bouton menu mobile
 - `.modal-overlay`: fond d'overlay des modales
 - `.modal`: conteneur de modale
 - `.form-modal`: structure verticale de formulaire en modale
-- `.input`: style partagé des champs `input`
-- `.text-area`: style partagé des champs `textarea`
+- `.input`: style partagÃ© des champs `input`
+- `.text-area`: style partagÃ© des champs `textarea`
 - `.submit-modal-area`: zone d'alignement du bouton de soumission
 - `.section-page`: spacing vertical/horizontal des sections de page
 
@@ -77,7 +77,8 @@ Classes actuellement définies dans `globals.css`:
 
 ## 6. Conventions en place
 
-- Prioriser les classes partagées définies dans `@layer components` avant d'ajouter des classes locales.
-- Ajouter une variable CSS dans `:root` si la valeur est réutilisable.
-- Garder les styles inline/locales seulement pour les cas strictement spécifiques.
-- Conserver la syntaxe Tailwind actuelle basée sur variables CSS, par exemple `bg-(--collor-bg)`.
+- Prioriser les classes partagÃ©es dÃ©finies dans `@layer components` avant d'ajouter des classes locales.
+- Ajouter une variable CSS dans `:root` si la valeur est rÃ©utilisable.
+- Garder les styles inline/locales seulement pour les cas strictement spÃ©cifiques.
+- Conserver la syntaxe Tailwind actuelle basÃ©e sur variables CSS, par exemple `bg-(--color-bg)`.
+

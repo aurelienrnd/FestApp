@@ -64,8 +64,8 @@ function DesktopNav({
                 href={item.path}
                 className={
                   isActive
-                    ? "border-b border-(--collor-1)"
-                    : "border-b border-transparent transition-colors hover:border-(--collor-1)"
+                    ? "border-b border-(--color-1)"
+                    : "border-b border-transparent transition-colors hover:border-(--color-1)"
                 }
               >
                 {item.label}
@@ -131,7 +131,7 @@ export function MobilNav({
                   key={item.path}
                   className={
                     isActive
-                      ? "bg-(--collor-1) w-50 p-2"
+                      ? "bg-(--color-1) w-50 p-2"
                       : "bg-black text-white w-30 p-2"
                   }
                 >

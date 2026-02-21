@@ -51,7 +51,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="w-full bg-(--collor-bg) flex flex-col gap-6 px-6 py-8 min-md:flex-row min-md:items-center min-md:justify-between">
+      <footer className="w-full bg-(--color-bg) flex flex-col gap-6 px-6 py-8 min-md:flex-row min-md:items-center min-md:justify-between">
         <nav>
           <ul className="nav-list justify-center ">
             {legalLinks.map((item) => (
@@ -69,7 +69,7 @@ export default function Footer() {
         </nav>
 
         <div
-          className="h-0.5 w-40 bg-(--collor-3) mx-auto md:mx-0 md:w-80"
+          className="h-0.5 w-40 bg-(--color-3) mx-auto md:mx-0 md:w-80"
           aria-hidden="true"
         />
 
@@ -81,7 +81,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={item.label}
-                className="inline-flex h-9 w-9 items-center justify-center rounded bg-(--collor-1) text-xs text-white transition-(--anim-btn-transition) duration-(--anim-btn-duration) hover:scale-(--anim-btn-scale)"
+                className="inline-flex h-9 w-9 items-center justify-center rounded bg-(--color-1) text-xs text-white transition-(--anim-btn-transition) duration-(--anim-btn-duration) hover:scale-(--anim-btn-scale)"
               >
                 <FontAwesomeIcon icon={item.icon} />
               </a>
