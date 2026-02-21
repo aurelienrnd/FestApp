@@ -35,21 +35,22 @@ describe("auth middleware", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.JWT_ACCESS_SECRET = "test-secret";
+    process.env.COOKIE_ACCESS_TOKEN_NAME = "access_token";
   });
 
-  it("should return 401 if authorization header is missing", async () => {
+  it("should return 401 if cookie header is missing", async () => {
     const app = createApp();
     const res = await request(app).get("/test");
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe("missing authorization");
+    expect(res.body.error).toBe("missing cookie");
   });
 
   it("should return 401 if token is invalid", async () => {
     const app = createApp();
     const res = await request(app)
       .get("/test")
-      .set("Authorization", "Bearer invalidToken");
+      .set("Cookie", "access_token=invalidToken");
 
     expect(res.status).toBe(401);
     expect(res.body.error); // message généré par jsonwebtoken
@@ -68,7 +69,7 @@ describe("auth middleware", () => {
     const app = createApp();
     const res = await request(app)
       .get("/test")
-      .set("Authorization", `Bearer ${token}`);
+      .set("Cookie", `access_token=${token}`);
 
     expect(res.status).toBe(401);
     expect(res.body.error).toBe("User not found");
@@ -89,7 +90,7 @@ describe("auth middleware", () => {
     const app = createApp();
     const res = await request(app)
       .get("/test")
-      .set("Authorization", `Bearer ${token}`);
+      .set("Cookie", `access_token=${token}`);
 
     expect(res.status).toBe(200);
     expect(res.body.userId).toBe("user-1");
