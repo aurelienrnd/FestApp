@@ -6,7 +6,7 @@ import { getEnv } from "../functions";
 import type { JwtPayload } from "jsonwebtoken";
 import { query } from "../db";
 
-/** Verifie qu'un token est bien present dans le cookie de la requete
+/** Verifie qu'un token est present dans le cookie de la requete
  * @return le token
  */
 function getTokenFromCookie(req: Request) {
@@ -42,18 +42,12 @@ function decodedToken(token: string) {
  * Recupere et decode le token
  * Recherche l'utilisateur dans la BDD
  * Renvoie le user et le sessionId dans le header de la requete
- * @function getTokenFromCookie Verifie qu'un token est bien present dans le cookie de la requete
- * @function decodedToken Decode le token JWT pour recuperer le userId et le sessionId
  */
 export async function auth(req: Request, res: Response, next: NextFunction) {
   try {
-    // Recuperation du token et envoi d'une erreur si non trouve
     const token = getTokenFromCookie(req);
-
-    // Decodage du token en userId
     const { userId, sessionId } = decodedToken(token);
 
-    // Recherche du userId dans la base de donnees et envoi d'une erreur si l'utilisateur n'est pas trouve
     const user = await query(
       "SELECT id, display_name FROM users WHERE id = $1",
       [userId],
@@ -62,7 +56,6 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
       throw new Error("User not found");
     }
 
-    // Si l'utilisateur est trouve on renvoie le header et l'id de la session
     req.headers.userId = user[0].id;
     req.headers.userdisplayName = user[0].display_name;
     req.headers.session = sessionId;

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import request from "supertest";
 import express from "express";
 import { validateBody } from "../../src/middlewares/validateBody";
-import { createUserSchema, loginSchema } from "../../src/shemas/shema";
+import { createUserSchema, loginSchema } from "../../src/schemas/schema";
 
 /** Creation d'une application Express pour les tests
  * Creation d'une route de test protégée par le middleware hashPassword
@@ -101,3 +101,4 @@ describe("validateBody", () => {
     );
   });
 });
+

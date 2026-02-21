@@ -1,23 +1,23 @@
 import { useState, type FormEvent } from "react";
-//TODO - SRONLY ?
+// TODO - SR-only ?
 
 /** Affiche un formulaire de contact avec les champs nom, email, sujet et message */
 export default function ContactUs() {
-  // Stockent l’état d’envoi du formulaire et les valeurs des champs
+  // Stocke l'etat d'envoi du formulaire et les valeurs des champs
   const [isSubmit, setIsSubmit] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
 
-  // Vérifie que tous les champs contiennent du texte valide
+  // Verifie que tous les champs contiennent du texte valide
   const isFormInvalid =
     name.trim() === "" ||
     email.trim() === "" ||
     subject.trim() === "" ||
     message.trim() === "";
 
-  // Empêche le rechargement, valide le formulaire puis log les champs
+  // Empeche le rechargement, valide le formulaire puis log les champs
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -37,7 +37,7 @@ export default function ContactUs() {
     <div className="m-(--spacing-container-modal)">
       {isSubmit ? (
         <p className="mt-(--spacing-paraf-modal) text-center">
-          votres message est envoyer
+          votre message est envoye
         </p>
       ) : (
         <form className="form-modal" onSubmit={handleSubmit}>

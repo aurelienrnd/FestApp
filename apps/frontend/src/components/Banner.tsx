@@ -17,10 +17,10 @@ import ModalCloseButton from "./ModalCloseButton";
 
 /** Affiche un bouton de billetterie
  * Contient un lien externe vers un site de recherche de billetterie
- * Le lien s’ouvre dans un nouvel onglet grâce à target="_blank"
- * Utilise rel="noopener noreferrer" pour des raisons de sécurité
+ * Le lien s'ouvre dans un nouvel onglet grace a target="_blank"
+ * Utilise rel="noopener noreferrer" pour des raisons de securite
  */
-function BtnTiket() {
+function BtnTicket() {
   return (
     <li>
       <a
@@ -35,14 +35,14 @@ function BtnTiket() {
   );
 }
 
-/** Affiche le menu de navigation pour l’affichage desktop
- * Compare chaque lien avec l’URL pour déterminer lequel est actif et y appliquer un style
- * Affiche le bouton de billetterie uniquement si l’on n’est pas sur une page admin
+/** Affiche le menu de navigation pour l'affichage desktop
+ * Compare chaque lien avec l'URL pour determiner lequel est actif et y appliquer un style
+ * Affiche le bouton de billetterie uniquement si l'on n'est pas sur une page admin
  * @param {Object} props
  * @param {NavItem[]} props.items
  * @param {string | null} [props.pathname]
  * @param {boolean} props.isAdminPath
- * @children BtnTiket Affiche un bouton de billetterie
+ * @children BtnTicket Affiche un bouton de billetterie
  */
 function DesktopNav({
   items,
@@ -73,21 +73,21 @@ function DesktopNav({
             </li>
           );
         })}
-        {isAdminPath ? null : <BtnTiket />}
+        {isAdminPath ? null : <BtnTicket />}
       </ul>
     </nav>
   );
 }
 
-/** Affiche le menu de navigation pour l’affichage mobile
- * Ouvre/ferme un menu via une modale (react-modal) grâce à un state `isOpen`
- * Compare chaque lien avec l’URL pour déterminer lequel est actif et lui appliquer un style
- * Affiche le bouton de billetterie (BtnTiket) uniquement si l’on n’est pas sur une page admin
- * @param {Object} props - Propriétés du composant
- * @param {NavItem[]} props.items - Liste des liens de navigation
- * @param {string | null} [props.pathname] - URL courante pour déterminer le lien actif
- * @param {boolean} props.isAdminPath - Indique si la page actuelle est une page admin
- * @children BtnTiket : Affiche un bouton de billetterie
+/** Affiche le menu de navigation pour l'affichage mobile
+ * Ouvre/ferme un menu via une modale (react-modal) grace a un state `isOpen`
+ * Compare chaque lien avec l'URL pour determiner lequel est actif et lui appliquer un style
+ * Affiche le bouton de billetterie (BtnTicket) uniquement si l'on n'est pas sur une page admin
+ * @param {Object} props proprietes du composant
+ * @param {NavItem[]} props.items liste des liens de navigation
+ * @param {string | null} [props.pathname] URL courante pour determiner le lien actif
+ * @param {boolean} props.isAdminPath indique si la page actuelle est une page admin
+ * @children BtnTicket Affiche un bouton de billetterie
  */
 export function MobilNav({
   items,
@@ -98,7 +98,7 @@ export function MobilNav({
   pathname?: string | null;
   isAdminPath: boolean;
 }) {
-  // verifie ci la modal est ouverte
+  // Verifie si la modale est ouverte
   const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     Modal.setAppElement("#app-root");
@@ -106,13 +106,13 @@ export function MobilNav({
 
   return (
     <nav>
-      <ul className="flex items-center gap-6 tracking-wides">
+      <ul className="flex items-center gap-6 tracking-wide">
         <li className="mobil-menu">
           <button type="button" onClick={() => setIsOpen(true)}>
             <FontAwesomeIcon icon={faBars} />
           </button>
         </li>
-        {isAdminPath ? null : <BtnTiket />}
+        {isAdminPath ? null : <BtnTicket />}
       </ul>
       <Modal
         isOpen={isOpen}
@@ -149,15 +149,15 @@ export function MobilNav({
 }
 
 /** Affiche le header avec un logo et la navigation
- * Détecte si l’URL correspond à une page admin pour choisir les bons items de navigation
- * Détermine si l’affichage est en mode desktop ou mobile via matchMedia (min-width: 768px)
- * Écoute les changements de taille d’écran pour mettre à jour l’état `isDesktop`
- * Affiche DesktopNav sur écran large, sinon MobilNav
- * @children DesktopNav :  Affiche le menu de navigation pour l’affichage desktop
- * @children MobilNav :  Affiche le menu de navigation pour l’affichage mobile
+ * Detecte si l'URL correspond a une page admin pour choisir les bons items de navigation
+ * Determine si l'affichage est en mode desktop ou mobile via matchMedia (min-width: 768px)
+ * Ecoute les changements de taille d'ecran pour mettre a jour l'etat `isDesktop`
+ * Affiche DesktopNav sur ecran large, sinon MobilNav
+ * @children DesktopNav Affiche le menu de navigation pour l'affichage desktop
+ * @children MobilNav Affiche le menu de navigation pour l'affichage mobile
  */
 export default function Banner() {
-  // Fournit l’état UI puis choisit automatiquement la navigation admin ou visiteur.
+  // Fournit l'etat UI puis choisit automatiquement la navigation admin ou visiteur.
   const { pathname, isAdminPath, isDesktop } = useAppUi();
   const items = isAdminPath ? navAdminItems : navVisitorItems;
 

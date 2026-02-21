@@ -1,5 +1,5 @@
 # 📦 Backend Projet Vindhellfest – Architecture & Documentation
-## Sript :
+## Script :
 - `docker compose up -d db backend`	: Démarrer la base de données et le backend
 - `docker compose restart backend` : Redémarrer uniquement le backend
 - `docker compose logs -f backend` : Consulter les logs
@@ -8,7 +8,7 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 - `npm run lint` : 	Vérifier le code (ESLint)
 - `npm run lint:fix` : 	Corriger automatiquement les erreurs ESLint
 - `npm run format` : 	Formater ton code auto avec Prettier
-- `npm test` : Lancer les tests vitetest
+- `npm test` : Lancer les tests vitest
 
 ## Stack technique
 **Dependencies**
@@ -61,18 +61,18 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 │  │     │  └─ ...
 │  │     ├─ artists/
 │  │     │  └─ ...
-│  │     └─ programation/
+│  │     └─ programming/
 │  │        └─ ...
 │  ├─ middlewares/
 │  │  └─ ...
 │  ├─ routes/
 │  │  └─ ...
-│  ├─ shemas/
+│  ├─ schemas/
 │  │  └─ ...
 │  ├─ db.ts
 │  ├─ app.ts
 │  ├─ type.ts
-│  ├─ function.ts
+│  ├─ functions.ts
 │  └─ index.ts/
 ├─ test/
 │  ├─ integration/
@@ -133,13 +133,13 @@ Il est responsable de l’exécution du serveur HTTP, à partir de l’applicati
 ### 📄 type.ts
 Définit les types et interfaces partagés du backend.
 
-### 📄 function.ts
+### 📄 functions.ts
 Centralise les fonctions utilitaires réutilisables.
 
 ## 📁 test
 Ce dossier regroupe les tests unitaires et d’intégration : Vitest exécute les tests tandis que Supertest permet de simuler des appels HTTP sur l’API. 
 - Les tests unitaires ciblent les fonctions/modules isolés
-- Les tests d’intégration valident plusieurs couches ensemble (middelwares + contrôleurs) utilisant plusieurs fonctions.
+- Les tests d’intégration valident plusieurs couches ensemble (middlewares + contrôleurs) utilisant plusieurs fonctions.
 
 ## ESLint & Prettier
 Dans ce projet, deux outils complémentaires assurent la qualité du code :
@@ -161,5 +161,6 @@ Il ne vérifie pas les bugs, il s’occupe uniquement de :
 - espaces
 - retours à la ligne
 - mise en forme des objets et fonctions
+
 
 

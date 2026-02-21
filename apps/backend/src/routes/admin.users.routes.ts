@@ -1,13 +1,13 @@
 import { Router } from "express";
-// midellewares
+// middlewares
 import { validateBody } from "../middlewares/validateBody";
 import { auth } from "../middlewares/auth";
 import { sessionIsOpen } from "../middlewares/sessionIsOpen";
 import { hashPassword } from "../middlewares/hashPassword";
 // controllers
 import { createUser } from "../controllers/admin/users/create_user.controller";
-//shema
-import { createUserSchema } from "../shemas/shema";
+// schema
+import { createUserSchema } from "../schemas/schema";
 
 const router = Router();
 
@@ -20,8 +20,8 @@ router.post(
   validateBody(createUserSchema),
   hashPassword(),
   createUser,
-); // Créer un administrateur
+); // Creer un administrateur
 //router.put("/users/:id", notImplemented); // Modifier un administrateur
-//router.delete("/users/:id", notImplemented); // Desactiver un administrateur //NOTE a verifier l'utilisation de delate
+//router.delete("/users/:id", notImplemented); // Desactiver un administrateur
 
 export default router;

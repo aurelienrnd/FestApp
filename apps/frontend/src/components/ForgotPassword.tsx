@@ -25,8 +25,8 @@ export default function ForgotPassword() {
             Votre email
           </label>
           <input
-            id="dEmail"
-            name="Email"
+            id="forgotPasswordEmail"
+            name="forgotPasswordEmail"
             type="email"
             autoComplete="email"
             placeholder="Votre email"
@@ -45,3 +45,4 @@ export default function ForgotPassword() {
     </div>
   );
 }
+

@@ -12,44 +12,44 @@ import publicArticle from "./routes/public.articles.routes";
 import publicArtists from "./routes/public.artists.routes";
 import publicProgramming from "./routes/public.programming.routes";
 
-// Création de l’application Express
+// Creation de l'application Express
 export function createApp() {
   const app = express();
   const frontendOrigin = process.env.FRONTEND_ORIGIN || "http://localhost:3000";
 
-  app.use(express.json()); // permet de lire le JSON envoyé par le client dans le body des requêtes HTTP.
+  app.use(express.json()); // Permet de lire le JSON envoye par le client dans le body des requetes HTTP.
 
   // Autorise le frontend a appeler l'API backend en local.
   app.use((req, res, next) => {
     const requestOrigin = req.headers.origin;
 
     if (requestOrigin && requestOrigin === frontendOrigin) {
-      res.header("Access-Control-Allow-Origin", requestOrigin); // Autorise cette origine à accéder à l’API.
-      res.header("Vary", "Origin"); // Indique aux caches que la réponse dépend de l’en-tête Origin
-      res.header("Access-Control-Allow-Credentials", "true"); // Autorise l’envoi des credentials (cookies, auth headers) côté navigateur.
+      res.header("Access-Control-Allow-Origin", requestOrigin); // Autorise cette origine a acceder a l'API.
+      res.header("Vary", "Origin"); // Indique aux caches que la reponse depend de l'en-tete Origin.
+      res.header("Access-Control-Allow-Credentials", "true"); // Autorise l'envoi des credentials (cookies, auth headers) cote navigateur.
     }
 
     res.header(
       "Access-Control-Allow-Methods",
-      "GET,POST,PUT,PATCH,DELETE,OPTIONS", // Liste les méthodes HTTP permises en CORS.
+      "GET,POST,PUT,PATCH,DELETE,OPTIONS", // Liste les methodes HTTP permises en CORS.
     );
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Autorise les en-têtes que le front peut envoyer.
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Autorise les en-tetes que le front peut envoyer.
 
     if (req.method === "OPTIONS") {
-      // Détecte la requête preflight (vérification CORS avant la vraie requête).
+      // Detecte la requete preflight (verification CORS avant la vraie requete).
       return res.sendStatus(204);
     }
 
     next();
   });
 
-  // test de demmarrage du serveur
+  // Test de demarrage du serveur
   app.get("/health", (req, res) => {
     console.log("Health check successful serveur backend operationnel");
     res.json({ status: "ok", message: "Backend is running" });
   });
 
-  // test de connexion à la base de données
+  // Test de connexion a la base de donnees
   app.get("/debug/db", async (req, res) => {
     try {
       const rows = await query("SELECT NOW() as now");
@@ -66,7 +66,7 @@ export function createApp() {
     }
   });
 
-  //routes API (auth, admin, public, etc.)
+  // Routes API (auth, admin, public, etc.)
   app.use("/admin", adminArticles);
   app.use("/admin", adminArtists);
   app.use("/admin", adminAuth);
@@ -79,4 +79,3 @@ export function createApp() {
 
   return app;
 }
-

@@ -13,14 +13,14 @@ import ModalCloseButton from "./ModalCloseButton";
 import LegalMention from "./LegalMention";
 import ContactUs from "./ContactUs";
 
-// Lien btn
+// Liens boutons
 const legalLinks = [
   { id: "mentions", label: "Mentions legales" },
   { id: "contact", label: "Nous contacter" },
 ] as const;
 type LegalLinkId = (typeof legalLinks)[number]["id"];
 
-// Lien reseaux sociaux
+// Liens reseaux sociaux
 const socialLinks = [
   {
     label: "Instagram",
@@ -39,12 +39,11 @@ const socialLinks = [
   },
 ];
 
-/** Affiche le footer avec les liens légaux et les réseaux sociaux.
- * Ouvre une modal unique au clic sur "Mentions legales" ou "Nous contacter"
- * @children Modal Fenêtre modale partagée dont le titre dépend de `activeModal`.
+/** Affiche le footer avec les liens legaux et les reseaux sociaux.
+ * Ouvre une modale unique au clic sur "Mentions legales" ou "Nous contacter".
  */
 export default function Footer() {
-  // Stocke ci la modal est ouverte et initialise react-modal sur body.
+  // Stocke si la modale est ouverte et initialise react-modal sur body.
   const [activeModal, setActiveModal] = useState<LegalLinkId | null>(null);
   useEffect(() => {
     Modal.setAppElement("#app-root");

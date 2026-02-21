@@ -8,7 +8,7 @@ vi.mock("next/navigation", () => ({
   usePathname: () => mockPathname,
 }));
 
-// Récupère les valeurs `isAdminPath` et `isDesktop` depuis le contexte
+// Recupere les valeurs `isAdminPath` et `isDesktop` depuis le contexte
 function Consumer() {
   const { isAdminPath, isDesktop } = useAppUi();
   return (
@@ -24,10 +24,10 @@ describe("AppUiProvider", () => {
     // Simule une URL admin
     mockPathname = "/admin/dashboard";
 
-    // Mock pour savoir ci le media query est vrais ou fausse
+    // Mock pour savoir si le media query est vrai ou faux
     window.matchMedia = vi.fn().mockImplementation(() => ({
       matches: true,
-      addEventListener: vi.fn(), // ecoute pour savoir ci le media query change
+      addEventListener: vi.fn(), // Ecoute pour savoir si le media query change
       removeEventListener: vi.fn(),
     }));
 

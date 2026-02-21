@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { MobilNav } from "../../src/components/Banner";
 import { navVisitorItems } from "../../src/config/navigation";
 
-// Mock du composant Link, le par une simple balise <a>
+// Mock du composant Link, remplace par une simple balise <a>
 vi.mock("next/link", () => ({
   default: ({
     href,
@@ -20,7 +20,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-// Mock de react-modal car elle utilise un vrais DOM, rend une fnction qui affiche une div ci la modal est ouverte
+// Mock de react-modal: rend une div si la modale est ouverte
 vi.mock("react-modal", () => {
   const Modal = ({
     isOpen,
@@ -35,7 +35,7 @@ vi.mock("react-modal", () => {
 
 describe("MobilNav", () => {
   it("opens and closes the mobile modal", async () => {
-    // Initialise un utilisateur et Rend le composant
+    // Initialise un utilisateur et monte le composant
     const user = userEvent.setup();
     render(
       <MobilNav items={navVisitorItems} pathname="/" isAdminPath={false} />,

@@ -53,9 +53,10 @@ describe("ContactUs", () => {
     );
     await user.click(screen.getByRole("button", { name: "Envoyer" }));
 
-    expect(screen.getByText("votres message est envoyer")).toBeInTheDocument();
+    expect(screen.getByText("votre message est envoye")).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Envoyer" }),
     ).not.toBeInTheDocument();
   });
 });
+
