@@ -12,4 +12,3 @@ export function asyncHandler(handler: AsyncMiddleware): RequestHandler {
     void handler(req, res, next).catch(next);
   };
 }
-

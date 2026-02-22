@@ -10,8 +10,11 @@ import {
   serializeCookie,
   sessionExists,
   sessionRevoked,
+  requireUserId,
+  requireSessionId,
 } from "../../src/functions";
 import type { SessionRow } from "../../src/type";
+import { AppError } from "../../src/errors/AppError";
 
 let originalEnv: NodeJS.ProcessEnv;
 
@@ -167,5 +170,47 @@ describe("sessionRevoked", () => {
     };
 
     expect(() => sessionRevoked(session)).toThrow(/session already closed/);
+  });
+});
+
+describe("requireUserId", () => {
+  it("returns userId when value is a string", () => {
+    expect(requireUserId("user-1")).toBe("user-1");
+  });
+
+  it("returns first value when value is a string array", () => {
+    expect(requireUserId(["user-1", "user-2"])).toBe("user-1");
+  });
+
+  it("throws AppError 401 when userId is missing", () => {
+    try {
+      requireUserId(undefined);
+      throw new Error("should have thrown");
+    } catch (error) {
+      expect(error).toBeInstanceOf(AppError);
+      expect((error as AppError).status).toBe(401);
+      expect((error as Error).message).toBe("Missing user");
+    }
+  });
+});
+
+describe("requireSessionId", () => {
+  it("returns sessionId when value is a string", () => {
+    expect(requireSessionId("sess-1")).toBe("sess-1");
+  });
+
+  it("returns first value when value is a string array", () => {
+    expect(requireSessionId(["sess-1", "sess-2"])).toBe("sess-1");
+  });
+
+  it("throws AppError 401 when sessionId is missing", () => {
+    try {
+      requireSessionId(undefined);
+      throw new Error("should have thrown");
+    } catch (error) {
+      expect(error).toBeInstanceOf(AppError);
+      expect((error as AppError).status).toBe(401);
+      expect((error as Error).message).toBe("Missing session");
+    }
   });
 });

@@ -65,7 +65,9 @@ describe("createUser controller (integration)", () => {
   });
 
   it("should return 409 when display_name already exists", async () => {
-    mockQuery.mockResolvedValueOnce([]).mockResolvedValueOnce([{ id: "user-2" }]);
+    mockQuery
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ id: "user-2" }]);
 
     const app = createApp();
     const res = await request(app).post("/users").send({

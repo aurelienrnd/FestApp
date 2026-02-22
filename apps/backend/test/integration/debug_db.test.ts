@@ -20,4 +20,3 @@ describe("GET /debug/db", () => {
     expect(res.body).toEqual({ db: "ok", now: expect.any(String) });
   });
 });
-

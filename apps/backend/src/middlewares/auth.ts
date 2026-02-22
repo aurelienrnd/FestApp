@@ -32,11 +32,8 @@ function getTokenFromCookie(req: Request) {
 function decodedToken(token: string) {
   let decodedToken: JwtPayload;
   try {
-    decodedToken = jwt.verify(
-      token,
-      getEnv("JWT_ACCESS_SECRET"),
-    ) as JwtPayload;
-  } catch (_error) {
+    decodedToken = jwt.verify(token, getEnv("JWT_ACCESS_SECRET")) as JwtPayload;
+  } catch {
     throw new AppError("invalid access token", 401);
   }
   const userId = decodedToken.userId;

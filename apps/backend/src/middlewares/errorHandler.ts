@@ -16,8 +16,10 @@ export const notFoundHandler: RequestHandler = (req, res) => {
  * Si l'erreur est une `AppError`, renvoie son `status` et son `message`.
  * Sinon, renvoie une erreur generique 500 pour eviter d'exposer des details internes.
  */
-export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
+export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   console.error(err);
+  void next;
+  void req;
 
   if (err instanceof AppError) {
     return res.status(err.status).json({ error: err.message });
