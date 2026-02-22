@@ -33,31 +33,16 @@ async function existingDisplayName(display_name: string) {
  * Renvoie l'utilisateur cree
  */
 export const createUser = async (req: Request, res: Response) => {
-  try {
-    const { email, password, display_name } = req.body;
-    await existingEmail(email);
-    await existingDisplayName(display_name);
+  const { email, password, display_name } = req.body;
+  await existingEmail(email);
+  await existingDisplayName(display_name);
 
-    await query(
-      `INSERT INTO users (email, password_hash, display_name, must_change_password, is_active)
-       VALUES ($1, $2, $3, TRUE, TRUE)
-       RETURNING id, email, display_name, is_active, must_change_password, created_at`,
-      [email, password, display_name],
-    );
+  await query(
+    `INSERT INTO users (email, password_hash, display_name, must_change_password, is_active)
+     VALUES ($1, $2, $3, TRUE, TRUE)
+     RETURNING id, email, display_name, is_active, must_change_password, created_at`,
+    [email, password, display_name],
+  );
 
-    return res.status(201).json({ message: "Utilisateur créé" });
-  } catch (error) {
-    console.error(error);
-    const err =
-      error instanceof Error
-        ? error
-        : new Error("Probleme lors de la creation de l'utilisateur");
-    const status =
-      typeof (error as { status?: unknown }).status === "number"
-        ? (error as { status: number }).status
-        : 500;
-    return res.status(status).json({
-      error: err.message,
-    });
-  }
+  return res.status(201).json({ message: "Utilisateur créé" });
 };
