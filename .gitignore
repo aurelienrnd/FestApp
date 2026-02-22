@@ -7,6 +7,4 @@
 **/node_modules/
 
 # A rajouter si besoin, les fichiers ou dossiers à ignorer
-apps/backend/src/middlewares/errorHandler.ts
-apps/backend/src/middlewares/notFound.ts
 .vscode/

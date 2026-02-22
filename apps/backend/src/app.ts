@@ -11,6 +11,7 @@ import contact from "./routes/contact.routes";
 import publicArticle from "./routes/public.articles.routes";
 import publicArtists from "./routes/public.artists.routes";
 import publicProgramming from "./routes/public.programming.routes";
+import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
 
 // Creation de l'application Express
 export function createApp() {
@@ -76,6 +77,10 @@ export function createApp() {
   app.use("/public", publicArticle);
   app.use("/public", publicArtists);
   app.use("/public", publicProgramming);
+
+  // Handlers globaux de fin de chaine
+  app.use(notFoundHandler);
+  app.use(errorHandler);
 
   return app;
 }
