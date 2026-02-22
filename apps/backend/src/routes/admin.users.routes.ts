@@ -4,6 +4,7 @@ import { validateBody } from "../middlewares/validateBody";
 import { auth } from "../middlewares/auth";
 import { sessionIsOpen } from "../middlewares/sessionIsOpen";
 import { hashPassword } from "../middlewares/hashPassword";
+import { asyncHandler } from "../middlewares/asyncHandler";
 // controllers
 import { createUser } from "../controllers/admin/users/create_user.controller";
 // schema
@@ -15,11 +16,11 @@ const router = Router();
 //router.get("/users", notImplemented); // Lister les administrateurs
 router.post(
   "/users",
-  auth,
-  sessionIsOpen,
+  asyncHandler(auth),
+  asyncHandler(sessionIsOpen),
   validateBody(createUserSchema),
-  hashPassword(),
-  createUser,
+  asyncHandler(hashPassword()),
+  asyncHandler(createUser),
 ); // Creer un administrateur
 //router.put("/users/:id", notImplemented); // Modifier un administrateur
 //router.delete("/users/:id", notImplemented); // Desactiver un administrateur
