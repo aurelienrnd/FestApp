@@ -36,7 +36,7 @@ export function envToStringValue(name: string): StringValue {
  */
 export function userExists(user: DbUser | undefined) {
   if (!user) {
-    throw new Error("email ou mot de passe incorrect");
+    throw new AppError("email ou mot de passe incorrect", 401);
   }
 }
 
@@ -47,7 +47,7 @@ export function userExists(user: DbUser | undefined) {
 export function passwordIsValid(password: string, passwordHash: string) {
   const isPasswordValid = bcrypt.compareSync(password, passwordHash);
   if (!isPasswordValid) {
-    throw new Error("email ou mot de passe incorrect");
+    throw new AppError("email ou mot de passe incorrect", 401);
   }
 }
 
@@ -117,4 +117,34 @@ export function sessionRevoked(sessionBdd: SessionRow) {
   ) {
     throw new AppError("session already closed", 401);
   }
+}
+
+/** Verifie que l'identifiant utilisateur est present dans la requete.
+ * @param {string | string[] | undefined} reqUserId userId provenant des headers
+ * @returns {string}
+ */
+export function requireUserId(
+  reqUserId: string | string[] | undefined,
+): string {
+  const userId = Array.isArray(reqUserId) ? reqUserId[0] : reqUserId;
+  if (!userId) {
+    throw new AppError("Missing user", 401);
+  }
+  return userId;
+}
+
+/** Verifie que l'identifiant de session est present dans la requete.
+ * @param {string | string[] | undefined} reqSessionId sessionId provenant des headers
+ * @returns {string}
+ */
+export function requireSessionId(
+  reqSessionId: string | string[] | undefined,
+): string {
+  const sessionId = Array.isArray(reqSessionId)
+    ? reqSessionId[0]
+    : reqSessionId;
+  if (!sessionId) {
+    throw new AppError("Missing session", 401);
+  }
+  return sessionId;
 }
