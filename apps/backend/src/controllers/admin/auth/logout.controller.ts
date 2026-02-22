@@ -3,6 +3,7 @@ import type { SessionRow } from "../../../type";
 
 import { sessionExists, sessionRevoked } from "../../../functions";
 import { query } from "../../../db";
+import { AppError } from "../../../errors/AppError";
 
 /** Deconnecte l'utilisateur du service
  * Verifie que la session existe
@@ -14,9 +15,7 @@ export async function logout(req: Request, res: Response) {
     const reqSessionId = req.headers.session;
     const reqUserId = req.headers.userId;
     if (!reqSessionId || !reqUserId) {
-      const err = new Error("Missing session");
-      (err as { status?: number }).status = 401;
-      throw err;
+      throw new AppError("Missing session", 401);
     }
 
     const rows = await query<SessionRow>(

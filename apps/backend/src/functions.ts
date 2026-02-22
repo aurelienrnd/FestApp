@@ -5,6 +5,7 @@ import * as jwt from "jsonwebtoken";
 import { serialize } from "cookie";
 import type { DbUser } from "../src/type";
 import type { SessionRow } from "../src/type";
+import { AppError } from "./errors/AppError";
 
 /** Verifie si la variable d'environnement existe et renvoie une erreur si non
  * Permet de gerer le typage
@@ -102,9 +103,7 @@ export function serializeCookie(
  */
 export function sessionExists(sessionBdd: SessionRow) {
   if (!sessionBdd) {
-    const err = new Error("session not found");
-    (err as { status?: number }).status = 401;
-    throw err;
+    throw new AppError("session not found", 401);
   }
 }
 
@@ -116,8 +115,6 @@ export function sessionRevoked(sessionBdd: SessionRow) {
     sessionBdd.revoked_at !== null ||
     new Date(sessionBdd.expires_at) < new Date()
   ) {
-    const err = new Error("session already closed");
-    (err as { status?: number }).status = 401;
-    throw err;
+    throw new AppError("session already closed", 401);
   }
 }

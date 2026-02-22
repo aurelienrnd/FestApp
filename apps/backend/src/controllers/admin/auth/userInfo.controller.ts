@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 
 import { query } from "../../../db";
+import { AppError } from "../../../errors/AppError";
 
 type UserInfoRow = {
   id: string;
@@ -20,9 +21,7 @@ export async function userInfo(req: Request, res: Response) {
   try {
     const reqUserId = req.headers.userId;
     if (!reqUserId) {
-      const err = new Error("Missing user");
-      (err as { status?: number }).status = 401;
-      throw err;
+      throw new AppError("Missing user", 401);
     }
 
     const rows = await query<UserInfoRow>(
@@ -34,9 +33,7 @@ export async function userInfo(req: Request, res: Response) {
     );
     const user = rows[0];
     if (!user) {
-      const err = new Error("User not found");
-      (err as { status?: number }).status = 401;
-      throw err;
+      throw new AppError("User not found", 401);
     }
 
     return res.status(200).json({
