@@ -6,6 +6,7 @@ import { serialize } from "cookie";
 import type { DbUser } from "../src/type";
 import type { SessionRow } from "../src/type";
 import { AppError } from "./errors/AppError";
+import { ERRORS } from "./errors/errorMessages";
 
 /** Verifie si la variable d'environnement existe et renvoie une erreur si non
  * Permet de gerer le typage
@@ -36,7 +37,7 @@ export function envToStringValue(name: string): StringValue {
  */
 export function userExists(user: DbUser | undefined) {
   if (!user) {
-    throw new AppError("email ou mot de passe incorrect", 401);
+    throw new AppError(ERRORS.AUTH_INVALID_CREDENTIALS, 401);
   }
 }
 
@@ -47,7 +48,7 @@ export function userExists(user: DbUser | undefined) {
 export function passwordIsValid(password: string, passwordHash: string) {
   const isPasswordValid = bcrypt.compareSync(password, passwordHash);
   if (!isPasswordValid) {
-    throw new AppError("email ou mot de passe incorrect", 401);
+    throw new AppError(ERRORS.AUTH_INVALID_CREDENTIALS, 401);
   }
 }
 
@@ -103,7 +104,7 @@ export function serializeCookie(
  */
 export function sessionExists(sessionBdd: SessionRow) {
   if (!sessionBdd) {
-    throw new AppError("session not found", 401);
+    throw new AppError(ERRORS.SESSION_NOT_FOUND, 401);
   }
 }
 
@@ -115,7 +116,7 @@ export function sessionRevoked(sessionBdd: SessionRow) {
     sessionBdd.revoked_at !== null ||
     new Date(sessionBdd.expires_at) < new Date()
   ) {
-    throw new AppError("session already closed", 401);
+    throw new AppError(ERRORS.SESSION_ALREADY_CLOSED, 401);
   }
 }
 
@@ -128,7 +129,7 @@ export function requireUserId(
 ): string {
   const userId = Array.isArray(reqUserId) ? reqUserId[0] : reqUserId;
   if (!userId) {
-    throw new AppError("Missing user", 401);
+    throw new AppError(ERRORS.AUTH_MISSING_USER, 401);
   }
   return userId;
 }
@@ -144,7 +145,7 @@ export function requireSessionId(
     ? reqSessionId[0]
     : reqSessionId;
   if (!sessionId) {
-    throw new AppError("Missing session", 401);
+    throw new AppError(ERRORS.AUTH_MISSING_SESSION, 401);
   }
   return sessionId;
 }

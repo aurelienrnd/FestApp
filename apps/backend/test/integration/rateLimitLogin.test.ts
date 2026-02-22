@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import express from "express";
+import { ERRORS } from "../../src/errors/errorMessages";
 import { rateLimitLogin } from "../../src/middlewares/rateLimitLogin";
 
 /** Creation d'une application Express pour les tests
@@ -17,11 +18,11 @@ describe("rateLimitLogin middleware", () => {
   it("should limit after 5 requests", async () => {
     // creation d'une application express pour le test
     const app = createApp();
-    app.post("/test-create", rateLimitLogin, (req, res) =>
+    app.post("/test-create", rateLimitLogin, (_req, res) =>
       res.status(200).json({ success: true }),
     );
 
-    //init d'une IP et d'un body valide
+    // init d'une IP et d'un body valide
     const ip = "10.0.0.1";
     const body = {
       email: "admin@test.fr",
@@ -46,7 +47,7 @@ describe("rateLimitLogin middleware", () => {
       .send(body);
     expect(res6.status).toBe(429);
     expect(res6.body).toEqual({
-      error: "Trop de tentatives, réessayer plus tard",
+      error: ERRORS.RATE_LIMIT_TOO_MANY_ATTEMPTS,
     });
   });
 });

@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import request from "supertest";
 import express from "express";
 import { AppError } from "../../src/errors/AppError";
+import { ERRORS } from "../../src/errors/errorMessages";
 import {
   errorHandler,
   notFoundHandler,
@@ -49,7 +50,7 @@ describe("error handlers (integration)", () => {
     const res = await request(app).get("/unknown-error");
 
     expect(res.status).toBe(500);
-    expect(res.body.error).toBe("Internal Server Error");
+    expect(res.body.error).toBe(ERRORS.INTERNAL_SERVER_ERROR);
   });
 
   it("should return 404 for unknown routes", async () => {
@@ -57,6 +58,6 @@ describe("error handlers (integration)", () => {
     const res = await request(app).get("/missing-route");
 
     expect(res.status).toBe(404);
-    expect(res.body.error).toContain("Route not found: GET /missing-route");
+    expect(res.body.error).toContain(ERRORS.ROUTE_NOT_FOUND);
   });
 });

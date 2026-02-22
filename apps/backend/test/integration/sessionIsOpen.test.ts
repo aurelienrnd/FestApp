@@ -3,6 +3,7 @@ import request from "supertest";
 import express from "express";
 import { sessionIsOpen } from "../../src/middlewares/sessionIsOpen";
 import { query } from "../../src/db";
+import { ERRORS } from "../../src/errors/errorMessages";
 import { initToken, serializeCookie } from "../../src/functions";
 import { asyncHandler } from "../../src/middlewares/asyncHandler";
 import { errorHandler } from "../../src/middlewares/errorHandler";
@@ -61,7 +62,7 @@ describe("sessionIsOpen middleware", () => {
     const res = await request(app).get("/test");
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe("session not found");
+    expect(res.body.error).toBe(ERRORS.SESSION_NOT_FOUND);
   });
 
   it("should return 401 when session is revoked", async () => {
@@ -93,7 +94,7 @@ describe("sessionIsOpen middleware", () => {
     const res = await request(app).get("/test");
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe("session already closed");
+    expect(res.body.error).toBe(ERRORS.SESSION_ALREADY_CLOSED);
   });
 
   it("should return 401 when session is expired", async () => {
@@ -125,7 +126,7 @@ describe("sessionIsOpen middleware", () => {
     const res = await request(app).get("/test");
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe("session already closed");
+    expect(res.body.error).toBe(ERRORS.SESSION_ALREADY_CLOSED);
   });
 
   it("should renew token and continue when session is valid", async () => {

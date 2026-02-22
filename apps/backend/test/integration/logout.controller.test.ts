@@ -3,6 +3,7 @@ import request from "supertest";
 import express from "express";
 import { logout } from "../../src/controllers/admin/auth/logout.controller";
 import { query } from "../../src/db";
+import { ERRORS } from "../../src/errors/errorMessages";
 import { asyncHandler } from "../../src/middlewares/asyncHandler";
 import { errorHandler } from "../../src/middlewares/errorHandler";
 
@@ -77,6 +78,6 @@ describe("logout controller (integration)", () => {
     const res = await request(app).post("/logout");
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe("Missing session");
+    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_SESSION);
   });
 });

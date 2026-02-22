@@ -1,4 +1,5 @@
 import rateLimit from "express-rate-limit";
+import { ERRORS } from "../errors/errorMessages";
 
 /** Middleware de limitation de tentatives de connexion
  * express-rate-limit retourne un middleware, du coup on l'appelle directement sans utiliser les paramètres req, res, next
@@ -11,6 +12,6 @@ export const rateLimitLogin = rateLimit({
   standardHeaders: true, // ajoute les headers RateLimit-*
   legacyHeaders: false, // ajoute au header 5-RateLimit-*
   message: {
-    error: "Trop de tentatives, réessayer plus tard",
+    error: ERRORS.RATE_LIMIT_TOO_MANY_ATTEMPTS,
   },
 });

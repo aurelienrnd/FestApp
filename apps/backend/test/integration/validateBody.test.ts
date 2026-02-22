@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import express from "express";
+import { ERRORS } from "../../src/errors/errorMessages";
 import { validateBody } from "../../src/middlewares/validateBody";
 import { createUserSchema, loginSchema } from "../../src/schemas/schema";
 import { errorHandler } from "../../src/middlewares/errorHandler";
@@ -38,7 +39,7 @@ describe("validateBody", () => {
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual(
-      expect.objectContaining({ error: "Donnees invalides" }),
+      expect.objectContaining({ error: ERRORS.VALIDATION_INVALID_BODY }),
     );
   });
 
@@ -52,7 +53,7 @@ describe("validateBody", () => {
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual(
-      expect.objectContaining({ error: "Donnees invalides" }),
+      expect.objectContaining({ error: ERRORS.VALIDATION_INVALID_BODY }),
     );
   });
 
@@ -75,7 +76,7 @@ describe("validateBody", () => {
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual(
-      expect.objectContaining({ error: "Donnees invalides" }),
+      expect.objectContaining({ error: ERRORS.VALIDATION_INVALID_BODY }),
     );
   });
 
@@ -88,7 +89,7 @@ describe("validateBody", () => {
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual(
-      expect.objectContaining({ error: "Donnees invalides" }),
+      expect.objectContaining({ error: ERRORS.VALIDATION_INVALID_BODY }),
     );
   });
 });

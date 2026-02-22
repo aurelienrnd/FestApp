@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
+import { ERRORS } from "../../../errors/errorMessages";
 
 /** Verifie que l'email de l'utilisateur existe dans la BDD
  * @param {string} email email de l'utilisateur dans le body de la requete
@@ -10,7 +11,7 @@ async function existingEmail(email: string) {
     email,
   ]);
   if (existingEmail.length > 0) {
-    throw new AppError("Email déjà utilise", 409);
+    throw new AppError(ERRORS.USER_EMAIL_ALREADY_USED, 409);
   }
 }
 
@@ -23,7 +24,7 @@ async function existingDisplayName(display_name: string) {
     [display_name],
   );
   if (existingDisplayName.length > 0) {
-    throw new AppError("Nom déjà utilise", 409);
+    throw new AppError(ERRORS.USER_DISPLAY_NAME_ALREADY_USED, 409);
   }
 }
 

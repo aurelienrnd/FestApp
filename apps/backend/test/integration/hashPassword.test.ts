@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import request from "supertest";
 import express from "express";
 import bcrypt from "bcrypt";
+import { ERRORS } from "../../src/errors/errorMessages";
 import { hashPassword } from "../../src/middlewares/hashPassword";
 import { asyncHandler } from "../../src/middlewares/asyncHandler";
 import { errorHandler } from "../../src/middlewares/errorHandler";
@@ -28,7 +29,7 @@ describe("hashPassword middleware (integration)", () => {
     const res = await request(app).post("/test").send({}); // mot de passe manquant
 
     expect(res.status).toBe(400);
-    expect(res.body).toEqual({ error: "Mot de passe non conforme" });
+    expect(res.body).toEqual({ error: ERRORS.PASSWORD_INVALID_FORMAT });
   });
 
   it("should return 400 if password is not a string", async () => {
@@ -37,7 +38,7 @@ describe("hashPassword middleware (integration)", () => {
     const res = await request(app).post("/test").send({ password: 123 }); // le mot de passe n'est pas une chaine
 
     expect(res.status).toBe(400);
-    expect(res.body).toEqual({ error: "Mot de passe non conforme" });
+    expect(res.body).toEqual({ error: ERRORS.PASSWORD_INVALID_FORMAT });
   });
 
   it("should hash the password and call next", async () => {

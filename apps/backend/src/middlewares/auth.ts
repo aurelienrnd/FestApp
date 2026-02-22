@@ -6,13 +6,14 @@ import { getEnv } from "../functions";
 import type { JwtPayload } from "jsonwebtoken";
 import { query } from "../db";
 import { AppError } from "../errors/AppError";
+import { ERRORS } from "../errors/errorMessages";
 
 /** Verifie qu'un token est present dans le cookie de la requete
  * @return le token
  */
 function getTokenFromCookie(req: Request) {
   if (!req.headers.cookie) {
-    throw new AppError("missing cookie", 401);
+    throw new AppError(ERRORS.AUTH_MISSING_COOKIE, 401);
   }
 
   const cookies = parse(req.headers.cookie);
@@ -20,7 +21,7 @@ function getTokenFromCookie(req: Request) {
   const token = cookies[cookieName];
 
   if (!token) {
-    throw new AppError("missing access token", 401);
+    throw new AppError(ERRORS.AUTH_MISSING_ACCESS_TOKEN, 401);
   }
 
   return token;
@@ -34,7 +35,7 @@ function decodedToken(token: string) {
   try {
     decodedToken = jwt.verify(token, getEnv("JWT_ACCESS_SECRET")) as JwtPayload;
   } catch {
-    throw new AppError("invalid access token", 401);
+    throw new AppError(ERRORS.AUTH_INVALID_ACCESS_TOKEN, 401);
   }
   const userId = decodedToken.userId;
   const sessionId = decodedToken.sessionId;
@@ -54,7 +55,7 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
     userId,
   ]);
   if (!user[0]) {
-    throw new AppError("User not found", 401);
+    throw new AppError(ERRORS.AUTH_USER_NOT_FOUND, 401);
   }
 
   res.locals.userId = user[0].id;

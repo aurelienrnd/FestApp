@@ -1,14 +1,15 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
 import { AppError } from "../errors/AppError";
+import { ERRORS } from "../errors/errorMessages";
 
 /** Middleware de fin de chaine pour les routes non trouvees.
  * Il est execute uniquement si aucune route precedente n'a repondu.
  * Renvoie une erreur HTTP 404 avec la methode et l'URL demandee.
  */
 export const notFoundHandler: RequestHandler = (req, res) => {
-  res
-    .status(404)
-    .json({ error: `Route not found: ${req.method} ${req.originalUrl}` });
+  res.status(404).json({
+    error: `${ERRORS.ROUTE_NOT_FOUND}: ${req.method} ${req.originalUrl}`,
+  });
 };
 
 /** Middleware global de gestion des erreurs Express.
@@ -25,5 +26,5 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     return res.status(err.status).json({ error: err.message });
   }
 
-  return res.status(500).json({ error: "Internal Server Error" });
+  return res.status(500).json({ error: ERRORS.INTERNAL_SERVER_ERROR });
 };

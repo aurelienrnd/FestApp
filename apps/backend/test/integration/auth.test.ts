@@ -6,6 +6,7 @@ import { auth } from "../../src/middlewares/auth";
 import { query } from "../../src/db";
 import { asyncHandler } from "../../src/middlewares/asyncHandler";
 import { errorHandler } from "../../src/middlewares/errorHandler";
+import { ERRORS } from "../../src/errors/errorMessages";
 
 // mock de la fonction query
 vi.mock("../../src/db", () => ({
@@ -46,7 +47,7 @@ describe("auth middleware", () => {
     const res = await request(app).get("/test");
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe("missing cookie");
+    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_COOKIE);
   });
 
   it("should return 401 if token is invalid", async () => {
@@ -56,7 +57,7 @@ describe("auth middleware", () => {
       .set("Cookie", "access_token=invalidToken");
 
     expect(res.status).toBe(401);
-    expect(res.body.error); // message généré par jsonwebtoken
+    expect(res.body.error).toBe(ERRORS.AUTH_INVALID_ACCESS_TOKEN);
   });
 
   it("should return 401 if user is not found", async () => {
@@ -75,7 +76,7 @@ describe("auth middleware", () => {
       .set("Cookie", `access_token=${token}`);
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe("User not found");
+    expect(res.body.error).toBe(ERRORS.AUTH_USER_NOT_FOUND);
   });
 
   it("should set headers and continue when token is valid", async () => {

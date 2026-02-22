@@ -4,6 +4,7 @@ import express from "express";
 import { login } from "../../src/controllers/admin/auth/login.controller";
 import { query } from "../../src/db";
 import { AppError } from "../../src/errors/AppError";
+import { ERRORS } from "../../src/errors/errorMessages";
 import { asyncHandler } from "../../src/middlewares/asyncHandler";
 import { errorHandler } from "../../src/middlewares/errorHandler";
 import {
@@ -106,7 +107,7 @@ describe("login controller (integration)", () => {
     // simulation de la réponse de la base de données/
     mockQuery.mockResolvedValueOnce([]); // no user found
     mockUserExists.mockImplementation(() => {
-      throw new AppError("email ou mot de passe incorrect", 401);
+      throw new AppError(ERRORS.AUTH_INVALID_CREDENTIALS, 401);
     });
 
     // creation de l'application express
@@ -119,7 +120,7 @@ describe("login controller (integration)", () => {
     });
 
     expect(res.status).toBe(401);
-    expect(String(res.body.error)).toMatch(/email ou mot de passe/);
+    expect(String(res.body.error)).toBe(ERRORS.AUTH_INVALID_CREDENTIALS);
   });
 
   it("should return 401 when password is invalid", async () => {
@@ -136,7 +137,7 @@ describe("login controller (integration)", () => {
 
     // simulate userExists to return true
     mockPasswordIsValid.mockImplementation(() => {
-      throw new AppError("email ou mot de passe incorrect", 401);
+      throw new AppError(ERRORS.AUTH_INVALID_CREDENTIALS, 401);
     });
 
     // create express app
@@ -149,7 +150,7 @@ describe("login controller (integration)", () => {
     });
 
     expect(res.status).toBe(401);
-    expect(String(res.body.error)).toMatch(/email ou mot de passe/);
+    expect(String(res.body.error)).toBe(ERRORS.AUTH_INVALID_CREDENTIALS);
   });
 
   it("should return 401 when database throws", async () => {
@@ -166,6 +167,6 @@ describe("login controller (integration)", () => {
     });
 
     expect(res.status).toBe(500);
-    expect(String(res.body.error)).toMatch(/Internal Server Error/);
+    expect(String(res.body.error)).toBe(ERRORS.INTERNAL_SERVER_ERROR);
   });
 });

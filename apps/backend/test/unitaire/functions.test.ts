@@ -15,6 +15,7 @@ import {
 } from "../../src/functions";
 import type { SessionRow } from "../../src/type";
 import { AppError } from "../../src/errors/AppError";
+import { ERRORS } from "../../src/errors/errorMessages";
 
 let originalEnv: NodeJS.ProcessEnv;
 
@@ -64,7 +65,9 @@ describe("userExists", () => {
   });
 
   it("throws when user is undefined", () => {
-    expect(() => userExists(undefined)).toThrow(/email ou mot de passe/);
+    expect(() => userExists(undefined)).toThrow(
+      ERRORS.AUTH_INVALID_CREDENTIALS,
+    );
   });
 });
 
@@ -77,7 +80,7 @@ describe("passwordIsValid", () => {
   it("throws for invalid password", () => {
     const hash = bcrypt.hashSync("Password123!", 10);
     expect(() => passwordIsValid("wrong", hash)).toThrow(
-      /email ou mot de passe/,
+      ERRORS.AUTH_INVALID_CREDENTIALS,
     );
   });
 });
@@ -136,7 +139,7 @@ describe("sessionExists", () => {
 
   it("throws when session is missing", () => {
     expect(() => sessionExists(undefined as unknown as SessionRow)).toThrow(
-      /session not found/,
+      ERRORS.SESSION_NOT_FOUND,
     );
   });
 });
@@ -159,7 +162,9 @@ describe("sessionRevoked", () => {
       expires_at: new Date(Date.now() + 60_000),
     };
 
-    expect(() => sessionRevoked(session)).toThrow(/session already closed/);
+    expect(() => sessionRevoked(session)).toThrow(
+      ERRORS.SESSION_ALREADY_CLOSED,
+    );
   });
 
   it("throws when session is expired", () => {
@@ -169,7 +174,9 @@ describe("sessionRevoked", () => {
       expires_at: new Date(Date.now() - 60_000),
     };
 
-    expect(() => sessionRevoked(session)).toThrow(/session already closed/);
+    expect(() => sessionRevoked(session)).toThrow(
+      ERRORS.SESSION_ALREADY_CLOSED,
+    );
   });
 });
 
@@ -189,7 +196,7 @@ describe("requireUserId", () => {
     } catch (error) {
       expect(error).toBeInstanceOf(AppError);
       expect((error as AppError).status).toBe(401);
-      expect((error as Error).message).toBe("Missing user");
+      expect((error as Error).message).toBe(ERRORS.AUTH_MISSING_USER);
     }
   });
 });
@@ -210,7 +217,7 @@ describe("requireSessionId", () => {
     } catch (error) {
       expect(error).toBeInstanceOf(AppError);
       expect((error as AppError).status).toBe(401);
-      expect((error as Error).message).toBe("Missing session");
+      expect((error as Error).message).toBe(ERRORS.AUTH_MISSING_SESSION);
     }
   });
 });

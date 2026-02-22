@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import { AppError } from "../errors/AppError";
+import { ERRORS } from "../errors/errorMessages";
 
 /** Retourne un middleware Express pour hasher le mot de passe dans req.body.
  * Si le champ du mot de passe n'existe pas ou n'est pas une chaîne, renvoie une erreur 400.
@@ -15,7 +16,7 @@ export function hashPassword(field = "password") {
     // verifie que le mot de passe existe et est bien une chaine de caractere
     const password = req.body?.[field];
     if (typeof password !== "string") {
-      throw new AppError("Mot de passe non conforme", 400);
+      throw new AppError(ERRORS.PASSWORD_INVALID_FORMAT, 400);
     }
 
     // hache le mot de passe avec bcrypt et le remplace dans req.body

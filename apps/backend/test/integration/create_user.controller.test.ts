@@ -3,6 +3,7 @@ import request from "supertest";
 import express from "express";
 import { createUser } from "../../src/controllers/admin/users/create_user.controller";
 import { query } from "../../src/db";
+import { ERRORS } from "../../src/errors/errorMessages";
 import { asyncHandler } from "../../src/middlewares/asyncHandler";
 import { errorHandler } from "../../src/middlewares/errorHandler";
 
@@ -61,7 +62,7 @@ describe("createUser controller (integration)", () => {
     });
 
     expect(res.status).toBe(409);
-    expect(res.body.error).toBe("Email déjà utilise");
+    expect(res.body.error).toBe(ERRORS.USER_EMAIL_ALREADY_USED);
   });
 
   it("should return 409 when display_name already exists", async () => {
@@ -77,7 +78,7 @@ describe("createUser controller (integration)", () => {
     });
 
     expect(res.status).toBe(409);
-    expect(res.body.error).toBe("Nom déjà utilise");
+    expect(res.body.error).toBe(ERRORS.USER_DISPLAY_NAME_ALREADY_USED);
   });
 
   it("should return 500 when database throws", async () => {
@@ -91,6 +92,6 @@ describe("createUser controller (integration)", () => {
     });
 
     expect(res.status).toBe(500);
-    expect(res.body.error).toBe("Internal Server Error");
+    expect(res.body.error).toBe(ERRORS.INTERNAL_SERVER_ERROR);
   });
 });

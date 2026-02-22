@@ -1,0 +1,19 @@
+/** Messages d'erreur centralises pour garder un format uniforme dans l'API. */
+export const ERRORS = {
+  AUTH_MISSING_COOKIE: "Cookie d'authentification manquant",
+  AUTH_MISSING_ACCESS_TOKEN: "Token d'acces manquant",
+  AUTH_INVALID_ACCESS_TOKEN: "Token d'acces invalide",
+  AUTH_INVALID_CREDENTIALS: "Email ou mot de passe incorrect",
+  AUTH_USER_NOT_FOUND: "Utilisateur introuvable",
+  AUTH_MISSING_USER: "Utilisateur manquant",
+  AUTH_MISSING_SESSION: "Session manquante",
+  SESSION_NOT_FOUND: "Session introuvable",
+  SESSION_ALREADY_CLOSED: "Session deja fermee ou expiree",
+  VALIDATION_INVALID_BODY: "Donnees invalides",
+  PASSWORD_INVALID_FORMAT: "Mot de passe non conforme",
+  USER_EMAIL_ALREADY_USED: "Email deja utilise",
+  USER_DISPLAY_NAME_ALREADY_USED: "Nom deja utilise",
+  ROUTE_NOT_FOUND: "Route introuvable",
+  INTERNAL_SERVER_ERROR: "Erreur interne du serveur",
+  RATE_LIMIT_TOO_MANY_ATTEMPTS: "Trop de tentatives, reessayer plus tard",
+} as const;

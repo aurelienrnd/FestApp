@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
+import { ERRORS } from "../../../errors/errorMessages";
 import { requireUserId } from "../../../functions";
 
 type UserInfoRow = {
@@ -30,7 +31,7 @@ export async function userInfo(_req: Request, res: Response) {
   );
   const user = rows[0];
   if (!user) {
-    throw new AppError("User not found", 401);
+    throw new AppError(ERRORS.AUTH_USER_NOT_FOUND, 401);
   }
 
   return res.status(200).json({
