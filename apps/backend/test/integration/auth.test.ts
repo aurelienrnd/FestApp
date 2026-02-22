@@ -4,6 +4,8 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { auth } from "../../src/middlewares/auth";
 import { query } from "../../src/db";
+import { asyncHandler } from "../../src/middlewares/asyncHandler";
+import { errorHandler } from "../../src/middlewares/errorHandler";
 
 // mock de la fonction query
 vi.mock("../../src/db", () => ({
@@ -20,13 +22,14 @@ type UserRow = { id: string; display_name: string };
 function createApp() {
   const app = express();
   app.use(express.json());
-  app.get("/test", auth, (req, res) => {
+  app.get("/test", asyncHandler(auth), (_req, res) => {
     return res.status(200).json({
-      userId: req.headers.userId,
-      session: req.headers.session,
-      displayName: req.headers.userdisplayName,
+      userId: res.locals.userId,
+      session: res.locals.sessionId,
+      displayName: res.locals.userDisplayName,
     });
   });
+  app.use(errorHandler);
   return app;
 }
 

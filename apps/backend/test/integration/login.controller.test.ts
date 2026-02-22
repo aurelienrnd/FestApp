@@ -3,6 +3,9 @@ import request from "supertest";
 import express from "express";
 import { login } from "../../src/controllers/admin/auth/login.controller";
 import { query } from "../../src/db";
+import { AppError } from "../../src/errors/AppError";
+import { asyncHandler } from "../../src/middlewares/asyncHandler";
+import { errorHandler } from "../../src/middlewares/errorHandler";
 import {
   envToStringValue,
   userExists,
@@ -35,6 +38,8 @@ const mockSerializeCookie = vi.mocked(serializeCookie);
 function createApp() {
   const app = express();
   app.use(express.json());
+  app.post("/login", asyncHandler(login));
+  app.use(errorHandler);
   return app;
 }
 
@@ -76,7 +81,6 @@ describe("login controller (integration)", () => {
 
     // creation de l'application express
     const app = createApp();
-    app.post("/login", login);
 
     // envoi de la requête de login
     const res = await request(app).post("/login").send({
@@ -102,12 +106,11 @@ describe("login controller (integration)", () => {
     // simulation de la réponse de la base de données/
     mockQuery.mockResolvedValueOnce([]); // no user found
     mockUserExists.mockImplementation(() => {
-      throw new Error("email ou mot de passe incorrect");
+      throw new AppError("email ou mot de passe incorrect", 401);
     });
 
     // creation de l'application express
     const app = createApp();
-    app.post("/login", login);
 
     // envoi de la requête de login
     const res = await request(app).post("/login").send({
@@ -133,12 +136,11 @@ describe("login controller (integration)", () => {
 
     // simulate userExists to return true
     mockPasswordIsValid.mockImplementation(() => {
-      throw new Error("email ou mot de passe incorrect");
+      throw new AppError("email ou mot de passe incorrect", 401);
     });
 
     // create express app
     const app = createApp();
-    app.post("/login", login);
 
     // send login request
     const res = await request(app).post("/login").send({
@@ -156,7 +158,6 @@ describe("login controller (integration)", () => {
 
     // initialisation express app
     const app = createApp();
-    app.post("/login", login);
 
     // envoi de la requête de login
     const res = await request(app).post("/login").send({
@@ -164,7 +165,7 @@ describe("login controller (integration)", () => {
       password: "Test1234!",
     });
 
-    expect(res.status).toBe(401);
-    expect(String(res.body.error)).toMatch(/db fail/);
+    expect(res.status).toBe(500);
+    expect(String(res.body.error)).toMatch(/Internal Server Error/);
   });
 });

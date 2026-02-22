@@ -4,15 +4,23 @@ import express from "express";
 import { sessionIsOpen } from "../../src/middlewares/sessionIsOpen";
 import { query } from "../../src/db";
 import { initToken, serializeCookie } from "../../src/functions";
+import { asyncHandler } from "../../src/middlewares/asyncHandler";
+import { errorHandler } from "../../src/middlewares/errorHandler";
 
 // mock de la fonction query, de initToken et de serializeCookie
 vi.mock("../../src/db", () => ({
   query: vi.fn(),
 }));
-vi.mock("../../src/functions", () => ({
-  initToken: vi.fn(),
-  serializeCookie: vi.fn(),
-}));
+vi.mock("../../src/functions", async () => {
+  const actual = await vi.importActual<typeof import("../../src/functions")>(
+    "../../src/functions",
+  );
+  return {
+    ...actual,
+    initToken: vi.fn(),
+    serializeCookie: vi.fn(),
+  };
+});
 const mockQuery = vi.mocked(query);
 const mockInitToken = vi.mocked(initToken);
 const mockSerializeCookie = vi.mocked(serializeCookie);
@@ -40,14 +48,15 @@ describe("sessionIsOpen middleware", () => {
     const app = createApp();
     app.get(
       "/test",
-      (req, res, next) => {
-        req.headers.userId = "user-1";
-        req.headers.session = "sess-1";
+      (_req, res, next) => {
+        res.locals.userId = "user-1";
+        res.locals.sessionId = "sess-1";
         next();
       },
-      sessionIsOpen,
+      asyncHandler(sessionIsOpen),
       (req, res) => res.status(200).json({ success: true }),
     );
+    app.use(errorHandler);
 
     const res = await request(app).get("/test");
 
@@ -70,14 +79,15 @@ describe("sessionIsOpen middleware", () => {
     const app = createApp();
     app.get(
       "/test",
-      (req, res, next) => {
-        req.headers.userId = "user-1";
-        req.headers.session = "sess-1";
+      (_req, res, next) => {
+        res.locals.userId = "user-1";
+        res.locals.sessionId = "sess-1";
         next();
       },
-      sessionIsOpen,
+      asyncHandler(sessionIsOpen),
       (req, res) => res.status(200).json({ success: true }),
     );
+    app.use(errorHandler);
 
     // execution de la requete
     const res = await request(app).get("/test");
@@ -101,14 +111,15 @@ describe("sessionIsOpen middleware", () => {
     const app = createApp();
     app.get(
       "/test",
-      (req, res, next) => {
-        req.headers.userId = "user-1";
-        req.headers.session = "sess-1";
+      (_req, res, next) => {
+        res.locals.userId = "user-1";
+        res.locals.sessionId = "sess-1";
         next();
       },
-      sessionIsOpen,
+      asyncHandler(sessionIsOpen),
       (req, res) => res.status(200).json({ success: true }),
     );
+    app.use(errorHandler);
 
     // execution de la requete
     const res = await request(app).get("/test");
@@ -136,14 +147,15 @@ describe("sessionIsOpen middleware", () => {
     const app = createApp();
     app.get(
       "/test",
-      (req, res, next) => {
-        req.headers.userId = "user-1";
-        req.headers.session = "sess-1";
+      (_req, res, next) => {
+        res.locals.userId = "user-1";
+        res.locals.sessionId = "sess-1";
         next();
       },
-      sessionIsOpen,
+      asyncHandler(sessionIsOpen),
       (req, res) => res.status(200).json({ success: true }),
     );
+    app.use(errorHandler);
 
     // execution de la requete
     const res = await request(app).get("/test");

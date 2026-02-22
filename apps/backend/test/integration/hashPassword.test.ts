@@ -3,6 +3,8 @@ import request from "supertest";
 import express from "express";
 import bcrypt from "bcrypt";
 import { hashPassword } from "../../src/middlewares/hashPassword";
+import { asyncHandler } from "../../src/middlewares/asyncHandler";
+import { errorHandler } from "../../src/middlewares/errorHandler";
 
 /** Creation d'une application Express pour les tests
  * Creation d'une route de test protégée par le middleware hashPassword
@@ -12,9 +14,10 @@ import { hashPassword } from "../../src/middlewares/hashPassword";
 function createApp() {
   const app = express();
   app.use(express.json());
-  app.post("/test", hashPassword(), (req, res) => {
+  app.post("/test", asyncHandler(hashPassword()), (req, res) => {
     return res.status(200).json({ password: req.body.password });
   });
+  app.use(errorHandler);
   return app;
 }
 
@@ -24,7 +27,7 @@ describe("hashPassword middleware (integration)", () => {
     const app = createApp();
     const res = await request(app).post("/test").send({}); // mot de passe manquant
 
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(400);
     expect(res.body).toEqual({ error: "Mot de passe non conforme" });
   });
 
@@ -33,7 +36,7 @@ describe("hashPassword middleware (integration)", () => {
     const app = createApp();
     const res = await request(app).post("/test").send({ password: 123 }); // le mot de passe n'est pas une chaine
 
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(400);
     expect(res.body).toEqual({ error: "Mot de passe non conforme" });
   });
 

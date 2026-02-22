@@ -3,15 +3,23 @@ import request from "supertest";
 import express from "express";
 import { logout } from "../../src/controllers/admin/auth/logout.controller";
 import { query } from "../../src/db";
+import { asyncHandler } from "../../src/middlewares/asyncHandler";
+import { errorHandler } from "../../src/middlewares/errorHandler";
 
 // mock de la fonction query, sessionExists et sessionRevoked
 vi.mock("../../src/db", () => ({
   query: vi.fn(),
 }));
-vi.mock("../../src/functions", () => ({
-  sessionExists: vi.fn(),
-  sessionRevoked: vi.fn(),
-}));
+vi.mock("../../src/functions", async () => {
+  const actual = await vi.importActual<typeof import("../../src/functions")>(
+    "../../src/functions",
+  );
+  return {
+    ...actual,
+    sessionExists: vi.fn(),
+    sessionRevoked: vi.fn(),
+  };
+});
 const mockQuery = vi.mocked(query);
 
 /** Creation d'une application Express pour les tests
@@ -43,12 +51,13 @@ describe("logout controller (integration)", () => {
 
     // creation de l'application Express avec le middleware pour les headers
     const app = createApp();
-    app.use((req, _res, next) => {
-      req.headers.userId = req.get("userId") as string;
-      req.headers.session = req.get("session") as string;
+    app.use((req, res, next) => {
+      res.locals.userId = req.get("userId");
+      res.locals.sessionId = req.get("session");
       next();
     });
-    app.post("/logout", logout);
+    app.post("/logout", asyncHandler(logout));
+    app.use(errorHandler);
 
     //Execution du test
     const res = await request(app)
@@ -62,7 +71,8 @@ describe("logout controller (integration)", () => {
 
   it("should return 401 when headers are missing", async () => {
     const app = createApp();
-    app.post("/logout", logout);
+    app.post("/logout", asyncHandler(logout));
+    app.use(errorHandler);
 
     const res = await request(app).post("/logout");
 
