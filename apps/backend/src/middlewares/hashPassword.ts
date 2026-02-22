@@ -1,6 +1,6 @@
-// Middleware pour hasher le mot de passe
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
+import { AppError } from "../errors/AppError";
 
 /** Retourne un middleware Express pour hasher le mot de passe dans req.body.
  * Si le champ du mot de passe n'existe pas ou n'est pas une chaîne, renvoie une erreur 400.
@@ -12,30 +12,16 @@ import bcrypt from "bcrypt";
  */
 export function hashPassword(field = "password") {
   return async function (req: Request, res: Response, next: NextFunction) {
-    try {
-      //NOTE Cette verif fait un peu doublon avec la validation Zod
-      // verifie que le mot de passe existe et est bien une chaine de caractere
-      const password = req.body?.[field];
-      if (typeof password !== "string") {
-        throw new Error("Mot de passe non conforme");
-      }
-
-      // hache le mot de passe avec bcrypt et le remplace dans req.body
-      const hashed = await bcrypt.hash(password, 10);
-      req.body[field] = hashed;
-
-      return next();
-    } catch (error) {
-      console.error(error);
-      const err =
-        error instanceof Error
-          ? error
-          : new Error("Erreur lors du hash du mot de passe");
-      const status =
-        typeof (error as { status?: unknown }).status === "number"
-          ? (error as { status: number }).status
-          : 500;
-      return res.status(status).json({ error: err.message });
+    // verifie que le mot de passe existe et est bien une chaine de caractere
+    const password = req.body?.[field];
+    if (typeof password !== "string") {
+      throw new AppError("Mot de passe non conforme", 400);
     }
+
+    // hache le mot de passe avec bcrypt et le remplace dans req.body
+    const hashed = await bcrypt.hash(password, 10);
+    req.body[field] = hashed;
+
+    next();
   };
 }

@@ -5,13 +5,14 @@ import { parse } from "cookie";
 import { getEnv } from "../functions";
 import type { JwtPayload } from "jsonwebtoken";
 import { query } from "../db";
+import { AppError } from "../errors/AppError";
 
 /** Verifie qu'un token est present dans le cookie de la requete
  * @return le token
  */
 function getTokenFromCookie(req: Request) {
   if (!req.headers.cookie) {
-    throw new Error("missing cookie");
+    throw new AppError("missing cookie", 401);
   }
 
   const cookies = parse(req.headers.cookie);
@@ -19,7 +20,7 @@ function getTokenFromCookie(req: Request) {
   const token = cookies[cookieName];
 
   if (!token) {
-    throw new Error("missing access token");
+    throw new AppError("missing access token", 401);
   }
 
   return token;
@@ -41,33 +42,22 @@ function decodedToken(token: string) {
 /** Verifie que l'utilisateur est autorise a effectuer cette requete
  * Recupere et decode le token
  * Recherche l'utilisateur dans la BDD
- * Renvoie le user et le sessionId dans le header de la requete
+ * Stocke le user et le sessionId dans res.locals pour les handlers suivants
  */
 export async function auth(req: Request, res: Response, next: NextFunction) {
-  try {
-    const token = getTokenFromCookie(req);
-    const { userId, sessionId } = decodedToken(token);
+  const token = getTokenFromCookie(req);
+  const { userId, sessionId } = decodedToken(token);
 
-    const user = await query(
-      "SELECT id, display_name FROM users WHERE id = $1",
-      [userId],
-    );
-    if (!user[0]) {
-      throw new Error("User not found");
-    }
-
-    req.headers.userId = user[0].id;
-    req.headers.userdisplayName = user[0].display_name;
-    req.headers.session = sessionId;
-
-    next();
-  } catch (error) {
-    console.error(error);
-    const err = error instanceof Error ? error : new Error("Not authorized");
-    const status =
-      typeof (error as { status?: unknown }).status === "number"
-        ? (error as { status: number }).status
-        : 401;
-    return res.status(status).json({ error: err.message });
+  const user = await query("SELECT id, display_name FROM users WHERE id = $1", [
+    userId,
+  ]);
+  if (!user[0]) {
+    throw new AppError("User not found", 401);
   }
+
+  res.locals.userId = user[0].id;
+  res.locals.userDisplayName = user[0].display_name;
+  res.locals.sessionId = sessionId;
+
+  next();
 }

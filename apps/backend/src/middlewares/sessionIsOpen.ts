@@ -1,71 +1,48 @@
 import { Request, Response, NextFunction } from "express";
-
-// Import function
 import { query } from "../db";
-import { initToken, serializeCookie } from "../functions";
+import type { SessionRow } from "../type";
+import {
+  initToken,
+  requireSessionId,
+  requireUserId,
+  serializeCookie,
+  sessionExists,
+  sessionRevoked,
+} from "../functions";
 
-/** Compare le sessionId du header avec celui de la BDD pour renouveler ou non le initToken
- * Verifie si la session est valide (non révoquée et non expirée)
- * Si la session est valide, renouvelle le token et le cookie
- * Sinon, renvoie une erreur 401
- * @middleware
- * @requires query
- * @function initToken
- * @function serializeCookie
- */
+/** Verifie si la session est valide puis renouvelle le token d'acces. */
 export async function sessionIsOpen(
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  try {
-    // récupération des info du headers
-    const reqSessionId = req.headers.session;
-    const reqUserId = req.headers.userId;
+  const reqSessionId = requireSessionId(res.locals.sessionId);
+  const reqUserId = requireUserId(res.locals.userId);
 
-    // requête en BDD recupérant la session
-    const row = await query(
-      "SELECT id, user_id, expires_at, revoked_at FROM sessions WHERE id = $1 AND user_id = $2",
-      [reqSessionId, reqUserId],
-    );
-    const sessionBdd = row[0];
+  const rows = await query<SessionRow>(
+    "SELECT id, user_id, expires_at, revoked_at FROM sessions WHERE id = $1 AND user_id = $2",
+    [reqSessionId, reqUserId],
+  );
+  const sessionBdd = rows[0];
 
-    // Verifie si la session est valide
-    if (!sessionBdd) {
-      throw new Error("session not found");
-    } else if (
-      sessionBdd.revoked_at !== null ||
-      new Date(sessionBdd.expires_at) < new Date()
-    ) {
-      throw new Error("session already closed");
-    }
+  sessionExists(sessionBdd);
+  sessionRevoked(sessionBdd);
 
-    // Si la session est valide, on renouvelle le token et le cookie
-    const accessToken = initToken(
-      reqUserId as string,
-      "JWT_ACCESS_SECRET",
-      "JWT_ACCESS_EXPIRES_IN",
-      reqSessionId as string,
-    );
+  const accessToken = initToken(
+    reqUserId,
+    "JWT_ACCESS_SECRET",
+    "JWT_ACCESS_EXPIRES_IN",
+    reqSessionId,
+  );
 
-    const accessCookie = serializeCookie(
-      "COOKIE_ACCESS_TOKEN_NAME",
-      "COOKIE_ACCESS_TOKEN_SECURE",
-      "COOKIE_ACCESS_TOKEN_SAME_SITE",
-      accessToken,
-      "JWT_ACCESS_EXPIRES_IN",
-    );
-    res.setHeader("Set-Cookie", accessCookie);
+  const accessCookie = serializeCookie(
+    "COOKIE_ACCESS_TOKEN_NAME",
+    "COOKIE_ACCESS_TOKEN_SECURE",
+    "COOKIE_ACCESS_TOKEN_SAME_SITE",
+    accessToken,
+    "JWT_ACCESS_EXPIRES_IN",
+  );
+  res.setHeader("Set-Cookie", accessCookie);
 
-    next();
-  } catch (error) {
-    console.error(error);
-    const err =
-      error instanceof Error ? error : new Error("Session non autorisée");
-    const status =
-      typeof (error as { status?: unknown }).status === "number"
-        ? (error as { status: number }).status
-        : 401;
-    return res.status(status).json({ error: err.message });
-  }
+  next();
 }
