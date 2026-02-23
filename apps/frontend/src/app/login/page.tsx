@@ -5,9 +5,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../components/ModalCloseButton";
 import ForgotPassword from "../../components/ForgotPassword";
-import { apiRequest } from "../../functions/apiRequest";
-
-type ApiError = { message?: string; status?: number };
+import { ApiRequestError, apiRequest } from "../../functions/apiRequest";
 
 /** Affiche la page de connexion admin avec un formulaire email/mot de passe.
  * Envoie la requete de connexion via `apiRequest` avec les credentials inclus.
@@ -23,7 +21,7 @@ export default function Page() {
   // Initialise les champs du formulaire, le message d'erreur et l'etat d'ouverture de la modale
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<ApiError | null>(null);
+  const [error, setError] = useState<ApiRequestError | null>(null);
   const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
     useState(false);
 
@@ -58,9 +56,8 @@ export default function Page() {
 
     // Si l'API renvoie une erreur, on l'affiche, sinon on redirige l'utilisateur vers le dashboard.
     if (result.error) {
-      const apiError = result.error as ApiError;
-      console.log(apiError.status, apiError.message);
-      setError(apiError);
+      console.log(result.error.status, result.error.message);
+      setError(result.error);
       return;
     }
 

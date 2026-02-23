@@ -211,8 +211,7 @@ export default function Banner() {
     const result = await apiRequest("/admin/auth/logout", { method: "POST" });
 
     if (result.error) {
-      const apiError = result.error as { status?: number; message?: string };
-      console.log(apiError.status, apiError.message);
+      console.log(result.error.status, result.error.message);
       return;
     }
 
