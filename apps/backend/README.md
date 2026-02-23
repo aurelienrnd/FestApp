@@ -65,6 +65,8 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 │  │        └─ ...
 │  ├─ middlewares/
 │  │  └─ ...
+│  ├─ errors/
+│  │  └─ ...
 │  ├─ routes/
 │  │  └─ ...
 │  ├─ schemas/
@@ -103,6 +105,18 @@ Contient la logique métier des endpoints et la gestion des requêtes/réponses.
 ### 📁 middlewares
 Contient les middlewares transverses (auth, validation, logs, erreurs).
 
+### 📁 errors
+Contient la gestion centralisée des erreurs applicatives de l'API.
+
+**Fichiers clés**
+- `AppError.ts` : classe d'erreur applicative (message + status HTTP).
+- `errorMessages.ts` : dictionnaire central de messages d'erreur (`ERRORS`) pour uniformiser les réponses.
+
+**Pourquoi ce dossier est important**
+- Garantit un format de réponse cohérent pour le frontend : `{ error: string }`.
+- Évite les messages dupliqués/hétérogènes dans les contrôleurs et middlewares.
+- Facilite la maintenance (un message changé à un seul endroit).
+
 ### 📁 routes
 Déclare les routes HTTP et connecte chaque endpoint à son contrôleur.
 POST /admin/auth/login
@@ -138,6 +152,29 @@ Définit les types et interfaces partagés du backend.
 
 ### 📄 functions.ts
 Centralise les fonctions utilitaires réutilisables.
+
+### 🔁 Traitement des erreurs dans l'API
+Le backend suit un flux unique pour traiter les erreurs.
+
+1. Cas métier dans les middlewares/contrôleurs  
+Les erreurs métier (auth, session, validation, conflit, etc.) lèvent une `AppError`.
+
+2. Handlers async  
+Les handlers asynchrones sont enveloppés par `asyncHandler`, ce qui transfère automatiquement les erreurs vers `next(error)`.
+
+3. Route introuvable  
+`notFoundHandler` renvoie une `404` pour les URLs non déclarées.
+
+4. Gestion globale  
+`errorHandler` centralise la réponse HTTP finale :
+- si erreur `instanceof AppError` : renvoie `status` + `message`
+- sinon : renvoie `500` avec un message générique (pas de fuite de détail interne)
+
+5. Contrat de réponse  
+Les erreurs renvoyées au client sont standardisées sous la forme :
+```json
+{ "error": "..." }
+```
 
 ## 📁 test
 Ce dossier regroupe les tests unitaires et d’intégration : Vitest exécute les tests tandis que Supertest permet de simuler des appels HTTP sur l’API. 
