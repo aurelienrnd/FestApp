@@ -10,19 +10,26 @@ export default async function AdminLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+  // Prefer a server-only API URL when running in Docker/SSR contexts.
+  const apiBaseUrl =
+    process.env.API_URL_SERVER ?? process.env.NEXT_PUBLIC_API_URL;
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
 
   if (!apiBaseUrl) {
-    throw new Error("Missing env var: NEXT_PUBLIC_API_URL");
+    throw new Error("Missing env var: API_URL_SERVER or NEXT_PUBLIC_API_URL");
   }
 
-  const response = await fetch(`${apiBaseUrl}/admin/auth/me`, {
-    method: "GET",
-    headers: { cookie: cookieHeader },
-    cache: "no-store",
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${apiBaseUrl}/admin/auth/me`, {
+      method: "GET",
+      headers: { cookie: cookieHeader },
+      cache: "no-store",
+    });
+  } catch {
+    redirect("/login");
+  }
 
   if (!response.ok) {
     redirect("/login");

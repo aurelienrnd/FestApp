@@ -51,9 +51,9 @@ describe("AdminLayout (server guard)", () => {
       ok: false,
     } as Response);
 
-    await expect(AdminLayout({ children: <div>Admin Content</div> })).rejects.toThrow(
-      "REDIRECT:/login",
-    );
+    await expect(
+      AdminLayout({ children: <div>Admin Content</div> }),
+    ).rejects.toThrow("REDIRECT:/login");
     expect(mockRedirect).toHaveBeenCalledWith("/login");
   });
 
@@ -62,9 +62,9 @@ describe("AdminLayout (server guard)", () => {
     mockCookies.mockResolvedValue({ toString: () => "access_token=abc" });
     const fetchSpy = vi.spyOn(globalThis, "fetch");
 
-    await expect(AdminLayout({ children: <div>Admin Content</div> })).rejects.toThrow(
-      "Missing env var: NEXT_PUBLIC_API_URL",
-    );
+    await expect(
+      AdminLayout({ children: <div>Admin Content</div> }),
+    ).rejects.toThrow("Missing env var: API_URL_SERVER or NEXT_PUBLIC_API_URL");
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
