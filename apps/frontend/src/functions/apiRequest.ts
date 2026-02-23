@@ -12,6 +12,10 @@ export type ApiRequestResult<T> =
   | { data: T; error: null }
   | { data: null; error: ApiRequestError };
 
+export type ApiMessageResponse = {
+  message?: string;
+};
+
 /** Envoie une requete API avec `fetch` en incluant les credentials.
  * Si la reponse HTTP est en erreur (`!response.ok`), remonte une `ApiRequestError`.
  * Retourne `{ data, error: null }` en succes, sinon `{ data: null, error }` en echec.

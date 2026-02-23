@@ -5,12 +5,8 @@ import { type FormEvent, useEffect, useState } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../components/ModalCloseButton";
 import ForgotPassword from "../../components/ForgotPassword";
-import { apiRequest } from "../../functions/apiRequest";
+import { apiRequest, type ApiMessageResponse } from "../../functions/apiRequest";
 import { getApiErrorMessage } from "../../functions/getApiErrorMessage";
-
-type LoginResponse = {
-  message?: string;
-};
 
 /** Affiche la page de connexion admin avec un formulaire email/mot de passe.
  * Envoie la requete de connexion via `apiRequest` avec les credentials inclus.
@@ -48,7 +44,7 @@ export default function Page() {
     }
 
     // Envoie la requete de connexion avec email/mot de passe au format JSON.
-    const result = await apiRequest<LoginResponse>("/admin/auth/login", {
+    const result = await apiRequest<ApiMessageResponse>("/admin/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,7 +61,6 @@ export default function Page() {
       return;
     }
 
-    console.log(200, result.data?.message);
     router.push("/admin/dashboard");
   };
 

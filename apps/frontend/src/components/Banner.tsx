@@ -15,12 +15,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { useAppUi } from "./AppUiProvider";
 import ModalCloseButton from "./ModalCloseButton";
-import { apiRequest } from "../functions/apiRequest";
+import { apiRequest, type ApiMessageResponse } from "../functions/apiRequest";
 import { getApiErrorMessage } from "../functions/getApiErrorMessage";
-
-type LogoutResponse = {
-  message?: string;
-};
 
 /** Affiche un bouton de billetterie
  * Contient un lien externe vers un site de recherche de billetterie
@@ -213,7 +209,7 @@ export default function Banner() {
   const items = isAdminPath ? navAdminItems : navVisitorItems;
 
   const handleLogout = async () => {
-    const result = await apiRequest<LogoutResponse>("/admin/auth/logout", {
+    const result = await apiRequest<ApiMessageResponse>("/admin/auth/logout", {
       method: "POST",
     });
 
@@ -222,7 +218,6 @@ export default function Banner() {
       return;
     }
 
-    console.log(200, result.data?.message);
     router.push("/login");
   };
 
