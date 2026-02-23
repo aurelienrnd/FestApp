@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { apiRequest } from "../../src/functions/apiRequest";
+import { ApiRequestError, apiRequest } from "../../src/functions/apiRequest";
 
 describe("apiRequest", () => {
   // Initialise une URL API de test
@@ -48,13 +48,14 @@ describe("apiRequest", () => {
 
     const result = await apiRequest("/admin/auth/login");
 
-    expect(result).toEqual({
-      data: null,
-      error: {
-        message: "Trop de tentatives",
-        status: 429,
-      },
-    });
+    expect(result.data).toBeNull();
+    expect(result.error).toBeInstanceOf(ApiRequestError);
+
+    if (!(result.error instanceof ApiRequestError)) {
+      throw new Error("Expected result.error to be an ApiRequestError instance");
+    }
+    expect(result.error.message).toBe("Trop de tentatives");
+    expect(result.error.status).toBe(429);
   });
 
   it("returns error when fetch rejects", async () => {
@@ -64,11 +65,12 @@ describe("apiRequest", () => {
     const result = await apiRequest("/admin/auth/login");
 
     expect(result.data).toBeNull();
-    expect(result.error).toBeInstanceOf(Error);
+    expect(result.error).toBeInstanceOf(ApiRequestError);
 
-    if (!(result.error instanceof Error)) {
-      throw new Error("Expected result.error to be an Error instance");
+    if (!(result.error instanceof ApiRequestError)) {
+      throw new Error("Expected result.error to be an ApiRequestError instance");
     }
     expect(result.error.message).toBe("Network down");
+    expect(result.error.status).toBe(500);
   });
 });

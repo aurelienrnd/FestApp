@@ -1,10 +1,4 @@
-/** Envoie une requete API avec `fetch` en incluant les credentials.
- * Si la reponse HTTP est en erreur (`!response.ok`), remonte une `ApiRequestError`.
- * Retourne `{ data, error: null }` en succes, sinon `{ data: null, error }` en echec.
- * @param {string} path Chemin de l'endpoint API (ex: `/admin/auth/login`).
- * @param {RequestInit} [init] Options de requete `fetch` (method, headers, body, etc.).
- */
-class ApiRequestError extends Error {
+export class ApiRequestError extends Error {
   status: number;
 
   constructor(message: string | undefined, status: number) {
@@ -14,6 +8,12 @@ class ApiRequestError extends Error {
   }
 }
 
+/** Envoie une requete API avec `fetch` en incluant les credentials.
+ * Si la reponse HTTP est en erreur (`!response.ok`), remonte une `ApiRequestError`.
+ * Retourne `{ data, error: null }` en succes, sinon `{ data: null, error }` en echec.
+ * @param {string} path Chemin de l'endpoint API (ex: `/admin/auth/login`).
+ * @param {RequestInit} [init] Options de requete `fetch` (method, headers, body, etc.).
+ */
 function extractApiErrorMessage(data: unknown): string | undefined {
   if (!data || typeof data !== "object" || !("error" in data)) {
     return undefined;
@@ -44,20 +44,17 @@ export async function apiRequest(path: string, init: RequestInit = {}) {
 
     return { data, error: null };
   } catch (error: unknown) {
-    // Erreur API attendue: levee quand la reponse HTTP est !ok (message + status).
+    // Erreur API attendue: deja normalisee en amont.
     if (error instanceof ApiRequestError) {
-      console.log(error.message, error.status);
       return { data: null, error };
     }
 
-    // Erreur technique standard: reseau fetch, erreur runtime, etc.
+    // Erreur technique standard: reseau fetch, runtime, etc. -> on normalise.
     if (error instanceof Error) {
-      console.log(error.message);
-      return { data: null, error };
+      return { data: null, error: new ApiRequestError(error.message, 500) };
     }
 
-    // Cas limite: valeur levee qui n'est pas une instance de Error.
-    console.log("Erreur inconnue");
-    return { data: null, error };
+    // Cas limite: valeur non-Error levee.
+    return { data: null, error: new ApiRequestError("Erreur inconnue", 500) };
   }
 }
