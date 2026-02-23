@@ -19,6 +19,7 @@ import AdminLayout from "../../src/app/admin/layout";
 
 describe("AdminLayout (server guard)", () => {
   beforeEach(() => {
+    delete process.env.API_URL_SERVER;
     process.env.NEXT_PUBLIC_API_URL = "http://localhost:4000";
     vi.clearAllMocks();
   });
@@ -58,6 +59,7 @@ describe("AdminLayout (server guard)", () => {
   });
 
   it("throws a clear error when NEXT_PUBLIC_API_URL is missing", async () => {
+    delete process.env.API_URL_SERVER;
     delete process.env.NEXT_PUBLIC_API_URL;
     mockCookies.mockResolvedValue({ toString: () => "access_token=abc" });
     const fetchSpy = vi.spyOn(globalThis, "fetch");
