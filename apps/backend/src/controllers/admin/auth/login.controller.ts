@@ -61,7 +61,7 @@ export async function login(req: Request, res: Response) {
     sessionId,
   );
 
-  // TODO - remove it
+  // TODO - remove it for production
   console.log("Token a la connexion", accessToken);
 
   const accessCookie = serializeCookie(

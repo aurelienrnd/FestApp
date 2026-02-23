@@ -50,6 +50,7 @@ export function createApp() {
     res.json({ status: "ok", message: "Backend is running" });
   });
 
+  // TODO - remove it for production
   // Test de connexion a la base de donnees
   app.get("/debug/db", async (req, res) => {
     try {
