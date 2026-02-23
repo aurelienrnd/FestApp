@@ -9,6 +9,8 @@ import "./globals.css";
 const koulen = Koulen({
   subsets: ["latin"],
   weight: "400", // OBLIGATOIRE pour Koulen
+  display: "swap",
+  variable: "--font-koulen",
 });
 
 // Métadonnées SEO
@@ -28,13 +30,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${koulen.className}`}>
-      <body className="min-h-screen bg-(--color-bg) text-(--color-text) flex flex-col">
+    <html lang="fr" className={koulen.variable}>
+      <body
+        className={`${koulen.className} min-h-screen bg-(--color-bg) text-(--color-text) flex flex-col`}
+      >
         <AppUiProvider>
           <div id="app-root" className="flex min-h-screen flex-col">
-          <Banner />
-          <main className="flex-1">{children}</main>
-          <Footer />
+            <Banner />
+            <main className="flex-1">{children}</main>
+            <Footer />
           </div>
         </AppUiProvider>
       </body>

@@ -2,6 +2,12 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import Banner from "../../src/components/Banner";
 
+const mockPush = vi.fn();
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
 // Mock du hook useAppUi pour contrôler les valeurs retournées par le contexte.
 const mockUseAppUi = vi.fn();
 vi.mock("../../src/components/AppUiProvider", () => ({
@@ -47,6 +53,7 @@ describe("Banner", () => {
   afterEach(() => {
     cleanup();
     mockUseAppUi.mockReset();
+    mockPush.mockReset();
   });
 
   it("renders desktop navigation when isDesktop is true", () => {
