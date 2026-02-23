@@ -60,6 +60,32 @@ describe("auth middleware", () => {
     expect(res.body.error).toBe(ERRORS.AUTH_INVALID_ACCESS_TOKEN);
   });
 
+  it("should return 401 if access token cookie is missing", async () => {
+    const app = createApp();
+    const res = await request(app).get("/test").set("Cookie", "foo=bar");
+
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_ACCESS_TOKEN);
+  });
+
+  it("should return 401 if token is expired", async () => {
+    const token = jwt.sign(
+      { userId: "user-1", sessionId: "sess-1" },
+      process.env.JWT_ACCESS_SECRET as string,
+      { expiresIn: "1ms" },
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    const app = createApp();
+    const res = await request(app)
+      .get("/test")
+      .set("Cookie", `access_token=${token}`);
+
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe(ERRORS.AUTH_INVALID_ACCESS_TOKEN);
+  });
+
   it("should return 401 if user is not found", async () => {
     // creation d'un token valide
     const token = jwt.sign(

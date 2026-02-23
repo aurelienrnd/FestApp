@@ -65,6 +65,25 @@ describe("sessionIsOpen middleware", () => {
     expect(res.body.error).toBe(ERRORS.SESSION_NOT_FOUND);
   });
 
+  it("should return 401 when sessionId is missing in auth context", async () => {
+    const app = createApp();
+    app.get(
+      "/test",
+      (_req, res, next) => {
+        res.locals.userId = "user-1";
+        next();
+      },
+      asyncHandler(sessionIsOpen),
+      (_req, res) => res.status(200).json({ success: true }),
+    );
+    app.use(errorHandler);
+
+    const res = await request(app).get("/test");
+
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_SESSION);
+  });
+
   it("should return 401 when session is revoked", async () => {
     // simulation de la session révoquée
     mockQuery.mockResolvedValueOnce([
