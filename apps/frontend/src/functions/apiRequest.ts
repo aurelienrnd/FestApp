@@ -8,6 +8,10 @@ export class ApiRequestError extends Error {
   }
 }
 
+export type ApiRequestResult<T> =
+  | { data: T; error: null }
+  | { data: null; error: ApiRequestError };
+
 /** Envoie une requete API avec `fetch` en incluant les credentials.
  * Si la reponse HTTP est en erreur (`!response.ok`), remonte une `ApiRequestError`.
  * Retourne `{ data, error: null }` en succes, sinon `{ data: null, error }` en echec.
@@ -23,7 +27,10 @@ function extractApiErrorMessage(data: unknown): string | undefined {
   return typeof apiError === "string" ? apiError : undefined;
 }
 
-export async function apiRequest(path: string, init: RequestInit = {}) {
+export async function apiRequest<T = unknown>(
+  path: string,
+  init: RequestInit = {},
+): Promise<ApiRequestResult<T>> {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   try {
@@ -33,7 +40,7 @@ export async function apiRequest(path: string, init: RequestInit = {}) {
       ...init,
     });
 
-    const data: unknown = await response.json().catch(() => null);
+    const data = (await response.json().catch(() => null)) as T | null;
 
     // Si l'API repond avec une erreur HTTP, on remonte le message + status.
     if (!response.ok) {
@@ -42,7 +49,7 @@ export async function apiRequest(path: string, init: RequestInit = {}) {
       throw new ApiRequestError(message, status);
     }
 
-    return { data, error: null };
+    return { data: data as T, error: null };
   } catch (error: unknown) {
     // Erreur API attendue: deja normalisee en amont.
     if (error instanceof ApiRequestError) {

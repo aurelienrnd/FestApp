@@ -16,6 +16,11 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { useAppUi } from "./AppUiProvider";
 import ModalCloseButton from "./ModalCloseButton";
 import { apiRequest } from "../functions/apiRequest";
+import { getApiErrorMessage } from "../functions/getApiErrorMessage";
+
+type LogoutResponse = {
+  message?: string;
+};
 
 /** Affiche un bouton de billetterie
  * Contient un lien externe vers un site de recherche de billetterie
@@ -208,10 +213,12 @@ export default function Banner() {
   const items = isAdminPath ? navAdminItems : navVisitorItems;
 
   const handleLogout = async () => {
-    const result = await apiRequest("/admin/auth/logout", { method: "POST" });
+    const result = await apiRequest<LogoutResponse>("/admin/auth/logout", {
+      method: "POST",
+    });
 
     if (result.error) {
-      console.log(result.error.status, result.error.message);
+      console.error(getApiErrorMessage(result.error));
       return;
     }
 

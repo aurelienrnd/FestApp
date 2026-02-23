@@ -5,7 +5,12 @@ import { type FormEvent, useEffect, useState } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../components/ModalCloseButton";
 import ForgotPassword from "../../components/ForgotPassword";
-import { ApiRequestError, apiRequest } from "../../functions/apiRequest";
+import { apiRequest } from "../../functions/apiRequest";
+import { getApiErrorMessage } from "../../functions/getApiErrorMessage";
+
+type LoginResponse = {
+  message?: string;
+};
 
 /** Affiche la page de connexion admin avec un formulaire email/mot de passe.
  * Envoie la requete de connexion via `apiRequest` avec les credentials inclus.
@@ -21,7 +26,7 @@ export default function Page() {
   // Initialise les champs du formulaire, le message d'erreur et l'etat d'ouverture de la modale
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<ApiRequestError | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
     useState(false);
 
@@ -37,13 +42,13 @@ export default function Page() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     // Empeche le rechargement de page, reset l'erreur, puis stoppe si formulaire invalide.
     event.preventDefault();
-    setError(null);
+    setErrorMessage(null);
     if (isFormInvalid) {
       return;
     }
 
     // Envoie la requete de connexion avec email/mot de passe au format JSON.
-    const result = await apiRequest("/admin/auth/login", {
+    const result = await apiRequest<LoginResponse>("/admin/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -56,8 +61,7 @@ export default function Page() {
 
     // Si l'API renvoie une erreur, on l'affiche, sinon on redirige l'utilisateur vers le dashboard.
     if (result.error) {
-      console.log(result.error.status, result.error.message);
-      setError(result.error);
+      setErrorMessage(getApiErrorMessage(result.error));
       return;
     }
 
@@ -105,8 +109,8 @@ export default function Page() {
         </div>
 
         <div className="flex flex-col items-center gap-2 pt-2">
-          {error ? (
-            <p className="mb-3 text-sm text-(--color-1)">{error.message}</p>
+          {errorMessage ? (
+            <p className="mb-3 text-sm text-(--color-1)">{errorMessage}</p>
           ) : null}
           <button type="submit" className="btn-cta" disabled={isFormInvalid}>
             Envoyer
