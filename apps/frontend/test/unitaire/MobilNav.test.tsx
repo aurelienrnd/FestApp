@@ -20,7 +20,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-// Mock de react-modal: rend une div si la modale est ouverte
+// Mock de la modal.
 vi.mock("react-modal", () => {
   const Modal = ({
     isOpen,
@@ -37,8 +37,16 @@ describe("MobilNav", () => {
   it("opens and closes the mobile modal", async () => {
     // Initialise un utilisateur et monte le composant
     const user = userEvent.setup();
+
+    // mock la fonction logout
+    const onLogout = vi.fn();
     render(
-      <MobilNav items={navVisitorItems} pathname="/" isAdminPath={false} />,
+      <MobilNav
+        items={navVisitorItems}
+        pathname="/"
+        isAdminPath={false}
+        onLogout={onLogout}
+      />,
     );
 
     expect(screen.queryByTestId("modal")).not.toBeInTheDocument();

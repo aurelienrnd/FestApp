@@ -5,11 +5,9 @@ import { ERRORS } from "../errors/errorMessages";
 
 /** Retourne un middleware Express pour hasher le mot de passe dans req.body.
  * Si le champ du mot de passe n'existe pas ou n'est pas une chaîne, renvoie une erreur 400.
- * Si une erreur survient lors du hashage, renvoie une erreur 500.
  * L'utilisation du middleware dans une fonction permet d'utiliser différent Field pour l'adapter a d'autres types de requêtes exemple password et newPassword.
  * @param passWordField Le nom du champ du mot de passe dans req.body
  * @returns Middleware Express qui hache le mot de passe dans req.body[passWordField].
- * @throws 500 si une erreur survient lors du hashage.
  */
 export function hashPassword(field = "password") {
   return async function (req: Request, res: Response, next: NextFunction) {

@@ -7,18 +7,22 @@ import { ApiRequestError } from "../../src/functions/apiRequest";
 const mockPush = vi.fn();
 const mockApiRequest = vi.fn();
 
+// Mock `useRouter` pour contrôler et vérifier les redirections pendant le test.
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
+// Mock de `apiRequest`
 vi.mock("../../src/functions/apiRequest", async () => {
   const actual = await vi.importActual("../../src/functions/apiRequest");
   return {
     ...actual,
+    // Redirige tous les appels à `apiRequest` vers le mock pour simuler les réponses API dans les tests.
     apiRequest: (...args: unknown[]) => mockApiRequest(...args),
   };
 });
 
+// Mock de la modal mot de passe oublié
 vi.mock("react-modal", () => {
   const Modal = ({
     isOpen,
@@ -51,11 +55,16 @@ describe("Login page", () => {
 
     render(<Page />);
 
-    await user.type(screen.getByPlaceholderText("Votre email"), "admin@test.fr");
+    await user.type(
+      screen.getByPlaceholderText("Votre email"),
+      "admin@test.fr",
+    );
     await user.type(screen.getByPlaceholderText("Votre mot de passe"), "wrong");
     await user.click(screen.getByRole("button", { name: "Envoyer" }));
 
-    expect(await screen.findByText("Identifiants invalides")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Identifiants invalides"),
+    ).toBeInTheDocument();
     expect(mockPush).not.toHaveBeenCalled();
   });
 
@@ -68,7 +77,10 @@ describe("Login page", () => {
 
     render(<Page />);
 
-    await user.type(screen.getByPlaceholderText("Votre email"), "admin@test.fr");
+    await user.type(
+      screen.getByPlaceholderText("Votre email"),
+      "admin@test.fr",
+    );
     await user.type(screen.getByPlaceholderText("Votre mot de passe"), "wrong");
     await user.click(screen.getByRole("button", { name: "Envoyer" }));
 
@@ -87,7 +99,10 @@ describe("Login page", () => {
 
     render(<Page />);
 
-    await user.type(screen.getByPlaceholderText("Votre email"), "admin@test.fr");
+    await user.type(
+      screen.getByPlaceholderText("Votre email"),
+      "admin@test.fr",
+    );
     await user.type(screen.getByPlaceholderText("Votre mot de passe"), "wrong");
     await user.click(screen.getByRole("button", { name: "Envoyer" }));
 
@@ -106,7 +121,10 @@ describe("Login page", () => {
 
     render(<Page />);
 
-    await user.type(screen.getByPlaceholderText("Votre email"), "admin@test.fr");
+    await user.type(
+      screen.getByPlaceholderText("Votre email"),
+      "admin@test.fr",
+    );
     await user.type(
       screen.getByPlaceholderText("Votre mot de passe"),
       "password123",

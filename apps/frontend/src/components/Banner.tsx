@@ -41,10 +41,11 @@ function BtnTicket() {
 /** Affiche le menu de navigation pour l'affichage desktop
  * Compare chaque lien avec l'URL pour determiner lequel est actif et y appliquer un style
  * Affiche le bouton de billetterie uniquement si l'on n'est pas sur une page admin
- * @param {Object} props
- * @param {NavItem[]} props.items
- * @param {string | null} [props.pathname]
- * @param {boolean} props.isAdminPath
+ * @param {Object} props proprietes du composant
+ * @param {NavItem[]} props.items liste des liens de navigation
+ * @param {string | null} [props.pathname] URL courante pour determiner le lien actif
+ * @param {boolean} props.isAdminPath indique si la page actuelle est une page admin
+ * @param {() => void} props.onLogout Fonction Logout
  * @children BtnTicket Affiche un bouton de billetterie
  */
 function DesktopNav({
@@ -112,6 +113,7 @@ function DesktopNav({
  * @param {NavItem[]} props.items liste des liens de navigation
  * @param {string | null} [props.pathname] URL courante pour determiner le lien actif
  * @param {boolean} props.isAdminPath indique si la page actuelle est une page admin
+ * @param {() => void} props.onLogout Fonction Logout
  * @children BtnTicket Affiche un bouton de billetterie
  */
 export function MobilNav({
@@ -199,6 +201,8 @@ export function MobilNav({
  * Determine si l'affichage est en mode desktop ou mobile via matchMedia (min-width: 768px)
  * Ecoute les changements de taille d'ecran pour mettre a jour l'etat `isDesktop`
  * Affiche DesktopNav sur ecran large, sinon MobilNav
+ * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
+ * @function getApiErrorMessage Définit un message à retourner à l'utilisateur selon le statut de l'erreur
  * @children DesktopNav Affiche le menu de navigation pour l'affichage desktop
  * @children MobilNav Affiche le menu de navigation pour l'affichage mobile
  */
@@ -208,6 +212,7 @@ export default function Banner() {
   const { pathname, isAdminPath, isDesktop } = useAppUi();
   const items = isAdminPath ? navAdminItems : navVisitorItems;
 
+  // Envoie la requete de deconnexion puis redirige vers `/login`
   const handleLogout = async () => {
     const result = await apiRequest<ApiMessageResponse>("/admin/auth/logout", {
       method: "POST",

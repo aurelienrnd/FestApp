@@ -5,7 +5,10 @@ import { type FormEvent, useEffect, useState } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../components/ModalCloseButton";
 import ForgotPassword from "../../components/ForgotPassword";
-import { apiRequest, type ApiMessageResponse } from "../../functions/apiRequest";
+import {
+  apiRequest,
+  type ApiMessageResponse,
+} from "../../functions/apiRequest";
 import { getApiErrorMessage } from "../../functions/getApiErrorMessage";
 
 /** Affiche la page de connexion admin avec un formulaire email/mot de passe.
@@ -13,6 +16,8 @@ import { getApiErrorMessage } from "../../functions/getApiErrorMessage";
  * Affiche le message d'erreur API au-dessus du bouton en cas d'echec.
  * Redirige vers `/admin/dashboard` si la connexion reussit.
  * Ouvre une modale "Mot de passe oublie" au clic sur le bouton dedie.
+ * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
+ * @function setErrorMessage Définit un message à retourner à l'utilisateur selon le statut de l'erreur
  * @children ForgotPassword Affiche le formulaire d'initialisation de reinitialisation du mot de passe.
  */
 export default function Page() {

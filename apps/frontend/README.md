@@ -8,6 +8,12 @@ Pour executer une commande npm dans le conteneur : `docker exec -it vindhellfest
 - `npm run lint` : 	Vérifier le code (ESLint)
 - `npm run format` : 	Formater ton code auto avec Prettier
 - `npm test` : Lancer les tests vitest
+- `npm run test:run` : Lancer les tests vitest en mode run (sans watch)
+
+## Variables d'environnement utilisees
+
+- `NEXT_PUBLIC_API_URL` : URL de base de l'API utilisee cote client.
+- `API_URL_SERVER` : URL API utilisee cote serveur.
 
 ## Stack technique
 **Dependencies**
@@ -86,7 +92,6 @@ Déclare les variables CSS globales, les thèmes admin/visitor et quelques utili
 - **📄 layout.tsx :** Layout racine Next.js : charge la police Google, définit les métadonnées SEO et enveloppe l’app avec le provider + bannière + footer.
 
 - **📄 page.tsx :** Page d’accueil par défaut (route /).
-
 Les autres dossiers regroupent les routes Next.js de l’app (pages)
 
 ### 📁 components/
@@ -97,6 +102,34 @@ Centralise les constantes et paramètres de configuration du frontend.
 
 ## 📁 test
 Ce dossier regroupe les tests unitaires et d’intégration côté front : Vitest exécute les tests et les assertions, tandis que Testing Library valide le rendu et les interactions. Les tests s’appuient sur jsdom pour simuler le navigateur et vérifier le comportement des composants et des pages dans un environnement contrôlé.
+
+## Gestion des erreurs
+La gestion des erreurs frontend est centralisee autour de deux helpers :
+- `src/functions/apiRequest.ts`
+- `src/functions/getApiErrorMessage.ts`
+
+### 1 Normalisation technique (`apiRequest.ts`)
+- Chaque appel retourne un format unique :
+  - succes : `{ data, error: null }`
+  - echec : `{ data: null, error: ApiRequestError }`
+- Si la reponse HTTP est en erreur (`!response.ok`) :
+  - lecture du message backend (`error`) si present
+  - creation d'une `ApiRequestError(message, status)`
+- Si `fetch` echoue (reseau/runtime), conversion en `ApiRequestError(..., 500)`.
+
+### 2 Message utilisateur (`getApiErrorMessage.ts`)
+- Priorite au message explicite venant du backend.
+- Sinon fallback selon le status :
+  - `401` : session expiree
+  - `403` : acces refuse
+  - `404` : ressource introuvable
+  - `429` : trop de tentatives
+  - `>=500` : erreur serveur
+
+### 3 Utilisation dans l'UI
+- `src/app/login/page.tsx` : affiche le message d'erreur formate.
+- `src/components/Banner.tsx` (logout) : journalise l'erreur formatee en cas d'echec, puis redirige vers `/login` en cas de succes.
+- `src/app/admin/layout.tsx` : verifie la session via `/admin/auth/me` et redirige vers `/login` en cas d'echec.
 
 ## ESLint & Prettier
 Dans ce projet, deux outils complémentaires assurent la qualité du code :

@@ -1,8 +1,10 @@
+// Type
 export type NavItem = {
   label: string;
   path: string;
 };
 
+// Liens affiches dans la navigation publique (visiteur non connecte).
 export const navVisitorItems: NavItem[] = [
   { label: "Accueil", path: "/" },
   { label: "Programmation", path: "/lineup" },
@@ -10,6 +12,7 @@ export const navVisitorItems: NavItem[] = [
   { label: "Information", path: "/practical-info" },
 ];
 
+// Liens affiches dans la navigation de l'espace administrateur.
 export const navAdminItems: NavItem[] = [
   { label: "Dashboard", path: "/admin/dashboard" },
   { label: "Programmation", path: "/admin/lineup" },

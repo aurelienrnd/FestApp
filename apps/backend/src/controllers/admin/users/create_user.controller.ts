@@ -32,12 +32,16 @@ async function existingDisplayName(display_name: string) {
  * Verifie que l'email n'est pas deja utilise dans la BDD
  * Verifie que le display_name n'est pas deja utilise dans la BDD
  * Renvoie l'utilisateur cree
+ * @function existingEmail
+ * @function existingDisplayName
  */
 export const createUser = async (req: Request, res: Response) => {
+  // Extrait les champs attendus du body et vérifie qu'ils' ne sont pas déjà utilisés.
   const { email, password, display_name } = req.body;
   await existingEmail(email);
   await existingDisplayName(display_name);
 
+  // Crée un nouvel utilisateur en base avec mot de passe hashé,
   await query(
     `INSERT INTO users (email, password_hash, display_name, must_change_password, is_active)
      VALUES ($1, $2, $3, TRUE, TRUE)

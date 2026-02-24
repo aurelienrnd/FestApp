@@ -47,7 +47,7 @@ function createApp() {
 describe("login controller (integration)", () => {
   // Réinitialiser les mocks avant chaque test
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   it("should return 200 and set cookie when login is successful", async () => {

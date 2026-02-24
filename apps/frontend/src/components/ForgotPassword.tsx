@@ -1,13 +1,18 @@
 import { useState, type FormEvent } from "react";
 
+/** Affiche le formulaire "Mot de passe oublié".
+ * Permet à l'utilisateur de saisir son email pour demander la réinitialisation du mot de passe.
+ * Bloque l'envoi si le champ email est vide (après suppression des espaces).
+ * @returns {JSX.Element} Le contenu du formulaire de récupération de mot de passe.
+ */
 export default function ForgotPassword() {
+  // Stocke l'email saisi et invalide le formulaire si le champ est vide.
   const [email, setEmail] = useState("");
-
   const isFormInvalid = email.trim() === "";
 
+  // Intercepte la soumission du formulaire et annule l'envoi si l'email est invalide.
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     if (isFormInvalid) {
       return;
     }
@@ -45,4 +50,3 @@ export default function ForgotPassword() {
     </div>
   );
 }
-

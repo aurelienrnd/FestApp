@@ -10,6 +10,21 @@ Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfe
 - `npm run format` : 	Formater ton code auto avec Prettier
 - `npm test` : Lancer les tests vitest
 
+## Variables d'environnement utilisees
+- PORT=4000 : port sur lequel l’API backend écoute les requêtes HTTP.
+- DB_HOST=db : port sur lequel l’API backend écoute les requêtes HTTP.
+- DB_PORT=5432 : port d’écoute PostgreSQL.
+- DB_USER=postgres : utilisateur pour se connecter à la base.
+- DB_PASSWORD=postgres : mot de passe de l’utilisateur PostgreSQL.
+- DB_NAME=vindhellfest : nom de la base utilisée par le backend.
+- JWT_ACCESS_SECRET=un-super-secret-a-changer : clé secrète pour les tokens JWT.
+- JWT_ACCESS_EXPIRES_IN=1h : durée de validité du token JWT d’accès.
+- COOKIE_ACCESS_TOKEN_NAME=vindhellfest_access_token : nom du cookie qui stocke le token d’accès.
+- COOKIE_ACCESS_TOKEN_SECURE=true : envoie le cookie uniquement en HTTPS.
+- COOKIE_ACCESS_TOKEN_SAME_SITE=lax : limite l’envoi du cookie sur les requêtes cross-site (protection CSRF de base).
+- SESSION_EXPIRES_IN=12h : durée de vie d’une session en base de données.
+- FRONTEND_ORIGIN=http://localhost:3000 : origine frontend.
+
 ## Stack technique
 **Dependencies**
 - `bcrypt` : Permet de hasher les mots de passe avant de les stocker dans la base de données.
@@ -121,7 +136,12 @@ Contient la gestion centralisée des erreurs applicatives de l'API.
 Déclare les routes HTTP et connecte chaque endpoint à son contrôleur.
 POST /admin/auth/login
 POST /admin/auth/logout
+GET /admin/auth/me
 POST /admin/users
+
+Ordre des middlewares sur les routes protegees :
+- `auth` : verifie le cookie/token et charge `userId` + `sessionId` dans `res.locals`.
+- `sessionIsOpen` : verifie la session en base (existe, non revoquee, non expiree) et renouvelle le token.
 
 ### 📄 db.ts
 Ce fichier centralise la configuration de la connexion à la base de données PostgreSQL ainsi qu’une fonction utilitaire permettant d’exécuter facilement des requêtes SQL depuis le backend.
@@ -180,6 +200,14 @@ Les erreurs renvoyées au client sont standardisées sous la forme :
 Ce dossier regroupe les tests unitaires et d’intégration : Vitest exécute les tests tandis que Supertest permet de simuler des appels HTTP sur l’API. 
 - Les tests unitaires ciblent les fonctions/modules isolés
 - Les tests d’intégration valident plusieurs couches ensemble (middlewares + contrôleurs) utilisant plusieurs fonctions.
+
+6. Statuts HTTP utilises dans le projet
+- `400` : validation/format invalide (ex: body invalide, mot de passe invalide)
+- `401` : authentification/session invalide ou manquante
+- `404` : route inexistante (`notFoundHandler`)
+- `409` : conflit metier (ex: email/display_name deja utilise)
+- `429` : trop de tentatives de connexion (`rateLimitLogin`)
+- `500` : erreur interne non prevue
 
 ## ESLint & Prettier
 Dans ce projet, deux outils complémentaires assurent la qualité du code :

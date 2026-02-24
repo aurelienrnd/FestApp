@@ -3,44 +3,13 @@
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import {
-  faInstagram,
-  faFacebookF,
-  faYoutube,
-} from "@fortawesome/free-brands-svg-icons";
 import ModalCloseButton from "./ModalCloseButton";
 import LegalMention from "./LegalMention";
 import ContactUs from "./ContactUs";
-
-// Liens boutons
-const legalLinks = [
-  { id: "mentions", label: "Mentions legales" },
-  { id: "contact", label: "Nous contacter" },
-] as const;
-type LegalLinkId = (typeof legalLinks)[number]["id"];
-
-// Liens reseaux sociaux
-const socialLinks = [
-  {
-    label: "Instagram",
-    href: "https://www.instagram.com/",
-    icon: faInstagram as unknown as IconProp,
-  },
-  {
-    label: "Facebook",
-    href: "https://www.facebook.com/",
-    icon: faFacebookF as unknown as IconProp,
-  },
-  {
-    label: "YouTube",
-    href: "https://www.youtube.com/",
-    icon: faYoutube as unknown as IconProp,
-  },
-];
+import { legalLinks, socialLinks, type LegalLinkId } from "@/config/footer";
 
 /** Affiche le footer avec les liens legaux et les reseaux sociaux.
- * Ouvre une modale unique au clic sur "Mentions legales" ou "Nous contacter".
+ * Ouvre une modale au clic sur "Mentions legales" ou "Nous contacter".
  */
 export default function Footer() {
   // Stocke si la modale est ouverte et initialise react-modal sur body.

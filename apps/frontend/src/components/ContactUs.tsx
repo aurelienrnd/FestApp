@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
-// TODO - SR-only ?
 
+// TODO requet
 /** Affiche un formulaire de contact avec les champs nom, email, sujet et message */
 export default function ContactUs() {
   // Stocke l'etat d'envoi du formulaire et les valeurs des champs

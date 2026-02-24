@@ -20,10 +20,12 @@ export async function generateSession(
   user: DbUser,
   SESSION_EXPIRES_IN: string,
 ) {
+  // Calcule la date d'expiration de la session via la varible d'environement
   const expiresAt = new Date(
     Date.now() + ms(envToStringValue(SESSION_EXPIRES_IN)),
   );
 
+  // Crée une nouvelle session en base pour l'utilisateur
   const rows = await query(
     `INSERT INTO sessions (user_id, expires_at) VALUES ($1, $2) RETURNING id`,
     [user.id, expiresAt],
@@ -36,11 +38,14 @@ export async function generateSession(
  * Verifie que l'utilisateur existe dans la BDD
  * Cree une session
  * Renvoie un token et un cookie pour l'authentification
+ * @function userExists
+ * @function passwordIsValid
+ * @function generateSession
  */
 export async function login(req: Request, res: Response) {
+  // Récupère le mot de passe et l'email dans la requete et dans la BDD
   const email = String(req.body.email).trim().toLowerCase();
   const password = String(req.body.password);
-
   const result = await query<DbUser>(
     `SELECT id, email, password_hash, display_name, is_active
      FROM users
@@ -50,9 +55,11 @@ export async function login(req: Request, res: Response) {
   );
   const user = result[0];
 
+  // Vérifie que l'utilisateur existe et que le mot et correspond bien au hash en BDD.
   userExists(user);
   passwordIsValid(password, user.password_hash);
 
+  // Crée une session pour l'utilisateur, puis génère un JWT d'accès
   const sessionId = await generateSession(user, "SESSION_EXPIRES_IN");
   const accessToken = initToken(
     user.id,
@@ -64,6 +71,7 @@ export async function login(req: Request, res: Response) {
   // TODO - remove it for production
   console.log("Token a la connexion", accessToken);
 
+  // Construit le cookie HTTP contenant le token puis l'ajoute au header
   const accessCookie = serializeCookie(
     "COOKIE_ACCESS_TOKEN_NAME",
     "COOKIE_ACCESS_TOKEN_SECURE",
@@ -73,13 +81,7 @@ export async function login(req: Request, res: Response) {
   );
   res.setHeader("Set-Cookie", accessCookie);
 
-  const userSession = await query(
-    `SELECT id, user_id, expires_at, created_at FROM sessions WHERE $1 = user_id ORDER BY created_at DESC LIMIT 1`,
-    [user.id],
-  );
-
   return res.status(200).json({
     message: "Authentification réussie",
-    userSession,
   });
 }

@@ -71,9 +71,9 @@ export function initToken(
 }
 
 /** Cree un cookie
- * @param {string} EnvName nom de variable d'environnement
- * @param {string} envSecure nom de variable d'environnement
- * @param {string} envSameSite nom de variable d'environnement
+ * @param {string} EnvName variable d'environnement
+ * @param {string} envSecure variable d'environnement
+ * @param {string} envSameSite variable d'environnement
  * @param {string} token token a renvoyer dans le cookie
  * @param {string} time duree avant expiration du cookie
  * @return cookie

@@ -20,8 +20,8 @@ type UserInfoRow = {
  * Renvoie les informations utilisateur et mustChangePassword
  */
 export async function userInfo(_req: Request, res: Response) {
+  // Récupère l'userId depuis `res.locals`puis recherche l'utilisateur dnas la bdd,
   const reqUserId = requireUserId(res.locals.userId);
-
   const rows = await query<UserInfoRow>(
     `SELECT id, email, display_name, is_active, role, must_change_password
      FROM users
