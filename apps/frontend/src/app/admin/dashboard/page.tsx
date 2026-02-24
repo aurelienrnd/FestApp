@@ -1,7 +1,9 @@
-export default function Page() {
+﻿export default function Page() {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
-    </div>
+    <section className="section-page flex flex-col items-center justify-center">
+      <h1 className="text-center text-6xl font-black uppercase md:text-8xl">
+        ADMINISTRATION MODE
+      </h1>
+    </section>
   );
 }
