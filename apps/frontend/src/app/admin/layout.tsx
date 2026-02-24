@@ -1,5 +1,9 @@
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import {
+  AdminUserProvider,
+  type AdminAuthMeResponse,
+} from "../../components/AdminUserProvider";
 
 /** Verifie la session via le backend avant de rendre les pages `/admin`
  * Redirige vers `/login` si la session est absente ou invalide.
@@ -17,11 +21,12 @@ export default async function AdminLayout({
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
 
-  // Vérifie si l'URL de l'API est definie dans les variables d'environnement
+  // Verifie si l'URL de l'API est definie dans les variables d'environnement
   if (!apiBaseUrl) {
     throw new Error("Missing env var: API_URL_SERVER or NEXT_PUBLIC_API_URL");
   }
 
+  // Verifie la session admin et redirige vers /login si la requete echoue ou renvoie une reponse non valide.
   let response: Response;
   try {
     response = await fetch(`${apiBaseUrl}/admin/auth/me`, {
@@ -32,10 +37,12 @@ export default async function AdminLayout({
   } catch {
     redirect("/login");
   }
-
   if (!response.ok) {
     redirect("/login");
   }
 
-  return <>{children}</>;
+  // Parse les donnees utilisateur et les fournit a toutes les pages admin
+  const me = (await response.json()) as AdminAuthMeResponse;
+
+  return <AdminUserProvider value={me}>{children}</AdminUserProvider>;
 }
