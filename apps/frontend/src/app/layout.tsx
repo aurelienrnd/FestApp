@@ -37,7 +37,7 @@ export default function RootLayout({
         <AppUiProvider>
           <div id="app-root" className="flex min-h-screen flex-col">
             <Banner />
-            <main className="flex-1">{children}</main>
+            <main className="flex flex-1 flex-col">{children}</main>
             <Footer />
           </div>
         </AppUiProvider>

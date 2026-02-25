@@ -71,11 +71,9 @@ export default function Page() {
 
   return (
     <section className="section-page flex flex-col items-center justify-center">
-      <h1 className="text-center text-6xl font-black uppercase md:text-8xl">
-        Connexion
-      </h1>
+      <h1 className="title1">Connexion</h1>
 
-      <form className="mt-12 w-full max-w-lg space-y-8" onSubmit={handleSubmit}>
+      <form className="w-full max-w-lg space-y-8" onSubmit={handleSubmit}>
         <div>
           <label htmlFor="loginEmail" className="sr-only">
             Votre email

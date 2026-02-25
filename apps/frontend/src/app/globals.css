@@ -29,15 +29,15 @@
 }
 
 :root {
-  --spacing-container-modal: 1.5rem;
-  --spacing-paraf-modal: 1rem;
+  --spacing-container-modal: 1.5rem; /*-6*/
+  --spacing-paraf-modal: 1rem; /*-4*/
 
-  --spacing-padding-input-x: 0.75rem;
-  --spacing-padding-input-y: 0.5rem;
+  --spacing-padding-input-x: 0.75rem; /*-3*/
+  --spacing-padding-input-y: 0.5rem; /*-2*/
 
-  --spacing-section-page-x: 1.5rem;
-  --spacing-mobil-section-page-y: 2.5rem;
-  --spacing-desktop-section-page-y: 2.5rem;
+  --spacing-section-page-x: 1.5rem; /*-6*/
+  --spacing-mobil-section-page-y: 2.5rem; /*-10*/
+  --spacing-desktop-section-page-y: 2.5rem; /*-10*/
 }
 
 :root {
@@ -45,6 +45,9 @@
 }
 
 @layer components {
+  .title1 {
+    @apply text-center text-4xl font-black uppercase mb-12 md:text-8xl;
+  }
   .title-modal {
     @apply text-center text-4xl font-black;
   }
