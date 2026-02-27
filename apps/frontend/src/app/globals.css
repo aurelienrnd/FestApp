@@ -2,7 +2,7 @@
 
 :root {
   --color-1: #cb3346;
-  --color-2: #767676;
+  --color-2: #e4e4e7;
   --color-3: #0ea5e9;
   --color-text-visitor: #ffffff;
   --color-bg-visitor: black;
@@ -46,7 +46,7 @@
 
 @layer components {
   .title1 {
-    @apply text-center text-4xl font-black uppercase mb-12 md:text-8xl;
+    @apply text-center text-4xl md:text-8xl font-black uppercase mb-12 md:text-8xl;
   }
   .title-modal {
     @apply text-center text-4xl font-black;
@@ -68,7 +68,7 @@
   }
 
   .mobil-menu {
-    @apply inline-flex rounded bg-(--color-2) px-2 py-1 text-(--color-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration);
+    @apply border border-(--color-text-input) inline-flex rounded bg-(--color-2) px-2 py-1 text-(--color-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration);
   }
   .mobil-menu:hover {
     @apply scale-(--anim-btn-scale);
@@ -97,6 +97,6 @@
   }
 
   .section-page {
-    @apply h-full px-(--spacing-section-page-x) py-(--spacing-mobil-section-page-y) md:py-(--spacing-desktop-section-page-y);
+    @apply w-full h-full py-(--spacing-mobil-section-page-y) md:py-(--spacing-desktop-section-page-y) px-(--spacing-section-page-x) md:px-0;
   }
 }
