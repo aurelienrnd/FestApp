@@ -1,7 +1,14 @@
+import SideBarTool from "../../../components/SideBarTool";
+import { navDashBordItems } from "../../../config/navigation";
+
 export default function Page() {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold">Admin Users</h1>
-    </div>
+    <section className="section-page flex flex-col flex-1 text-xl md:text-4xl">
+      <h1 className="title1">Admin Users</h1>
+
+      <SideBarTool items={navDashBordItems}>
+        <p>exemple</p>
+      </SideBarTool>
+    </section>
   );
 }
