@@ -13,10 +13,18 @@ export const navVisitorItems: NavItem[] = [
 ];
 
 // Liens affiches dans la navigation de l'espace administrateur.
-export const navAdminItems: NavItem[] = [
+export const navAdminItem: NavItem[] = [
   { label: "Dashboard", path: "/admin/dashboard" },
   { label: "Programmation", path: "/admin/lineup" },
   { label: "Articles", path: "/admin/news" },
   { label: "Utilisateurs", path: "/admin/users" },
   { label: "Logout", path: "/../login" },
+];
+
+// Liens affiches dans la navigation de la page Dashboard.
+export const navDashBordItems: NavItem[] = [
+  { label: "Dashboard", path: "/admin/dashboard" },
+  { label: "Programmation", path: "/admin/lineup" },
+  { label: "Articles", path: "/admin/news" },
+  { label: "Utilisateurs", path: "/admin/users" },
 ];
