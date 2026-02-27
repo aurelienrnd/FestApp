@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import {
   navVisitorItems,
-  navAdminItems,
+  navAdminItem,
   type NavItem,
 } from "../config/navigation";
 import logo from "../../public/header_logo.png";
@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { useAppUi } from "./AppUiProvider";
 import ModalCloseButton from "./ModalCloseButton";
+import Navigation from "./Navigation";
 import { apiRequest, type ApiMessageResponse } from "../functions/apiRequest";
 import { getApiErrorMessage } from "../functions/getApiErrorMessage";
 
@@ -115,6 +116,7 @@ function DesktopNav({
  * @param {boolean} props.isAdminPath indique si la page actuelle est une page admin
  * @param {() => void} props.onLogout Fonction Logout
  * @children BtnTicket Affiche un bouton de billetterie
+ * @children Navigation Affiche une navigation verticale
  */
 export function MobilNav({
   items,
@@ -151,46 +153,14 @@ export function MobilNav({
         overlayClassName="modal-overlay"
       >
         <ModalCloseButton onClose={() => setIsOpen(false)} />
-        <nav>
-          <ul className="flex flex-col gap-6">
-            {items.map((item) => {
-              const isActive = pathname === item.path;
-              const isLogoutItem = isAdminPath && item.label === "Logout";
-
-              if (isLogoutItem) {
-                return (
-                  <li key={item.path} className="bg-black text-white w-30 p-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsOpen(false);
-                        onLogout();
-                      }}
-                      className="block w-full text-right"
-                    >
-                      {item.label}
-                    </button>
-                  </li>
-                );
-              }
-
-              return (
-                <li
-                  key={item.path}
-                  className={
-                    isActive
-                      ? "bg-(--color-1) w-50 p-2"
-                      : "bg-black text-white w-30 p-2"
-                  }
-                >
-                  <Link href={item.path} className="block w-full text-right">
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
+        <Navigation
+          items={items}
+          pathname={pathname}
+          isAdminPath={isAdminPath}
+          onLogout={onLogout}
+          variant="mobile"
+          onNavigate={() => setIsOpen(false)}
+        />
       </Modal>
     </nav>
   );
@@ -210,7 +180,7 @@ export default function Banner() {
   const router = useRouter();
   // Fournit l'etat UI puis choisit automatiquement la navigation admin ou visiteur.
   const { pathname, isAdminPath, isDesktop } = useAppUi();
-  const items = isAdminPath ? navAdminItems : navVisitorItems;
+  const items = isAdminPath ? navAdminItem : navVisitorItems;
 
   // Envoie la requete de deconnexion puis redirige vers `/login`
   const handleLogout = async () => {
