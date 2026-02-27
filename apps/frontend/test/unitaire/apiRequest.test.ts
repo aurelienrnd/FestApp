@@ -52,7 +52,9 @@ describe("apiRequest", () => {
     expect(result.error).toBeInstanceOf(ApiRequestError);
 
     if (!(result.error instanceof ApiRequestError)) {
-      throw new Error("Expected result.error to be an ApiRequestError instance");
+      throw new Error(
+        "Expected result.error to be an ApiRequestError instance",
+      );
     }
     expect(result.error.message).toBe("Trop de tentatives");
     expect(result.error.status).toBe(429);
@@ -68,7 +70,9 @@ describe("apiRequest", () => {
     expect(result.error).toBeInstanceOf(ApiRequestError);
 
     if (!(result.error instanceof ApiRequestError)) {
-      throw new Error("Expected result.error to be an ApiRequestError instance");
+      throw new Error(
+        "Expected result.error to be an ApiRequestError instance",
+      );
     }
     expect(result.error.message).toBe("Network down");
     expect(result.error.status).toBe(500);
