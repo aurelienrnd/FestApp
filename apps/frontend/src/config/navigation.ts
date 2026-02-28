@@ -1,7 +1,9 @@
 // Type
 export type NavItem = {
-  label: string;
-  path: string;
+  label?: string;
+  labelBtn?: string;
+  path?: string;
+  active?: boolean;
 };
 
 // Liens affiches dans la navigation publique (visiteur non connecte).
@@ -18,7 +20,7 @@ export const navAdminItem: NavItem[] = [
   { label: "Programmation", path: "/admin/lineup" },
   { label: "Articles", path: "/admin/news" },
   { label: "Utilisateurs", path: "/admin/users" },
-  { label: "Logout", path: "/../login" },
+  { labelBtn: "Logout", active: false },
 ];
 
 // Liens affiches dans la navigation de la page Dashboard.
@@ -27,4 +29,25 @@ export const navDashBordItems: NavItem[] = [
   { label: "Programmation", path: "/admin/lineup" },
   { label: "Articles", path: "/admin/news" },
   { label: "Utilisateurs", path: "/admin/users" },
+];
+
+// Filtre affiches dans la navigation de la page LineUp et admin/Lineup.
+export const filterLineUpItems: NavItem[] = [
+  { labelBtn: "Toutes les dates", active: true },
+  { labelBtn: "Jours: 1", active: false },
+  { labelBtn: "Jours: 2", active: false },
+];
+
+// Filtre affiches dans la navigation de la page News et admin/News.
+export const filterNewsItems: NavItem[] = [
+  { labelBtn: "Toutes les news", active: true },
+  { labelBtn: "Croissant", active: false },
+  { labelBtn: "Decroissant", active: false },
+];
+
+// Filtre affiches dans la navigation de la admin/Users.
+export const filterUsersItems: NavItem[] = [
+  { labelBtn: "Par nom", active: true },
+  { labelBtn: "Par mail", active: false },
+  { labelBtn: "Par role", active: false },
 ];

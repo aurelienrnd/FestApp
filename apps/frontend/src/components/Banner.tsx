@@ -63,13 +63,13 @@ function DesktopNav({
   return (
     <nav>
       <ul className="nav-list">
-        {items.map((item) => {
+        {items.map((item, index) => {
           const isActive = pathname === item.path;
-          const isLogoutItem = isAdminPath && item.label === "Logout";
+          const isLogoutItem = isAdminPath && Boolean(item.labelBtn);
 
           if (isLogoutItem) {
             return (
-              <li key={item.path}>
+              <li key={`logout-${index}`}>
                 <button
                   type="button"
                   onClick={onLogout}
@@ -79,14 +79,18 @@ function DesktopNav({
                       : "border-b border-transparent transition-colors hover:border-(--color-1)"
                   }
                 >
-                  {item.label}
+                  {item.labelBtn}
                 </button>
               </li>
             );
           }
 
+          if (!item.path) {
+            return null;
+          }
+
           return (
-            <li key={item.path}>
+            <li key={`${item.path}-${index}`}>
               <Link
                 href={item.path}
                 className={
@@ -158,8 +162,8 @@ export function MobilNav({
           pathname={pathname}
           isAdminPath={isAdminPath}
           onLogout={onLogout}
-          variant="mobile"
-          onNavigate={() => setIsOpen(false)}
+          variant="modal"
+          setmodal={() => setIsOpen(false)}
         />
       </Modal>
     </nav>
