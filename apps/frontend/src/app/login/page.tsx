@@ -136,7 +136,6 @@ export default function Page() {
         overlayClassName="modal-overlay"
       >
         <ModalCloseButton onClose={() => setIsForgotPasswordModalOpen(false)} />
-
         <h2 className="title-modal">Mot de passe oublie</h2>
 
         <ForgotPassword />

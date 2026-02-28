@@ -109,6 +109,6 @@
   }
 
   .section-page {
-    @apply w-full h-full py-(--spacing-around-big) md:py-(--spacing-around-big) px-(--spacing-around-meduim) md:px-0 flex flex-col flex-1 text-xl md:text-4xl;
+    @apply w-full h-full py-(--spacing-around-big) md:py-(--spacing-around-big) px-(--spacing-around-meduim) md:px-0 flex flex-col flex-1 text-xl md:text-3xl;
   }
 }
