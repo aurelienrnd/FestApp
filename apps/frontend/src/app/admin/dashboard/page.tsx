@@ -12,7 +12,7 @@ import DashboardContent from "./DashboardContent";
  */
 export default function Page() {
   return (
-    <section className="section-page flex flex-col flex-1 text-xl md:text-4xl">
+    <section className="section-page ">
       <h1 className="title1">ADMINISTRATION MODE</h1>
 
       <SideBarTool items={navDashBordItems}>

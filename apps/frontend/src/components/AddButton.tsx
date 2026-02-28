@@ -16,7 +16,6 @@ import Navigation from "./Navigation";
  */
 export default function AddButton({
   items,
-  className,
 }: {
   items: NavItem[];
   className?: string;
@@ -36,7 +35,7 @@ export default function AddButton({
     <>
       <button
         type="button"
-        className="mb-12"
+        className="mb-(--margin-bottom-title)"
         aria-label="Ouvrir les filtres"
         onClick={() => setIsOpen(true)}
       >

@@ -4,9 +4,9 @@ import AddButton from "../../components/AddButton";
 
 export default function Page() {
   return (
-    <section className="section-page flex flex-col flex-1 text-xl md:text-4xl">
+    <section className="section-page">
       <div className="flex justify-center item-center gap-6">
-        <AddButton items={filterLineUpItems} className="mb-12" />
+        <AddButton items={filterLineUpItems} />
         <h1 className="title1">Lineup</h1>
       </div>
       <SideBarTool items={filterLineUpItems}>

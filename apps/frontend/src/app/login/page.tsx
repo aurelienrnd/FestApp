@@ -73,7 +73,10 @@ export default function Page() {
     <section className="section-page flex flex-col items-center justify-center">
       <h1 className="title1">Connexion</h1>
 
-      <form className="w-full max-w-lg space-y-8" onSubmit={handleSubmit}>
+      <form
+        className="w-full max-w-lg space-y-(--spacing-form)"
+        onSubmit={handleSubmit}
+      >
         <div>
           <label htmlFor="loginEmail" className="sr-only">
             Votre email
@@ -110,6 +113,7 @@ export default function Page() {
           {errorMessage ? (
             <p className="mb-3 text-sm text-(--color-1)">{errorMessage}</p>
           ) : null}
+
           <button type="submit" className="btn-cta" disabled={isFormInvalid}>
             Envoyer
           </button>
@@ -118,7 +122,7 @@ export default function Page() {
 
       <button
         type="button"
-        className="mt-10 btn-type-2"
+        className="mt-(--spacing-form) btn-type-2"
         onClick={() => setIsForgotPasswordModalOpen(true)}
       >
         Mot de passe oublie

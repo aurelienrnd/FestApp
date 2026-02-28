@@ -1,84 +1,100 @@
 ﻿# Guide Style Frontend
 
-Ce document décrit le style réellement utilisé dans `apps/frontend`.
+Ce document decrit l etat reel du style dans `apps/frontend`.
 
 ## 1. Fichier central
 
-Le style global est centralisé dans:
+Le style global est centralise dans:
 - `apps/frontend/src/app/globals.css`
 
-Ce fichier contient:
+Il contient:
 - les variables CSS (`:root`)
-- les thèmes (`:root[data-theme="..."]`)
-- les classes composants réutilisables (`@layer components`)
+- les themes (`:root[data-theme="..."]`)
+- les classes composants reutilisables (`@layer components`)
 
-## 2. Design tokens (`:root`)
+Details:
+- `--font-koulen` est reference dans `apps/frontend/src/app/layout.tsx:13` et provient de Next Font.
 
-Les tokens sont définis en variables CSS pour éviter les valeurs dupliquées.
+## 2. Tokens declares et usages
 
 ### Couleurs
-- `--color-1`, `--color-2`, `--color-3`
-- `--color-bg-input`, `--color-text-input`
-- `--color-text-visitor`, `--color-bg-visitor`
-- `--color-text-admin`, `--color-bg-admin`
-- `--color-text`, `--color-bg` (variables actives selon le thème)
 
-Note: le préfixe `color` est conservé tel quel pour rester aligné avec le code actuel.
+| Variable | Usages |
+| --- | --- |
+| `--color-1` | `globals.css` (`.btn-cta`), `components/Footer.tsx`, `components/Banner.tsx`, `components/Navigation.tsx`, `app/login/page.tsx` |
+| `--color-2` | `globals.css` (`.mobil-menu`) |
+| `--color-3` | `components/Footer.tsx` (separateur) |
+| `--color-text-visitor` | `globals.css` (theme visitor) |
+| `--color-bg-visitor` | `globals.css` (theme visitor) |
+| `--color-bg-admin` | `globals.css` (theme admin) |
+| `--color-text-admin` | `globals.css` (theme admin) |
+| `--color-bg-input` | `globals.css` (`.input`, `.text-area`) |
+| `--color-text-input` | `globals.css` (`.mobil-menu`, `.input`, `.text-area`) |
+| `--color-text` | `globals.css` (`.btn-cta`, `.mobil-menu`), `app/layout.tsx` |
+| `--color-bg` | `app/layout.tsx`, `components/Footer.tsx` |
 
 ### Animation
-- `--anim-btn-transition`
-- `--anim-btn-duration`
-- `--anim-btn-scale`
 
-### Espacements
-- `--spacing-container-modal`
-- `--spacing-paraf-modal`
-- `--spacing-padding-input-x`
-- `--spacing-padding-input-y`
-- `--spacing-section-page-x`
-- `--spacing-mobil-section-page-y`
-- `--spacing-desktop-section-page-y`
+| Variable | Usages |
+| --- | --- |
+| `--anim-btn-transition` | `globals.css` (`.btn-cta`, `.mobil-menu`), `components/Footer.tsx` |
+| `--anim-btn-duration` | `globals.css` (`.btn-cta`, `.mobil-menu`), `components/Footer.tsx` |
+| `--anim-btn-scale` | `globals.css` (`.btn-cta:hover`, `.mobil-menu:hover`), `components/Footer.tsx` |
+
+### Echelle d espacement (`--space-*`)
+
+| Variable | Usages |
+| --- | --- |
+| `--space-2` | source de `--input-padding-y` |
+| `--space-3` | source de `--input-padding-x` |
+| `--space-4` | source de `--spacing-paragraph` |
+| `--space-6` | source de `--gap-content-small`, `--spacing-around-small` |
+| `--space-8` | source de `--spacing-form` |
+| `--space-10` | source de `--spacing-around-big` |
+| `--space-12` | source de `--margin-bottom-title` |
+| `--space-20` | source de `--gap-content-big` |
+
+### Espacements semantiques
+
+| Variable | Usages |
+| --- | --- |
+| `--gap-content-small` | `globals.css` (`.nav-list`), `components/Banner.tsx`, `components/Footer.tsx`, `components/ContactUs.tsx`, `components/ForgotPassword.tsx`, `components/LegalMention.tsx`, `components/ModalCloseButton.tsx`, `components/SideBarTool.tsx`, `app/news/page.tsx`, `app/admin/users/page.tsx`, `app/admin/dashboard/DashboardContent.tsx` |
+| `--gap-content-big` | `app/admin/dashboard/DashboardContent.tsx` |
+| `--spacing-paragraph` | `components/ContactUs.tsx`, `components/ForgotPassword.tsx`, `components/LegalMention.tsx` |
+| `--spacing-around-small` | `globals.css` (`.section-page`), `components/Banner.tsx`, `components/Footer.tsx` |
+| `--spacing-around-big` | `globals.css` (`.section-page`), `components/Footer.tsx` |
+| `--input-padding-x` | `globals.css` (`.input`, `.text-area`) |
+| `--input-padding-y` | `globals.css` (`.input`, `.text-area`) |
+| `--spacing-form` | `app/login/page.tsx` |
+| `--margin-bottom-title` | `globals.css` (`.title1`), `components/AddButton.tsx` |
 
 ### Typographie
-- `--font-family-input` (actuellement `Arial, sans-serif`)
 
-## 3. Système de thème
+| Variable | Usages |
+| --- | --- |
+| `--font-family-input` | `globals.css` (`.input`, `.text-area`) |
 
-Le projet utilise deux thèmes pilotés par l'attribut `data-theme`:
-- `:root[data-theme="admin"]`
-- `:root[data-theme="visitor"]`
+## 3. Classes reutilisables (@layer components)
 
-Les composants s'appuient ensuite sur:
-- `bg-(--color-bg)`
-- `text-(--color-text)`
+Classes definies dans `globals.css`:
+- `.title1`
+- `.title-modal`
+- `.nav-list`
+- `.btn-cta`
+- `.btn-type-2`
+- `.mobil-menu`
+- `.modal-overlay`
+- `.modal`
+- `.form-modal`
+- `.input`
+- `.text-area`
+- `.submit-modal-area`
+- `.section-page`
 
-## 4. Classes réutilisables (`@layer components`)
+## 4. Conventions recommandees
 
-Classes actuellement définies dans `globals.css`:
-- `.title-modal`: titre principal des modales
-- `.nav-list`: liste de navigation horizontale (alignement + gap + tracking)
-- `.btn-cta`: bouton principal (couleur marque, transitions, état disabled)
-- `.btn-type-2`: bouton secondaire (variation d'opacité)
-- `.mobil-menu`: bouton menu mobile
-- `.modal-overlay`: fond d'overlay des modales
-- `.modal`: conteneur de modale
-- `.form-modal`: structure verticale de formulaire en modale
-- `.input`: style partagé des champs `input`
-- `.text-area`: style partagé des champs `textarea`
-- `.submit-modal-area`: zone d'alignement du bouton de soumission
-- `.section-page`: spacing vertical/horizontal des sections de page
-
-## 5. Usage dans les composants
-
-- `Footer.tsx` utilise `.nav-list`, `.btn-type-2`, `.modal`, `.modal-overlay`, `.title-modal`.
-- `ContactUs.tsx` et `ForgotPassword.tsx` utilisent `.form-modal`, `.input`, `.submit-modal-area`.
-- `login/page.tsx` utilise `.section-page`, `.input`, `.btn-cta`, `.btn-type-2`, `.modal`, `.modal-overlay`, `.title-modal`.
-- `Banner.tsx` utilise `.nav-list` et `.mobil-menu`.
-
-## 6. Conventions en place
-
-- Prioriser les classes partagées définies dans `@layer components` avant d'ajouter des classes locales.
-- Ajouter une variable CSS dans `:root` si la valeur est réutilisable.
-- Garder les styles inline/locales seulement pour les cas strictement spécifiques.
-- Conserver la syntaxe Tailwind actuelle basée sur variables CSS, par exemple `bg-(--color-bg)`.
+- Prioriser les tokens semantiques avant les valeurs brutes Tailwind.
+- Utiliser la scale `--space-*` comme base unique.
+- Creer un token semantique seulement quand une valeur est reutilisee.
+- Garder la syntaxe Tailwind variable: `gap-(--token)`, `px-(--token)`, `bg-(--token)`.
 

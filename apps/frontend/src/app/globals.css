@@ -29,15 +29,27 @@
 }
 
 :root {
-  --spacing-container-modal: 1.5rem; /*-6*/
-  --spacing-paraf-modal: 1rem; /*-4*/
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-20: 5rem;
 
-  --spacing-padding-input-x: 0.75rem; /*-3*/
-  --spacing-padding-input-y: 0.5rem; /*-2*/
+  --gap-content-small: var(--space-6);
+  --gap-content-big: var(--space-20);
+  --spacing-paragraph: var(--space-4);
 
-  --spacing-section-page-x: 1.5rem; /*-6*/
-  --spacing-mobil-section-page-y: 2.5rem; /*-10*/
-  --spacing-desktop-section-page-y: 2.5rem; /*-10*/
+  --spacing-around-small: var(--space-6);
+  --spacing-around-big: var(--space-10);
+
+  --input-padding-x: var(--space-3);
+  --input-padding-y: var(--space-2);
+  --spacing-form: var(--space-8);
+
+  --margin-bottom-title: var(--space-12);
 }
 
 :root {
@@ -46,14 +58,14 @@
 
 @layer components {
   .title1 {
-    @apply text-center text-4xl md:text-8xl font-black uppercase mb-12 md:text-8xl;
+    @apply text-center text-4xl md:text-8xl font-black uppercase mb-(--margin-bottom-title) md:text-8xl;
   }
   .title-modal {
     @apply text-center text-4xl font-black;
   }
 
   .nav-list {
-    @apply flex items-center gap-(--spacing-container-modal) tracking-wide;
+    @apply flex items-center gap-(--gap-content-small) tracking-wide;
   }
 
   .btn-cta {
@@ -85,11 +97,11 @@
     @apply mt-4 space-y-4;
   }
   .input {
-    @apply w-full rounded-md border border-(--color-text-input) bg-(--color-bg-input) px-(--spacing-padding-input-x) py-(--spacing-padding-input-y) text-sm placeholder:text-(--color-text-input);
+    @apply w-full rounded-md border border-(--color-text-input) bg-(--color-bg-input) px-(--input-padding-x) py-(--input-padding-y) text-sm placeholder:text-(--color-text-input);
     font-family: var(--font-family-input);
   }
   .text-area {
-    @apply h-56 w-full resize-none rounded-md border border-(--color-text-input) bg-(--color-bg-input) px-(--spacing-padding-input-x) py-(--spacing-padding-input-y) text-sm placeholder:text-(--color-text-input) md:h-44;
+    @apply h-56 w-full resize-none rounded-md border border-(--color-text-input) bg-(--color-bg-input) px-(--input-padding-x) py-(--input-padding-y) text-sm placeholder:text-(--color-text-input) md:h-44;
     font-family: var(--font-family-input);
   }
   .submit-modal-area {
@@ -97,6 +109,6 @@
   }
 
   .section-page {
-    @apply w-full h-full py-(--spacing-mobil-section-page-y) md:py-(--spacing-desktop-section-page-y) px-(--spacing-section-page-x) md:px-0;
+    @apply w-full h-full py-(--spacing-around-big) md:py-(--spacing-around-big) px-(--spacing-around-small) md:px-0 flex flex-col flex-1 text-xl md:text-4xl;
   }
 }

@@ -34,14 +34,14 @@ export default function ContactUs() {
   };
 
   return (
-    <div className="m-(--spacing-container-modal)">
+    <div className="m-(--spacing-around-small)">
       {isSubmit ? (
-        <p className="mt-(--spacing-paraf-modal) text-center">
+        <p className="mt-(--spacing-paragraph) text-center">
           votre message est envoye
         </p>
       ) : (
         <form className="form-modal" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-(--gap-content-small) md:grid-cols-2">
             <div>
               <label htmlFor="contactName" className="sr-only">
                 Nom Prenom

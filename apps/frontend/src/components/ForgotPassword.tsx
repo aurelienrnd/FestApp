@@ -19,8 +19,8 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="m-(--spacing-container-modal)">
-      <p className="mt-(--spacing-paraf-modal) text-center">
+    <div className="m-(--gap-content-small)">
+      <p className="mt-(--spacing-paragraph) text-center">
         Nous vous enverrons un nouveau mot de passe sur votre boite mail
       </p>
 
