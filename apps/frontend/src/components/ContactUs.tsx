@@ -34,7 +34,7 @@ export default function ContactUs() {
   };
 
   return (
-    <div className="m-(--spacing-around-small)">
+    <div className="m-(--spacing-around-meduim)">
       {isSubmit ? (
         <p className="mt-(--spacing-paragraph) text-center">
           votre message est envoye

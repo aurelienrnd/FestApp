@@ -5,18 +5,18 @@ import type { NavItem } from "../config/navigation";
 
 const navigationStyle = {
   modal: {
-    list: "flex flex-col gap-4",
-    btnActive: "bg-(--color-1) w-70 p-3",
+    list: "flex flex-col gap-(--gap-content-small)",
+    btnActive: "bg-(--color-1) w-70 p-(--spacing-around-small)",
     btnInactive:
-      "bg-black text-white w-40 p-3 hover:bg-(--color-1) hover:w-70 hover:text-black",
+      "bg-black text-white w-40 p-(--spacing-around-small) hover:bg-(--color-1) hover:w-70 hover:text-black",
   },
   sidebar: {
-    list: "flex flex-col gap-6",
+    list: "flex flex-col gap-(--gap-content-small)",
     btnActive: "bg-(--color-1) w-80 p-2",
     btnInactiveAdmin:
-      "bg-black text-white w-60 p-2 hover:bg-(--color-1) hover:w-80 hover:text-white",
+      "bg-black text-white w-60 p-(--spacing-around-small) hover:bg-(--color-1) hover:w-80 hover:text-white",
     btnInactivePublic:
-      "bg-white text-black w-60 p-2 hover:bg-(--color-1) hover:w-80 hover:text-black",
+      "bg-white text-black w-60 p-(--spacing-around-small) hover:bg-(--color-1) hover:w-80 hover:text-black",
   },
 } as const;
 

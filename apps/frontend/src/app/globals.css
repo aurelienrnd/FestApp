@@ -42,11 +42,11 @@
   --gap-content-big: var(--space-20);
   --spacing-paragraph: var(--space-4);
 
-  --spacing-around-small: var(--space-6);
+  --spacing-around-xsmall: var(--space-2);
+  --spacing-around-small: var(--space-3);
+  --spacing-around-meduim: var(--space-6);
   --spacing-around-big: var(--space-10);
 
-  --input-padding-x: var(--space-3);
-  --input-padding-y: var(--space-2);
   --spacing-form: var(--space-8);
 
   --margin-bottom-title: var(--space-12);
@@ -69,7 +69,7 @@
   }
 
   .btn-cta {
-    @apply text-white inline-flex rounded bg-(--color-1) px-5 py-1 text-(--color-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration) disabled:cursor-not-allowed disabled:opacity-60;
+    @apply text-white inline-flex rounded bg-(--color-1) px-3 py-2 text-(--color-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration) disabled:cursor-not-allowed disabled:opacity-60;
   }
   .btn-cta:hover {
     @apply scale-(--anim-btn-scale);
@@ -97,11 +97,11 @@
     @apply mt-4 space-y-4;
   }
   .input {
-    @apply w-full rounded-md border border-(--color-text-input) bg-(--color-bg-input) px-(--input-padding-x) py-(--input-padding-y) text-sm placeholder:text-(--color-text-input);
+    @apply w-full rounded-md border border-(--color-text-input) bg-(--color-bg-input) px-(--spacing-around-small) py-(--spacing-around-xsmall) text-sm placeholder:text-(--color-text-input);
     font-family: var(--font-family-input);
   }
   .text-area {
-    @apply h-56 w-full resize-none rounded-md border border-(--color-text-input) bg-(--color-bg-input) px-(--input-padding-x) py-(--input-padding-y) text-sm placeholder:text-(--color-text-input) md:h-44;
+    @apply h-56 w-full resize-none rounded-md border border-(--color-text-input) bg-(--color-bg-input) px-(--spacing-around-small) py-(--spacing-around-xsmall) text-sm placeholder:text-(--color-text-input) md:h-44;
     font-family: var(--font-family-input);
   }
   .submit-modal-area {
@@ -109,6 +109,6 @@
   }
 
   .section-page {
-    @apply w-full h-full py-(--spacing-around-big) md:py-(--spacing-around-big) px-(--spacing-around-small) md:px-0 flex flex-col flex-1 text-xl md:text-4xl;
+    @apply w-full h-full py-(--spacing-around-big) md:py-(--spacing-around-big) px-(--spacing-around-meduim) md:px-0 flex flex-col flex-1 text-xl md:text-4xl;
   }
 }

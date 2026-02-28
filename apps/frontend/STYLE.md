@@ -45,10 +45,10 @@ Details:
 
 | Variable | Usages |
 | --- | --- |
-| `--space-2` | source de `--input-padding-y` |
-| `--space-3` | source de `--input-padding-x` |
+| `--space-2` | source de `--spacing-around-xsmall` |
+| `--space-3` | source de `--spacing-around-small` |
 | `--space-4` | source de `--spacing-paragraph` |
-| `--space-6` | source de `--gap-content-small`, `--spacing-around-small` |
+| `--space-6` | source de `--gap-content-small`, `--spacing-around-meduim` |
 | `--space-8` | source de `--spacing-form` |
 | `--space-10` | source de `--spacing-around-big` |
 | `--space-12` | source de `--margin-bottom-title` |
@@ -61,10 +61,10 @@ Details:
 | `--gap-content-small` | `globals.css` (`.nav-list`), `components/Banner.tsx`, `components/Footer.tsx`, `components/ContactUs.tsx`, `components/ForgotPassword.tsx`, `components/LegalMention.tsx`, `components/ModalCloseButton.tsx`, `components/SideBarTool.tsx`, `app/news/page.tsx`, `app/admin/users/page.tsx`, `app/admin/dashboard/DashboardContent.tsx` |
 | `--gap-content-big` | `app/admin/dashboard/DashboardContent.tsx` |
 | `--spacing-paragraph` | `components/ContactUs.tsx`, `components/ForgotPassword.tsx`, `components/LegalMention.tsx` |
-| `--spacing-around-small` | `globals.css` (`.section-page`), `components/Banner.tsx`, `components/Footer.tsx` |
+| `--spacing-around-meduim` | `globals.css` (`.section-page`), `components/Banner.tsx`, `components/ContactUs.tsx`, `components/Footer.tsx`, `components/SideBarTool.tsx` |
 | `--spacing-around-big` | `globals.css` (`.section-page`), `components/Footer.tsx` |
-| `--input-padding-x` | `globals.css` (`.input`, `.text-area`) |
-| `--input-padding-y` | `globals.css` (`.input`, `.text-area`) |
+| `--spacing-around-small` | `globals.css` (`.input`, `.text-area`) |
+| `--spacing-around-xsmall` | `globals.css` (`.input`, `.text-area`) |
 | `--spacing-form` | `app/login/page.tsx` |
 | `--margin-bottom-title` | `globals.css` (`.title1`), `components/AddButton.tsx` |
 
@@ -97,4 +97,3 @@ Classes definies dans `globals.css`:
 - Utiliser la scale `--space-*` comme base unique.
 - Creer un token semantique seulement quand une valeur est reutilisee.
 - Garder la syntaxe Tailwind variable: `gap-(--token)`, `px-(--token)`, `bg-(--token)`.
-

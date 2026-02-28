@@ -201,7 +201,7 @@ export default function Banner() {
   };
 
   return (
-    <header className="mx-auto flex w-full items-center justify-between px-(--spacing-around-small) py-2">
+    <header className="mx-auto flex w-full items-center justify-between px-(--spacing-around-meduim) py-2">
       <Image
         src={logo}
         alt="Logo Hellfest"
