@@ -61,16 +61,18 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
   const token = getTokenFromCookie(req);
   const { userId, sessionId } = decodedToken(token);
 
-  // Cherche l'utilisateur correspondant à l'userId extrait du token
-  const user = await query("SELECT id, display_name FROM users WHERE id = $1", [
-    userId,
-  ]);
+  // Cherche l'utilisateur correspondant à l'userId extrait du token et renvoie sont nom et sont role
+  const user = await query(
+    "SELECT id, display_name, role FROM users WHERE id = $1",
+    [userId],
+  );
   if (!user[0]) {
     throw new AppError(ERRORS.AUTH_USER_NOT_FOUND, 401);
   }
 
   // // Stocke les infos d'authentification dans `res.locals`
   res.locals.userId = user[0].id;
+  res.locals.userRole = user[0].role;
   res.locals.userDisplayName = user[0].display_name;
   res.locals.sessionId = sessionId;
 
