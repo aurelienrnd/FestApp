@@ -7,13 +7,19 @@ import { hashPassword } from "../middlewares/hashPassword";
 import { asyncHandler } from "../middlewares/asyncHandler";
 // controllers
 import { createUser } from "../controllers/admin/users/create_user.controller";
+import { listUsers } from "../controllers/admin/users/list_users.controller";
 // schema
 import { createUserSchema } from "../schemas/schema";
 
 const router = Router();
 
 // Administrateurs
-//router.get("/users", notImplemented); // Lister les administrateurs
+router.get(
+  "/users",
+  asyncHandler(auth),
+  asyncHandler(sessionIsOpen),
+  asyncHandler(listUsers),
+); // Lister les utilisateurs
 router.post(
   "/users",
   asyncHandler(auth),
