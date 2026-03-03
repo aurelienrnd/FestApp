@@ -64,7 +64,7 @@ export default function Navigation({
   };
 
   return (
-    <nav>
+    <nav className="side-bar">
       <ul className={listClass}>
         {items.map((item, index) => {
           const isActive = pathname === item.path || Boolean(item.active);

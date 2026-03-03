@@ -8,7 +8,16 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState, type FormEvent } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
+import UsersContent from "./UsersContent";
 
+/** Affiche la page d'administration des utilisateurs.
+ * Affiche les filtres (sidebar + modal mobile) et la liste des utilisateurs.
+ * Ouvre une modale permettant d'ajouter un utilisateur (formulaire).
+ * @children SideBarTool : Affiche une navigation sticky sur desktop
+ * @children AddButton : Affiche la navigation des filtres sur mobile
+ * @children UsersContent : Affiche le contenu de la page utilisateurs
+ * @children ModalCloseButton : Ferme la modale
+ */
 export default function Page() {
   const [isOpen, setIsOpen] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -45,7 +54,7 @@ export default function Page() {
       <section className="section-page">
         <div className="flex justify-center item-center gap-(--gap-content-small)">
           <AddButton items={filterUsersItems} />
-          <h1 className="title1">Admin Users</h1>
+          <h1 className="title1">UTILISATEURS</h1>
           <button
             type="button"
             className="mb-(--margin-bottom-title)"
@@ -56,7 +65,7 @@ export default function Page() {
           </button>
         </div>
         <SideBarTool items={filterUsersItems}>
-          <p>exemple</p>
+          <UsersContent />
         </SideBarTool>
       </section>
 
@@ -145,7 +154,11 @@ export default function Page() {
             </div>
 
             <div className="submit-modal-area">
-              <button type="submit" className="btn-cta" disabled={isFormInvalid}>
+              <button
+                type="submit"
+                className="btn-cta"
+                disabled={isFormInvalid}
+              >
                 Ajouter
               </button>
             </div>
