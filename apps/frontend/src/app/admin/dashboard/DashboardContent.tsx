@@ -3,13 +3,12 @@
 import { useAdminUser } from "../../../components/AdminUserProvider";
 
 /** Affiche les informations principales du compte administrateur.
- * Recupere l'utilisateur connecte et presente les donnees de profil.
- */
+ * Recupere l'utilisateur connecte et presente les donnees de profil.*/
 export default function DashboardContent() {
   const { user } = useAdminUser();
 
   return (
-    <div className="flex-1 flex justify-center">
+    <div className="flex-1 flex justify-center text-2xl lg:text-5xl">
       <div className="h-full flex flex-col justify-center gap-(--gap-content-big)">
         <div>
           <p>Name : {user.display_name}</p>
