@@ -7,11 +7,15 @@ import { ERRORS } from "../../src/errors/errorMessages";
 import { asyncHandler } from "../../src/middlewares/asyncHandler";
 import { errorHandler } from "../../src/middlewares/errorHandler";
 
+// Mock du module de base de données pour les tests
 vi.mock("../../src/db", () => ({
   query: vi.fn(),
 }));
+
+// Création d’une version typée et mockée de la fonction query
 const mockQuery = vi.mocked(query);
 
+// Crée une instance Express configurée avec la route de création d’utilisateur
 function createApp() {
   const app = express();
   app.use(express.json());
@@ -33,7 +37,8 @@ describe("createUser controller (integration)", () => {
         {
           id: "user-1",
           email: "admin@test.fr",
-          display_name: "TestAdmin",
+          display_name: "John Doe",
+          role: "admin",
           is_active: true,
           must_change_password: true,
           created_at: new Date().toISOString(),
@@ -43,12 +48,15 @@ describe("createUser controller (integration)", () => {
     const app = createApp();
     const res = await request(app).post("/users").send({
       email: "admin@test.fr",
-      password: "Test1234!",
-      display_name: "TestAdmin",
+      first_name: "John",
+      last_name: "Doe",
+      role: "admin",
     });
 
     expect(res.status).toBe(201);
-    expect(res.body.message).toBe("Utilisateur créé");
+    expect(res.body.message).toBe("Utilisateur cree");
+    expect(typeof res.body.temporary_password).toBe("string");
+    expect(res.body.temporary_password.length).toBeGreaterThanOrEqual(16);
   });
 
   it("should return 409 when email already exists", async () => {
@@ -57,8 +65,9 @@ describe("createUser controller (integration)", () => {
     const app = createApp();
     const res = await request(app).post("/users").send({
       email: "admin@test.fr",
-      password: "Test1234!",
-      display_name: "TestAdmin",
+      first_name: "John",
+      last_name: "Doe",
+      role: "admin",
     });
 
     expect(res.status).toBe(409);
@@ -73,8 +82,9 @@ describe("createUser controller (integration)", () => {
     const app = createApp();
     const res = await request(app).post("/users").send({
       email: "admin@test.fr",
-      password: "Test1234!",
-      display_name: "TestAdmin",
+      first_name: "John",
+      last_name: "Doe",
+      role: "admin",
     });
 
     expect(res.status).toBe(409);
@@ -87,8 +97,9 @@ describe("createUser controller (integration)", () => {
     const app = createApp();
     const res = await request(app).post("/users").send({
       email: "admin@test.fr",
-      password: "Test1234!",
-      display_name: "TestAdmin",
+      first_name: "John",
+      last_name: "Doe",
+      role: "admin",
     });
 
     expect(res.status).toBe(500);
