@@ -184,6 +184,37 @@ Reponses d'erreur:
 - `409` `{ "error": "Email deja utilise" }`
 - `409` `{ "error": "Nom deja utilise" }`
 
+### DELETE `/admin/users/:id`
+
+Supprime definitivement un utilisateur de la base de donnees.
+
+Authentification:
+
+- Cookie d'authentification valide requis.
+
+Parametre d'URL:
+
+- `id`: UUID de l'utilisateur a supprimer.
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "message": "Utilisateur supprime"
+}
+```
+
+Reponses d'erreur:
+
+- `400` `{ "error": "Donnees invalides" }` (id invalide)
+- `401` `{ "error": "Cookie d'authentification manquant" }`
+- `401` `{ "error": "Token d'acces manquant" }`
+- `401` `{ "error": "Token d'acces invalide" }`
+- `404` `{ "error": "Utilisateur introuvable" }`
+
 ## Notes
 
 - Format d'erreur standardise:
