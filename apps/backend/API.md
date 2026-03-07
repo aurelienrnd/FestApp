@@ -100,7 +100,7 @@ Reponses d'erreur:
 
 Base path: `/admin/users`
 
-### GET `/admin/users/`
+### GET `/admin/users`
 
 Afficher la liste des utilisateurs.
 
@@ -141,6 +141,48 @@ Reponses d'erreur:
 - `401` `{ "error": "Cookie d'authentification manquant" }`
 - `401` `{ "error": "Token d'acces manquant" }`
 - `401` `{ "error": "Token d'acces invalide" }`
+
+### POST `/admin/users`
+
+Ajouter un utilisateur.
+
+Authentification:
+
+- Cookie d'authentification valide requis.
+
+Corps de requete:
+
+- `role` accepte: `admin`, `lineup`, `news`.
+
+```json
+{
+  "email": "nouveau@test.fr",
+  "first_name": "Nouveau",
+  "last_name": "User",
+  "role": "admin"
+}
+```
+
+Reponse en succes:
+
+- Statut: `201`
+- Corps:
+
+```json
+{
+  "message": "Utilisateur cree",
+  "temporary_password": "ab12cd34ef56gh78"
+}
+```
+
+Reponses d'erreur:
+
+- `400` `{ "error": "Donnees invalides" }`
+- `401` `{ "error": "Cookie d'authentification manquant" }`
+- `401` `{ "error": "Token d'acces manquant" }`
+- `401` `{ "error": "Token d'acces invalide" }`
+- `409` `{ "error": "Email deja utilise" }`
+- `409` `{ "error": "Nom deja utilise" }`
 
 ## Notes
 
