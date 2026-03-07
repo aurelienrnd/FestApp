@@ -113,6 +113,6 @@
   }
 
   .side-bar {
-    @apply text-lg md:text-4xl;
+    @apply text-lg md:text-2xl lg:text-4xl;
   }
 }

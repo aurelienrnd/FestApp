@@ -9,6 +9,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import UsersContent from "./UsersContent";
+import { apiRequest } from "../../../functions/apiRequest";
+import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 
 /** Affiche la page d'administration des utilisateurs.
  * Affiche les filtres (sidebar + modal mobile) et la liste des utilisateurs.
@@ -24,6 +26,10 @@ export default function Page() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [temporaryPassword, setTemporaryPassword] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [refreshToken, setRefreshToken] = useState(0);
 
   const isFormInvalid =
     firstName.trim() === "" ||
@@ -31,18 +37,43 @@ export default function Page() {
     email.trim() === "" ||
     role.trim() === "";
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isFormInvalid) {
       return;
     }
 
-    console.log({ firstName, lastName, email, role });
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setTemporaryPassword(null);
+
+    const result = await apiRequest<{
+      message: string;
+      temporary_password?: string;
+    }>("/admin/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        role,
+      }),
+    });
+
+    if (result.error) {
+      setSubmitError(getApiErrorMessage(result.error));
+      setIsSubmitting(false);
+      return;
+    }
+
+    setTemporaryPassword(result.data.temporary_password ?? null);
     setFirstName("");
     setLastName("");
     setEmail("");
     setRole("");
-    setIsOpen(false);
+    setRefreshToken((currentValue) => currentValue + 1);
+    setIsSubmitting(false);
   };
 
   useEffect(() => {
@@ -65,7 +96,7 @@ export default function Page() {
           </button>
         </div>
         <SideBarTool items={filterUsersItems}>
-          <UsersContent />
+          <UsersContent refreshToken={refreshToken} />
         </SideBarTool>
       </section>
 
@@ -157,11 +188,19 @@ export default function Page() {
               <button
                 type="submit"
                 className="btn-cta"
-                disabled={isFormInvalid}
+                disabled={isFormInvalid || isSubmitting}
               >
-                Ajouter
+                {isSubmitting ? "Ajout..." : "Ajouter"}
               </button>
             </div>
+            {submitError ? (
+              <p className="text-center text-(--color-1)">{submitError}</p>
+            ) : null}
+            {temporaryPassword ? (
+              <p className="text-center">
+                Mot de passe temporaire: <strong>{temporaryPassword}</strong>
+              </p>
+            ) : null}
           </form>
         </div>
       </Modal>

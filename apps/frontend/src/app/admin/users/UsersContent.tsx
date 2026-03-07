@@ -19,7 +19,11 @@ type ListUsersResponse = { users: UserListRow[] };
  * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
  * @function getApiErrorMessage Definit un message a retourner selon le statut de l'erreur
  */
-export default function UsersContent() {
+export default function UsersContent({
+  refreshToken,
+}: {
+  refreshToken: number;
+}) {
   const [users, setUsers] = useState<UserListRow[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,7 +49,7 @@ export default function UsersContent() {
     };
 
     getUsers();
-  }, []);
+  }, [refreshToken]);
 
   return (
     <div className="flex-1 flex justify-center ">
