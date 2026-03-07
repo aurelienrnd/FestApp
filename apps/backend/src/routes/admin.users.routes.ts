@@ -6,6 +6,7 @@ import { sessionIsOpen } from "../middlewares/sessionIsOpen";
 import { asyncHandler } from "../middlewares/asyncHandler";
 // controllers
 import { createUser } from "../controllers/admin/users/create_user.controller";
+import { deleteUser } from "../controllers/admin/users/delete_user.controller";
 import { listUsers } from "../controllers/admin/users/list_users.controller";
 // schema
 import { createUserSchema } from "../schemas/schema";
@@ -26,7 +27,12 @@ router.post(
   validateBody(createUserSchema),
   asyncHandler(createUser),
 ); // Creer un utilisateur
-//router.put("/users/:id", notImplemented); // Modifier un administrateur
-//router.delete("/users/:id", notImplemented); // Desactiver un administrateur
+
+router.delete(
+  "/users/:id",
+  asyncHandler(auth),
+  asyncHandler(sessionIsOpen),
+  asyncHandler(deleteUser),
+); // Supprimer definitivement un administrateur
 
 export default router;
