@@ -1,4 +1,6 @@
 import type { Request, Response } from "express";
+import bcrypt from "bcrypt";
+import { randomBytes } from "crypto";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
@@ -14,18 +16,22 @@ async function existingEmail(email: string) {
     throw new AppError(ERRORS.USER_EMAIL_ALREADY_USED, 409);
   }
 }
-
 /** Verifie que le nom d'utilisateur existe dans la BDD
- * @param {string} display_name nom de l'utilisateur dans le body de la requete
+ * @param {string} displayName nom complet de l'utilisateur dans le body de la requete
  */
-async function existingDisplayName(display_name: string) {
+async function existingDisplayName(displayName: string) {
   const existingDisplayName = await query(
     "SELECT id FROM users WHERE display_name = $1",
-    [display_name],
+    [displayName],
   );
   if (existingDisplayName.length > 0) {
     throw new AppError(ERRORS.USER_DISPLAY_NAME_ALREADY_USED, 409);
   }
+}
+
+/** Cree un mot de passe temporaire aleatoire */
+function generateTemporaryPassword() {
+  return randomBytes(8).toString("hex");
 }
 
 /** Creation d'un utilisateur dans le service
@@ -36,18 +42,34 @@ async function existingDisplayName(display_name: string) {
  * @function existingDisplayName
  */
 export const createUser = async (req: Request, res: Response) => {
-  // Extrait les champs attendus du body et vérifie qu'ils' ne sont pas déjà utilisés.
-  const { email, password, display_name } = req.body;
-  await existingEmail(email);
-  await existingDisplayName(display_name);
+  // Récupère les informations de l'utilisateur dans le body de la requête et crée un display name
+  const { email, first_name, last_name, role } = req.body;
+  const displayName = `${first_name} ${last_name}`.trim();
 
-  // Crée un nouvel utilisateur en base avec mot de passe hashé,
+  // Vérifie si l'email ou le display name est déjà utilisé
+  await existingEmail(email);
+  await existingDisplayName(displayName);
+
+  // Crée un mot de passe temporaire et le hash
+  const temporaryPassword = generateTemporaryPassword();
+  const passwordHash = await bcrypt.hash(temporaryPassword, 10);
+
+  // Enregistre l'utilisateur en base de données
   await query(
-    `INSERT INTO users (email, password_hash, display_name, must_change_password, is_active)
-     VALUES ($1, $2, $3, TRUE, TRUE)
-     RETURNING id, email, display_name, is_active, must_change_password, created_at`,
-    [email, password, display_name],
+    `INSERT INTO users (
+      email,
+      password_hash,
+      display_name,
+      must_change_password,
+      is_active,
+      role
+    ) VALUES ($1, $2, $3, TRUE, TRUE, $4)
+     RETURNING id, email, display_name, is_active, must_change_password, role, created_at`,
+    [email, passwordHash, displayName, role],
   );
 
-  return res.status(201).json({ message: "Utilisateur créé" });
+  return res.status(201).json({
+    message: "Utilisateur cree",
+    temporary_password: temporaryPassword,
+  });
 };

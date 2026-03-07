@@ -3,7 +3,6 @@ import { Router } from "express";
 import { validateBody } from "../middlewares/validateBody";
 import { auth } from "../middlewares/auth";
 import { sessionIsOpen } from "../middlewares/sessionIsOpen";
-import { hashPassword } from "../middlewares/hashPassword";
 import { asyncHandler } from "../middlewares/asyncHandler";
 // controllers
 import { createUser } from "../controllers/admin/users/create_user.controller";
@@ -25,9 +24,8 @@ router.post(
   asyncHandler(auth),
   asyncHandler(sessionIsOpen),
   validateBody(createUserSchema),
-  asyncHandler(hashPassword()),
   asyncHandler(createUser),
-); // Creer un administrateur
+); // Creer un utilisateur
 //router.put("/users/:id", notImplemented); // Modifier un administrateur
 //router.delete("/users/:id", notImplemented); // Desactiver un administrateur
 
