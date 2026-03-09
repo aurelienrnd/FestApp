@@ -8,18 +8,19 @@ import { asyncHandler } from "../middlewares/asyncHandler";
 import { createUser } from "../controllers/admin/users/create_user.controller";
 import { deleteUser } from "../controllers/admin/users/delete_user.controller";
 import { listUsers } from "../controllers/admin/users/list_users.controller";
+import { updateUser } from "../controllers/admin/users/update_user.controller";
 // schema
-import { createUserSchema } from "../schemas/schema";
+import { createUserSchema, updateUserSchema } from "../schemas/schema";
 
 const router = Router();
 
-// Administrateurs
 router.get(
   "/users",
   asyncHandler(auth),
   asyncHandler(sessionIsOpen),
   asyncHandler(listUsers),
 ); // Lister les utilisateurs
+
 router.post(
   "/users",
   asyncHandler(auth),
@@ -27,6 +28,14 @@ router.post(
   validateBody(createUserSchema),
   asyncHandler(createUser),
 ); // Creer un utilisateur
+
+router.patch(
+  "/users/:id",
+  asyncHandler(auth),
+  asyncHandler(sessionIsOpen),
+  validateBody(updateUserSchema),
+  asyncHandler(updateUser),
+); // Modifier un utilisateur
 
 router.delete(
   "/users/:id",
