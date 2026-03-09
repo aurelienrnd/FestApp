@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import AddUserModal from "./AddUserModal";
 import DelateUserModal from "./DelateUserModal";
 
 type UserListRow = {
@@ -26,23 +27,28 @@ export default function UsersContent({
 }: {
   refreshToken: number;
 }) {
-  // États liés aux données
+  // Etats lies aux donnees
   const [users, setUsers] = useState<UserListRow[]>([]);
   const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // États liés à la suppression
+  // Etats lies a la suppression
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedUserToDelete, setSelectedUserToDelete] =
+    useState<UserListRow | null>(null);
+
+  // Etats lies a la modification
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserListRow | null>(null);
 
-  // Charge la liste des utilisateurs au montage du composant et à chaque changement du refreshToken
+  // Charge la liste des utilisateurs au montage du composant et a chaque changement du refreshToken
   useEffect(() => {
     const getUsers = async () => {
-      // Active le chargement et réinitialise les erreurs
+      // Active le chargement et reinitialise les erreurs
       setIsLoading(true);
       setLoadErrorMessage(null);
 
-      // Appel API pour récupérer la liste des utilisateurs
+      // Appel API pour recuperer la liste des utilisateurs
       const result = await apiRequest<ListUsersResponse>("/admin/users", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -55,7 +61,7 @@ export default function UsersContent({
         return;
       }
 
-      // Mise à jour de la liste des utilisateurs
+      // Mise a jour de la liste des utilisateurs
       setUsers(result.data?.users ?? []);
       setIsLoading(false);
     };
@@ -63,22 +69,34 @@ export default function UsersContent({
     getUsers();
   }, [refreshToken]);
 
-  // Met à jour la liste des utilisateurs après suppression en retirant l’utilisateur correspondant à l’id fourni
+  // Met a jour la liste des utilisateurs apres suppression en retirant l'utilisateur correspondant a l'id fourni
   const handleUserDeleted = (userId: string) => {
     setUsers((currentUsers) =>
       currentUsers.filter((currentUser) => currentUser.id !== userId),
     );
   };
 
-  // Ouvre la modal de suppression et définit l’utilisateur sélectionné
+  // Ouvre la modal de suppression et definit l'utilisateur selectionne
   const openDeleteModal = (user: UserListRow) => {
-    setSelectedUser(user);
+    setSelectedUserToDelete(user);
     setIsDeleteModalOpen(true);
   };
 
-  // Masque la modal de confirmation et supprime la référence à l’utilisateur sélectionné
+  // Masque la modal de confirmation et supprime la reference a l'utilisateur selectionne
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
+    setSelectedUserToDelete(null);
+  };
+
+  // Ouvre la modal de modification et definit l'utilisateur selectionne
+  const openEditModal = (user: UserListRow) => {
+    setSelectedUser(user);
+    setIsEditModalOpen(true);
+  };
+
+  // Ferme la fenêtre modale d’édition et réinitialise l’utilisateur sélectionné
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
     setSelectedUser(null);
   };
 
@@ -123,7 +141,11 @@ export default function UsersContent({
                 </div>
 
                 <div className="flex flex-col gap-2 sm:flex-row sm:justify-end sm:gap-x-3 md:gap-x-(--gap-content-small)">
-                  <button type="button" className="btn-type-2">
+                  <button
+                    type="button"
+                    className="btn-type-2"
+                    onClick={() => openEditModal(user)}
+                  >
                     Modifier
                   </button>
                   <button
@@ -141,9 +163,15 @@ export default function UsersContent({
       </div>
       <DelateUserModal
         isOpen={isDeleteModalOpen}
-        user={selectedUser}
+        user={selectedUserToDelete}
         onClose={closeDeleteModal}
         onUserDeleted={handleUserDeleted}
+      />
+      <AddUserModal
+        isOpen={isEditModalOpen}
+        onClose={closeEditModal}
+        onUserCreated={closeEditModal}
+        initialUser={selectedUser}
       />
     </div>
   );

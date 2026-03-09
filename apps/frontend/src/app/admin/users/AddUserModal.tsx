@@ -16,6 +16,12 @@ type AddUserModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onUserCreated: () => void;
+  initialUser?: {
+    id: string;
+    email: string;
+    display_name: string | null;
+    role: string;
+  } | null;
 };
 
 type CreateUserApiResponse = {
@@ -135,6 +141,7 @@ export default function AddUserModal({
   isOpen,
   onClose,
   onUserCreated,
+  initialUser = null,
 }: AddUserModalProps) {
   // Champs du formulaire utilisateur
   const [firstName, setFirstName] = useState("");
@@ -155,6 +162,32 @@ export default function AddUserModal({
   useEffect(() => {
     Modal.setAppElement("#app-root");
   }, []);
+
+  // Pre-remplit les champs lorsque la modal est ouverte en mode modification.
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    // Reset formulaire si pas d’utilisateur
+    if (!initialUser) {
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setRole("");
+      return;
+    }
+
+    // Récupère et nettoie le display_name, puis sépare le prénom du reste du nom
+    const displayName = initialUser.display_name?.trim() ?? "";
+    const [firstNameValue, ...lastNameParts] = displayName.split(/\s+/);
+
+    // Met à jour les champs du formulaire avec les données de l’utilisateur sélectionné
+    setFirstName(firstNameValue ?? "");
+    setLastName(lastNameParts.join(" "));
+    setEmail(initialUser.email);
+    setRole(initialUser.role);
+  }, [isOpen, initialUser]);
 
   // Verifie si le formulaire d'ajout utilisateur est incomplet.
   const isFormInvalid = isAddUserFormInvalid(firstName, lastName, email, role);
@@ -287,7 +320,7 @@ export default function AddUserModal({
               className="btn-cta"
               disabled={isFormInvalid || isSubmitting}
             >
-              Ajouter"
+              Ajouter
             </button>
           </div>
           {submitError ? (
