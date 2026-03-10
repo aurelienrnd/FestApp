@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import UsersContent from "../../src/app/admin/users/UsersContent";
@@ -58,14 +58,130 @@ describe("UsersContent", () => {
       error: null,
     });
 
-    // Rend le composant UsersContent avec un refreshToken initial
-    render(<UsersContent refreshToken={0} />);
+    // Rend le composant UsersContent
+    render(<UsersContent />);
 
     expect(await screen.findByText("John Doe")).toBeInTheDocument();
     expect(screen.getByText("john@test.fr")).toBeInTheDocument();
     expect(mockApiRequest).toHaveBeenCalledWith("/admin/users", {
       method: "GET",
       headers: { "Content-Type": "application/json" },
+    });
+  });
+
+  it("adds a user and updates the list locally", async () => {
+    // Initialise userEvent pour simuler les interactions utilisateur
+    const user = userEvent.setup();
+
+    // Simule deux appels API successifs :
+    mockApiRequest
+      // 1. Chargement initial de la liste (vide)
+      .mockResolvedValueOnce({
+        data: { users: [] },
+        error: null,
+      })
+      // 2. Creation reussie d'un utilisateur
+      .mockResolvedValueOnce({
+        data: {
+          message: "Utilisateur cree",
+          temporary_password: "abc123456789def0",
+          user: {
+            id: "user-3",
+            email: "new@test.fr",
+            display_name: "New User",
+            is_active: true,
+            role: "news",
+          },
+        },
+        error: null,
+      });
+
+    // Rend le composant UsersContent avec la modale d'ajout ouverte
+    render(<UsersContent isAddModalOpen />);
+
+    // Remplit le formulaire d'ajout utilisateur puis soumet
+    await user.type(screen.getByPlaceholderText("Prenom"), "New");
+    await user.type(screen.getByPlaceholderText("Nom"), "User");
+    await user.type(screen.getByPlaceholderText("Email"), "new@test.fr");
+    await user.selectOptions(screen.getByLabelText("Role"), "news");
+    await user.click(screen.getByRole("button", { name: "Ajouter" }));
+
+    expect(await screen.findByText("New User")).toBeInTheDocument();
+    expect(screen.getByText("new@test.fr")).toBeInTheDocument();
+    expect(mockApiRequest).toHaveBeenNthCalledWith(2, "/admin/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: "new@test.fr",
+        first_name: "New",
+        last_name: "User",
+        role: "news",
+      }),
+    });
+  });
+
+  it("edits a user and updates the list locally", async () => {
+    // Initialise userEvent pour simuler les interactions utilisateur
+    const user = userEvent.setup();
+
+    // Simule deux appels API successifs :
+    mockApiRequest
+      // 1. Chargement initial de la liste
+      .mockResolvedValueOnce({
+        data: {
+          users: [
+            {
+              id: "user-1",
+              email: "john@test.fr",
+              display_name: "John Doe",
+              is_active: true,
+              role: "admin",
+            },
+          ],
+        },
+        error: null,
+      })
+      // 2. Modification reussie de l'utilisateur
+      .mockResolvedValueOnce({
+        data: {
+          message: "Utilisateur modifie",
+          user: {
+            id: "user-1",
+            email: "john@test.fr",
+            display_name: "Jane Doe",
+            is_active: true,
+            role: "admin",
+          },
+        },
+        error: null,
+      });
+
+    // Rend le composant UsersContent
+    render(<UsersContent />);
+
+    // Ouvre la modale de modification via le bouton de la liste
+    await screen.findByText("John Doe");
+    await user.click(screen.getAllByRole("button", { name: "Modifier" })[0]);
+    const modal = screen.getByTestId("modal");
+
+    // Met a jour le prenom puis soumet le formulaire
+    await user.clear(screen.getByPlaceholderText("Prenom"));
+    await user.type(screen.getByPlaceholderText("Prenom"), "Jane");
+    await user.click(within(modal).getByRole("button", { name: "Modifier" }));
+
+    expect(await screen.findByText("Jane Doe")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText("John Doe")).not.toBeInTheDocument();
+    });
+    expect(mockApiRequest).toHaveBeenNthCalledWith(2, "/admin/users/user-1", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: "john@test.fr",
+        first_name: "Jane",
+        last_name: "Doe",
+        role: "admin",
+      }),
     });
   });
 
@@ -103,8 +219,8 @@ describe("UsersContent", () => {
         error: null,
       });
 
-    // Rend le composant UsersContent avec un refreshToken initial
-    render(<UsersContent refreshToken={0} />);
+    // Rend le composant UsersContent
+    render(<UsersContent />);
 
     // Attend que l’utilisateur "John Doe" soit affiché, puis clique sur le premier bouton "Supprimer"
     await screen.findByText("John Doe");
@@ -159,8 +275,8 @@ describe("UsersContent", () => {
         error: new ApiRequestError(undefined, 500),
       });
 
-    // Rend le composant UsersContent avec un refreshToken initial
-    render(<UsersContent refreshToken={0} />);
+    // Rend le composant UsersContent
+    render(<UsersContent />);
 
     // Attend l’affichage de "John Doe", clique sur "Supprimer", puis confirme la suppression
     await screen.findByText("John Doe");
