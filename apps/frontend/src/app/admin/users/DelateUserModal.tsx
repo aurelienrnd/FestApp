@@ -16,25 +16,25 @@ type UserToDelete = {
 
 type DelateUserModalProps = {
   isOpen: boolean;
-  user: UserToDelete | null;
+  selectedUser: UserToDelete | null;
   onClose: () => void;
-  onUserDeleted: (userId: string) => void;
+  handleUser: (userId: string) => void;
 };
 
 /** Affiche la modale de confirmation pour supprimer un utilisateur.
  * Ouvre une confirmation, lance la requete DELETE et affiche l'etat succes/erreur.
  * @param {DelateUserModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
- * @param {UserToDelete | null} props.user Utilisateur selectionne pour la suppression.
+ * @param {UserToDelete | null} props.selectedUser Utilisateur selectionne pour la suppression.
  * @param {() => void} props.onClose Ferme la modale.
- * @param {(userId: string) => void} props.onUserDeleted Notifie le parent apres suppression reussie.
+ * @param {(userId: string) => void} props.handleUser Met a jour la liste des users et ferme la modale.
  * @children ModalCloseButton Ferme la modale.
  */
 export default function DelateUserModal({
   isOpen,
-  user,
+  selectedUser,
   onClose,
-  onUserDeleted,
+  handleUser,
 }: DelateUserModalProps) {
   // Etats locaux de soumission, d'erreur et de confirmation
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,7 +57,7 @@ export default function DelateUserModal({
 
   // Confirme la suppression et met a jour l'UI selon la reponse API
   const handleConfirmDelete = async () => {
-    if (!user) {
+    if (!selectedUser) {
       return;
     }
 
@@ -67,7 +67,7 @@ export default function DelateUserModal({
 
     // Envoie une requête DELETE à l’API pour supprimer l’utilisateur sélectionné
     const result = await apiRequest<ApiMessageResponse>(
-      `/admin/users/${user.id}`,
+      `/admin/users/${selectedUser.id}`,
       {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -82,7 +82,7 @@ export default function DelateUserModal({
     }
 
     // Notifie la suppression de l’utilisateur, met à jour l’état local et désactive la soumission
-    onUserDeleted(user.id);
+    handleUser(selectedUser.id);
     setIsDeleted(true);
     setIsSubmitting(false);
   };
@@ -112,7 +112,8 @@ export default function DelateUserModal({
           <div className="form-modal">
             <p className="text-center">
               Voulez-vous confirmer la suppression de{" "}
-              <strong>{user?.display_name ?? "cet utilisateur"}</strong> ?
+              <strong>{selectedUser?.display_name ?? "cet utilisateur"}</strong>{" "}
+              ?
             </p>
 
             <div className="submit-modal-area">
@@ -120,7 +121,7 @@ export default function DelateUserModal({
                 type="button"
                 className="btn-cta"
                 onClick={handleConfirmDelete}
-                disabled={isSubmitting || !user}
+                disabled={isSubmitting || !selectedUser}
               >
                 {isSubmitting ? "Suppression..." : "Confirmer"}
               </button>
