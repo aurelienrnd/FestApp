@@ -42,7 +42,15 @@ describe("updateUser controller (integration)", () => {
       .mockResolvedValueOnce([{ id: "7bcf77a4-f4c0-4fbe-ab4b-f470dce2eef0" }]) // utilisateur cible existe
       .mockResolvedValueOnce([]) // email libre
       .mockResolvedValueOnce([]) // display_name libre
-      .mockResolvedValueOnce([]); // UPDATE execute
+      .mockResolvedValueOnce([
+        {
+          id: "7bcf77a4-f4c0-4fbe-ab4b-f470dce2eef0",
+          email: "updated@test.fr",
+          display_name: "Updated User",
+          is_active: true,
+          role: "admin",
+        },
+      ]); // UPDATE execute
 
     // Initialise l'application de test et envoie une requete PATCH
     const app = createApp();
@@ -61,7 +69,8 @@ describe("updateUser controller (integration)", () => {
       4,
       `UPDATE users
      SET email = $1, display_name = $2, role = $3
-     WHERE id = $4`,
+     WHERE id = $4
+     RETURNING id, email, display_name, is_active, role`,
       [
         "updated@test.fr",
         "Updated User",
@@ -69,6 +78,14 @@ describe("updateUser controller (integration)", () => {
         "7bcf77a4-f4c0-4fbe-ab4b-f470dce2eef0",
       ],
     );
+
+    expect(res.body.user).toEqual({
+      id: "7bcf77a4-f4c0-4fbe-ab4b-f470dce2eef0",
+      email: "updated@test.fr",
+      display_name: "Updated User",
+      is_active: true,
+      role: "admin",
+    });
   });
 
   it("should return 400 when user id is invalid", async () => {
@@ -123,6 +140,7 @@ describe("updateUser controller (integration)", () => {
   });
 
   it("should return 409 when email already exists", async () => {
+    // Simule un conflit email
     mockQuery
       .mockResolvedValueOnce([{ id: "7bcf77a4-f4c0-4fbe-ab4b-f470dce2eef0" }]) // utilisateur cible existe
       .mockResolvedValueOnce([{ id: "another-user-id" }]); // email deja pris par un autre utilisateur

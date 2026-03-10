@@ -73,13 +73,30 @@ export async function updateUser(req: Request, res: Response) {
   await existingEmail(email, userId);
   await existingDisplayName(displayName, userId);
 
-  // Met a jour l'utilisateur en base de donnees
-  await query(
+  // Met a jour l'utilisateur en base de donnees et le recupaire
+  const updatedUsers = await query<{
+    id: string;
+    email: string;
+    display_name: string;
+    is_active: boolean;
+    role: string;
+  }>(
     `UPDATE users
      SET email = $1, display_name = $2, role = $3
-     WHERE id = $4`,
+     WHERE id = $4
+     RETURNING id, email, display_name, is_active, role`,
     [email, displayName, role, userId],
   );
+  const updatedUser = updatedUsers[0];
 
-  return res.status(200).json({ message: "Utilisateur modifie" });
+  return res.status(200).json({
+    message: "Utilisateur modifie",
+    user: {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      display_name: updatedUser.display_name,
+      is_active: updatedUser.is_active,
+      role: updatedUser.role,
+    },
+  });
 }

@@ -54,8 +54,14 @@ export const createUser = async (req: Request, res: Response) => {
   const temporaryPassword = generateTemporaryPassword();
   const passwordHash = await bcrypt.hash(temporaryPassword, 10);
 
-  // Enregistre l'utilisateur en base de données
-  await query(
+  // Enregistre l'utilisateur en base de données et le recupaire
+  const createdUsers = await query<{
+    id: string;
+    email: string;
+    display_name: string;
+    is_active: boolean;
+    role: string;
+  }>(
     `INSERT INTO users (
       email,
       password_hash,
@@ -67,9 +73,17 @@ export const createUser = async (req: Request, res: Response) => {
      RETURNING id, email, display_name, is_active, must_change_password, role, created_at`,
     [email, passwordHash, displayName, role],
   );
+  const createdUser = createdUsers[0];
 
   return res.status(201).json({
     message: "Utilisateur cree",
     temporary_password: temporaryPassword,
+    user: {
+      id: createdUser.id,
+      email: createdUser.email,
+      display_name: createdUser.display_name,
+      is_active: createdUser.is_active,
+      role: createdUser.role,
+    },
   });
 };
