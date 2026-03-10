@@ -171,7 +171,14 @@ Reponse en succes:
 ```json
 {
   "message": "Utilisateur cree",
-  "temporary_password": "ab12cd34ef56gh78"
+  "temporary_password": "ab12cd34ef56gh78",
+  "user": {
+    "id": "uuid",
+    "email": "nouveau@test.fr",
+    "display_name": "Nouveau User",
+    "is_active": true,
+    "role": "admin"
+  }
 }
 ```
 
@@ -216,7 +223,14 @@ Reponse en succes:
 
 ```json
 {
-  "message": "Utilisateur modifie"
+  "message": "Utilisateur modifie",
+  "user": {
+    "id": "uuid",
+    "email": "modifie@test.fr",
+    "display_name": "Modifie User",
+    "is_active": true,
+    "role": "lineup"
+  }
 }
 ```
 
