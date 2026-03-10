@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { apiRequest } from "../../../functions/apiRequest";
@@ -20,12 +20,18 @@ type ListUsersResponse = { users: UserListRow[] };
  * Recupere les utilisateurs via l'API puis affiche un etat de chargement/erreur.
  * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
  * @function getApiErrorMessage Definit un message a retourner selon le statut de l'erreur
+ * @param isAddModalOpen Ouvre la modale d'ajout utilisateur.
+ * @param onCloseAddModal Ferme la modale d'ajout utilisateur.
+ * @children AddUserModal - Affiche la modale d'ajout d'utilisateur.
+ * @children AddUserModal - Affiche la modale d'edition d'utilisateur.
  * @children DelateUserModal - Affiche la modale de confirmation pour supprimer un utilisateur.
  */
 export default function UsersContent({
-  refreshToken,
+  isAddModalOpen = false,
+  onCloseAddModal = () => {},
 }: {
-  refreshToken: number;
+  isAddModalOpen?: boolean;
+  onCloseAddModal?: () => void;
 }) {
   // Etats lies aux donnees
   const [users, setUsers] = useState<UserListRow[]>([]);
@@ -39,9 +45,10 @@ export default function UsersContent({
 
   // Etats lies a la modification
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<UserListRow | null>(null);
+  const [selectedUserToBeUpdate, setSelectedUserToBeUpdate] =
+    useState<UserListRow | null>(null);
 
-  // Charge la liste des utilisateurs au montage du composant et a chaque changement du refreshToken
+  // Charge la liste des utilisateurs au montage du composant
   useEffect(() => {
     const getUsers = async () => {
       // Active le chargement et reinitialise les erreurs
@@ -67,37 +74,64 @@ export default function UsersContent({
     };
 
     getUsers();
-  }, [refreshToken]);
-
-  // Met a jour la liste des utilisateurs apres suppression en retirant l'utilisateur correspondant a l'id fourni
-  const handleUserDeleted = (userId: string) => {
-    setUsers((currentUsers) =>
-      currentUsers.filter((currentUser) => currentUser.id !== userId),
-    );
-  };
+  }, []);
 
   // Ouvre la modal de suppression et definit l'utilisateur selectionne
   const openDeleteModal = (user: UserListRow) => {
     setSelectedUserToDelete(user);
     setIsDeleteModalOpen(true);
   };
-
-  // Masque la modal de confirmation et supprime la reference a l'utilisateur selectionne
+  // Met a jour la liste des utilisateurs apres suppression en retirant l'utilisateur correspondant a l'id fourni
+  const handleUserDeleted = (userId: string) => {
+    setUsers((currentUsers) =>
+      currentUsers.filter((currentUser) => currentUser.id !== userId),
+    );
+  };
+  // Masque la modal de suppression et reinitialise l'utilisateur selectionne
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
     setSelectedUserToDelete(null);
   };
 
-  // Ouvre la modal de modification et definit l'utilisateur selectionne
-  const openEditModal = (user: UserListRow) => {
-    setSelectedUser(user);
-    setIsEditModalOpen(true);
+  // Ajoute ou met a jour un utilisateur dans la liste locale
+  const upsertUser = (savedUser: UserListRow) => {
+    setUsers((currentUsers) => {
+      // Vérifie si un utilisateur avec le même id existe déjà
+      const userAlreadyExists = currentUsers.some(
+        (currentUser) => currentUser.id === savedUser.id,
+      );
+
+      // Si l'utilisateur n'existe pas encore on l'ajoute à la liste existante
+      if (!userAlreadyExists) {
+        return [...currentUsers, savedUser];
+      }
+      // Si l'utilisateur existe déjà on parcourt la liste pour remplacer l'ancien utilisateur
+      return currentUsers.map((currentUser) =>
+        currentUser.id === savedUser.id ? savedUser : currentUser,
+      );
+    });
   };
 
-  // Ferme la fenêtre modale d’édition et réinitialise l’utilisateur sélectionné
+  // Ouvre la modal de modification et definit l'utilisateur selectionne
+  const openEditModal = (user: UserListRow) => {
+    setSelectedUserToBeUpdate(user);
+    setIsEditModalOpen(true);
+  };
+  // Ferme la fenetre modale de modification et reinitialise l'utilisateur selectionne
   const closeEditModal = () => {
     setIsEditModalOpen(false);
-    setSelectedUser(null);
+    setSelectedUserToBeUpdate(null);
+  };
+  // Met a jour la liste apres modification utilisateur puis ferme la modal d'edition
+  const handleUserEdited = (savedUser: UserListRow) => {
+    upsertUser(savedUser);
+    closeEditModal();
+  };
+
+  // Met a jour la liste apres ajout utilisateur puis ferme la modal d'ajout
+  const handleUserAdded = (savedUser: UserListRow) => {
+    upsertUser(savedUser);
+    onCloseAddModal();
   };
 
   return (
@@ -163,15 +197,20 @@ export default function UsersContent({
       </div>
       <DelateUserModal
         isOpen={isDeleteModalOpen}
-        user={selectedUserToDelete}
+        selectedUser={selectedUserToDelete}
         onClose={closeDeleteModal}
-        onUserDeleted={handleUserDeleted}
+        handleUser={handleUserDeleted}
+      />
+      <AddUserModal
+        isOpen={isAddModalOpen}
+        onClose={onCloseAddModal}
+        handleUser={handleUserAdded}
       />
       <AddUserModal
         isOpen={isEditModalOpen}
         onClose={closeEditModal}
-        onUserCreated={closeEditModal}
-        initialUser={selectedUser}
+        handleUser={handleUserEdited}
+        selectedUser={selectedUserToBeUpdate}
       />
     </div>
   );
