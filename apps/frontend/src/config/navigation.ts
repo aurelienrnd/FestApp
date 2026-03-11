@@ -47,7 +47,8 @@ export const filterNewsItems: NavItem[] = [
 
 // Filtre affiches dans la navigation de la admin/Users.
 export const filterUsersItems: NavItem[] = [
-  { labelBtn: "Par nom", active: true },
-  { labelBtn: "Par mail", active: false },
-  { labelBtn: "Par role", active: false },
+  { labelBtn: "Tout", active: true },
+  { labelBtn: "Admin", active: false },
+  { labelBtn: "Line Up", active: false },
+  { labelBtn: "News", active: false },
 ];
