@@ -9,7 +9,6 @@ type UserInfoRow = {
   id: string;
   email: string;
   display_name: string;
-  is_active: boolean;
   role: string;
   must_change_password: boolean;
 };
@@ -23,7 +22,7 @@ export async function userInfo(_req: Request, res: Response) {
   // Récupère l'userId depuis `res.locals`puis recherche l'utilisateur dnas la bdd,
   const reqUserId = requireUserId(res.locals.userId);
   const rows = await query<UserInfoRow>(
-    `SELECT id, email, display_name, is_active, role, must_change_password
+    `SELECT id, email, display_name, role, must_change_password
      FROM users
      WHERE id = $1
      LIMIT 1`,
@@ -39,7 +38,6 @@ export async function userInfo(_req: Request, res: Response) {
       id: user.id,
       email: user.email,
       display_name: user.display_name,
-      is_active: user.is_active,
       role: user.role,
     },
     mustChangePassword: user.must_change_password,

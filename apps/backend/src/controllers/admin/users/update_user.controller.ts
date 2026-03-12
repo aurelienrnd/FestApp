@@ -78,13 +78,14 @@ export async function updateUser(req: Request, res: Response) {
     id: string;
     email: string;
     display_name: string;
-    is_active: boolean;
     role: string;
+    must_change_password: boolean;
+    created_at: string;
   }>(
     `UPDATE users
      SET email = $1, display_name = $2, role = $3
      WHERE id = $4
-     RETURNING id, email, display_name, is_active, role`,
+     RETURNING id, email, display_name, role, must_change_password, created_at`,
     [email, displayName, role, userId],
   );
   const updatedUser = updatedUsers[0];
@@ -95,8 +96,9 @@ export async function updateUser(req: Request, res: Response) {
       id: updatedUser.id,
       email: updatedUser.email,
       display_name: updatedUser.display_name,
-      is_active: updatedUser.is_active,
       role: updatedUser.role,
+      must_change_password: updatedUser.must_change_password,
+      created_at: updatedUser.created_at,
     },
   });
 }

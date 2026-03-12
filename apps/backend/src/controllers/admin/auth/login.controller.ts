@@ -47,7 +47,7 @@ export async function login(req: Request, res: Response) {
   const email = String(req.body.email).trim().toLowerCase();
   const password = String(req.body.password);
   const result = await query<DbUser>(
-    `SELECT id, email, password_hash, display_name, is_active
+    `SELECT id, email, password_hash, display_name
      FROM users
      WHERE email = $1
      LIMIT 1`,

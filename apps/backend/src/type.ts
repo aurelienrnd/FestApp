@@ -4,7 +4,6 @@ export type DbUser = {
   email: string;
   password_hash: string;
   display_name: string | null;
-  is_active: boolean;
 };
 
 export type SessionRow = {
