@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
+﻿import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import UsersContent from "../../src/app/admin/users/UsersContent";
@@ -50,8 +50,10 @@ describe("UsersContent", () => {
             id: "user-1",
             email: "john@test.fr",
             display_name: "John Doe",
-            is_active: true,
             role: "admin",
+            must_change_password: false,
+            created_at: "2026-03-12T10:15:30.000Z",
+            password_changed_at: "2026-03-12T12:00:00.000Z",
           },
         ],
       },
@@ -89,8 +91,10 @@ describe("UsersContent", () => {
             id: "user-3",
             email: "new@test.fr",
             display_name: "New User",
-            is_active: true,
             role: "news",
+            must_change_password: true,
+            created_at: "2026-03-12T10:30:00.000Z",
+            password_changed_at: null,
           },
         },
         error: null,
@@ -134,8 +138,10 @@ describe("UsersContent", () => {
               id: "user-1",
               email: "john@test.fr",
               display_name: "John Doe",
-              is_active: true,
               role: "admin",
+              must_change_password: false,
+              created_at: "2026-03-12T10:15:30.000Z",
+              password_changed_at: "2026-03-12T12:00:00.000Z",
             },
           ],
         },
@@ -149,8 +155,10 @@ describe("UsersContent", () => {
             id: "user-1",
             email: "john@test.fr",
             display_name: "Jane Doe",
-            is_active: true,
             role: "admin",
+            must_change_password: false,
+            created_at: "2026-03-12T10:15:30.000Z",
+            password_changed_at: "2026-03-12T12:00:00.000Z",
           },
         },
         error: null,
@@ -199,15 +207,19 @@ describe("UsersContent", () => {
               id: "user-1",
               email: "john@test.fr",
               display_name: "John Doe",
-              is_active: true,
               role: "admin",
+              must_change_password: false,
+              created_at: "2026-03-12T10:15:30.000Z",
+              password_changed_at: "2026-03-12T12:00:00.000Z",
             },
             {
               id: "user-2",
               email: "jane@test.fr",
               display_name: "Jane Doe",
-              is_active: true,
               role: "news",
+              must_change_password: false,
+              created_at: "2026-03-12T10:20:00.000Z",
+              password_changed_at: null,
             },
           ],
         },
@@ -262,8 +274,10 @@ describe("UsersContent", () => {
               id: "user-1",
               email: "john@test.fr",
               display_name: "John Doe",
-              is_active: true,
               role: "admin",
+              must_change_password: false,
+              created_at: "2026-03-12T10:15:30.000Z",
+              password_changed_at: "2026-03-12T12:00:00.000Z",
             },
           ],
         },
@@ -289,3 +303,4 @@ describe("UsersContent", () => {
     expect(screen.getAllByText("John Doe").length).toBeGreaterThanOrEqual(1);
   });
 });
+

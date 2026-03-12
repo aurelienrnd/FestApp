@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 import request from "supertest";
 import express from "express";
 import { query } from "../../src/db";
@@ -47,8 +47,9 @@ describe("updateUser controller (integration)", () => {
           id: "7bcf77a4-f4c0-4fbe-ab4b-f470dce2eef0",
           email: "updated@test.fr",
           display_name: "Updated User",
-          is_active: true,
           role: "admin",
+          must_change_password: false,
+          created_at: new Date().toISOString(),
         },
       ]); // UPDATE execute
 
@@ -70,7 +71,7 @@ describe("updateUser controller (integration)", () => {
       `UPDATE users
      SET email = $1, display_name = $2, role = $3
      WHERE id = $4
-     RETURNING id, email, display_name, is_active, role`,
+     RETURNING id, email, display_name, role, must_change_password, created_at`,
       [
         "updated@test.fr",
         "Updated User",
@@ -83,8 +84,9 @@ describe("updateUser controller (integration)", () => {
       id: "7bcf77a4-f4c0-4fbe-ab4b-f470dce2eef0",
       email: "updated@test.fr",
       display_name: "Updated User",
-      is_active: true,
       role: "admin",
+      must_change_password: false,
+      created_at: expect.any(String),
     });
   });
 
@@ -201,3 +203,4 @@ describe("updateUser controller (integration)", () => {
     expect(res.body.error).toBe(ERRORS.INTERNAL_SERVER_ERROR);
   });
 });
+

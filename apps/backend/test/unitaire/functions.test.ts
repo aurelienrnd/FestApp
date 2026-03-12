@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+﻿import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import {
@@ -59,7 +59,7 @@ describe("userExists", () => {
         email: "a@test.local",
         password_hash: "hash",
         display_name: "A",
-        is_active: true,
+
       }),
     ).not.toThrow();
   });
@@ -221,3 +221,4 @@ describe("requireSessionId", () => {
     }
   });
 });
+

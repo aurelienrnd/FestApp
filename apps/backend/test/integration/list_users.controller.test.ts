@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import request from "supertest";
 import express from "express";
 
@@ -32,15 +32,19 @@ describe("listUsers controller", () => {
         id: "user-1",
         email: "admin@test.fr",
         display_name: "Admin",
-        is_active: true,
         role: "admin",
+        must_change_password: false,
+        created_at: "2026-03-12T10:15:30.000Z",
+        password_changed_at: "2026-03-12T12:00:00.000Z",
       },
       {
         id: "user-2",
         email: "autre@test.fr",
         display_name: "Autre",
-        is_active: false,
         role: "admin",
+        must_change_password: true,
+        created_at: "2026-03-12T11:10:00.000Z",
+        password_changed_at: null,
       },
     ]);
 
@@ -53,8 +57,10 @@ describe("listUsers controller", () => {
       id: "user-1",
       email: "admin@test.fr",
       display_name: "Admin",
-      is_active: true,
       role: "admin",
+      must_change_password: false,
+      created_at: "2026-03-12T10:15:30.000Z",
+      password_changed_at: "2026-03-12T12:00:00.000Z",
     });
   });
 
@@ -68,3 +74,4 @@ describe("listUsers controller", () => {
     expect(res.body.error).toBe(ERRORS.INTERNAL_SERVER_ERROR);
   });
 });
+

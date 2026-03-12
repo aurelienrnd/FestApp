@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { login } from "../../src/controllers/admin/auth/login.controller";
@@ -63,7 +63,7 @@ describe("login controller (integration)", () => {
           email: "admin@test.fr",
           password_hash: "hash",
           display_name: "TestAdmin",
-          is_active: true,
+
         },
       ]) // SELECT user by email
       .mockResolvedValueOnce([{ id: "sess-1" }]) // INSERT session
@@ -131,7 +131,7 @@ describe("login controller (integration)", () => {
         email: "admin@test.fr",
         password_hash: "hash",
         display_name: "TestAdmin",
-        is_active: true,
+
       },
     ]);
 
@@ -170,3 +170,4 @@ describe("login controller (integration)", () => {
     expect(String(res.body.error)).toBe(ERRORS.INTERNAL_SERVER_ERROR);
   });
 });
+
