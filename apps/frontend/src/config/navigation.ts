@@ -4,6 +4,8 @@ export type NavItem = {
   labelBtn?: string;
   path?: string;
   active?: boolean;
+  value?: string;
+  onClick?: () => void;
 };
 
 // Liens affiches dans la navigation publique (visiteur non connecte).
@@ -47,8 +49,8 @@ export const filterNewsItems: NavItem[] = [
 
 // Filtre affiches dans la navigation de la admin/Users.
 export const filterUsersItems: NavItem[] = [
-  { labelBtn: "Tout", active: true },
-  { labelBtn: "Admin", active: false },
-  { labelBtn: "Line Up", active: false },
-  { labelBtn: "News", active: false },
+  { labelBtn: "Tout", active: true, value: "all" },
+  { labelBtn: "Admin", active: false, value: "admin" },
+  { labelBtn: "Line Up", active: false, value: "lineup" },
+  { labelBtn: "News", active: false, value: "news" },
 ];

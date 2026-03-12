@@ -46,18 +46,24 @@ export default function Navigation({
   setmodal?: () => void;
   variant?: "sidebar" | "modal";
 }) {
+  // Récupère la classe CSS de la liste pour la variante de navigation choisie
   const listClass = navigationStyle[variant].list;
+
+  // Renvoie la classe CSS du bouton selon la variante, l’état actif et le contexte admin/public
   const itemClass = (isActive: boolean) => {
+    // Pour la variante "modal", renvoie la classe active ou inactive selon l’état
     if (variant === "modal") {
       return isActive
         ? navigationStyle.modal.btnActive
         : navigationStyle.modal.btnInactive;
     }
 
+    // Si l’item est actif, renvoie la classe active de la sidebar
     if (isActive) {
       return navigationStyle.sidebar.btnActive;
     }
 
+    // Sinon, renvoie la classe inactive selon le contexte admin ou public
     return isAdminPath
       ? navigationStyle.sidebar.btnInactiveAdmin
       : navigationStyle.sidebar.btnInactivePublic;
@@ -78,6 +84,7 @@ export default function Navigation({
                 <button
                   type="button"
                   onClick={() => {
+                    item.onClick?.();
                     setmodal?.();
                     onLogout?.();
                   }}

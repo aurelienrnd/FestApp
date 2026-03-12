@@ -22,6 +22,7 @@ type ListUsersResponse = { users: UserListRow[] };
  * @function getApiErrorMessage Definit un message a retourner selon le statut de l'erreur
  * @param isAddModalOpen Ouvre la modale d'ajout utilisateur.
  * @param onCloseAddModal Ferme la modale d'ajout utilisateur.
+ * @param filterBy filtre les utilisateurs
  * @children AddUserModal - Affiche la modale d'ajout d'utilisateur.
  * @children AddUserModal - Affiche la modale d'edition d'utilisateur.
  * @children DelateUserModal - Affiche la modale de confirmation pour supprimer un utilisateur.
@@ -29,9 +30,11 @@ type ListUsersResponse = { users: UserListRow[] };
 export default function UsersContent({
   isAddModalOpen = false,
   onCloseAddModal = () => {},
+  filterBy = "all",
 }: {
   isAddModalOpen?: boolean;
   onCloseAddModal?: () => void;
+  filterBy?: "all" | "admin" | "lineup" | "news";
 }) {
   // Etats lies aux donnees
   const [users, setUsers] = useState<UserListRow[]>([]);
@@ -134,6 +137,19 @@ export default function UsersContent({
     onCloseAddModal();
   };
 
+  // On crée un nouveau tableau contenant uniquement les utilisateurs correspondant au filtre sélectionné
+  const filteredUsers = users.filter((user) => {
+    // Si le filtre est "all", on retourne tous les utilisateurs
+    if (filterBy === "all") {
+      return true;
+    }
+    // On normalise le rôle de l'utilisateur et aussi le filtre pour être sûr que la comparaison soit cohérente
+    const normalizedRole = user.role.toLowerCase().replace(/\s+/g, "");
+    const normalizedFilter = filterBy.toLowerCase();
+
+    return normalizedRole === normalizedFilter;
+  });
+
   return (
     <div className="flex-1 flex justify-center ">
       <div className="w-full max-w-5xl">
@@ -141,11 +157,13 @@ export default function UsersContent({
           <p className="text-center">Chargement...</p>
         ) : loadErrorMessage ? (
           <p className="text-center text-(--color-1)">{loadErrorMessage}</p>
-        ) : users.length === 0 ? (
-          <p className="text-center">Aucun utilisateur.</p>
+        ) : filteredUsers.length === 0 ? (
+          <div className="flex h-full justify-center items-center">
+            <p>Aucun utilisateur.</p>
+          </div>
         ) : (
           <ul className="flex flex-col gap-(--gap-content-small)">
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <li
                 key={user.id}
                 className="w-full rounded-md border border-(--color-text-input) p-(--spacing-around-small)

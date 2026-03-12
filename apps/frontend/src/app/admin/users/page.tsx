@@ -19,11 +19,29 @@ export default function Page() {
   // Initialise l'etat d'ouverture de la modal pour ajouter un utilisateur
   const [isOpen, setIsOpen] = useState(false);
 
+  // Etat du filtre utilisateurs (tout / admin / lineup / news)
+  const [userFilter, setUserFilter] = useState<
+    "all" | "admin" | "lineup" | "news"
+  >("all");
+
+  //Determine quelle option est utilisé
+  const userFilterItems = filterUsersItems.map((item) => ({
+    ...item, // On copie toutes les propriétés existantes de l'item
+
+    //Détermine si l'item est actif
+    active: item.value === userFilter,
+
+    // Si l'item possède une valeur on définit une fonction onClick qui met à jour le filtre
+    onClick: item.value
+      ? () => setUserFilter(item.value as "all" | "admin" | "lineup" | "news")
+      : undefined,
+  }));
+
   return (
     <>
       <section className="section-page">
         <div className="flex justify-center item-center gap-(--gap-content-small)">
-          <AddButton items={filterUsersItems} />
+          <AddButton items={userFilterItems} />
           <h1 className="title1">UTILISATEURS</h1>
           <button
             type="button"
@@ -35,10 +53,11 @@ export default function Page() {
           </button>
         </div>
 
-        <SideBarTool items={filterUsersItems}>
+        <SideBarTool items={userFilterItems}>
           <UsersContent
             isAddModalOpen={isOpen}
             onCloseAddModal={() => setIsOpen(false)}
+            filterBy={userFilter}
           />
         </SideBarTool>
       </section>
