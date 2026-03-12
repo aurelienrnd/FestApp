@@ -7,7 +7,6 @@ export type AdminUser = {
   id: string;
   email: string;
   display_name: string;
-  is_active: boolean;
   role: string;
 };
 

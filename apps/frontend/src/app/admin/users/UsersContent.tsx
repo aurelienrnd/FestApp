@@ -10,8 +10,10 @@ type UserListRow = {
   id: string;
   email: string;
   display_name: string | null;
-  is_active: boolean;
   role: string;
+  must_change_password: boolean;
+  created_at: string;
+  password_changed_at: string | null;
 };
 
 type ListUsersResponse = { users: UserListRow[] };
@@ -179,17 +181,31 @@ export default function UsersContent({
                     <p className="font-semibold text-base md:text-lg">
                       {user.display_name}
                     </p>
-                    <p className="text-xs md:text-sm text-(--color-text-input)">
-                      {user.email}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs md:text-sm">
+                      <p className="text-(--color-text-input)">{user.email}</p>
+                      <p className="font-semibold uppercase">
+                        role: {user.role}
+                      </p>
+                      <p className="text-(--color-text-input)">
+                        must_change_password:{" "}
+                        {user.must_change_password ? "true" : "false"}
+                      </p>
+                      {user.must_change_password ? (
+                        <p className="text-(--color-text-input)">
+                          mot de passe provisoir
+                        </p>
+                      ) : (
+                        <p className="text-(--color-text-input)">
+                          password_changed_at:{" "}
+                          {user.password_changed_at ?? "null"}
+                        </p>
+                      )}
+                      <p className="text-(--color-text-input)">
+                        created_at: {user.created_at}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="flex flex-col sm:items-end md:items-end">
-                    <p className="text-sm md:text-base">{user.role}</p>
-                    <p className="text-xs md:text-sm text-(--color-text-input)">
-                      {user.is_active ? "actif" : "non actif"}
-                    </p>
-                  </div>
                 </div>
 
                 <div className="flex flex-col gap-2 sm:flex-row sm:justify-end sm:gap-x-3 md:gap-x-(--gap-content-small)">

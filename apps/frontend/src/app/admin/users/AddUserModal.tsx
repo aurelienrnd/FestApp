@@ -19,15 +19,17 @@ type AddUserModalProps = {
     id: string;
     email: string;
     display_name: string | null;
-    is_active: boolean;
     role: string;
+    must_change_password: boolean;
+    created_at: string;
   }) => void;
   selectedUser?: {
     id: string;
     email: string;
     display_name: string | null;
-    is_active?: boolean;
     role: string;
+    must_change_password: boolean;
+    created_at: string;
   } | null;
 };
 
@@ -38,8 +40,9 @@ type CreateUserApiResponse = {
     id: string;
     email: string;
     display_name: string | null;
-    is_active: boolean;
     role: string;
+    must_change_password: boolean;
+    created_at: string;
   };
 };
 
@@ -86,7 +89,6 @@ async function submitAddUserForm({
   isFormInvalid,
   isEditMode,
   selectedUserId,
-  selectedUserIsActive,
   firstName,
   lastName,
   email,
@@ -101,7 +103,6 @@ async function submitAddUserForm({
   isFormInvalid: boolean;
   isEditMode: boolean;
   selectedUserId: string | null;
-  selectedUserIsActive: boolean;
   firstName: string;
   lastName: string;
   email: string;
@@ -114,8 +115,9 @@ async function submitAddUserForm({
     id: string;
     email: string;
     display_name: string | null;
-    is_active: boolean;
     role: string;
+    must_change_password: boolean;
+    created_at: string;
   }) => void;
 }) {
   // Empeche le comportement par defaut du formulaire et stoppe la soumission si le formulaire est invalide
@@ -163,8 +165,9 @@ async function submitAddUserForm({
     id: selectedUserId ?? "",
     email,
     display_name: `${firstName} ${lastName}`.trim(),
-    is_active: selectedUserIsActive,
     role,
+    must_change_password: selectedUser?.must_change_password ?? true,
+    created_at: selectedUser?.created_at ?? new Date().toISOString(),
   };
   handleUser(result.data.user ?? fallbackUser);
   resetForm();
@@ -252,7 +255,6 @@ export default function AddUserModal({
       isFormInvalid,
       isEditMode,
       selectedUserId: selectedUser?.id ?? null,
-      selectedUserIsActive: selectedUser?.is_active ?? true,
       firstName,
       lastName,
       email,
