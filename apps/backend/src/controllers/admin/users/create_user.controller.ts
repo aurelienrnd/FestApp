@@ -60,17 +60,15 @@ export const createUser = async (req: Request, res: Response) => {
     email: string;
     display_name: string;
     role: string;
-    must_change_password: boolean;
     created_at: string;
   }>(
     `INSERT INTO users (
       email,
       password_hash,
       display_name,
-      must_change_password,
       role
-    ) VALUES ($1, $2, $3, TRUE, $4)
-     RETURNING id, email, display_name, must_change_password, role, created_at`,
+    ) VALUES ($1, $2, $3, $4)
+     RETURNING id, email, display_name, role, created_at`,
     [email, passwordHash, displayName, role],
   );
   const createdUser = createdUsers[0];
@@ -83,7 +81,6 @@ export const createUser = async (req: Request, res: Response) => {
       email: createdUser.email,
       display_name: createdUser.display_name,
       role: createdUser.role,
-      must_change_password: createdUser.must_change_password,
       created_at: createdUser.created_at,
     },
   });

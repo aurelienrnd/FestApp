@@ -7,7 +7,6 @@ type UserListRow = {
   email: string;
   display_name: string | null;
   role: string;
-  must_change_password: boolean;
   created_at: string;
   password_changed_at: string | null;
 };
@@ -17,7 +16,7 @@ type UserListRow = {
  */
 export async function listUsers(_req: Request, res: Response) {
   const users = await query<UserListRow>(
-    `SELECT id, email, display_name, role, must_change_password, created_at, password_changed_at
+    `SELECT id, email, display_name, role, created_at, password_changed_at
      FROM users
      ORDER BY display_name ASC`,
   );
