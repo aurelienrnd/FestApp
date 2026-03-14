@@ -20,7 +20,6 @@ type AddUserModalProps = {
     email: string;
     display_name: string | null;
     role: string;
-    must_change_password: boolean;
     created_at: string;
   }) => void;
   selectedUser?: {
@@ -28,7 +27,6 @@ type AddUserModalProps = {
     email: string;
     display_name: string | null;
     role: string;
-    must_change_password: boolean;
     created_at: string;
   } | null;
 };
@@ -41,7 +39,6 @@ type CreateUserApiResponse = {
     email: string;
     display_name: string | null;
     role: string;
-    must_change_password: boolean;
     created_at: string;
   };
 };
@@ -89,6 +86,7 @@ async function submitAddUserForm({
   isFormInvalid,
   isEditMode,
   selectedUserId,
+  selectedUser,
   firstName,
   lastName,
   email,
@@ -103,6 +101,13 @@ async function submitAddUserForm({
   isFormInvalid: boolean;
   isEditMode: boolean;
   selectedUserId: string | null;
+  selectedUser?: {
+    id: string;
+    email: string;
+    display_name: string | null;
+    role: string;
+    created_at: string;
+  } | null;
   firstName: string;
   lastName: string;
   email: string;
@@ -116,7 +121,6 @@ async function submitAddUserForm({
     email: string;
     display_name: string | null;
     role: string;
-    must_change_password: boolean;
     created_at: string;
   }) => void;
 }) {
@@ -166,7 +170,6 @@ async function submitAddUserForm({
     email,
     display_name: `${firstName} ${lastName}`.trim(),
     role,
-    must_change_password: selectedUser?.must_change_password ?? true,
     created_at: selectedUser?.created_at ?? new Date().toISOString(),
   };
   handleUser(result.data.user ?? fallbackUser);
@@ -255,6 +258,7 @@ export default function AddUserModal({
       isFormInvalid,
       isEditMode,
       selectedUserId: selectedUser?.id ?? null,
+      selectedUser,
       firstName,
       lastName,
       email,

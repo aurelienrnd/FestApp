@@ -11,12 +11,18 @@ type UserListRow = {
   email: string;
   display_name: string | null;
   role: string;
-  must_change_password: boolean;
   created_at: string;
   password_changed_at: string | null;
 };
 
 type ListUsersResponse = { users: UserListRow[] };
+
+const formatDateFr = (value: string) =>
+  new Date(value).toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 
 /** Affiche la liste des utilisateurs.
  * Recupere les utilisateurs via l'API puis affiche un etat de chargement/erreur.
@@ -186,26 +192,21 @@ export default function UsersContent({
                       <p className="font-semibold uppercase">
                         role: {user.role}
                       </p>
-                      <p className="text-(--color-text-input)">
-                        must_change_password:{" "}
-                        {user.must_change_password ? "true" : "false"}
-                      </p>
-                      {user.must_change_password ? (
+                      {user.password_changed_at ? (
                         <p className="text-(--color-text-input)">
-                          mot de passe provisoir
+                          mot de passe modiffier le :{" "}
+                          {formatDateFr(user.password_changed_at)}
                         </p>
                       ) : (
                         <p className="text-(--color-text-input)">
-                          password_changed_at:{" "}
-                          {user.password_changed_at ?? "null"}
+                          Mot de passe provisoir
                         </p>
                       )}
                       <p className="text-(--color-text-input)">
-                        created_at: {user.created_at}
+                        Cree le : {formatDateFr(user.created_at)}
                       </p>
                     </div>
                   </div>
-
                 </div>
 
                 <div className="flex flex-col gap-2 sm:flex-row sm:justify-end sm:gap-x-3 md:gap-x-(--gap-content-small)">
