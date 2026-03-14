@@ -41,7 +41,7 @@ describe("createUser controller (integration)", () => {
           email: "admin@test.fr",
           display_name: "John Doe",
           role: "admin",
-          must_change_password: true,
+
           created_at: new Date().toISOString(),
         },
       ]);
@@ -65,7 +65,7 @@ describe("createUser controller (integration)", () => {
       email: "admin@test.fr",
       display_name: "John Doe",
       role: "admin",
-      must_change_password: true,
+
       created_at: expect.any(String),
     });
   });
@@ -123,4 +123,5 @@ describe("createUser controller (integration)", () => {
     expect(res.body.error).toBe(ERRORS.INTERNAL_SERVER_ERROR);
   });
 });
+
 

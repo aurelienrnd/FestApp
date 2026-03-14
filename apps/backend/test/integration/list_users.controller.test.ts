@@ -33,7 +33,7 @@ describe("listUsers controller", () => {
         email: "admin@test.fr",
         display_name: "Admin",
         role: "admin",
-        must_change_password: false,
+
         created_at: "2026-03-12T10:15:30.000Z",
         password_changed_at: "2026-03-12T12:00:00.000Z",
       },
@@ -42,7 +42,7 @@ describe("listUsers controller", () => {
         email: "autre@test.fr",
         display_name: "Autre",
         role: "admin",
-        must_change_password: true,
+
         created_at: "2026-03-12T11:10:00.000Z",
         password_changed_at: null,
       },
@@ -58,7 +58,7 @@ describe("listUsers controller", () => {
       email: "admin@test.fr",
       display_name: "Admin",
       role: "admin",
-      must_change_password: false,
+
       created_at: "2026-03-12T10:15:30.000Z",
       password_changed_at: "2026-03-12T12:00:00.000Z",
     });
@@ -74,4 +74,5 @@ describe("listUsers controller", () => {
     expect(res.body.error).toBe(ERRORS.INTERNAL_SERVER_ERROR);
   });
 });
+
 

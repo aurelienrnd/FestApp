@@ -48,7 +48,7 @@ describe("updateUser controller (integration)", () => {
           email: "updated@test.fr",
           display_name: "Updated User",
           role: "admin",
-          must_change_password: false,
+
           created_at: new Date().toISOString(),
         },
       ]); // UPDATE execute
@@ -71,7 +71,7 @@ describe("updateUser controller (integration)", () => {
       `UPDATE users
      SET email = $1, display_name = $2, role = $3
      WHERE id = $4
-     RETURNING id, email, display_name, role, must_change_password, created_at`,
+     RETURNING id, email, display_name, role, created_at`,
       [
         "updated@test.fr",
         "Updated User",
@@ -85,7 +85,7 @@ describe("updateUser controller (integration)", () => {
       email: "updated@test.fr",
       display_name: "Updated User",
       role: "admin",
-      must_change_password: false,
+
       created_at: expect.any(String),
     });
   });
@@ -203,4 +203,5 @@ describe("updateUser controller (integration)", () => {
     expect(res.body.error).toBe(ERRORS.INTERNAL_SERVER_ERROR);
   });
 });
+
 
