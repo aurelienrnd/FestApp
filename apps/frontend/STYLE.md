@@ -21,7 +21,7 @@ Details:
 
 | Variable | Usages |
 | --- | --- |
-| `--color-1` | `globals.css` (`.btn-cta`), `components/Footer.tsx`, `components/Banner.tsx`, `components/Navigation.tsx`, `app/login/page.tsx` |
+| `--color-1` | `globals.css` (`.btn-cta`), `components/Banner.tsx`, `components/Footer.tsx`, `components/Navigation.tsx`, `app/login/page.tsx`, `app/admin/users/AddUserModal.tsx`, `app/admin/users/DelateUserModal.tsx`, `app/admin/users/UsersContent.tsx` |
 | `--color-2` | `globals.css` (`.mobil-menu`) |
 | `--color-3` | `components/Footer.tsx` (separateur) |
 | `--color-text-visitor` | `globals.css` (theme visitor) |
@@ -29,7 +29,7 @@ Details:
 | `--color-bg-admin` | `globals.css` (theme admin) |
 | `--color-text-admin` | `globals.css` (theme admin) |
 | `--color-bg-input` | `globals.css` (`.input`, `.text-area`) |
-| `--color-text-input` | `globals.css` (`.mobil-menu`, `.input`, `.text-area`) |
+| `--color-text-input` | `globals.css` (`.mobil-menu`, `.input`, `.text-area`), `app/admin/dashboard/DashboardContent.tsx`, `app/admin/users/UsersContent.tsx` |
 | `--color-text` | `globals.css` (`.btn-cta`, `.mobil-menu`), `app/layout.tsx` |
 | `--color-bg` | `app/layout.tsx`, `components/Footer.tsx` |
 
@@ -58,15 +58,15 @@ Details:
 
 | Variable | Usages |
 | --- | --- |
-| `--gap-content-small` | `globals.css` (`.nav-list`), `components/Banner.tsx`, `components/Footer.tsx`, `components/ContactUs.tsx`, `components/ForgotPassword.tsx`, `components/LegalMention.tsx`, `components/ModalCloseButton.tsx`, `components/SideBarTool.tsx`, `app/news/page.tsx`, `app/admin/users/page.tsx`, `app/admin/dashboard/DashboardContent.tsx` |
+| `--gap-content-small` | `globals.css` (`.nav-list`), `components/Banner.tsx`, `components/Footer.tsx`, `components/ContactUs.tsx`, `components/ForgotPassword.tsx`, `components/LegalMention.tsx`, `components/ModalCloseButton.tsx`, `components/Navigation.tsx`, `components/SideBarTool.tsx`, `app/news/page.tsx`, `app/admin/users/page.tsx`, `app/admin/dashboard/DashboardContent.tsx`, `app/admin/users/AddUserModal.tsx`, `app/admin/users/UsersContent.tsx` |
 | `--gap-content-big` | `app/admin/dashboard/DashboardContent.tsx` |
 | `--spacing-paragraph` | `components/ContactUs.tsx`, `components/ForgotPassword.tsx`, `components/LegalMention.tsx` |
-| `--spacing-around-meduim` | `globals.css` (`.section-page`), `components/Banner.tsx`, `components/ContactUs.tsx`, `components/Footer.tsx`, `components/SideBarTool.tsx` |
-| `--spacing-around-big` | `globals.css` (`.section-page`), `components/Footer.tsx` |
-| `--spacing-around-small` | `globals.css` (`.input`, `.text-area`) |
+| `--spacing-around-meduim` | `globals.css` (`.section-page`), `components/Banner.tsx`, `components/ContactUs.tsx`, `components/Footer.tsx`, `components/SideBarTool.tsx`, `app/admin/users/AddUserModal.tsx`, `app/admin/users/DelateUserModal.tsx` |
+| `--spacing-around-big` | `globals.css` (`.section-page`), `components/Footer.tsx`, `app/admin/dashboard/DashboardContent.tsx` |
+| `--spacing-around-small` | `globals.css` (`.input`, `.text-area`), `components/Navigation.tsx`, `app/admin/users/UsersContent.tsx` |
 | `--spacing-around-xsmall` | `globals.css` (`.input`, `.text-area`) |
 | `--spacing-form` | `app/login/page.tsx` |
-| `--margin-bottom-title` | `globals.css` (`.title1`), `components/AddButton.tsx` |
+| `--margin-bottom-title` | `globals.css` (`.title1`), `components/AddButton.tsx`, `app/admin/users/page.tsx` |
 
 ### Typographie
 
@@ -90,6 +90,7 @@ Classes definies dans `globals.css`:
 - `.text-area`
 - `.submit-modal-area`
 - `.section-page`
+- `.side-bar`
 
 ## 4. Conventions recommandees
 
