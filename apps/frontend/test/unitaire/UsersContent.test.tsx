@@ -51,7 +51,7 @@ describe("UsersContent", () => {
             email: "john@test.fr",
             display_name: "John Doe",
             role: "admin",
-            must_change_password: false,
+
             created_at: "2026-03-12T10:15:30.000Z",
             password_changed_at: "2026-03-12T12:00:00.000Z",
           },
@@ -92,7 +92,7 @@ describe("UsersContent", () => {
             email: "new@test.fr",
             display_name: "New User",
             role: "news",
-            must_change_password: true,
+
             created_at: "2026-03-12T10:30:00.000Z",
             password_changed_at: null,
           },
@@ -139,7 +139,7 @@ describe("UsersContent", () => {
               email: "john@test.fr",
               display_name: "John Doe",
               role: "admin",
-              must_change_password: false,
+
               created_at: "2026-03-12T10:15:30.000Z",
               password_changed_at: "2026-03-12T12:00:00.000Z",
             },
@@ -156,7 +156,7 @@ describe("UsersContent", () => {
             email: "john@test.fr",
             display_name: "Jane Doe",
             role: "admin",
-            must_change_password: false,
+
             created_at: "2026-03-12T10:15:30.000Z",
             password_changed_at: "2026-03-12T12:00:00.000Z",
           },
@@ -208,7 +208,7 @@ describe("UsersContent", () => {
               email: "john@test.fr",
               display_name: "John Doe",
               role: "admin",
-              must_change_password: false,
+
               created_at: "2026-03-12T10:15:30.000Z",
               password_changed_at: "2026-03-12T12:00:00.000Z",
             },
@@ -217,7 +217,7 @@ describe("UsersContent", () => {
               email: "jane@test.fr",
               display_name: "Jane Doe",
               role: "news",
-              must_change_password: false,
+
               created_at: "2026-03-12T10:20:00.000Z",
               password_changed_at: null,
             },
@@ -275,7 +275,7 @@ describe("UsersContent", () => {
               email: "john@test.fr",
               display_name: "John Doe",
               role: "admin",
-              must_change_password: false,
+
               created_at: "2026-03-12T10:15:30.000Z",
               password_changed_at: "2026-03-12T12:00:00.000Z",
             },
@@ -303,4 +303,5 @@ describe("UsersContent", () => {
     expect(screen.getAllByText("John Doe").length).toBeGreaterThanOrEqual(1);
   });
 });
+
 
