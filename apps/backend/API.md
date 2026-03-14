@@ -79,8 +79,7 @@ Reponse en succes:
     "email": "admin@test.fr",
     "display_name": "Admin",
     "role": "admin"
-  },
-  "mustChangePassword": false
+  }
 }
 ```
 
@@ -120,7 +119,7 @@ Reponse en succes:
       "email": "admin@test.fr",
       "display_name": "Admin",
       "role": "admin",
-      "must_change_password": false,
+
       "created_at": "2026-03-12T10:15:30.000Z",
       "password_changed_at": "2026-03-12T12:00:00.000Z"
     },
@@ -129,7 +128,7 @@ Reponse en succes:
       "email": "autre@test.fr",
       "display_name": "autreAdmin",
       "role": "admin",
-      "must_change_password": true,
+
       "created_at": "2026-03-12T11:10:00.000Z",
       "password_changed_at": null
     }
@@ -180,7 +179,7 @@ Reponse en succes:
     "email": "nouveau@test.fr",
     "display_name": "Nouveau User",
     "role": "admin",
-    "must_change_password": true,
+
     "created_at": "2026-03-12T10:30:00.000Z"
   }
 }
@@ -233,7 +232,7 @@ Reponse en succes:
     "email": "modifie@test.fr",
     "display_name": "Modifie User",
     "role": "lineup",
-    "must_change_password": false,
+
     "created_at": "2026-03-12T10:15:30.000Z"
   }
 }
@@ -287,5 +286,6 @@ Reponses d'erreur:
 ```json
 { "error": "..." }
 ```
+
 
 
