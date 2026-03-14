@@ -90,9 +90,10 @@ Reponses d'erreur:
 - `401` `{ "error": "Cookie d'authentification manquant" }`
 - `401` `{ "error": "Token d'acces manquant" }`
 - `401` `{ "error": "Token d'acces invalide" }`
-- `403` `{ "error": "Utilisateur introuvable" }`
+- `401` `{ "error": "Utilisateur introuvable" }`
 - `401` `{ "error": "Session introuvable" }`
 - `401` `{ "error": "Session deja fermee ou expiree" }`
+- `401` `{ "error": "Session manquante" }`
 
 ## Users
 
@@ -143,6 +144,9 @@ Reponses d'erreur:
 - `401` `{ "error": "Cookie d'authentification manquant" }`
 - `401` `{ "error": "Token d'acces manquant" }`
 - `401` `{ "error": "Token d'acces invalide" }`
+- `401` `{ "error": "Session introuvable" }`
+- `401` `{ "error": "Session deja fermee ou expiree" }`
+- `401` `{ "error": "Session manquante" }`
 
 ### POST `/admin/users`
 
@@ -185,12 +189,17 @@ Reponse en succes:
 }
 ```
 
+- Header: `Set-Cookie` (token d'acces renouvele)
+
 Reponses d'erreur:
 
 - `400` `{ "error": "Donnees invalides" }`
 - `401` `{ "error": "Cookie d'authentification manquant" }`
 - `401` `{ "error": "Token d'acces manquant" }`
 - `401` `{ "error": "Token d'acces invalide" }`
+- `401` `{ "error": "Session introuvable" }`
+- `401` `{ "error": "Session deja fermee ou expiree" }`
+- `401` `{ "error": "Session manquante" }`
 - `409` `{ "error": "Email deja utilise" }`
 - `409` `{ "error": "Nom deja utilise" }`
 
@@ -238,12 +247,17 @@ Reponse en succes:
 }
 ```
 
+- Header: `Set-Cookie` (token d'acces renouvele)
+
 Reponses d'erreur:
 
 - `400` `{ "error": "Donnees invalides" }` (id invalide ou corps invalide)
 - `401` `{ "error": "Cookie d'authentification manquant" }`
 - `401` `{ "error": "Token d'acces manquant" }`
 - `401` `{ "error": "Token d'acces invalide" }`
+- `401` `{ "error": "Session introuvable" }`
+- `401` `{ "error": "Session deja fermee ou expiree" }`
+- `401` `{ "error": "Session manquante" }`
 - `404` `{ "error": "Utilisateur introuvable" }`
 - `409` `{ "error": "Email deja utilise" }`
 - `409` `{ "error": "Nom deja utilise" }`
@@ -271,12 +285,17 @@ Reponse en succes:
 }
 ```
 
+- Header: `Set-Cookie` (token d'acces renouvele)
+
 Reponses d'erreur:
 
 - `400` `{ "error": "Donnees invalides" }` (id invalide)
 - `401` `{ "error": "Cookie d'authentification manquant" }`
 - `401` `{ "error": "Token d'acces manquant" }`
 - `401` `{ "error": "Token d'acces invalide" }`
+- `401` `{ "error": "Session introuvable" }`
+- `401` `{ "error": "Session deja fermee ou expiree" }`
+- `401` `{ "error": "Session manquante" }`
 - `404` `{ "error": "Utilisateur introuvable" }`
 
 ## Notes
