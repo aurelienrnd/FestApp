@@ -28,6 +28,15 @@ VALUES (
   'Rock',
   'Etats-Unis, Los Angeles',
   'Groupe de rock melant riffs lourds et funcky.',
-  '/media/artists/red-hot-chili-peppers.jpg',
+  'https://www.franceinfo.fr/pictures/wgYIq-vpdl_9MeEJWHXBaIz0ns8/186x42:2836x1535/2656x1494/filters:format(avif):quality(50)/2022/04/01/phpPAEw95.jpg',
   'Photo promo du groupe Red Hot Chili Peppers'
+);
+INSERT INTO artists (name, genre, origin, bio, url_media, description_media)
+VALUES (
+  'Foo Fighters',
+  'Rock',
+  'Etats-Unis, Seattle',
+  'Groupe de rock alternatif connu pour ses refrains puissants et ses concerts endiables.',
+  'https://images.rtl.fr/~c/1540v1026/rtl2/www/1480371-foo-fighters.jpg',
+  'Photo promo du groupe Foo Fighters'
 );
