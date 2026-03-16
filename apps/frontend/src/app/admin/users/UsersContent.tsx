@@ -178,34 +178,26 @@ export default function UsersContent({
              flex flex-col gap-3
              md:flex-row md:items-center md:justify-between md:gap-x-(--gap-content-small)"
               >
-                <div
-                  className="flex flex-col gap-3
-               sm:flex-row sm:justify-between sm:gap-x-(--gap-content-small)
-               md:flex-1"
-                >
-                  <div className="flex flex-col">
+                <div className="flex flex-1 flex-col justify-center gap-3">
+                  <div className="text-xs md:text-sm flex flex-wrap items-center justify-start gap-(--gap-content-small)">
                     <p className="font-semibold text-base md:text-lg">
-                      {user.display_name}
+                      {user.display_name ?? "Utilisateur"}
                     </p>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs md:text-sm">
-                      <p className="text-(--color-text-input)">{user.email}</p>
-                      <p className="font-semibold uppercase">
-                        role: {user.role}
-                      </p>
-                      {user.password_changed_at ? (
-                        <p className="text-(--color-text-input)">
-                          mot de passe modiffier le :{" "}
-                          {formatDateFr(user.password_changed_at)}
-                        </p>
-                      ) : (
-                        <p className="text-(--color-text-input)">
-                          Mot de passe provisoir
-                        </p>
-                      )}
-                      <p className="text-(--color-text-input)">
-                        Cree le : {formatDateFr(user.created_at)}
-                      </p>
-                    </div>
+                    <p className="text-[10px] uppercase tracking-wide text-(--color-text-input)">
+                      Email : {user.email}
+                    </p>
+                    <p className="text-[10px] uppercase tracking-wide text-(--color-text-input)">
+                      Cree le : {formatDateFr(user.created_at)}
+                    </p>
+                    <p className="text-[10px] uppercase tracking-wide text-(--color-text-input)">
+                      Role : {user.role}
+                    </p>
+                    <p className="text-[10px] uppercase tracking-wide text-(--color-text-input)">
+                      Mot de passe{" "}
+                      {user.password_changed_at
+                        ? `Modifie le : ${formatDateFr(user.password_changed_at)}`
+                        : "Provisoire"}
+                    </p>
                   </div>
                 </div>
 

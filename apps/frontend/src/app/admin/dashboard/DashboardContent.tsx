@@ -12,36 +12,22 @@ export default function DashboardContent() {
     <div className="flex-1 flex flex-col justify-center items-center gap-(--gap-content-big)">
       <div className="w-full max-w-6xl">
         <div
-          className="w-full rounded-2xl border border-(--color-text-input) p-(--spacing-around-big)
-                     flex flex-col gap-(--gap-content-big)
-                     lg:flex-row lg:items-center lg:justify-between lg:gap-x-(--gap-content-big)"
+          className="w-full rounded-2xl border border-(--color-text-input) p-(--spacing-around-small) md:p-(--spacing-around-big)
+                     flex flex-wrap justify-around items-center gap-(--gap-content-small)"
         >
-          <div
-            className="flex flex-col gap-(--gap-content-small)
-                       sm:flex-row sm:justify-between sm:gap-x-(--gap-content-big)
-                       lg:flex-1 lg:items-center"
-          >
-            <div className="flex flex-col">
-              <p className="font-semibold text-xl md:text-2xl lg:text-4xl">
-                Name: {user.display_name}
-              </p>
-              <p className="text-base md:text-lg lg:text-2xl text-(--color-text-input)">
-                Email: {user.email}
-              </p>
-            </div>
+          <p className="font-semibold text-xl md:text-2xl lg:text-4xl">
+            Name: {user.display_name}
+          </p>
+          <p className="text-base md:text-lg lg:text-2xl text-(--color-text-input)">
+            Email: {user.email}
+          </p>
 
-            <div className="flex flex-col sm:items-end lg:items-end">
-              <p className="text-lg md:text-xl lg:text-3xl">Type: {user.role}</p>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-(--gap-content-small) lg:items-end">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-x-(--gap-content-small) lg:justify-end">
-              <p className="text-lg md:text-xl lg:text-3xl">Password:</p>
-              <button type="button" className="btn-cta">
-                Modifier
-              </button>
-            </div>
+          <p className="text-lg md:text-xl lg:text-3xl">Type: {user.role}</p>
+          <div className="flex flex-row items-center gap-x-(--gap-content-small)">
+            <p className="text-lg md:text-xl lg:text-3xl">Password:</p>
+            <button type="button" className="btn-cta w-fit">
+              Modifier
+            </button>
           </div>
         </div>
       </div>
