@@ -12,7 +12,7 @@ type UserListRow = {
   display_name: string | null;
   role: string;
   created_at: string;
-  password_changed_at: string | null;
+  password_changed_at?: string | null;
 };
 
 type ListUsersResponse = { users: UserListRow[] };
@@ -170,48 +170,50 @@ export default function UsersContent({
             <p>Aucun utilisateur.</p>
           </div>
         ) : (
-          <ul className="flex flex-col gap-(--gap-content-small)">
+          <ul className="flex flex-col items-center gap-(--gap-content-small)">
             {filteredUsers.map((user) => (
-              <li
-                key={user.id}
-                className="w-full rounded-md border border-(--color-text-input) p-(--spacing-around-small)
-             flex flex-col gap-3
-             md:flex-row md:items-center md:justify-between md:gap-x-(--gap-content-small)"
-              >
-                <div className="flex flex-1 flex-col justify-center gap-3">
-                  <div className="text-xs md:text-sm flex flex-wrap items-center justify-start gap-(--gap-content-small)">
-                    <p className="font-semibold text-base md:text-lg">
-                      {user.display_name ?? "Utilisateur"}
-                    </p>
-                    <p className="text-[10px] uppercase tracking-wide text-(--color-text-input)">
-                      Email : {user.email}
-                    </p>
-                    <p className="text-[10px] uppercase tracking-wide text-(--color-text-input)">
-                      Cree le : {formatDateFr(user.created_at)}
-                    </p>
-                    <p className="text-[10px] uppercase tracking-wide text-(--color-text-input)">
-                      Role : {user.role}
-                    </p>
-                    <p className="text-[10px] uppercase tracking-wide text-(--color-text-input)">
-                      Mot de passe{" "}
+              <li key={user.id} className="card-row">
+                <div className="card-users-media-center">
+                  <span className="card-user-name">
+                    {user.display_name ?? "Utilisateur"}
+                  </span>
+                </div>
+
+                <div className="card-user-content">
+                  <span className="whitespace-nowrap">{user.email}</span>
+
+                  <div className="card-user-field">
+                    <span className="whitespace-nowrap">Cree le&nbsp;</span>
+                    <span className="whitespace-nowrap">
+                      {formatDateFr(user.created_at)}
+                    </span>
+                  </div>
+
+                  <span className="whitespace-nowrap">{user.role}</span>
+
+                  <div className="card-user-field">
+                    <span className="whitespace-nowrap">
+                      Mot de passe&nbsp;
+                    </span>
+                    <span className="whitespace-nowrap">
                       {user.password_changed_at
-                        ? `Modifie le : ${formatDateFr(user.password_changed_at)}`
+                        ? `Modifie le ${formatDateFr(user.password_changed_at)}`
                         : "Provisoire"}
-                    </p>
+                    </span>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2 sm:flex-row sm:justify-end sm:gap-x-3 md:gap-x-(--gap-content-small)">
+                <div className="card-user-actions">
                   <button
                     type="button"
-                    className="btn-type-2"
+                    className="btn-type-2 rounded-md border border-(--color-text-input) p-(--spacing-around-xsmall)"
                     onClick={() => openEditModal(user)}
                   >
                     Modifier
                   </button>
                   <button
                     type="button"
-                    className="btn-type-2"
+                    className="btn-type-2 rounded-md border border-(--color-text-input) p-(--spacing-around-xsmall)"
                     onClick={() => openDeleteModal(user)}
                   >
                     Supprimer
@@ -222,6 +224,7 @@ export default function UsersContent({
           </ul>
         )}
       </div>
+
       <DelateUserModal
         isOpen={isDeleteModalOpen}
         selectedUser={selectedUserToDelete}

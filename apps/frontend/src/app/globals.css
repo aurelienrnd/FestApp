@@ -115,4 +115,66 @@
   .side-bar {
     @apply text-lg md:text-2xl lg:text-4xl;
   }
+
+  .card-row {
+    @apply w-full max-w-md lg:max-w-none rounded-md border border-(--color-text-input) flex flex-col lg:flex-row gap-(--spacing-around-small);
+  }
+
+  @layer dashboard {
+    .card-dashboard-media-center {
+      @apply flex items-center justify-center m-(--spacing-around-small) mb-0 lg:mb-(--spacing-around-small);
+    }
+
+    .card-dashboard-avatar {
+      @apply flex h-(--space-12) w-(--space-12) items-center justify-center rounded-full border border-(--color-text-input) bg-(--color-bg);
+    }
+
+    .card-dashboard-content {
+      @apply w-full flex flex-col lg:flex-row justify-around items-center mb-(--spacing-around-small) lg:mb-0;
+    }
+
+    .card-dashboard-field {
+      @apply flex justify-around;
+    }
+
+    .card-dashboard-actions {
+      @apply flex flex-col lg:flex-row gap-x-(--gap-content-small) items-center;
+    }
+  }
+
+  @layer users {
+    .card-users-media-center {
+      @apply flex items-center justify-center m-(--spacing-around-small) mb-0 lg:mb-(--spacing-around-small);
+    }
+
+    .card-user-name {
+      @apply flex items-center justify-center;
+    }
+
+    .card-user-content {
+      @apply flex-1 flex flex-wrap flex-col lg:flex-row items-center gap-(--spacing-around-small) justify-between;
+    }
+
+    .card-user-field {
+      @apply flex flex-nowrap;
+    }
+
+    .card-user-actions {
+      @apply flex justify-center gap-(--gap-content-small) mb-(--spacing-around-small) lg:m-(--spacing-around-small);
+    }
+  }
+
+  @layer lineup {
+    .card-media-img {
+      @apply rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none lg:w-48;
+    }
+
+    .card-lineup-content {
+      @apply flex flex-1 flex-col lg:flex-row items-center lg:justify-between gap-(--spacing-around-small);
+    }
+
+    .card-lineup-actions {
+      @apply flex justify-center items-center mb-(--spacing-around-small) lg:m-(--spacing-around-small);
+    }
+  }
 }

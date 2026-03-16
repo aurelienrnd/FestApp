@@ -10,27 +10,37 @@ export default function DashboardContent() {
 
   return (
     <div className="flex-1 flex flex-col justify-center items-center gap-(--gap-content-big)">
-      <div className="w-full max-w-6xl">
-        <div
-          className="w-full rounded-2xl border border-(--color-text-input) p-(--spacing-around-small) md:p-(--spacing-around-big)
-                     flex flex-wrap justify-around items-center gap-(--gap-content-small)"
-        >
-          <p className="font-semibold text-xl md:text-2xl lg:text-4xl">
-            Name: {user.display_name}
-          </p>
-          <p className="text-base md:text-lg lg:text-2xl text-(--color-text-input)">
-            Email: {user.email}
-          </p>
+      <div className="w-full max-w-5xl flex flex-col justify-center items-center gap-(--gap-content-small)">
+        <div className="card-row">
+          <div className="card-dashboard-media-center">
+            <div className="card-dashboard-avatar">
+              {(user.display_name ?? "U").slice(0, 1)}
+            </div>
+          </div>
 
-          <p className="text-lg md:text-xl lg:text-3xl">Type: {user.role}</p>
-          <div className="flex flex-row items-center gap-x-(--gap-content-small)">
-            <p className="text-lg md:text-xl lg:text-3xl">Password:</p>
-            <button type="button" className="btn-cta w-fit">
-              Modifier
-            </button>
+          <div className="card-dashboard-content">
+            <div className="card-dashboard-field">
+              <span>Name: {user.display_name}</span>
+            </div>
+
+            <div className="card-dashboard-field">
+              <span>Email: {user.email}</span>
+            </div>
+
+            <div className="card-dashboard-field">
+              <span>Type: {user.role}</span>
+            </div>
+
+            <div className="card-dashboard-actions">
+              <span>Password:</span>
+              <button type="button" className="btn-cta">
+                Modifier
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
       <p className="text-base md:text-lg lg:text-2xl text-(--color-text-input) lg:text-center">
         Prochain evenement : du 23 mai 2026 au 24 mai 2026
       </p>
