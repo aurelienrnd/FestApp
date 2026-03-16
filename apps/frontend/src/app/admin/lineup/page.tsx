@@ -1,6 +1,7 @@
 import SideBarTool from "../../../components/SideBarTool";
 import { filterLineUpItems } from "../../../config/navigation";
 import AddButton from "../../../components/AddButton";
+import LineupContent from "./LineupContent";
 
 export default function Page() {
   return (
@@ -11,7 +12,7 @@ export default function Page() {
       </div>
 
       <SideBarTool items={filterLineUpItems}>
-        <p>exemple</p>
+        <LineupContent />
       </SideBarTool>
     </section>
   );
