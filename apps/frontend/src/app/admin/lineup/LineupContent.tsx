@@ -35,7 +35,7 @@ export default function LineupContent() {
       setLoadErrorMessage(null);
 
       // Appel API pour recuperer la liste des artistes
-      const result = await apiRequest<ListArtistsResponse>("/admin/artists", {
+      const result = await apiRequest<ListArtistsResponse>("/public/lineup", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -48,6 +48,7 @@ export default function LineupContent() {
       }
 
       // Mise a jour de la liste des artistes
+      console.log("Lineup API result:", result.data?.artists ?? []);
       setArtists(result.data?.artists ?? []);
       setIsLoading(false);
     };
@@ -67,13 +68,30 @@ export default function LineupContent() {
             <p>Aucun artiste.</p>
           </div>
         ) : (
-          <ul className="flex flex-col gap-(--gap-content-small)">
+          <ul className="flex w-full flex-col items-center gap-(--gap-content-small)">
             {artists.map((artist) => (
-              <li
-                key={artist.id}
-                className="w-full rounded-md border border-(--color-text-input) p-(--spacing-around-small)
-             flex flex-col gap-3"
-              ></li>
+              <li key={artist.id} className="card-row">
+                <div className="card-lineup-media">
+                  <img
+                    src={artist.url_media}
+                    alt={artist.description_media}
+                    className="card-media-img"
+                  />
+                </div>
+
+                <div className="card-lineup-content">
+                  <span>{artist.name}</span>
+                  <span>Scene principale</span>
+                  <span>Samedi 23 mai</span>
+                  <span>22h30</span>
+                </div>
+
+                <div className="card-lineup-actions">
+                  <button type="button" className="btn-cta">
+                    Voir plus
+                  </button>
+                </div>
+              </li>
             ))}
           </ul>
         )}
