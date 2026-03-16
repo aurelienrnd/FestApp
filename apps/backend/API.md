@@ -298,6 +298,43 @@ Reponses d'erreur:
 - `401` `{ "error": "Session manquante" }`
 - `404` `{ "error": "Utilisateur introuvable" }`
 
+## Lineup
+
+Base path: `/public/lineup`
+
+### GET `/public/lineup`
+
+Afficher la programmation (liste des artistes).
+
+Authentification:
+
+- Aucune (route publique).
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "artists": [
+    {
+      "id": "uuid",
+      "name": "Red Hot Chili Peppers",
+      "genre": "Rock",
+      "origin": "Etats-Unis, Los Angeles",
+      "bio": "Groupe de rock melant riffs lourds et funcky.",
+      "url_media": "https://www.franceinfo.fr/pictures/wgYIq-vpdl_9MeEJWHXBaIz0ns8/186x42:2836x1535/2656x1494/filters:format(avif):quality(50)/2022/04/01/phpPAEw95.jpg",
+      "description_media": "Photo promo du groupe Red Hot Chili Peppers"
+    }
+  ]
+}
+```
+
+Reponses d'erreur:
+
+- `500` `{ "error": "Erreur serveur" }`
+
 ## Notes
 
 - Format d'erreur standardise:
