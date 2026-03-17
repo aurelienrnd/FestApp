@@ -72,6 +72,9 @@ export const createUser = async (req: Request, res: Response) => {
     [email, passwordHash, displayName, role],
   );
   const createdUser = createdUsers[0];
+  if (!createdUser) {
+    throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
+  }
 
   return res.status(201).json({
     message: "Utilisateur cree",

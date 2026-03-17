@@ -6,7 +6,7 @@ dotenv.config();
 
 // création de l’application Express
 const app = createApp();
-const PORT = process.env.PORT || 4000;
+const PORT: number = Number(process.env.PORT) || 4000;
 
 // lance le serveur sur le port spécifié
 app.listen(PORT, () => {

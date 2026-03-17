@@ -10,6 +10,8 @@ import {
   initToken,
   serializeCookie,
 } from "../../../functions";
+import { AppError } from "../../../errors/AppError";
+import { ERRORS } from "../../../errors/errorMessages";
 
 /** Cree la session dans la BDD
  * @param {DbUser} user utilisateur de la requete
@@ -26,10 +28,13 @@ export async function generateSession(
   );
 
   // Crée une nouvelle session en base pour l'utilisateur
-  const rows = await query(
+  const rows = await query<{ id: string }>(
     `INSERT INTO sessions (user_id, expires_at) VALUES ($1, $2) RETURNING id`,
     [user.id, expiresAt],
   );
+  if (!rows[0]) {
+    throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
+  }
 
   return rows[0].id;
 }
@@ -67,9 +72,6 @@ export async function login(req: Request, res: Response) {
     "JWT_ACCESS_EXPIRES_IN",
     sessionId,
   );
-
-  // TODO - remove it for production
-  console.log("Token a la connexion", accessToken);
 
   // Construit le cookie HTTP contenant le token puis l'ajoute au header
   const accessCookie = serializeCookie(

@@ -100,19 +100,20 @@ export function serializeCookie(
 }
 
 /** Verifie si la session existe
- * @param {SessionRow} sessionBdd session en BDD
+ * @param {SessionRow | undefined} sessionBdd session en BDD
  */
-export function sessionExists(sessionBdd: SessionRow) {
+export function sessionExists(sessionBdd: SessionRow | undefined) {
   if (!sessionBdd) {
     throw new AppError(ERRORS.SESSION_NOT_FOUND, 401);
   }
 }
 
 /** Verifie si la session est deja revoquee ou expiree
- * @param {SessionRow} sessionBdd session en BDD
+ * @param {SessionRow | undefined} sessionBdd session en BDD
  */
-export function sessionRevoked(sessionBdd: SessionRow) {
+export function sessionRevoked(sessionBdd: SessionRow | undefined) {
   if (
+    !sessionBdd ||
     sessionBdd.revoked_at !== null ||
     new Date(sessionBdd.expires_at) < new Date()
   ) {

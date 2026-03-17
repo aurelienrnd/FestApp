@@ -88,6 +88,9 @@ export async function updateUser(req: Request, res: Response) {
     [email, displayName, role, userId],
   );
   const updatedUser = updatedUsers[0];
+  if (!updatedUser) {
+    throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
+  }
 
   return res.status(200).json({
     message: "Utilisateur modifie",

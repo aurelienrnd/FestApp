@@ -62,7 +62,7 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
   const { userId, sessionId } = decodedToken(token);
 
   // Cherche l'utilisateur correspondant à l'userId extrait du token et renvoie sont nom et sont role
-  const user = await query(
+  const user = await query<{ id: string; display_name: string | null; role: string }>(
     "SELECT id, display_name, role FROM users WHERE id = $1",
     [userId],
   );

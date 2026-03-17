@@ -26,7 +26,7 @@ export async function logout(_req: Request, res: Response) {
     "SELECT id, revoked_at, expires_at FROM sessions WHERE id = $1 AND user_id = $2",
     [reqSessionId, reqUserId],
   );
-  const sessionBdd: SessionRow = rows[0];
+  const sessionBdd = rows[0];
   sessionExists(sessionBdd);
   sessionRevoked(sessionBdd);
 

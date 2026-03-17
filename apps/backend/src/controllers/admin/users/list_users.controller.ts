@@ -1,15 +1,7 @@
 import type { Request, Response } from "express";
 
 import { query } from "../../../db";
-
-type UserListRow = {
-  id: string;
-  email: string;
-  display_name: string | null;
-  role: string;
-  created_at: string;
-  password_changed_at: string | null;
-};
+import type { UserListRow } from "../../../type";
 
 /** Liste tous les utilisateurs.
  * Renvoie uniquement les champs utiles au front (pas de champs sensibles).

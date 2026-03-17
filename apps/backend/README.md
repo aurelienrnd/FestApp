@@ -180,7 +180,14 @@ Centralise la connexion PostgreSQL via un pool `pg` et expose une fonction `quer
 
 ### `type.ts`
 
-Définit les types et interfaces TypeScript partagés du backend (ex : extensions de `res.locals`).
+Centralise tous les types TypeScript partagés du backend :
+
+- `Express.Locals` augmentation — type `res.locals` avec `userId`, `userRole`, `userDisplayName`, `sessionId`
+- `DbUser` — ligne utilisateur retournée pour l'authentification (email, password_hash…)
+- `SessionRow` — ligne de session retournée par la base de données
+- `UserListRow` — ligne utilisateur pour les endpoints de liste/CRUD
+- `ArtistListRow` — ligne artiste pour l'endpoint de programmation
+- `UserInfoRow` — ligne utilisateur pour l'endpoint `/admin/auth/me`
 
 ### `functions.ts`
 

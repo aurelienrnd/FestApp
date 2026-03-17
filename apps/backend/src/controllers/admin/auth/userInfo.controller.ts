@@ -4,13 +4,7 @@ import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
 import { requireUserId } from "../../../functions";
-
-type UserInfoRow = {
-  id: string;
-  email: string;
-  display_name: string;
-  role: string;
-};
+import type { UserInfoRow } from "../../../type";
 
 /** Recupere les informations de l'utilisateur connecte
  * Verifie que l'utilisateur est present dans le header
