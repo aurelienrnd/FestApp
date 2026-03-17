@@ -229,6 +229,7 @@ export default function UsersContent({
         handleUser={handleUserAdded}
       />
       <AddUserModal
+        key={selectedUserToBeUpdate?.id ?? "edit"}
         isOpen={isEditModalOpen}
         onClose={closeEditModal}
         handleUser={handleUserEdited}

@@ -156,11 +156,15 @@ export default function AddUserModal({
 }: AddUserModalProps) {
   const isEditMode = selectedUser !== null;
 
+  // Initialise les champs depuis selectedUser en mode modification, vide en mode creation
+  const displayName = selectedUser?.display_name?.trim() ?? "";
+  const [initialFirstName, ...initialLastNameParts] = displayName.split(/\s+/);
+
   // Champs du formulaire utilisateur
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
+  const [firstName, setFirstName] = useState(initialFirstName ?? "");
+  const [lastName, setLastName] = useState(initialLastNameParts.join(" "));
+  const [email, setEmail] = useState(selectedUser?.email ?? "");
+  const [role, setRole] = useState(selectedUser?.role ?? "");
 
   // Gestion des erreurs lors de la soumission du formulaire
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -171,27 +175,6 @@ export default function AddUserModal({
   useEffect(() => {
     Modal.setAppElement("#app-root");
   }, []);
-
-  // Pre-remplit les champs lorsque la modal est ouverte en mode modification.
-  const handleAfterOpen = () => {
-    if (!selectedUser) {
-      setFirstName("");
-      setLastName("");
-      setEmail("");
-      setRole("");
-      return;
-    }
-
-    // Recupere et nettoie le display_name, puis separe le prenom du reste du nom
-    const displayName = selectedUser.display_name?.trim() ?? "";
-    const [firstNameValue, ...lastNameParts] = displayName.split(/\s+/);
-
-    // Met a jour les champs du formulaire avec les donnees de l'utilisateur selectionne
-    setFirstName(firstNameValue ?? "");
-    setLastName(lastNameParts.join(" "));
-    setEmail(selectedUser.email);
-    setRole(selectedUser.role);
-  };
 
   // Verifie si le formulaire d'ajout utilisateur est incomplet.
   const isFormInvalid = isAddUserFormInvalid(firstName, lastName, email, role);
@@ -233,7 +216,6 @@ export default function AddUserModal({
     <Modal
       isOpen={isOpen}
       onRequestClose={handleClose}
-      onAfterOpen={handleAfterOpen}
       contentLabel="Ajout utilisateur"
       className="modal"
       overlayClassName="modal-overlay"
