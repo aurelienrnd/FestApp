@@ -1,3 +1,4 @@
+/** Page d'accueil publique du site. */
 export default function Home() {
   return (
     <main>

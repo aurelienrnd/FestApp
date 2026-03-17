@@ -8,3 +8,6 @@
 
 # A rajouter si besoin, les fichiers ou dossiers à ignorer
 .vscode/
+
+# Instructions Claude (non versionnées)
+CLAUDE.md

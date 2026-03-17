@@ -13,7 +13,7 @@ import publicArtists from "./routes/public.artists.routes";
 import publicProgramming from "./routes/public.programming.routes";
 import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
 
-// Creation de l'application Express
+/** Cree et configure l'application Express — CORS, routes API, handlers d'erreur. */
 export function createApp() {
   const app = express();
   const frontendOrigin = process.env.FRONTEND_ORIGIN || "http://localhost:3000";

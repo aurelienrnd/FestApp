@@ -3,6 +3,7 @@ import { filterLineUpItems } from "../../config/navigation";
 import AddButton from "../../components/AddButton";
 import LineupContent from "../admin/lineup/LineupContent";
 
+/** Page publique de la programmation du festival. */
 export default function Page() {
   return (
     <section className="section-page">

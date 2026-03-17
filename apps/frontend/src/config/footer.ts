@@ -5,16 +5,16 @@ import {
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
 
-// Type
+/** Type derive des identifiants possibles des liens legaux du footer. */
 export type LegalLinkId = (typeof legalLinks)[number]["id"];
 
-// Liens du footer qui ouvrent les modales legales.
+/** Liens du footer qui ouvrent les modales legales. */
 export const legalLinks = [
   { id: "mentions", label: "Mentions legales" },
   { id: "contact", label: "Nous contacter" },
 ] as const;
 
-// Liens externes des reseaux sociaux affiches dans le footer.
+/** Liens externes des reseaux sociaux affiches dans le footer. */
 export const socialLinks = [
   {
     label: "Instagram",

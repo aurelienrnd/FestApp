@@ -1,3 +1,4 @@
+/** Page d'informations pratiques du festival. */
 export default function Page() {
   return (
     <section className="section-page">

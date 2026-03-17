@@ -3,6 +3,7 @@ import { filterLineUpItems } from "../../../config/navigation";
 import AddButton from "../../../components/AddButton";
 import LineupContent from "./LineupContent";
 
+/** Page admin de gestion de la programmation. */
 export default function Page() {
   return (
     <section className="section-page">
