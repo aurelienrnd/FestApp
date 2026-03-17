@@ -1,5 +1,6 @@
 /** Augmentation du type Express.Locals pour typer res.locals dans les middlewares et controllers. */
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Locals {
       userId?: string;

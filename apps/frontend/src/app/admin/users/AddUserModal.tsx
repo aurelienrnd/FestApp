@@ -22,7 +22,6 @@ type AddUserModalProps = {
 
 type CreateUserApiResponse = {
   message: string;
-  temporary_password?: string;
   user?: UserListRow;
 };
 
@@ -58,7 +57,6 @@ function isAddUserFormInvalid(
  * @param {string} params.role Valeur du champ role.
  * @param {Dispatch<SetStateAction<boolean>>} params.setIsSubmitting Met a jour l'etat d'envoi.
  * @param {Dispatch<SetStateAction<string | null>>} params.setSubmitError Met a jour le message d'erreur.
- * @param {Dispatch<SetStateAction<string | null>>} params.setTemporaryPassword Met a jour le mot de passe temporaire.
  * @param {() => void} params.resetForm Reinitialise les champs du formulaire.
  * @param {(user) => void} params.onUserSaved Notifie le parent apres creation/modification reussie.
  * @function apiRequest -Envoie une requete HTTP a l'API avec `fetch`
@@ -76,7 +74,6 @@ async function submitAddUserForm({
   role,
   setIsSubmitting,
   setSubmitError,
-  setTemporaryPassword,
   resetForm,
   handleUser,
 }: {
@@ -91,7 +88,6 @@ async function submitAddUserForm({
   role: string;
   setIsSubmitting: Dispatch<SetStateAction<boolean>>;
   setSubmitError: Dispatch<SetStateAction<string | null>>;
-  setTemporaryPassword: Dispatch<SetStateAction<string | null>>;
   resetForm: () => void;
   handleUser: (user: UserListRow) => void;
 }) {
@@ -101,10 +97,9 @@ async function submitAddUserForm({
     return;
   }
 
-  // Indique que la soumission est en cours et nettoie les erreurs ou mots de passe precedemment affiches
+  // Indique que la soumission est en cours et nettoie les erreurs
   setIsSubmitting(true);
   setSubmitError(null);
-  setTemporaryPassword(null);
 
   // Verifie ci il sagit d'une creation ou d'une modification
   const requestPath =
@@ -132,10 +127,6 @@ async function submitAddUserForm({
     return;
   }
 
-  // Stocke le mot de passe temporaire uniquement apres creation
-  setTemporaryPassword(
-    isEditMode ? null : (result.data.temporary_password ?? null),
-  );
   const fallbackUser = {
     id: selectedUserId ?? "",
     email,
@@ -173,10 +164,6 @@ export default function AddUserModal({
 
   // Gestion des erreurs lors de la soumission du formulaire
   const [submitError, setSubmitError] = useState<string | null>(null);
-  // Stocke le mot de passe temporaire retourne apres la creation
-  const [temporaryPassword, setTemporaryPassword] = useState<string | null>(
-    null,
-  );
   // Indique si le formulaire envoye
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -186,12 +173,7 @@ export default function AddUserModal({
   }, []);
 
   // Pre-remplit les champs lorsque la modal est ouverte en mode modification.
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    // Reset formulaire si pas d'utilisateur
+  const handleAfterOpen = () => {
     if (!selectedUser) {
       setFirstName("");
       setLastName("");
@@ -209,7 +191,7 @@ export default function AddUserModal({
     setLastName(lastNameParts.join(" "));
     setEmail(selectedUser.email);
     setRole(selectedUser.role);
-  }, [isOpen, selectedUser]);
+  };
 
   // Verifie si le formulaire d'ajout utilisateur est incomplet.
   const isFormInvalid = isAddUserFormInvalid(firstName, lastName, email, role);
@@ -236,7 +218,6 @@ export default function AddUserModal({
       role,
       setIsSubmitting,
       setSubmitError,
-      setTemporaryPassword,
       resetForm,
       handleUser,
     });
@@ -244,7 +225,6 @@ export default function AddUserModal({
   // Gere la fermeture de la modal et reinitialise les etats associes
   const handleClose = () => {
     setSubmitError(null);
-    setTemporaryPassword(null);
     setIsSubmitting(false);
     onClose();
   };
@@ -253,6 +233,7 @@ export default function AddUserModal({
     <Modal
       isOpen={isOpen}
       onRequestClose={handleClose}
+      onAfterOpen={handleAfterOpen}
       contentLabel="Ajout utilisateur"
       className="modal"
       overlayClassName="modal-overlay"

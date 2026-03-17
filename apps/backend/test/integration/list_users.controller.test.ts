@@ -74,5 +74,3 @@ describe("listUsers controller", () => {
     expect(res.body.error).toBe(ERRORS.INTERNAL_SERVER_ERROR);
   });
 });
-
-

@@ -59,7 +59,6 @@ describe("userExists", () => {
         email: "a@test.local",
         password_hash: "hash",
         display_name: "A",
-
       }),
     ).not.toThrow();
   });
@@ -221,4 +220,3 @@ describe("requireSessionId", () => {
     }
   });
 });
-

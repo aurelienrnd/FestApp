@@ -46,14 +46,13 @@ export default function DelateUserModal({
     Modal.setAppElement("#app-root");
   }, []);
 
-  // Reinitialise l'etat interne a chaque fermeture de la modale
-  useEffect(() => {
-    if (!isOpen) {
-      setIsSubmitting(false);
-      setSubmitError(null);
-      setIsDeleted(false);
-    }
-  }, [isOpen]);
+  // Reinitialise l'etat interne et ferme la modale
+  const handleClose = () => {
+    setIsSubmitting(false);
+    setSubmitError(null);
+    setIsDeleted(false);
+    onClose();
+  };
 
   // Confirme la suppression et met a jour l'UI selon la reponse API
   const handleConfirmDelete = async () => {
@@ -90,12 +89,12 @@ export default function DelateUserModal({
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
       contentLabel="Suppression utilisateur"
       className="modal"
       overlayClassName="modal-overlay"
     >
-      <ModalCloseButton onClose={onClose} />
+      <ModalCloseButton onClose={handleClose} />
       <h2 className="title-modal">Suppression utilisateur</h2>
 
       <div className="m-(--space-md)">
@@ -103,7 +102,7 @@ export default function DelateUserModal({
           <div className="form-modal">
             <p className="text-center">L&apos;utilisateur a ete supprime.</p>
             <div className="submit-modal-area">
-              <button type="button" className="btn-cta" onClick={onClose}>
+              <button type="button" className="btn-cta" onClick={handleClose}>
                 Fermer
               </button>
             </div>

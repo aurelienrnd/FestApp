@@ -63,7 +63,6 @@ describe("login controller (integration)", () => {
           email: "admin@test.fr",
           password_hash: "hash",
           display_name: "TestAdmin",
-
         },
       ]) // SELECT user by email
       .mockResolvedValueOnce([{ id: "sess-1" }]) // INSERT session
@@ -131,7 +130,6 @@ describe("login controller (integration)", () => {
         email: "admin@test.fr",
         password_hash: "hash",
         display_name: "TestAdmin",
-
       },
     ]);
 
@@ -170,4 +168,3 @@ describe("login controller (integration)", () => {
     expect(String(res.body.error)).toBe(ERRORS.INTERNAL_SERVER_ERROR);
   });
 });
-
