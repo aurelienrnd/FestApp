@@ -1,5 +1,22 @@
 ﻿# API Backend - Vindhellfest
 
+## Résumé des endpoints
+
+| Méthode | Route | Accès | Description |
+| --- | --- | --- | --- |
+| POST | `/admin/auth/login` | Public | Connexion administrateur |
+| POST | `/admin/auth/logout` | Authentifié | Déconnexion |
+| GET | `/admin/auth/me` | Authentifié | Informations utilisateur + renouvellement token |
+| GET | `/admin/users` | Authentifié | Liste des utilisateurs |
+| POST | `/admin/users` | Authentifié | Créer un utilisateur |
+| PATCH | `/admin/users/:id` | Authentifié | Modifier un utilisateur |
+| DELETE | `/admin/users/:id` | Authentifié | Supprimer un utilisateur |
+| GET | `/public/lineup` | Public | Liste des artistes de la programmation |
+| GET | `/health` | Public | Santé du serveur (diagnostic) |
+| GET | `/debug/db` | Public | Connexion à la base de données (diagnostic) |
+
+---
+
 ## Authentification
 
 Base path: `/admin/auth`
@@ -335,13 +352,56 @@ Reponses d'erreur:
 
 - `500` `{ "error": "Erreur serveur" }`
 
+## Diagnostic
+
+> Ces routes sont uniquement destinées au développement. **À supprimer avant la mise en production.**
+
+### GET `/health`
+
+Vérifie que le serveur backend est opérationnel.
+
+Authentification : aucune.
+
+Réponse en succès :
+
+- Statut : `200`
+- Corps :
+
+```json
+{
+  "status": "ok",
+  "message": "Backend is running"
+}
+```
+
+### GET `/debug/db`
+
+Vérifie que la connexion à la base de données est opérationnelle.
+
+Authentification : aucune.
+
+Réponse en succès :
+
+- Statut : `200`
+- Corps :
+
+```json
+{
+  "db": "ok",
+  "now": "2026-03-17T10:00:00.000Z"
+}
+```
+
+Réponse d'erreur :
+
+- `500` `{ "error": "Impossible de joindre la base de donnees" }`
+
+---
+
 ## Notes
 
-- Format d'erreur standardise:
+- Format d'erreur standardisé :
 
 ```json
 { "error": "..." }
 ```
-
-
-

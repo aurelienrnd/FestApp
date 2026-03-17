@@ -1,234 +1,332 @@
-# 📦 Backend Projet Vindhellfest – Architecture & Documentation
-## Script :
-- `docker compose up -d db backend`	: Démarrer la base de données et le backend
+# Backend — Projet Vindhellfest
+
+## Scripts Docker
+
+- `docker compose up -d db backend` : Démarrer la base de données et le backend
 - `docker compose restart backend` : Redémarrer uniquement le backend
 - `docker compose logs -f backend` : Consulter les logs
 
-Pour exécuter une commande npm dans le conteneur :  `docker exec -it vindhellfest-backend`
-- `npm run lint` : 	Vérifier le code (ESLint)
-- `npm run lint:fix` : 	Corriger automatiquement les erreurs ESLint
-- `npm run format` : 	Formater ton code auto avec Prettier
-- `npm test` : Lancer les tests vitest
+Pour exécuter une commande npm dans le conteneur :
 
-## Variables d'environnement utilisees
-- PORT=4000 : port sur lequel l’API backend écoute les requêtes HTTP.
-- DB_HOST=db : port sur lequel l’API backend écoute les requêtes HTTP.
-- DB_PORT=5432 : port d’écoute PostgreSQL.
-- DB_USER=postgres : utilisateur pour se connecter à la base.
-- DB_PASSWORD=postgres : mot de passe de l’utilisateur PostgreSQL.
-- DB_NAME=vindhellfest : nom de la base utilisée par le backend.
-- JWT_ACCESS_SECRET=un-super-secret-a-changer : clé secrète pour les tokens JWT.
-- JWT_ACCESS_EXPIRES_IN=1h : durée de validité du token JWT d’accès.
-- COOKIE_ACCESS_TOKEN_NAME=vindhellfest_access_token : nom du cookie qui stocke le token d’accès.
-- COOKIE_ACCESS_TOKEN_SECURE=true : envoie le cookie uniquement en HTTPS.
-- COOKIE_ACCESS_TOKEN_SAME_SITE=lax : limite l’envoi du cookie sur les requêtes cross-site (protection CSRF de base).
-- SESSION_EXPIRES_IN=12h : durée de vie d’une session en base de données.
-- FRONTEND_ORIGIN=http://localhost:3000 : origine frontend.
+```bash
+docker exec -it vindhellfest-backend npm run lint
+docker exec -it vindhellfest-backend npm run lint:fix
+docker exec -it vindhellfest-backend npm run format
+docker exec -it vindhellfest-backend npm test
+```
+
+---
+
+## Variables d'environnement
+
+- `PORT=4000` : port sur lequel l'API backend écoute les requêtes HTTP.
+- `DB_HOST=db` : nom du service Docker correspondant au serveur PostgreSQL.
+- `DB_PORT=5432` : port d'écoute PostgreSQL.
+- `DB_USER=postgres` : utilisateur pour se connecter à la base.
+- `DB_PASSWORD=postgres` : mot de passe de l'utilisateur PostgreSQL.
+- `DB_NAME=vindhellfest` : nom de la base utilisée par le backend.
+- `JWT_ACCESS_SECRET=un-super-secret-a-changer` : clé secrète pour signer les tokens JWT.
+- `JWT_ACCESS_EXPIRES_IN=1h` : durée de validité du token JWT d'accès.
+- `COOKIE_ACCESS_TOKEN_NAME=vindhellfest_access_token` : nom du cookie qui stocke le token d'accès.
+- `COOKIE_ACCESS_TOKEN_SECURE=true` : envoie le cookie uniquement en HTTPS.
+- `COOKIE_ACCESS_TOKEN_SAME_SITE=lax` : limite l'envoi du cookie sur les requêtes cross-site (protection CSRF de base).
+- `SESSION_EXPIRES_IN=12h` : durée de vie d'une session en base de données.
+- `FRONTEND_ORIGIN=http://localhost:3000` : origine autorisée par le middleware CORS.
+
+---
 
 ## Stack technique
+
 **Dependencies**
-- `bcrypt` : Permet de hasher les mots de passe avant de les stocker dans la base de données.
-- `dotenv` : Charge automatiquement les variables d’environnement depuis les fichier .env.
-- `express` : Framework web
-- `jsonwebtoken` : Gère la création et la vérification des JSON Web Tokens
+
+- `express` : Framework web.
+- `bcrypt` : Hash des mots de passe avant stockage en base.
+- `jsonwebtoken` : Création et vérification des JSON Web Tokens.
 - `pg` : Client PostgreSQL pour Node.js.
-- `cookie` : Parser et sérialiser les cookies HTTP côté serveur
+- `cookie` : Parse et sérialise les cookies HTTP côté serveur.
+- `dotenv` : Charge les variables d'environnement depuis les fichiers `.env`.
 - `express-rate-limit` : Middleware de limitation du nombre de requêtes par IP.
-- `zod` : Bibliothèque de validation et de typage des données.
+- `zod` : Validation et typage des données entrantes.
 
 **DevDependencies**
+
+- `typescript` : Compilateur TypeScript.
+- `ts-node-dev` : Rechargement à chaud pour le développement TypeScript (équivalent nodemon).
+- `eslint` : Analyseur statique du code.
+- `eslint-config-prettier` : Désactive les règles ESLint en conflit avec Prettier.
+- `eslint-plugin-prettier` : Lance Prettier comme règle ESLint.
+- `prettier` : Formateur de code automatique.
+- `vitest` : Runner de tests et vérification des assertions.
+- `supertest` : Simule des appels HTTP sur l'API Express dans les tests.
 - `@types/bcrypt` : Définitions TypeScript pour bcrypt.
+- `@types/cookie` : Définitions TypeScript pour cookie.
 - `@types/express` : Définitions TypeScript pour express.
 - `@types/jsonwebtoken` : Définitions TypeScript pour jsonwebtoken.
-- `@types/node` : Définitions TypeScript pour les fonctionnalités internes Node.js.
+- `@types/node` : Définitions TypeScript pour Node.js.
 - `@types/pg` : Définitions TypeScript pour pg.
-- `@typescript-eslint/eslint-plugin` : Plugin ESLint permettant de corriger/analyser du TypeScript.
-- `@typescript-eslint/parser` : Permet à ESLint de comprendre le code TypeScript.
-- `eslint` : Outil d’analyse statique du code.
-- `eslint-config-prettier` : Désactive les règles ESLint qui entrent en conflit avec Prettier.
-- `eslint-plugin-prettier` : Lance Prettier comme une règle ESLint.
-- `prettier` : Formateur de code automatique.
-- `ts-node-dev` : Comme nodemon, mais pour TypeScript.
-- `typescript` : Le compilateur TypeScript.
-- `vitest` : Lance les tests et vérifie les assertions.
-- `supertest` : Simule un navigateur ou un client API.
 - `@types/supertest` : Définitions TypeScript pour supertest.
-- `@types/cookie` : Définitions TypeScript pour cookie.
+- `@typescript-eslint/eslint-plugin` : Plugin ESLint pour analyser le TypeScript.
+- `@typescript-eslint/parser` : Permet à ESLint de comprendre la syntaxe TypeScript.
+
+---
 
 ## Architecture
-```bash
-├─ node_modules/
-├─ src/
-│  ├─ controllers/
-│  │  ├─ admin/
-│  │  │  ├─ articles/
-│  │  │  │  └─ ...
-│  │  │  ├─ artists/
-│  │  │  │  └─ ...
-│  │  │  ├─ auth/
-│  │  │  │  └─ ...
-│  │  │  ├─ concerts/
-│  │  │  │  └─ ...
-│  │  │  └─ users/
-│  │  │     └─ ...
-│  │  └─ public/
-│  │     ├─ articles/
-│  │     │  └─ ...
-│  │     ├─ artists/
-│  │     │  └─ ...
-│  │     └─ programming/
-│  │        └─ ...
-│  ├─ middlewares/
-│  │  └─ ...
-│  ├─ errors/
-│  │  └─ ...
-│  ├─ routes/
-│  │  └─ ...
-│  ├─ schemas/
-│  │  └─ ...
-│  ├─ db.ts
-│  ├─ app.ts
-│  ├─ type.ts
-│  ├─ functions.ts
-│  └─ index.ts/
-├─ test/
-│  ├─ integration/
-│  │  └─ ...
-│  └─ unitaire/
-│     └─ ...
-├─ .eslintrc.json
-├─ .prettierignore
-├─ .prettierc
-├─ Dockerfile
-├─ eslint.config.cjs
-├─ .package-lock.json
-├─ .package.json
-├─ README.MD
-└─ tsconfig.json
+
 ```
-## 📄 Dockerfile
-Le projet utilise un Dockerfile multi-stage pour generer deux types d'images a partir du meme fichier :
-une image de developpement et une image de production.
-- Stage `builder` utilise `node:20-alpine`
+apps/backend/
+├── src/
+│   ├── controllers/
+│   │   ├── admin/
+│   │   │   ├── auth/
+│   │   │   │   ├── login.controller.ts
+│   │   │   │   ├── logout.controller.ts
+│   │   │   │   └── userInfo.controller.ts
+│   │   │   └── users/
+│   │   │       ├── create_user.controller.ts
+│   │   │       ├── delete_user.controller.ts
+│   │   │       ├── list_users.controller.ts
+│   │   │       └── update_user.controller.ts
+│   │   └── public/
+│   │       └── lineup/
+│   │           └── list_lineup.controller.ts
+│   ├── middlewares/
+│   │   ├── asyncHandler.ts
+│   │   ├── auth.ts
+│   │   ├── errorHandler.ts
+│   │   ├── hashPassword.ts
+│   │   ├── rateLimitLogin.ts
+│   │   ├── sessionIsOpen.ts
+│   │   └── validateBody.ts
+│   ├── errors/
+│   │   ├── AppError.ts
+│   │   └── errorMessages.ts
+│   ├── routes/
+│   │   ├── admin.articles.routes.ts
+│   │   ├── admin.artists.routes.ts
+│   │   ├── admin.auth.routes.ts
+│   │   ├── admin.concerts.routes.ts
+│   │   ├── admin.users.routes.ts
+│   │   ├── contact.routes.ts
+│   │   ├── public.articles.routes.ts
+│   │   ├── public.artists.routes.ts
+│   │   └── public.programming.routes.ts
+│   ├── schemas/
+│   │   └── schema.ts
+│   ├── app.ts
+│   ├── db.ts
+│   ├── functions.ts
+│   ├── index.ts
+│   └── type.ts
+├── test/
+│   ├── integration/
+│   │   ├── auth.test.ts
+│   │   ├── create_user.controller.test.ts
+│   │   ├── delete_user.controller.test.ts
+│   │   ├── errorHandler.test.ts
+│   │   ├── hashPassword.test.ts
+│   │   ├── health.test.ts
+│   │   ├── list_users.controller.test.ts
+│   │   ├── login.controller.test.ts
+│   │   ├── logout.controller.test.ts
+│   │   ├── rateLimitLogin.test.ts
+│   │   ├── sessionIsOpen.test.ts
+│   │   ├── update_user.controller.test.ts
+│   │   └── validateBody.test.ts
+│   └── unitaire/
+│       ├── asyncHandler.test.ts
+│       └── functions.test.ts
+├── .eslintrc.json
+├── API.md
+├── Dockerfile
+├── eslint.config.cjs
+├── package.json
+├── package-lock.json
+├── README.md
+└── tsconfig.json
+```
+
+---
+
+## Dockerfile
+
+Le projet utilise un Dockerfile multi-stage pour générer deux types d'images à partir du même fichier : une image de développement et une image de production.
+
+- Base commune : `node:20-alpine`
+- Stage `builder` : copie du code et compilation TypeScript
 - Image de production (`runner`)
-- Image de developpement (`dev`)
+- Image de développement (`dev`)
 
-## 📁 src /
-### 📁 controllers
-Contient la logique métier des endpoints et la gestion des requêtes/réponses.
+---
 
-### 📁 middlewares
-Contient les middlewares transverses (auth, validation, logs, erreurs).
+## `src/`
 
-### 📁 errors
-Contient la gestion centralisée des erreurs applicatives de l'API.
+### `app.ts`
 
-**Fichiers clés**
-- `AppError.ts` : classe d'erreur applicative (message + status HTTP).
-- `errorMessages.ts` : dictionnaire central de messages d'erreur (`ERRORS`) pour uniformiser les réponses.
+Crée et configure l'application Express sans démarrer le serveur — ce qui permet de l'importer dans les tests sans effet de bord.
 
-**Pourquoi ce dossier est important**
-- Garantit un format de réponse cohérent pour le frontend : `{ error: string }`.
-- Évite les messages dupliqués/hétérogènes dans les contrôleurs et middlewares.
-- Facilite la maintenance (un message changé à un seul endroit).
+- Configure le middleware JSON (`express.json()`)
+- Gère le CORS manuellement (validation de l'origine, preflight `OPTIONS`)
+- Monte toutes les routes sous leurs préfixes (`/admin`, `/public`, `/contact`)
+- Expose les routes de diagnostic (`/health`, `/debug/db`) — à supprimer en production
+- Attache `notFoundHandler` et `errorHandler` en fin de chaîne
 
-### 📁 routes
-Déclare les routes HTTP et connecte chaque endpoint à son contrôleur.
-POST /admin/auth/login
-POST /admin/auth/logout
-GET /admin/auth/me
-POST /admin/users
+### `index.ts`
 
-Ordre des middlewares sur les routes protegees :
-- `auth` : verifie le cookie/token et charge `userId` + `sessionId` dans `res.locals`.
-- `sessionIsOpen` : verifie la session en base (existe, non revoquee, non expiree) et renouvelle le token.
+Point d'entrée du serveur — importe `createApp()` et démarre `app.listen()` sur le port configuré.
 
-### 📄 db.ts
-Ce fichier centralise la configuration de la connexion à la base de données PostgreSQL ainsi qu’une fonction utilitaire permettant d’exécuter facilement des requêtes SQL depuis le backend.
-**Rôle du fichier**
-- Charger les variables d’environnement (fichier .env) grâce à dotenv
-- Créer un pool de connexions PostgreSQL via le module pg
-- Exposer une fonction query() qui simplifie l’exécution de requêtes SQL
-- Éviter la répétition de code lors des interactions avec la base de données
+### `db.ts`
 
-### 📄 app.ts 
-Ce fichier est responsable de la création et de la configuration de l’application Express
-Il permet de séparer la création de l’API de son exécution, afin de faciliter les tests automatisés et la maintenabilité du code.
-**Rôle du fichier**
-- Créer l’application Express
-- Configurer les middlewares globaux (JSON, sécurité, etc.)
-- Monter les routes de l’API
-- Exporter l’application via une fonction (createApp) sans lancer le serveur
+Centralise la connexion PostgreSQL via un pool `pg` et expose une fonction `query()` réutilisable dans tous les contrôleurs.
 
-### 📄 index.ts 
-Il est responsable de l’exécution du serveur HTTP, à partir de l’application Express configurée dans app.ts.
-**Rôle du fichier**
-- Charger les variables d’environnement (via dotenv)
-- Importer l’application Express depuis app.ts
-- Démarrer le serveur HTTP avec app.listen sur le port configuré
+### `type.ts`
 
-### 📄 type.ts
-Définit les types et interfaces partagés du backend.
+Définit les types et interfaces TypeScript partagés du backend (ex : extensions de `res.locals`).
 
-### 📄 functions.ts
-Centralise les fonctions utilitaires réutilisables.
+### `functions.ts`
 
-### 🔁 Traitement des erreurs dans l'API
-Le backend suit un flux unique pour traiter les erreurs.
+Centralise les fonctions utilitaires réutilisables (génération de token JWT, parsing de durée, etc.).
 
-1. Cas métier dans les middlewares/contrôleurs  
-Les erreurs métier (auth, session, validation, conflit, etc.) lèvent une `AppError`.
+### `controllers/`
 
-2. Handlers async  
-Les handlers asynchrones sont enveloppés par `asyncHandler`, ce qui transfère automatiquement les erreurs vers `next(error)`.
+Contient la logique métier des endpoints, organisée en deux espaces :
 
-3. Route introuvable  
-`notFoundHandler` renvoie une `404` pour les URLs non déclarées.
+- `admin/` — endpoints protégés par authentification JWT + session
+- `public/` — endpoints accessibles sans authentification
 
-4. Gestion globale  
-`errorHandler` centralise la réponse HTTP finale :
-- si erreur `instanceof AppError` : renvoie `status` + `message`
-- sinon : renvoie `500` avec un message générique (pas de fuite de détail interne)
+**Contrôleurs implémentés :**
 
-5. Contrat de réponse  
-Les erreurs renvoyées au client sont standardisées sous la forme :
-```json
-{ "error": "..." }
-```
+| Fichier | Endpoint | Description |
+| --- | --- | --- |
+| `admin/auth/login.controller.ts` | POST `/admin/auth/login` | Vérifie les identifiants, crée une session, retourne un cookie JWT |
+| `admin/auth/logout.controller.ts` | POST `/admin/auth/logout` | Révoque la session en base |
+| `admin/auth/userInfo.controller.ts` | GET `/admin/auth/me` | Retourne les infos de l'utilisateur connecté et renouvelle le token |
+| `admin/users/list_users.controller.ts` | GET `/admin/users` | Liste tous les utilisateurs admin |
+| `admin/users/create_user.controller.ts` | POST `/admin/users` | Crée un utilisateur avec un mot de passe temporaire |
+| `admin/users/update_user.controller.ts` | PATCH `/admin/users/:id` | Modifie les informations d'un utilisateur |
+| `admin/users/delete_user.controller.ts` | DELETE `/admin/users/:id` | Supprime définitivement un utilisateur |
+| `public/lineup/list_lineup.controller.ts` | GET `/public/lineup` | Liste tous les artistes du festival |
 
-## 📁 test
-Ce dossier regroupe les tests unitaires et d’intégration : Vitest exécute les tests tandis que Supertest permet de simuler des appels HTTP sur l’API. 
-- Les tests unitaires ciblent les fonctions/modules isolés
-- Les tests d’intégration valident plusieurs couches ensemble (middlewares + contrôleurs) utilisant plusieurs fonctions.
+### `routes/`
 
-6. Statuts HTTP utilises dans le projet
-- `400` : validation/format invalide (ex: body invalide, mot de passe invalide)
-- `401` : authentification/session invalide ou manquante
-- `404` : route inexistante (`notFoundHandler`)
-- `409` : conflit metier (ex: email/display_name deja utilise)
-- `429` : trop de tentatives de connexion (`rateLimitLogin`)
-- `500` : erreur interne non prevue
+Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son contrôleur.
+
+**Routes actives :**
+
+| Fichier | Endpoints actifs |
+| --- | --- |
+| `admin.auth.routes.ts` | POST `/admin/auth/login`, POST `/admin/auth/logout`, GET `/admin/auth/me` |
+| `admin.users.routes.ts` | GET `/admin/users`, POST `/admin/users`, PATCH `/admin/users/:id`, DELETE `/admin/users/:id` |
+| `public.programming.routes.ts` | GET `/public/lineup` |
+
+**Routes déclarées mais non encore implémentées :**
+`admin.articles.routes.ts`, `admin.artists.routes.ts`, `admin.concerts.routes.ts`, `contact.routes.ts`, `public.articles.routes.ts`, `public.artists.routes.ts`
+
+**Ordre des middlewares sur les routes protégées :**
+
+1. `asyncHandler(auth)` — vérifie le cookie/token et charge `userId` + `sessionId` dans `res.locals`
+2. `asyncHandler(sessionIsOpen)` — vérifie la session en base (existe, non révoquée, non expirée) et renouvelle le token
+3. `validateBody(schema)` *(si applicable)* — valide le body avec Zod
+4. `asyncHandler(controller)` — logique métier
+
+### `middlewares/`
+
+| Fichier | Description |
+| --- | --- |
+| `asyncHandler.ts` | Enveloppe un handler async et transfère automatiquement les erreurs vers `next(error)` |
+| `auth.ts` | Extrait et vérifie le JWT depuis le cookie — charge `userId` et `sessionId` dans `res.locals` |
+| `sessionIsOpen.ts` | Vérifie en base que la session existe, n'est pas révoquée et n'est pas expirée — renouvelle le token |
+| `hashPassword.ts` | Factory middleware — hashe le champ mot de passe spécifié dans `req.body` avec bcrypt avant de passer au handler suivant |
+| `rateLimitLogin.ts` | Limite le nombre de tentatives de connexion par IP (`express-rate-limit`) |
+| `validateBody.ts` | Valide `req.body` contre un schéma Zod — renvoie `400` si invalide |
+| `errorHandler.ts` | Gestion globale des erreurs : `notFoundHandler` (404 pour routes inconnues) et `errorHandler` (centralise la réponse HTTP finale) |
+
+### `errors/`
+
+- `AppError.ts` : classe d'erreur applicative avec `message` + `status` HTTP.
+- `errorMessages.ts` : dictionnaire central `ERRORS` — uniformise tous les messages d'erreur renvoyés au client.
+
+**Pourquoi ce dossier est important :**
+- Garantit un format de réponse cohérent : `{ "error": "..." }`
+- Évite les messages dupliqués dans les contrôleurs et middlewares
+- Facilite la maintenance (un message changé à un seul endroit)
+
+### `schemas/`
+
+- `schema.ts` : schémas Zod utilisés pour la validation des body (`createUserSchema`, `updateUserSchema`, etc.).
+
+---
+
+## Traitement des erreurs
+
+Le backend suit un flux unique :
+
+1. **Cas métier** — les middlewares/contrôleurs lèvent une `AppError(message, status)`.
+2. **`asyncHandler`** — transfère automatiquement les erreurs vers `next(error)`.
+3. **Route inconnue** — `notFoundHandler` renvoie une `404`.
+4. **`errorHandler`** — centralise la réponse HTTP finale :
+   - `instanceof AppError` → renvoie `status` + `message`
+   - sinon → renvoie `500` avec un message générique (pas de fuite interne)
+
+**Codes HTTP utilisés :**
+
+| Code | Cas |
+| --- | --- |
+| `400` | Body invalide, format de mot de passe incorrect |
+| `401` | Token absent, invalide ou session expirée/révoquée |
+| `404` | Route inconnue (`notFoundHandler`) |
+| `409` | Conflit métier (ex : email déjà utilisé) |
+| `429` | Trop de tentatives de connexion (`rateLimitLogin`) |
+| `500` | Erreur interne non prévue |
+
+---
+
+## `test/`
+
+Vitest exécute les tests, Supertest simule les appels HTTP sur l'API Express.
+
+**Tests d'intégration** (`test/integration/`) — valident plusieurs couches ensemble (middleware + contrôleur + base de données) :
+
+| Fichier | Ce qui est testé |
+| --- | --- |
+| `auth.test.ts` | Middleware `auth` |
+| `sessionIsOpen.test.ts` | Middleware `sessionIsOpen` |
+| `hashPassword.test.ts` | Middleware `hashPassword` |
+| `rateLimitLogin.test.ts` | Middleware `rateLimitLogin` |
+| `validateBody.test.ts` | Middleware `validateBody` |
+| `errorHandler.test.ts` | Middleware `errorHandler` et `notFoundHandler` |
+| `health.test.ts` | Route `/health` |
+| `login.controller.test.ts` | Contrôleur `login` |
+| `logout.controller.test.ts` | Contrôleur `logout` |
+| `list_users.controller.test.ts` | Contrôleur `listUsers` |
+| `create_user.controller.test.ts` | Contrôleur `createUser` |
+| `update_user.controller.test.ts` | Contrôleur `updateUser` |
+| `delete_user.controller.test.ts` | Contrôleur `deleteUser` |
+
+**Tests unitaires** (`test/unitaire/`) — ciblent des fonctions isolées :
+
+| Fichier | Ce qui est testé |
+| --- | --- |
+| `asyncHandler.test.ts` | Utilitaire `asyncHandler` |
+| `functions.test.ts` | Fonctions utilitaires (`functions.ts`) |
+
+---
 
 ## ESLint & Prettier
-Dans ce projet, deux outils complémentaires assurent la qualité du code :
 
 ### ESLint — Analyseur de code
-ESLint est un analyseur statique qui vérifie le code TypeScript/JavaScript pour détecter :
+
+Vérifie le code TypeScript pour détecter :
+
 - erreurs de logique
 - mauvaises pratiques
 - variables non utilisées
 - types incorrects
-- règles de style définies par l’équipe
-- incohérences dans l’organisation du code
 
-### Prettier — Formateur automatique (style du code uniquement)
-Il ne vérifie pas les bugs, il s’occupe uniquement de :
+### Prettier — Formateur automatique
+
+S'occupe uniquement de la mise en forme :
+
 - indentation
 - guillemets
 - trailing commas
-- espaces
-- retours à la ligne
-- mise en forme des objets et fonctions
-
-
-
+- espaces et retours à la ligne

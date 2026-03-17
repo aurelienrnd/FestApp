@@ -76,21 +76,53 @@ Details:
 
 ## 3. Classes reutilisables (@layer components)
 
-Classes definies dans `globals.css`:
-- `.title1`
-- `.title-modal`
-- `.nav-list`
-- `.btn-cta`
-- `.btn-type-2`
-- `.mobil-menu`
-- `.modal-overlay`
-- `.modal`
-- `.form-modal`
-- `.input`
-- `.text-area`
-- `.submit-modal-area`
-- `.section-page`
-- `.side-bar`
+### Classes de base
+
+| Classe | Description |
+| --- | --- |
+| `.title1` | Titre principal de page — centré, très grand, uppercase, bold |
+| `.title-modal` | Titre de modale — centré, grand, bold |
+| `.nav-list` | Liste de liens de navigation — flex, gap, letter-spacing |
+| `.btn-cta` | Bouton call-to-action — fond `--color-1`, texte blanc, scale au hover |
+| `.btn-type-2` | Bouton secondaire — hover opacity |
+| `.mobil-menu` | Bouton menu mobile — fond `--color-2`, scale au hover |
+| `.modal-overlay` | Fond semi-transparent de modale — fixed, centré |
+| `.modal` | Conteneur de modale — arrondi, fond clair |
+| `.form-modal` | Formulaire dans une modale — space-y |
+| `.input` | Champ texte — bordure, fond `--color-bg-input`, police Arial |
+| `.text-area` | Zone de texte redimensionnable — hauteur fixe, même style que `.input` |
+| `.submit-modal-area` | Zone du bouton de soumission — flex centré |
+| `.section-page` | Conteneur de section de page — padding vertical/horizontal responsive |
+| `.side-bar` | Texte de la sidebar admin — taille responsive |
+| `.card-row` | Carte en ligne — bordure, flex colonne sur mobile, ligne sur desktop |
+
+### `@layer dashboard` — Cartes du dashboard admin
+
+| Classe | Description |
+| --- | --- |
+| `.card-dashboard-media-center` | Zone média de la carte dashboard — centrée avec marges |
+| `.card-dashboard-avatar` | Avatar circulaire — taille fixe, bordure, fond `--color-bg` |
+| `.card-dashboard-content` | Contenu principal de la carte — flex, justify-around, responsive |
+| `.card-dashboard-field` | Champ individuel dans la carte — flex, justify-around |
+| `.card-dashboard-actions` | Zone d'actions — flex colonne sur mobile, ligne sur desktop |
+
+### `@layer users` — Cartes de la page utilisateurs
+
+| Classe | Description |
+| --- | --- |
+| `.card-users-media-center` | Zone média de la carte utilisateur — centrée avec marges |
+| `.card-user-name` | Nom de l'utilisateur — flex centré |
+| `.card-user-content` | Contenu de la carte — flex wrap, space-between, responsive |
+| `.card-user-field` | Champ individuel — flex nowrap |
+| `.card-user-actions` | Zone d'actions — flex centré, gap, marges responsive |
+
+### `@layer lineup` — Cartes de la programmation
+
+| Classe | Description |
+| --- | --- |
+| `.card-media-img` | Image de l'artiste — arrondie en haut sur mobile, à gauche sur desktop, largeur fixe (`w-48`) |
+| `.card-lineup-content` | Contenu de la carte lineup — flex colonne/ligne, space-between |
+| `.card-lineup-actions` | Zone d'actions — flex centré, marges responsive |
 
 ## 4. Conventions recommandees
 

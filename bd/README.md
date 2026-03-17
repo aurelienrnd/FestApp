@@ -1,118 +1,146 @@
-# 📦 Base de Donnée Projet Vindhellfest – Architecture & Documentation
+# Base de données — Projet Vindhellfest
 
-## Démarrage :
+## Démarrage
 
-- `docker compose up -d db` : Lance uniquement la base de données Postgres en arrière-plan.
-- `docker compose down -v` : Arrête et supprime, les conteneurs, les réseaux Docker, et la base de données (utile apres modif sur la bdd)
-- `docker exec -it vindhellfest-db psql -U postgres -d vindhellfest` : Entre dans le conteneur PostgreSQL et ouvre un terminal psql.
-  Utile pour tester tes tables directement dans la base.
+- `docker compose up -d db` : Lance uniquement la base de données PostgreSQL en arrière-plan.
+- `docker compose down -v` : Arrête et supprime les conteneurs, les réseaux Docker et la base de données (utile après une modification du schéma).
+- `docker exec -it vindhellfest-db psql -U postgres -d vindhellfest` : Entre dans le conteneur PostgreSQL et ouvre un terminal psql. Utile pour tester les tables directement dans la base.
 
-## Architecture globale du projet
+---
 
-```bash
-├─ init/
-│  ├─ 01_user_schema.sql
-│  ├─ 02_sessions_schema.sql
-│  ├─ 03_article_schema.sql
-│  ├─ 04_artist_schema.sql
-│  └─ 05_concert_schema.sql
-└─ README.md
+## Architecture globale
+
+```
+bd/
+├── init/
+│   ├── 01_user_schema.sql
+│   ├── 02_sessions_schema.sql
+│   ├── 03_article_schema.sql
+│   ├── 04_artist_schema.sql
+│   └── 05_concert_schema.sql
+└── README.md
 ```
 
-## 📁 `init/` – Fichier d'initialisation de la base de donnée
+---
 
-Le dossier init/ regroupe l’ensemble des scripts SQL utilisés pour créer et alimenter la base de données durant le développement.
+## `init/` — Scripts d'initialisation
 
-### 📄 01_user_schema.sql — Table users
+Le dossier `init/` regroupe l'ensemble des scripts SQL exécutés automatiquement par Docker au démarrage du conteneur PostgreSQL. Ils créent les tables et insèrent des données de développement.
 
-Ce fichier contient :
+> Chaque fichier commence par un `DROP TABLE IF EXISTS ... CASCADE` pour permettre de relancer le conteneur proprement lors des évolutions du schéma. **À ne pas utiliser en production.**
 
-- Les extensions PostgreSQL nécessaires
-- pgcrypto : génération d’UUID aléatoires (gen_random_uuid())
-- citext : gestion des emails insensibles à la casse
+---
 
-La table est utilisée pour la création des comptes administrateurs
-Elle inclut :
+### `01_user_schema.sql` — Table `users`
 
-- un identifiant unique de type UUID
-- une adresse email unique et insensible à la casse
-- un mot de passe stocké sous forme hashée
-- un nom d’affichage
-- un indicateur d’activation/désactivation du compte
-- des champs de suivi temporel (created_at, updated_at)
+**Extensions utilisées :** `pgcrypto`, `citext`
 
-Automatisation de la mise à jour
+Stocke les comptes des utilisateurs administrateurs de l'application.
 
-- un trigger PostgreSQL mettant automatiquement à jour updated_at à chaque modification
+| Colonne | Type | Contraintes | Description |
+| --- | --- | --- | --- |
+| `id` | `UUID` | PRIMARY KEY | Identifiant unique, généré automatiquement |
+| `email` | `CITEXT` | NOT NULL, UNIQUE | Email insensible à la casse |
+| `password_hash` | `VARCHAR(255)` | NOT NULL | Mot de passe hashé (bcrypt) |
+| `display_name` | `VARCHAR(100)` | NOT NULL | Nom affiché dans l'interface admin |
+| `role` | `VARCHAR(50)` | NOT NULL, DEFAULT `'user'` | Rôle de l'utilisateur (`admin`, `lineup`, `news`) |
+| `password_changed_at` | `TIMESTAMPTZ` | NULL | Date du dernier changement de mot de passe |
+| `created_at` | `TIMESTAMPTZ` | NOT NULL, DEFAULT `NOW()` | Date de création du compte |
 
-Gestion du développement
+**Données de développement :** Un utilisateur `admin@example.com` avec le mot de passe `MyPassword` est inséré au démarrage.
 
-- suppression conditionnelle de la table (DROP TABLE IF EXISTS ... CASCADE) pour éviter les conflits lors des évolutions du schéma
+---
 
-### 📄 02_sessions_schema.sql — Table sessions
+### `02_sessions_schema.sql` — Table `sessions`
 
-Ce fichier contient :
+**Extensions utilisées :** `pgcrypto`
 
-- un identifiant unique de session
-- une référence vers l’utilisateur connecté (clé étrangère vers users)
-- une date d’expiration de la session
-- une date de création de la session
-- une si la session est cloturée
+Gère la persistance des connexions et la sécurité des accès dans le cadre de l'authentification JWT.
 
-Gestion du cycle de vie
+| Colonne | Type | Contraintes | Description |
+| --- | --- | --- | --- |
+| `id` | `UUID` | PRIMARY KEY | Identifiant unique de session |
+| `user_id` | `UUID` | NOT NULL, FK → `users(id)` ON DELETE CASCADE | Utilisateur propriétaire de la session |
+| `expires_at` | `TIMESTAMPTZ` | NOT NULL | Date/heure d'expiration |
+| `created_at` | `TIMESTAMPTZ` | NOT NULL, DEFAULT `NOW()` | Date de création |
+| `revoked_at` | `TIMESTAMPTZ` | NULL | Date de révocation (`NULL` si la session est active) |
 
-- suppression automatique des sessions lorsque l’utilisateur associé est supprimé (cascade)
+**Contraintes de cohérence :**
+- `expires_at > created_at` — une session ne peut pas expirer avant d'avoir été créée
+- `revoked_at IS NULL OR revoked_at >= created_at` — une session ne peut pas être révoquée avant sa création
 
-Gestion du développement
+**Index :** `user_id`, `expires_at`, `revoked_at`
 
-- suppression conditionnelle de la table pour permettre la recréation du schéma sans erreur
+---
 
-### 📄 03_article_schema.sql — Table articles
+### `03_article_schema.sql` — Table `articles`
 
-Ce fichier contient :
+**Extensions utilisées :** `pgcrypto`
 
-- un identifiant unique d’article
-- un titre
-- un contenu textuel
-- un statut de publication
-- des dates de création et de mise à jour
-- url du media associé et sa description
-- une référence vers l’auteur
+Stocke le contenu éditorial du festival (actualités, annonces).
 
-Cohérence des données
+| Colonne | Type | Contraintes | Description |
+| --- | --- | --- | --- |
+| `id` | `UUID` | PRIMARY KEY | Identifiant unique de l'article |
+| `title` | `VARCHAR(150)` | NOT NULL | Titre de l'article |
+| `content` | `TEXT` | NULL | Corps de l'article |
+| `is_published` | `BOOLEAN` | NOT NULL, DEFAULT `FALSE` | Statut de publication |
+| `created_at` | `TIMESTAMPTZ` | NOT NULL, DEFAULT `NOW()` | Date de création |
+| `url_media` | `VARCHAR(255)` | NOT NULL | URL ou chemin du média associé |
+| `description_media` | `VARCHAR(255)` | NOT NULL | Texte alternatif du média |
+| `user_id` | `UUID` | NOT NULL, FK → `users(id)` ON DELETE RESTRICT | Auteur de l'article |
 
-- contraintes garantissant la validité des références utilisateurs
+**Contrainte :** La suppression d'un utilisateur est bloquée s'il est auteur d'un article (`ON DELETE RESTRICT`).
 
-Gestion du développement
+**Index :** `created_at`, `is_published`
 
-- suppression conditionnelle de la table pour faciliter les mises à jour du modèle
+**Données de développement :** Un article de démonstration est inséré et lié à `admin@example.com`.
 
-### 📄 04_artist_schema.sql — Table artists
+---
 
-Ce fichier contient :
+### `04_artist_schema.sql` — Table `artists`
 
-- un identifiant unique d’artiste
-- un nom d’artiste ou de groupe
-- une description avec genre et origine
-- des liens médias leur description
+**Extensions utilisées :** `pgcrypto`, `citext`
 
-Gestion du développement
+Représente les groupes ou artistes programmés au festival.
 
-- suppression conditionnelle de la table pour permettre l’évolution du schéma sans conflit
+| Colonne | Type | Contraintes | Description |
+| --- | --- | --- | --- |
+| `id` | `UUID` | PRIMARY KEY | Identifiant unique de l'artiste |
+| `name` | `CITEXT` | NOT NULL, `char_length >= 2` | Nom de l'artiste ou du groupe |
+| `genre` | `VARCHAR(60)` | NOT NULL | Genre musical |
+| `origin` | `VARCHAR(80)` | NOT NULL | Origine (pays, ville) |
+| `bio` | `TEXT` | NOT NULL | Biographie |
+| `url_media` | `VARCHAR(255)` | NOT NULL | URL ou chemin du média associé |
+| `description_media` | `VARCHAR(255)` | NOT NULL | Texte alternatif du média |
 
-### 📄 05_concert_schema.sql — Table concerts
+**Index :** `genre`, `name`
 
-Ce fichier contient :
+**Données de développement :** Red Hot Chili Peppers et Foo Fighters sont insérés au démarrage.
 
-- un identifiant unique de concert
-- un artist associé
-- une date et une heure de passage
-- une scène ou localisation
+---
 
-Relations métier
+### `05_concert_schema.sql` — Table `concerts`
 
-- chaque concert est obligatoirement associé à un artiste existant
+**Extensions utilisées :** `pgcrypto`, `citext`, `btree_gist`
 
-Gestion du développement
+Décrit les événements musicaux et modélise la programmation du festival.
 
-- suppression conditionnelle de la table pour permettre les modifications de structure en phase de conception
+| Colonne | Type | Contraintes | Description |
+| --- | --- | --- | --- |
+| `id` | `UUID` | PRIMARY KEY | Identifiant unique du concert |
+| `artist_id` | `UUID` | NOT NULL, FK → `artists(id)` ON DELETE CASCADE | Artiste qui se produit |
+| `stage` | `TEXT` | NOT NULL | Nom ou identifiant de la scène |
+| `start_time` | `TIMESTAMPTZ` | NOT NULL | Date et heure de début |
+| `end_time` | `TIMESTAMPTZ` | NOT NULL | Date et heure de fin |
+
+**Contraintes de cohérence :**
+- `end_time > start_time` — un concert ne peut pas se terminer avant de commencer
+- `no_overlap_stage` — deux concerts ne peuvent pas se chevaucher sur la même scène (via `EXCLUDE USING gist`)
+- `no_overlap_artist` — un artiste ne peut pas jouer sur deux scènes en même temps (via `EXCLUDE USING gist`)
+
+> L'extension `btree_gist` est requise pour les contraintes d'exclusion sur les plages horaires (`tstzrange`).
+
+**Index :** `(stage, start_time)`, `start_time`
+
+**Données de développement :** Un concert de Red Hot Chili Peppers sur `main-stage` est planifié le lendemain du démarrage.
