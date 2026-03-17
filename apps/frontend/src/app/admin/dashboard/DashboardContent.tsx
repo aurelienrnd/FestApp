@@ -9,8 +9,8 @@ export default function DashboardContent() {
   const { user } = useAdminUser();
 
   return (
-    <div className="flex-1 flex flex-col justify-center items-center gap-(--gap-content-big)">
-      <div className="w-full max-w-5xl flex flex-col justify-center items-center gap-(--gap-content-small)">
+    <div className="flex-1 flex flex-col justify-center items-center gap-(--space-xl)">
+      <div className="w-full max-w-5xl flex flex-col justify-center items-center gap-(--space-md)">
         <div className="card-row">
           <div className="card-dashboard-media-center">
             <div className="card-dashboard-avatar">

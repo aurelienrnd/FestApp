@@ -29,27 +29,15 @@
 }
 
 :root {
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-  --space-20: 5rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 5rem;
 
-  --gap-content-small: var(--space-6);
-  --gap-content-big: var(--space-20);
-  --spacing-paragraph: var(--space-4);
-
-  --spacing-around-xsmall: var(--space-2);
-  --spacing-around-small: var(--space-3);
-  --spacing-around-meduim: var(--space-6);
-  --spacing-around-big: var(--space-10);
-
-  --spacing-form: var(--space-8);
-
-  --margin-bottom-title: var(--space-12);
+  --spacing-paragraph: 1rem;
+  --spacing-form: 2rem;
+  --margin-bottom-title: 3rem;
 }
 
 :root {
@@ -65,7 +53,7 @@
   }
 
   .nav-list {
-    @apply flex items-center gap-(--gap-content-small) tracking-wide;
+    @apply flex items-center gap-(--space-md) tracking-wide;
   }
 
   .btn-cta {
@@ -97,11 +85,11 @@
     @apply mt-4 space-y-4;
   }
   .input {
-    @apply w-full rounded-md border border-(--color-text-input) bg-(--color-bg-input) px-(--spacing-around-small) py-(--spacing-around-xsmall) text-sm placeholder:text-(--color-text-input);
+    @apply w-full rounded-md border border-(--color-text-input) bg-(--color-bg-input) px-(--space-sm) py-(--space-xs) text-sm placeholder:text-(--color-text-input);
     font-family: var(--font-family-input);
   }
   .text-area {
-    @apply h-56 w-full resize-none rounded-md border border-(--color-text-input) bg-(--color-bg-input) px-(--spacing-around-small) py-(--spacing-around-xsmall) text-sm placeholder:text-(--color-text-input) md:h-44;
+    @apply h-56 w-full resize-none rounded-md border border-(--color-text-input) bg-(--color-bg-input) px-(--space-sm) py-(--space-xs) text-sm placeholder:text-(--color-text-input) md:h-44;
     font-family: var(--font-family-input);
   }
   .submit-modal-area {
@@ -109,28 +97,49 @@
   }
 
   .section-page {
-    @apply w-full h-full py-(--spacing-around-big) md:py-(--spacing-around-big) px-(--spacing-around-meduim) md:px-0 flex flex-col flex-1 text-base;
+    @apply w-full h-full py-(--space-lg) md:py-(--space-lg) px-(--space-md) md:px-0 flex flex-col flex-1 text-base;
   }
 
   .side-bar {
     @apply text-lg md:text-2xl lg:text-4xl;
   }
 
+  .nav-vertical-list {
+    @apply flex flex-col gap-(--space-md);
+  }
+
+  .nav-btn-active-modal {
+    @apply bg-(--color-1) w-70 p-(--space-sm);
+  }
+  .nav-btn-inactive-modal {
+    @apply bg-black text-white w-40 p-(--space-sm) hover:bg-(--color-1) hover:w-70 hover:text-black;
+  }
+
+  .nav-btn-active-sidebar {
+    @apply bg-(--color-1) w-80 p-2;
+  }
+  .nav-btn-inactive-admin {
+    @apply bg-black text-white w-60 p-(--space-sm) hover:bg-(--color-1) hover:w-80 hover:text-white;
+  }
+  .nav-btn-inactive-public {
+    @apply bg-white text-black w-60 p-(--space-sm) hover:bg-(--color-1) hover:w-80 hover:text-black;
+  }
+
   .card-row {
-    @apply w-full max-w-md lg:max-w-none rounded-md border border-(--color-text-input) flex flex-col lg:flex-row gap-(--spacing-around-small);
+    @apply w-full max-w-md lg:max-w-none rounded-md border border-(--color-text-input) flex flex-col lg:flex-row gap-(--space-sm);
   }
 
   @layer dashboard {
     .card-dashboard-media-center {
-      @apply flex items-center justify-center m-(--spacing-around-small) mb-0 lg:mb-(--spacing-around-small);
+      @apply flex items-center justify-center m-(--space-sm) mb-0 lg:mb-(--space-sm);
     }
 
     .card-dashboard-avatar {
-      @apply flex h-(--space-12) w-(--space-12) items-center justify-center rounded-full border border-(--color-text-input) bg-(--color-bg);
+      @apply flex h-(--margin-bottom-title) w-(--margin-bottom-title) items-center justify-center rounded-full border border-(--color-text-input) bg-(--color-bg);
     }
 
     .card-dashboard-content {
-      @apply w-full flex flex-col lg:flex-row justify-around items-center mb-(--spacing-around-small) lg:mb-0;
+      @apply w-full flex flex-col lg:flex-row justify-around items-center mb-(--space-sm) lg:mb-0;
     }
 
     .card-dashboard-field {
@@ -138,13 +147,13 @@
     }
 
     .card-dashboard-actions {
-      @apply flex flex-col lg:flex-row gap-x-(--gap-content-small) items-center;
+      @apply flex flex-col lg:flex-row gap-x-(--space-md) items-center;
     }
   }
 
   @layer users {
     .card-users-media-center {
-      @apply flex items-center justify-center m-(--spacing-around-small) mb-0 lg:mb-(--spacing-around-small);
+      @apply flex items-center justify-center m-(--space-sm) mb-0 lg:mb-(--space-sm);
     }
 
     .card-user-name {
@@ -152,7 +161,7 @@
     }
 
     .card-user-content {
-      @apply flex-1 flex flex-wrap flex-col lg:flex-row items-center gap-(--spacing-around-small) justify-between;
+      @apply flex-1 flex flex-wrap flex-col lg:flex-row items-center gap-(--space-sm) justify-between;
     }
 
     .card-user-field {
@@ -160,21 +169,25 @@
     }
 
     .card-user-actions {
-      @apply flex justify-center gap-(--gap-content-small) mb-(--spacing-around-small) lg:m-(--spacing-around-small);
+      @apply flex justify-center gap-(--space-md) mb-(--space-sm) lg:m-(--space-sm);
     }
   }
 
   @layer lineup {
+    .card-lineup-media {
+      @apply flex-shrink-0;
+    }
+
     .card-media-img {
       @apply rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none lg:w-48;
     }
 
     .card-lineup-content {
-      @apply flex flex-1 flex-col lg:flex-row items-center lg:justify-between gap-(--spacing-around-small);
+      @apply flex flex-1 flex-col lg:flex-row items-center lg:justify-between gap-(--space-sm);
     }
 
     .card-lineup-actions {
-      @apply flex justify-center items-center mb-(--spacing-around-small) lg:m-(--spacing-around-small);
+      @apply flex justify-center items-center mb-(--space-sm) lg:m-(--space-sm);
     }
   }
 }

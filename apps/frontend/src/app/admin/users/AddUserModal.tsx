@@ -289,9 +289,9 @@ export default function AddUserModal({
       <ModalCloseButton onClose={handleClose} />
       <h2 className="title-modal">Utilisateur</h2>
 
-      <div className="m-(--spacing-around-meduim)">
+      <div className="m-(--space-md)">
         <form className="form-modal" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 gap-(--gap-content-small) md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-(--space-md) md:grid-cols-2">
             <div>
               <label htmlFor="userFirstName" className="sr-only">
                 Prenom
@@ -327,7 +327,7 @@ export default function AddUserModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-(--gap-content-small) md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-(--space-md) md:grid-cols-2">
             <div>
               <label htmlFor="userEmail" className="sr-only">
                 Email

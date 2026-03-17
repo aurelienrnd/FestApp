@@ -98,7 +98,7 @@ export default function DelateUserModal({
       <ModalCloseButton onClose={onClose} />
       <h2 className="title-modal">Suppression utilisateur</h2>
 
-      <div className="m-(--spacing-around-meduim)">
+      <div className="m-(--space-md)">
         {isDeleted ? (
           <div className="form-modal">
             <p className="text-center">L&apos;utilisateur a ete supprime.</p>

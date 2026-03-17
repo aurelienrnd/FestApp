@@ -170,7 +170,7 @@ export default function UsersContent({
             <p>Aucun utilisateur.</p>
           </div>
         ) : (
-          <ul className="flex flex-col items-center gap-(--gap-content-small)">
+          <ul className="flex flex-col items-center gap-(--space-md)">
             {filteredUsers.map((user) => (
               <li key={user.id} className="card-row">
                 <div className="card-users-media-center">
@@ -206,14 +206,14 @@ export default function UsersContent({
                 <div className="card-user-actions">
                   <button
                     type="button"
-                    className="btn-type-2 rounded-md border border-(--color-text-input) p-(--spacing-around-xsmall)"
+                    className="btn-type-2 rounded-md border border-(--color-text-input) p-(--space-xs)"
                     onClick={() => openEditModal(user)}
                   >
                     Modifier
                   </button>
                   <button
                     type="button"
-                    className="btn-type-2 rounded-md border border-(--color-text-input) p-(--spacing-around-xsmall)"
+                    className="btn-type-2 rounded-md border border-(--color-text-input) p-(--space-xs)"
                     onClick={() => openDeleteModal(user)}
                   >
                     Supprimer

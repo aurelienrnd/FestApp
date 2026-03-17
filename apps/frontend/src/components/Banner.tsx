@@ -141,7 +141,7 @@ export function MobilNav({
 
   return (
     <nav>
-      <ul className="flex items-center gap-(--gap-content-small) tracking-wide">
+      <ul className="nav-list">
         <li className="mobil-menu">
           <button type="button" onClick={() => setIsOpen(true)}>
             <FontAwesomeIcon icon={faBars} />
@@ -201,7 +201,7 @@ export default function Banner() {
   };
 
   return (
-    <header className="mx-auto flex w-full items-center justify-between px-(--spacing-around-meduim) py-2">
+    <header className="mx-auto flex w-full items-center justify-between px-(--space-md) py-2">
       <Image
         src={logo}
         alt="Logo Hellfest"

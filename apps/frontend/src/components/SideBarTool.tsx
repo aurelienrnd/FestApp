@@ -22,7 +22,7 @@ export default function SideBarTool({
   const { pathname, isDesktop, isAdminPath } = useAppUi();
 
   return (
-    <div className="flex flex-1 gap-(--gap-content-small) pr-0 md:pr-(--spacing-around-meduim)">
+    <div className="flex flex-1 gap-(--space-md) pr-0 md:pr-(--space-md)">
       {isDesktop ? (
         <div className="sticky flex items-center">
           <Navigation

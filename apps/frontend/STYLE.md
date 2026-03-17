@@ -1,78 +1,68 @@
-﻿# Guide Style Frontend
+# Guide Style Frontend
 
-Ce document decrit l etat reel du style dans `apps/frontend`.
+Ce document decrit l'etat reel du style dans `apps/frontend`.
 
 ## 1. Fichier central
 
-Le style global est centralise dans:
+Le style global est centralise dans :
 - `apps/frontend/src/app/globals.css`
 
-Il contient:
+Il contient :
 - les variables CSS (`:root`)
 - les themes (`:root[data-theme="..."]`)
 - les classes composants reutilisables (`@layer components`)
 
-Details:
+Details :
 - `--font-koulen` est reference dans `apps/frontend/src/app/layout.tsx:13` et provient de Next Font.
+
+---
 
 ## 2. Tokens declares et usages
 
 ### Couleurs
 
-| Variable | Usages |
-| --- | --- |
-| `--color-1` | `globals.css` (`.btn-cta`), `components/Banner.tsx`, `components/Footer.tsx`, `components/Navigation.tsx`, `app/login/page.tsx`, `app/admin/users/AddUserModal.tsx`, `app/admin/users/DelateUserModal.tsx`, `app/admin/users/UsersContent.tsx` |
-| `--color-2` | `globals.css` (`.mobil-menu`) |
-| `--color-3` | `components/Footer.tsx` (separateur) |
-| `--color-text-visitor` | `globals.css` (theme visitor) |
-| `--color-bg-visitor` | `globals.css` (theme visitor) |
-| `--color-bg-admin` | `globals.css` (theme admin) |
-| `--color-text-admin` | `globals.css` (theme admin) |
-| `--color-bg-input` | `globals.css` (`.input`, `.text-area`) |
-| `--color-text-input` | `globals.css` (`.mobil-menu`, `.input`, `.text-area`), `app/admin/dashboard/DashboardContent.tsx`, `app/admin/users/UsersContent.tsx` |
-| `--color-text` | `globals.css` (`.btn-cta`, `.mobil-menu`), `app/layout.tsx` |
-| `--color-bg` | `app/layout.tsx`, `components/Footer.tsx` |
+| Variable | Valeur | Usages |
+| --- | --- | --- |
+| `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`), `components/Banner.tsx`, `components/Footer.tsx`, `app/login/page.tsx`, `app/admin/users/AddUserModal.tsx`, `app/admin/users/DelateUserModal.tsx`, `app/admin/users/UsersContent.tsx` |
+| `--color-2` | `#e4e4e7` | `globals.css` (`.mobil-menu`) |
+| `--color-3` | `#0ea5e9` | `components/Footer.tsx` (separateur) |
+| `--color-text-visitor` | `#ffffff` | `globals.css` (theme visitor) |
+| `--color-bg-visitor` | `black` | `globals.css` (theme visitor) |
+| `--color-bg-admin` | `#ffffff` | `globals.css` (theme admin) |
+| `--color-text-admin` | `black` | `globals.css` (theme admin) |
+| `--color-bg-input` | `#e4e4e7` | `globals.css` (`.input`, `.text-area`) |
+| `--color-text-input` | `#47474f` | `globals.css` (`.mobil-menu`, `.input`, `.text-area`, `.card-row`), `app/admin/dashboard/DashboardContent.tsx`, `app/admin/users/UsersContent.tsx` |
+| `--color-text` | thème actif | `globals.css` (`.btn-cta`, `.mobil-menu`), `app/layout.tsx` |
+| `--color-bg` | thème actif | `globals.css` (`.card-dashboard-avatar`), `app/layout.tsx`, `components/Footer.tsx` |
 
 ### Animation
 
-| Variable | Usages |
-| --- | --- |
-| `--anim-btn-transition` | `globals.css` (`.btn-cta`, `.mobil-menu`), `components/Footer.tsx` |
-| `--anim-btn-duration` | `globals.css` (`.btn-cta`, `.mobil-menu`), `components/Footer.tsx` |
-| `--anim-btn-scale` | `globals.css` (`.btn-cta:hover`, `.mobil-menu:hover`), `components/Footer.tsx` |
+| Variable | Valeur | Usages |
+| --- | --- | --- |
+| `--anim-btn-transition` | `"transform"` | `globals.css` (`.btn-cta`, `.mobil-menu`), `components/Footer.tsx` |
+| `--anim-btn-duration` | `200ms` | `globals.css` (`.btn-cta`, `.mobil-menu`), `components/Footer.tsx` |
+| `--anim-btn-scale` | `1.1` | `globals.css` (`.btn-cta:hover`, `.mobil-menu:hover`), `components/Footer.tsx` |
 
-### Echelle d espacement (`--space-*`)
+### Espacement
 
-| Variable | Usages |
-| --- | --- |
-| `--space-2` | source de `--spacing-around-xsmall` |
-| `--space-3` | source de `--spacing-around-small` |
-| `--space-4` | source de `--spacing-paragraph` |
-| `--space-6` | source de `--gap-content-small`, `--spacing-around-meduim` |
-| `--space-8` | source de `--spacing-form` |
-| `--space-10` | source de `--spacing-around-big` |
-| `--space-12` | source de `--margin-bottom-title` |
-| `--space-20` | source de `--gap-content-big` |
-
-### Espacements semantiques
-
-| Variable | Usages |
-| --- | --- |
-| `--gap-content-small` | `globals.css` (`.nav-list`), `components/Banner.tsx`, `components/Footer.tsx`, `components/ContactUs.tsx`, `components/ForgotPassword.tsx`, `components/LegalMention.tsx`, `components/ModalCloseButton.tsx`, `components/Navigation.tsx`, `components/SideBarTool.tsx`, `app/news/page.tsx`, `app/admin/users/page.tsx`, `app/admin/dashboard/DashboardContent.tsx`, `app/admin/users/AddUserModal.tsx`, `app/admin/users/UsersContent.tsx` |
-| `--gap-content-big` | `app/admin/dashboard/DashboardContent.tsx` |
-| `--spacing-paragraph` | `components/ContactUs.tsx`, `components/ForgotPassword.tsx`, `components/LegalMention.tsx` |
-| `--spacing-around-meduim` | `globals.css` (`.section-page`), `components/Banner.tsx`, `components/ContactUs.tsx`, `components/Footer.tsx`, `components/SideBarTool.tsx`, `app/admin/users/AddUserModal.tsx`, `app/admin/users/DelateUserModal.tsx` |
-| `--spacing-around-big` | `globals.css` (`.section-page`), `components/Footer.tsx`, `app/admin/dashboard/DashboardContent.tsx` |
-| `--spacing-around-small` | `globals.css` (`.input`, `.text-area`), `components/Navigation.tsx`, `app/admin/users/UsersContent.tsx` |
-| `--spacing-around-xsmall` | `globals.css` (`.input`, `.text-area`) |
-| `--spacing-form` | `app/login/page.tsx` |
-| `--margin-bottom-title` | `globals.css` (`.title1`), `components/AddButton.tsx`, `app/admin/users/page.tsx` |
+| Variable | Valeur | Usages |
+| --- | --- | --- |
+| `--space-xs` | `0.5rem` | `globals.css` (`.input`, `.text-area`), `app/admin/users/UsersContent.tsx` |
+| `--space-sm` | `0.75rem` | `globals.css` (`.input`, `.text-area`, `.nav-btn-*`, `.card-row`, `.card-dashboard-*`, `.card-users-*`, `.card-user-*`, `.card-lineup-*`) |
+| `--space-md` | `1.5rem` | `globals.css` (`.nav-list`, `.nav-vertical-list`, `.section-page`, `.card-dashboard-actions`, `.card-user-actions`), `components/Banner.tsx`, `components/Footer.tsx`, `components/ContactUs.tsx`, `components/ForgotPassword.tsx`, `components/LegalMention.tsx`, `components/ModalCloseButton.tsx`, `components/SideBarTool.tsx`, `app/lineup/page.tsx`, `app/news/page.tsx`, `app/admin/lineup/LineupContent.tsx`, `app/admin/users/page.tsx`, `app/admin/users/AddUserModal.tsx`, `app/admin/users/UsersContent.tsx`, `app/admin/dashboard/DashboardContent.tsx` |
+| `--space-lg` | `2.5rem` | `globals.css` (`.section-page`), `components/Footer.tsx` |
+| `--space-xl` | `5rem` | `app/admin/dashboard/DashboardContent.tsx` |
+| `--spacing-paragraph` | `1rem` | `components/ContactUs.tsx`, `components/ForgotPassword.tsx`, `components/LegalMention.tsx` |
+| `--spacing-form` | `2rem` | `app/login/page.tsx` |
+| `--margin-bottom-title` | `3rem` | `globals.css` (`.title1`, `.card-dashboard-avatar`), `components/AddButton.tsx`, `app/admin/users/page.tsx` |
 
 ### Typographie
 
-| Variable | Usages |
-| --- | --- |
-| `--font-family-input` | `globals.css` (`.input`, `.text-area`) |
+| Variable | Valeur | Usages |
+| --- | --- | --- |
+| `--font-family-input` | `Arial, sans-serif` | `globals.css` (`.input`, `.text-area`) |
+
+---
 
 ## 3. Classes reutilisables (@layer components)
 
@@ -82,7 +72,13 @@ Details:
 | --- | --- |
 | `.title1` | Titre principal de page — centré, très grand, uppercase, bold |
 | `.title-modal` | Titre de modale — centré, grand, bold |
-| `.nav-list` | Liste de liens de navigation — flex, gap, letter-spacing |
+| `.nav-list` | Liste de liens de navigation horizontale — flex, `gap-(--space-md)`, letter-spacing |
+| `.nav-vertical-list` | Liste de liens de navigation verticale — flex colonne, `gap-(--space-md)` |
+| `.nav-btn-active-modal` | Bouton actif en variante modale — fond `--color-1`, largeur étendue |
+| `.nav-btn-inactive-modal` | Bouton inactif en variante modale — fond noir, hover couleur principale |
+| `.nav-btn-active-sidebar` | Bouton actif en variante sidebar — fond `--color-1`, largeur étendue |
+| `.nav-btn-inactive-admin` | Bouton inactif sidebar (contexte admin) — fond noir, texte blanc |
+| `.nav-btn-inactive-public` | Bouton inactif sidebar (contexte public) — fond blanc, texte noir |
 | `.btn-cta` | Bouton call-to-action — fond `--color-1`, texte blanc, scale au hover |
 | `.btn-type-2` | Bouton secondaire — hover opacity |
 | `.mobil-menu` | Bouton menu mobile — fond `--color-2`, scale au hover |
@@ -101,7 +97,7 @@ Details:
 | Classe | Description |
 | --- | --- |
 | `.card-dashboard-media-center` | Zone média de la carte dashboard — centrée avec marges |
-| `.card-dashboard-avatar` | Avatar circulaire — taille fixe, bordure, fond `--color-bg` |
+| `.card-dashboard-avatar` | Avatar circulaire — taille fixe (`--margin-bottom-title`), bordure, fond `--color-bg` |
 | `.card-dashboard-content` | Contenu principal de la carte — flex, justify-around, responsive |
 | `.card-dashboard-field` | Champ individuel dans la carte — flex, justify-around |
 | `.card-dashboard-actions` | Zone d'actions — flex colonne sur mobile, ligne sur desktop |
@@ -120,13 +116,17 @@ Details:
 
 | Classe | Description |
 | --- | --- |
+| `.card-lineup-media` | Conteneur de l'image artiste — flex-shrink-0 |
 | `.card-media-img` | Image de l'artiste — arrondie en haut sur mobile, à gauche sur desktop, largeur fixe (`w-48`) |
 | `.card-lineup-content` | Contenu de la carte lineup — flex colonne/ligne, space-between |
 | `.card-lineup-actions` | Zone d'actions — flex centré, marges responsive |
 
-## 4. Conventions recommandees
+---
 
-- Prioriser les tokens semantiques avant les valeurs brutes Tailwind.
-- Utiliser la scale `--space-*` comme base unique.
-- Creer un token semantique seulement quand une valeur est reutilisee.
-- Garder la syntaxe Tailwind variable: `gap-(--token)`, `px-(--token)`, `bg-(--token)`.
+## 4. Conventions
+
+- Utiliser uniquement les tokens de `globals.css` — pas de valeurs brutes Tailwind (`gap-6`, `p-4`, etc.).
+- Echelle d'espacement : `--space-xs` → `--space-xl` pour les valeurs generiques, tokens contextuels (`--spacing-paragraph`, `--spacing-form`, `--margin-bottom-title`) pour les cas specifiques.
+- Syntaxe Tailwind variable : `gap-(--token)`, `px-(--token)`, `bg-(--token)`.
+- Creer un token semantique seulement quand une valeur est reutilisee dans plusieurs contextes.
+- Toute nouvelle classe composant va dans `globals.css` sous `@layer components`, pas dans un objet JS.

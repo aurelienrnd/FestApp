@@ -6,7 +6,7 @@ import LineupContent from "../admin/lineup/LineupContent";
 export default function Page() {
   return (
     <section className="section-page">
-      <div className="flex justify-center item-center gap-6">
+      <div className="flex justify-center items-center gap-(--space-md)">
         <AddButton items={filterLineUpItems} />
         <h1 className="title1">Lineup</h1>
       </div>

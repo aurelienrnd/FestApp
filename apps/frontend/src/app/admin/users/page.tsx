@@ -40,7 +40,7 @@ export default function Page() {
   return (
     <>
       <section className="section-page">
-        <div className="flex justify-center item-center gap-(--gap-content-small)">
+        <div className="flex justify-center item-center gap-(--space-md)">
           <AddButton items={userFilterItems} />
           <h1 className="title1">UTILISATEURS</h1>
           <button

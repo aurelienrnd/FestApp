@@ -1,7 +1,7 @@
 /** Affiche le contenu des mentions légales dans un conteneur avec marge interne*/
 export default function LegalMention() {
   return (
-    <div className="m-(--gap-content-small)">
+    <div className="m-(--space-md)">
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent
         vehicula, tortor at eleifend varius, lorem neque convallis augue, sit

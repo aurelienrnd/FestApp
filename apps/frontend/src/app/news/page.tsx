@@ -5,7 +5,7 @@ import AddButton from "../../components/AddButton";
 export default function Page() {
   return (
     <section className="section-page">
-      <div className="flex justify-center item-center gap-(--gap-content-small)">
+      <div className="flex justify-center items-center gap-(--space-md)">
         <AddButton items={filterNewsItems} />
         <h1 className="title1">News</h1>
       </div>

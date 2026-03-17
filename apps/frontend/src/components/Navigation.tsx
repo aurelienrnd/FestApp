@@ -3,22 +3,6 @@
 import Link from "next/link";
 import type { NavItem } from "../config/navigation";
 
-const navigationStyle = {
-  modal: {
-    list: "flex flex-col gap-(--gap-content-small)",
-    btnActive: "bg-(--color-1) w-70 p-(--spacing-around-small)",
-    btnInactive:
-      "bg-black text-white w-40 p-(--spacing-around-small) hover:bg-(--color-1) hover:w-70 hover:text-black",
-  },
-  sidebar: {
-    list: "flex flex-col gap-(--gap-content-small)",
-    btnActive: "bg-(--color-1) w-80 p-2",
-    btnInactiveAdmin:
-      "bg-black text-white w-60 p-(--spacing-around-small) hover:bg-(--color-1) hover:w-80 hover:text-white",
-    btnInactivePublic:
-      "bg-white text-black w-60 p-(--spacing-around-small) hover:bg-(--color-1) hover:w-80 hover:text-black",
-  },
-} as const;
 
 /** Affiche une navigation verticale (sidebar ou modal).
  * Compare chaque lien avec l'URL courante pour appliquer le style actif.
@@ -46,32 +30,20 @@ export default function Navigation({
   setmodal?: () => void;
   variant?: "sidebar" | "modal";
 }) {
-  // Récupère la classe CSS de la liste pour la variante de navigation choisie
-  const listClass = navigationStyle[variant].list;
-
   // Renvoie la classe CSS du bouton selon la variante, l’état actif et le contexte admin/public
   const itemClass = (isActive: boolean) => {
-    // Pour la variante "modal", renvoie la classe active ou inactive selon l’état
     if (variant === "modal") {
-      return isActive
-        ? navigationStyle.modal.btnActive
-        : navigationStyle.modal.btnInactive;
+      return isActive ? "nav-btn-active-modal" : "nav-btn-inactive-modal";
     }
 
-    // Si l’item est actif, renvoie la classe active de la sidebar
-    if (isActive) {
-      return navigationStyle.sidebar.btnActive;
-    }
+    if (isActive) return "nav-btn-active-sidebar";
 
-    // Sinon, renvoie la classe inactive selon le contexte admin ou public
-    return isAdminPath
-      ? navigationStyle.sidebar.btnInactiveAdmin
-      : navigationStyle.sidebar.btnInactivePublic;
+    return isAdminPath ? "nav-btn-inactive-admin" : "nav-btn-inactive-public";
   };
 
   return (
     <nav className="side-bar">
-      <ul className={listClass}>
+      <ul className="nav-vertical-list">
         {items.map((item, index) => {
           const isActive = pathname === item.path || Boolean(item.active);
 
