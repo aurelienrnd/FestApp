@@ -5,15 +5,7 @@ import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import AddUserModal from "./AddUserModal";
 import DelateUserModal from "./DelateUserModal";
-
-type UserListRow = {
-  id: string;
-  email: string;
-  display_name: string | null;
-  role: string;
-  created_at: string;
-  password_changed_at?: string | null;
-};
+import type { UserListRow } from "../../../types";
 
 type ListUsersResponse = { users: UserListRow[] };
 

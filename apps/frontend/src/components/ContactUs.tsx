@@ -17,7 +17,7 @@ export default function ContactUs() {
     subject.trim() === "" ||
     message.trim() === "";
 
-  // Empeche le rechargement, valide le formulaire puis log les champs
+  // Empeche le rechargement, valide le formulaire puis reinitialise les champs
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -25,7 +25,6 @@ export default function ContactUs() {
       return;
     }
 
-    console.log({ name, email, subject, message });
     setName("");
     setEmail("");
     setSubject("");

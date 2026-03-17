@@ -1,4 +1,4 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
   faInstagram,
   faFacebookF,
@@ -19,16 +19,16 @@ export const socialLinks = [
   {
     label: "Instagram",
     href: "https://www.instagram.com/",
-    icon: faInstagram as unknown as IconProp,
+    icon: faInstagram as IconDefinition,
   },
   {
     label: "Facebook",
     href: "https://www.facebook.com/",
-    icon: faFacebookF as unknown as IconProp,
+    icon: faFacebookF as IconDefinition,
   },
   {
     label: "YouTube",
     href: "https://www.youtube.com/",
-    icon: faYoutube as unknown as IconProp,
+    icon: faYoutube as IconDefinition,
   },
 ];

@@ -107,9 +107,11 @@ apps/frontend/
 │   ├── config/
 │   │   ├── footer.ts
 │   │   └── navigation.ts
-│   └── functions/
-│       ├── apiRequest.ts
-│       └── getApiErrorMessage.ts
+│   ├── functions/
+│   │   ├── apiRequest.ts
+│   │   └── getApiErrorMessage.ts
+│   └── types/
+│       └── index.ts
 ├── test/
 │   └── setup.ts
 ├── .dockerignore
@@ -201,6 +203,14 @@ Utilitaires partagés pour les appels API et la gestion des erreurs.
 | --- | --- |
 | `apiRequest.ts` | Wrapper `fetch` typé — retourne toujours `{ data, error: null }` en succès ou `{ data: null, error: ApiRequestError }` en échec |
 | `getApiErrorMessage.ts` | Traduit un `ApiRequestError` en message lisible — priorité au message backend, puis fallback par code HTTP (`401`, `403`, `404`, `429`, `>=500`) |
+
+### `types/`
+
+Types TypeScript partagés entre plusieurs composants.
+
+| Fichier | Description |
+| --- | --- |
+| `index.ts` | Centralise les types métier réutilisables : `UserListRow` (données utilisateur API), `ArtistListRow` (données artiste API) |
 
 ---
 

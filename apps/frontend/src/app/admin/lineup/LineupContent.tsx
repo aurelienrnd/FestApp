@@ -3,16 +3,7 @@
 import { useEffect, useState } from "react";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
-
-type ArtistListRow = {
-  id: string;
-  name: string;
-  genre: string;
-  origin: string;
-  bio: string;
-  url_media: string;
-  description_media: string;
-};
+import type { ArtistListRow } from "../../../types";
 
 type ListArtistsResponse = { artists: ArtistListRow[] };
 
@@ -48,7 +39,6 @@ export default function LineupContent() {
       }
 
       // Mise a jour de la liste des artistes
-      console.log("Lineup API result:", result.data?.artists ?? []);
       setArtists(result.data?.artists ?? []);
       setIsLoading(false);
     };

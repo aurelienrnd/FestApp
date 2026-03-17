@@ -11,36 +11,19 @@ import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import type { UserListRow } from "../../../types";
 
 type AddUserModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  handleUser: (user: {
-    id: string;
-    email: string;
-    display_name: string | null;
-    role: string;
-    created_at: string;
-  }) => void;
-  selectedUser?: {
-    id: string;
-    email: string;
-    display_name: string | null;
-    role: string;
-    created_at: string;
-  } | null;
+  handleUser: (user: UserListRow) => void;
+  selectedUser?: UserListRow | null;
 };
 
 type CreateUserApiResponse = {
   message: string;
   temporary_password?: string;
-  user?: {
-    id: string;
-    email: string;
-    display_name: string | null;
-    role: string;
-    created_at: string;
-  };
+  user?: UserListRow;
 };
 
 /** Verifie si le formulaire d'ajout utilisateur est incomplet.
@@ -101,13 +84,7 @@ async function submitAddUserForm({
   isFormInvalid: boolean;
   isEditMode: boolean;
   selectedUserId: string | null;
-  selectedUser?: {
-    id: string;
-    email: string;
-    display_name: string | null;
-    role: string;
-    created_at: string;
-  } | null;
+  selectedUser?: UserListRow | null;
   firstName: string;
   lastName: string;
   email: string;
@@ -116,13 +93,7 @@ async function submitAddUserForm({
   setSubmitError: Dispatch<SetStateAction<string | null>>;
   setTemporaryPassword: Dispatch<SetStateAction<string | null>>;
   resetForm: () => void;
-  handleUser: (user: {
-    id: string;
-    email: string;
-    display_name: string | null;
-    role: string;
-    created_at: string;
-  }) => void;
+  handleUser: (user: UserListRow) => void;
 }) {
   // Empeche le comportement par defaut du formulaire et stoppe la soumission si le formulaire est invalide
   event.preventDefault();
