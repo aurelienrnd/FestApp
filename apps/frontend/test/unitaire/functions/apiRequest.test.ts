@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ApiRequestError, apiRequest } from "../../src/functions/apiRequest";
+import { ApiRequestError, apiRequest } from "../../../src/functions/apiRequest";
 
 describe("apiRequest", () => {
   // Initialise une URL API de test
@@ -46,6 +46,7 @@ describe("apiRequest", () => {
       json: vi.fn().mockResolvedValue({ error: "Trop de tentatives" }),
     } as unknown as Response);
 
+    // Appelle la fonction a tester
     const result = await apiRequest("/admin/auth/login");
 
     expect(result.data).toBeNull();
@@ -64,6 +65,7 @@ describe("apiRequest", () => {
     // Simule une erreur reseau
     vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("Network down"));
 
+    // Appelle la fonction a tester
     const result = await apiRequest("/admin/auth/login");
 
     expect(result.data).toBeNull();

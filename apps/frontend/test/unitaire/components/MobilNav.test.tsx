@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { MobilNav } from "../../src/components/Banner";
-import { navVisitorItems } from "../../src/config/navigation";
+import { MobilNav } from "../../../src/components/Banner";
+import { navVisitorItems } from "../../../src/config/navigation";
 
 // Mock du composant Link, remplace par une simple balise <a>
 vi.mock("next/link", () => ({
@@ -20,7 +20,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-// Mock de la modal.
+// Mock de react-modal, rend une div uniquement quand la modal est ouverte
 vi.mock("react-modal", () => {
   const Modal = ({
     isOpen,
@@ -35,11 +35,13 @@ vi.mock("react-modal", () => {
 
 describe("MobilNav", () => {
   it("opens and closes the mobile modal", async () => {
-    // Initialise un utilisateur et monte le composant
+    // Initialise userEvent pour simuler les interactions utilisateur
     const user = userEvent.setup();
 
-    // mock la fonction logout
+    // Mock de la fonction logout passee en prop
     const onLogout = vi.fn();
+
+    // Monte le composant avec les liens visiteur
     render(
       <MobilNav
         items={navVisitorItems}
@@ -49,10 +51,13 @@ describe("MobilNav", () => {
       />,
     );
 
+    // Verifie que la modale est fermee, puis l'ouvre via le bouton hamburger
     expect(screen.queryByTestId("modal")).not.toBeInTheDocument();
-    await user.click(screen.getAllByRole("button")[0]);
+    await user.click(screen.getByRole("button"));
     expect(screen.getByTestId("modal")).toBeInTheDocument();
-    await user.click(screen.getAllByRole("button")[1]);
+
+    // Ferme la modale via le bouton de fermeture
+    await user.click(screen.getByRole("button", { name: "Fermer la modal" }));
     expect(screen.queryByTestId("modal")).not.toBeInTheDocument();
   });
 });

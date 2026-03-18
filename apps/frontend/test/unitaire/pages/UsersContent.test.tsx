@@ -1,22 +1,28 @@
-﻿import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import {
+  cleanup,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import UsersContent from "../../src/app/admin/users/UsersContent";
-import { ApiRequestError } from "../../src/functions/apiRequest";
+import UsersContent from "../../../src/app/admin/users/UsersContent";
+import { ApiRequestError } from "../../../src/functions/apiRequest";
 
-// Création d’un mock pour simuler les appels à l’API
+// Création d'un mock pour simuler les appels à l'API
 const mockApiRequest = vi.fn();
 
-// Remplace uniquement la fonction apiRequest par un mock,
-vi.mock("../../src/functions/apiRequest", async () => {
-  const actual = await vi.importActual("../../src/functions/apiRequest");
+// Remplace uniquement la fonction apiRequest par un mock pour simuler les reponses API sans appel reseau
+vi.mock("../../../src/functions/apiRequest", async () => {
+  const actual = await vi.importActual("../../../src/functions/apiRequest");
   return {
     ...actual,
     apiRequest: (...args: unknown[]) => mockApiRequest(...args),
   };
 });
 
-// Mock du composant react-modal pour les tests affiche le contenu uniquement si isOpen est true
+// Mock du composant react-modal, affiche le contenu uniquement si isOpen est true
 vi.mock("react-modal", () => {
   const Modal = ({
     isOpen,
@@ -42,7 +48,7 @@ describe("UsersContent", () => {
   });
 
   it("loads and displays users list", async () => {
-    // Simule une réponse API réussie retournant une liste d’utilisateurs
+    // Simule une réponse API réussie retournant une liste d'utilisateurs
     mockApiRequest.mockResolvedValueOnce({
       data: {
         users: [
@@ -51,7 +57,6 @@ describe("UsersContent", () => {
             email: "john@test.fr",
             display_name: "John Doe",
             role: "admin",
-
             created_at: "2026-03-12T10:15:30.000Z",
             password_changed_at: "2026-03-12T12:00:00.000Z",
           },
@@ -92,7 +97,6 @@ describe("UsersContent", () => {
             email: "new@test.fr",
             display_name: "New User",
             role: "news",
-
             created_at: "2026-03-12T10:30:00.000Z",
             password_changed_at: null,
           },
@@ -139,7 +143,6 @@ describe("UsersContent", () => {
               email: "john@test.fr",
               display_name: "John Doe",
               role: "admin",
-
               created_at: "2026-03-12T10:15:30.000Z",
               password_changed_at: "2026-03-12T12:00:00.000Z",
             },
@@ -156,7 +159,6 @@ describe("UsersContent", () => {
             email: "john@test.fr",
             display_name: "Jane Doe",
             role: "admin",
-
             created_at: "2026-03-12T10:15:30.000Z",
             password_changed_at: "2026-03-12T12:00:00.000Z",
           },
@@ -208,7 +210,6 @@ describe("UsersContent", () => {
               email: "john@test.fr",
               display_name: "John Doe",
               role: "admin",
-
               created_at: "2026-03-12T10:15:30.000Z",
               password_changed_at: "2026-03-12T12:00:00.000Z",
             },
@@ -217,7 +218,6 @@ describe("UsersContent", () => {
               email: "jane@test.fr",
               display_name: "Jane Doe",
               role: "news",
-
               created_at: "2026-03-12T10:20:00.000Z",
               password_changed_at: null,
             },
@@ -225,7 +225,7 @@ describe("UsersContent", () => {
         },
         error: null,
       })
-      // 2. Suppression réussie d’un utilisateur
+      // 2. Suppression réussie d'un utilisateur
       .mockResolvedValueOnce({
         data: { message: "Utilisateur supprime" },
         error: null,
@@ -234,7 +234,7 @@ describe("UsersContent", () => {
     // Rend le composant UsersContent
     render(<UsersContent />);
 
-    // Attend que l’utilisateur "John Doe" soit affiché, puis clique sur le premier bouton "Supprimer"
+    // Attend que l'utilisateur "John Doe" soit affiché, puis clique sur le premier bouton "Supprimer"
     await screen.findByText("John Doe");
     await user.click(screen.getAllByRole("button", { name: "Supprimer" })[0]);
 
@@ -260,6 +260,78 @@ describe("UsersContent", () => {
     });
   });
 
+  it("shows loading state while fetching", () => {
+    // La promesse ne se résout jamais, isLoading reste true
+    mockApiRequest.mockReturnValue(new Promise(() => {}));
+
+    // Rend le composant UsersContent
+    render(<UsersContent />);
+
+    expect(screen.getByText("Chargement...")).toBeInTheDocument();
+  });
+
+  it("shows error message when load fails", async () => {
+    // Simule une erreur serveur lors du chargement de la liste
+    mockApiRequest.mockResolvedValueOnce({
+      data: null,
+      error: new ApiRequestError(undefined, 500),
+    });
+
+    // Rend le composant UsersContent
+    render(<UsersContent />);
+
+    expect(
+      await screen.findByText("Erreur serveur, reessayez plus tard."),
+    ).toBeInTheDocument();
+  });
+
+  it("shows empty state when no users match", async () => {
+    // Simule une reponse API reussie retournant une liste vide
+    mockApiRequest.mockResolvedValueOnce({
+      data: { users: [] },
+      error: null,
+    });
+
+    // Rend le composant UsersContent
+    render(<UsersContent />);
+
+    expect(await screen.findByText("Aucun utilisateur.")).toBeInTheDocument();
+  });
+
+  it("filters users by role with filterBy prop", async () => {
+    // Simule une reponse API retournant des utilisateurs avec des roles differents
+    mockApiRequest.mockResolvedValueOnce({
+      data: {
+        users: [
+          {
+            id: "u1",
+            email: "admin@test.fr",
+            display_name: "Admin User",
+            role: "admin",
+            created_at: "2026-01-01T00:00:00.000Z",
+            password_changed_at: null,
+          },
+          {
+            id: "u2",
+            email: "news@test.fr",
+            display_name: "News User",
+            role: "news",
+            created_at: "2026-01-01T00:00:00.000Z",
+            password_changed_at: null,
+          },
+        ],
+      },
+      error: null,
+    });
+
+    // Rend le composant UsersContent avec le filtre "admin"
+    render(<UsersContent filterBy="admin" />);
+
+    // Verifie que seul l'utilisateur admin est affiche
+    expect(await screen.findByText("Admin User")).toBeInTheDocument();
+    expect(screen.queryByText("News User")).not.toBeInTheDocument();
+  });
+
   it("shows error message when delete fails", async () => {
     // Initialise userEvent pour simuler les interactions utilisateur
     const user = userEvent.setup();
@@ -275,7 +347,6 @@ describe("UsersContent", () => {
               email: "john@test.fr",
               display_name: "John Doe",
               role: "admin",
-
               created_at: "2026-03-12T10:15:30.000Z",
               password_changed_at: "2026-03-12T12:00:00.000Z",
             },
@@ -292,7 +363,7 @@ describe("UsersContent", () => {
     // Rend le composant UsersContent
     render(<UsersContent />);
 
-    // Attend l’affichage de "John Doe", clique sur "Supprimer", puis confirme la suppression
+    // Attend l'affichage de "John Doe", clique sur "Supprimer", puis confirme la suppression
     await screen.findByText("John Doe");
     await user.click(screen.getByRole("button", { name: "Supprimer" }));
     await user.click(screen.getByRole("button", { name: "Confirmer" }));
@@ -303,5 +374,3 @@ describe("UsersContent", () => {
     expect(screen.getAllByText("John Doe").length).toBeGreaterThanOrEqual(1);
   });
 });
-
-

@@ -113,7 +113,22 @@ apps/frontend/
 │   └── types/
 │       └── index.ts
 ├── test/
-│   └── setup.ts
+│   ├── setup.ts
+│   ├── integration/
+│   │   └── AdminLayout.test.tsx
+│   └── unitaire/
+│       ├── components/
+│       │   ├── AppUiProvider.test.tsx
+│       │   ├── Banner.test.tsx
+│       │   ├── ContactUs.test.tsx
+│       │   ├── Footer.test.tsx
+│       │   └── MobilNav.test.tsx
+│       ├── functions/
+│       │   ├── apiRequest.test.ts
+│       │   └── getApiErrorMessage.test.ts
+│       └── pages/
+│           ├── LoginPage.test.tsx
+│           └── UsersContent.test.tsx
 ├── .dockerignore
 ├── .gitignore
 ├── .prettierrc
@@ -216,7 +231,49 @@ Types TypeScript partagés entre plusieurs composants.
 
 ## `test/`
 
-Contient la configuration globale des tests. Vitest exécute les tests et les assertions, Testing Library valide le rendu et les interactions, jsdom simule l'environnement navigateur.
+Contient la configuration globale des tests et tous les fichiers de test. Vitest exécute les tests et les assertions, Testing Library valide le rendu et les interactions, jsdom simule l'environnement navigateur.
+
+### `setup.ts`
+
+Fichier d'initialisation chargé avant chaque test — importe les matchers `@testing-library/jest-dom` pour étendre `expect` (ex : `toBeInTheDocument`, `toBeDisabled`).
+
+### `integration/`
+
+Tests qui font appel à des systèmes externes (fetch vers le backend, cookies…).
+
+| Fichier | Description |
+| --- | --- |
+| `AdminLayout.test.tsx` | Vérifie que le layout admin appelle bien `/admin/auth/me`, gère les cookies de session et redirige vers `/login` en cas d'échec |
+
+### `unitaire/components/`
+
+Tests unitaires des composants React réutilisables.
+
+| Fichier | Description |
+| --- | --- |
+| `AppUiProvider.test.tsx` | Vérifie la détection de la route admin (`isAdminPath`) et du mode desktop (`isDesktop`) |
+| `Banner.test.tsx` | Vérifie le rendu desktop/mobile et l'affichage conditionnel du bouton billetterie |
+| `ContactUs.test.tsx` | Vérifie le formulaire de contact — activation du bouton et soumission |
+| `Footer.test.tsx` | Vérifie l'ouverture/fermeture des modales mentions légales et contact |
+| `MobilNav.test.tsx` | Vérifie l'ouverture/fermeture de la navigation mobile |
+
+### `unitaire/functions/`
+
+Tests unitaires des utilitaires partagés.
+
+| Fichier | Description |
+| --- | --- |
+| `apiRequest.test.ts` | Vérifie le wrapper fetch — succès, erreur HTTP et erreur réseau |
+| `getApiErrorMessage.test.ts` | Vérifie les messages d'erreur — passthrough backend et fallbacks par code HTTP |
+
+### `unitaire/pages/`
+
+Tests unitaires des pages et de leurs flux principaux.
+
+| Fichier | Description |
+| --- | --- |
+| `LoginPage.test.tsx` | Vérifie le formulaire de connexion — gestion des erreurs (401, 429, 500) et redirection en cas de succès |
+| `UsersContent.test.tsx` | Vérifie le CRUD utilisateurs — chargement de la liste, ajout, modification, suppression et gestion des erreurs |
 
 ---
 

@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import ContactUs from "../../src/components/ContactUs";
+import ContactUs from "../../../src/components/ContactUs";
 
 describe("ContactUs", () => {
   // Réinitialise le DOM et les mocks entre chaque test
@@ -14,6 +14,7 @@ describe("ContactUs", () => {
     // Monte le composant
     render(<ContactUs />);
 
+    // Verifie que tous les champs sont presents et que le bouton est desactive
     expect(screen.getByPlaceholderText("Nom Prenom")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Votre email")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Sujet")).toBeInTheDocument();
@@ -24,10 +25,13 @@ describe("ContactUs", () => {
   });
 
   it("enables submit button when all fields are filled", async () => {
-    // Initialise un utilisateur puis monte le composant
+    // Initialise userEvent pour simuler les interactions utilisateur
     const user = userEvent.setup();
+
+    // Monte le composant
     render(<ContactUs />);
 
+    // Remplit tous les champs du formulaire
     await user.type(screen.getByPlaceholderText("Nom Prenom"), "Jean Dupont");
     await user.type(screen.getByPlaceholderText("Votre email"), "jean@test.fr");
     await user.type(screen.getByPlaceholderText("Sujet"), "Demande info");
@@ -40,10 +44,13 @@ describe("ContactUs", () => {
   });
 
   it("submits the form and shows success message", async () => {
-    // Initialise un utilisateur, mock le log puis monte le composant
+    // Initialise userEvent pour simuler les interactions utilisateur
     const user = userEvent.setup();
+
+    // Monte le composant
     render(<ContactUs />);
 
+    // Remplit tous les champs puis soumet le formulaire
     await user.type(screen.getByPlaceholderText("Nom Prenom"), "Jean Dupont");
     await user.type(screen.getByPlaceholderText("Votre email"), "jean@test.fr");
     await user.type(screen.getByPlaceholderText("Sujet"), "Demande info");
@@ -53,10 +60,10 @@ describe("ContactUs", () => {
     );
     await user.click(screen.getByRole("button", { name: "Envoyer" }));
 
+    // Verifie que le message de succes s'affiche et que le formulaire disparait
     expect(screen.getByText("votre message est envoye")).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Envoyer" }),
     ).not.toBeInTheDocument();
   });
 });
-
