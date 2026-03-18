@@ -4,6 +4,7 @@ import { randomBytes } from "crypto";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
+import { sendWelcomeEmail } from "../../../services/mailer";
 
 /** Verifie que l'email de l'utilisateur existe dans la BDD
  * @param {string} email email de l'utilisateur dans le body de la requete
@@ -76,9 +77,10 @@ export const createUser = async (req: Request, res: Response) => {
     throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
   }
 
+  await sendWelcomeEmail(email, displayName, temporaryPassword);
+
   return res.status(201).json({
     message: "Utilisateur cree",
-    temporary_password: temporaryPassword,
     user: {
       id: createdUser.id,
       email: createdUser.email,
