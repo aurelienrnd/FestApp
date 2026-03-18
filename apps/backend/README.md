@@ -32,6 +32,10 @@ docker exec -it vindhellfest-backend npm test
 - `COOKIE_ACCESS_TOKEN_SAME_SITE=lax` : limite l'envoi du cookie sur les requêtes cross-site (protection CSRF de base).
 - `SESSION_EXPIRES_IN=12h` : durée de vie d'une session en base de données.
 - `FRONTEND_ORIGIN=http://localhost:3000` : origine autorisée par le middleware CORS.
+- `SMTP_HOST=smtp.gmail.com` : serveur SMTP utilisé pour l'envoi d'emails.
+- `SMTP_PORT=587` : port SMTP (587 pour TLS, standard Gmail et Resend).
+- `SMTP_USER=toncompte@gmail.com` : adresse email utilisée comme expéditeur.
+- `SMTP_PASS=xxxx xxxx xxxx xxxx` : mot de passe d'application SMTP (ne jamais utiliser le mot de passe du compte, générer un mot de passe d'application dédié).
 
 ---
 
@@ -42,6 +46,7 @@ docker exec -it vindhellfest-backend npm test
 - `express` : Framework web.
 - `bcrypt` : Hash des mots de passe avant stockage en base.
 - `jsonwebtoken` : Création et vérification des JSON Web Tokens.
+- `nodemailer` : Envoi d'emails via SMTP (création d'utilisateur, récupération de mot de passe, formulaire de contact).
 - `pg` : Client PostgreSQL pour Node.js.
 - `cookie` : Parse et sérialise les cookies HTTP côté serveur.
 - `dotenv` : Charge les variables d'environnement depuis les fichiers `.env`.
@@ -64,6 +69,7 @@ docker exec -it vindhellfest-backend npm test
 - `@types/jsonwebtoken` : Définitions TypeScript pour jsonwebtoken.
 - `@types/node` : Définitions TypeScript pour Node.js.
 - `@types/pg` : Définitions TypeScript pour pg.
+- `@types/nodemailer` : Définitions TypeScript pour nodemailer.
 - `@types/supertest` : Définitions TypeScript pour supertest.
 - `@typescript-eslint/eslint-plugin` : Plugin ESLint pour analyser le TypeScript.
 - `@typescript-eslint/parser` : Permet à ESLint de comprendre la syntaxe TypeScript.
