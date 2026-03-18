@@ -118,6 +118,8 @@ apps/backend/
 │   │   └── public.programming.routes.ts
 │   ├── schemas/
 │   │   └── schema.ts
+│   ├── services/
+│   │   └── mailer.ts
 │   ├── app.ts
 │   ├── db.ts
 │   ├── functions.ts
@@ -214,7 +216,7 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 | `admin/auth/logout.controller.ts` | POST `/admin/auth/logout` | Révoque la session en base |
 | `admin/auth/userInfo.controller.ts` | GET `/admin/auth/me` | Retourne les infos de l'utilisateur connecté et renouvelle le token |
 | `admin/users/list_users.controller.ts` | GET `/admin/users` | Liste tous les utilisateurs admin |
-| `admin/users/create_user.controller.ts` | POST `/admin/users` | Crée un utilisateur avec un mot de passe temporaire |
+| `admin/users/create_user.controller.ts` | POST `/admin/users` | Crée un utilisateur et envoie le mot de passe provisoire par email |
 | `admin/users/update_user.controller.ts` | PATCH `/admin/users/:id` | Modifie les informations d'un utilisateur |
 | `admin/users/delete_user.controller.ts` | DELETE `/admin/users/:id` | Supprime définitivement un utilisateur |
 | `public/lineup/list_lineup.controller.ts` | GET `/public/lineup` | Liste tous les artistes du festival |
@@ -262,6 +264,10 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 - Garantit un format de réponse cohérent : `{ "error": "..." }`
 - Évite les messages dupliqués dans les contrôleurs et middlewares
 - Facilite la maintenance (un message changé à un seul endroit)
+
+### `services/`
+
+- `mailer.ts` : service d'envoi d'email via SMTP (`nodemailer`). Expose les fonctions d'envoi utilisées par les contrôleurs. La configuration SMTP est chargée depuis les variables d'environnement au moment de l'envoi.
 
 ### `schemas/`
 

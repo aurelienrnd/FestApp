@@ -2,18 +2,18 @@
 
 ## Résumé des endpoints
 
-| Méthode | Route | Accès | Description |
-| --- | --- | --- | --- |
-| POST | `/admin/auth/login` | Public | Connexion administrateur |
-| POST | `/admin/auth/logout` | Authentifié | Déconnexion |
-| GET | `/admin/auth/me` | Authentifié | Informations utilisateur + renouvellement token |
-| GET | `/admin/users` | Authentifié | Liste des utilisateurs |
-| POST | `/admin/users` | Authentifié | Créer un utilisateur |
-| PATCH | `/admin/users/:id` | Authentifié | Modifier un utilisateur |
-| DELETE | `/admin/users/:id` | Authentifié | Supprimer un utilisateur |
-| GET | `/public/lineup` | Public | Liste des artistes de la programmation |
-| GET | `/health` | Public | Santé du serveur (diagnostic) |
-| GET | `/debug/db` | Public | Connexion à la base de données (diagnostic) |
+| Méthode | Route                | Accès       | Description                                     |
+| ------- | -------------------- | ----------- | ----------------------------------------------- |
+| POST    | `/admin/auth/login`  | Public      | Connexion administrateur                        |
+| POST    | `/admin/auth/logout` | Authentifié | Déconnexion                                     |
+| GET     | `/admin/auth/me`     | Authentifié | Informations utilisateur + renouvellement token |
+| GET     | `/admin/users`       | Authentifié | Liste des utilisateurs                          |
+| POST    | `/admin/users`       | Authentifié | Créer un utilisateur                            |
+| PATCH   | `/admin/users/:id`   | Authentifié | Modifier un utilisateur                         |
+| DELETE  | `/admin/users/:id`   | Authentifié | Supprimer un utilisateur                        |
+| GET     | `/public/lineup`     | Public      | Liste des artistes de la programmation          |
+| GET     | `/health`            | Public      | Santé du serveur (diagnostic)                   |
+| GET     | `/debug/db`          | Public      | Connexion à la base de données (diagnostic)     |
 
 ---
 
@@ -194,7 +194,6 @@ Reponse en succes:
 ```json
 {
   "message": "Utilisateur cree",
-  "temporary_password": "ab12cd34ef56gh78",
   "user": {
     "id": "uuid",
     "email": "nouveau@test.fr",
@@ -205,6 +204,8 @@ Reponse en succes:
   }
 }
 ```
+
+> Le mot de passe provisoire est envoye directement par email a l'adresse du nouvel utilisateur.
 
 - Header: `Set-Cookie` (token d'acces renouvele)
 
