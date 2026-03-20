@@ -53,4 +53,5 @@ export type UserInfoRow = {
   email: string;
   display_name: string;
   role: string;
+  password_changed_at: Date | null;
 };

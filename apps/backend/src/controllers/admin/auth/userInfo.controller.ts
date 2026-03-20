@@ -15,7 +15,7 @@ export async function userInfo(_req: Request, res: Response) {
   // Récupère l'userId depuis `res.locals`puis recherche l'utilisateur dnas la bdd,
   const reqUserId = requireUserId(res.locals.userId);
   const rows = await query<UserInfoRow>(
-    `SELECT id, email, display_name, role
+    `SELECT id, email, display_name, role, password_changed_at
      FROM users
      WHERE id = $1
      LIMIT 1`,
@@ -33,5 +33,6 @@ export async function userInfo(_req: Request, res: Response) {
       display_name: user.display_name,
       role: user.role,
     },
+    mustChangePassword: user.password_changed_at === null,
   });
 }
