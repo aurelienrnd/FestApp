@@ -1,12 +1,6 @@
 ﻿"use client";
 
-import {
-  useEffect,
-  useState,
-  type Dispatch,
-  type FormEvent,
-  type SetStateAction,
-} from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import { apiRequest } from "../../../functions/apiRequest";
@@ -44,99 +38,6 @@ function isAddUserFormInvalid(
     email.trim() === "" ||
     role.trim() === ""
   );
-}
-
-/** Soumet le formulaire d'ajout utilisateur et applique les mises a jour d'etat.
- * Annule la soumission native, envoie la requete API, gere l'erreur et notifie le parent en cas de succes.
- * @param {Object} params Parametres de soumission.
- * @param {FormEvent<HTMLFormElement>} params.event Evenement de soumission du formulaire.
- * @param {boolean} params.isFormInvalid Indique si le formulaire est invalide.
- * @param {string} params.firstName Valeur du champ prenom.
- * @param {string} params.lastName Valeur du champ nom.
- * @param {string} params.email Valeur du champ email.
- * @param {string} params.role Valeur du champ role.
- * @param {Dispatch<SetStateAction<boolean>>} params.setIsSubmitting Met a jour l'etat d'envoi.
- * @param {Dispatch<SetStateAction<string | null>>} params.setSubmitError Met a jour le message d'erreur.
- * @param {() => void} params.resetForm Reinitialise les champs du formulaire.
- * @param {(user) => void} params.onUserSaved Notifie le parent apres creation/modification reussie.
- * @function apiRequest -Envoie une requete HTTP a l'API avec `fetch`
- * @function getApiErrorMessage - Definit un message a retourner a l'utilisateur selon le statut de l'erreur
- */
-async function submitAddUserForm({
-  event,
-  isFormInvalid,
-  isEditMode,
-  selectedUserId,
-  selectedUser,
-  firstName,
-  lastName,
-  email,
-  role,
-  setIsSubmitting,
-  setSubmitError,
-  resetForm,
-  handleUser,
-}: {
-  event: FormEvent<HTMLFormElement>;
-  isFormInvalid: boolean;
-  isEditMode: boolean;
-  selectedUserId: string | null;
-  selectedUser?: UserListRow | null;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-  setIsSubmitting: Dispatch<SetStateAction<boolean>>;
-  setSubmitError: Dispatch<SetStateAction<string | null>>;
-  resetForm: () => void;
-  handleUser: (user: UserListRow) => void;
-}) {
-  // Empeche le comportement par defaut du formulaire et stoppe la soumission si le formulaire est invalide
-  event.preventDefault();
-  if (isFormInvalid) {
-    return;
-  }
-
-  // Indique que la soumission est en cours et nettoie les erreurs
-  setIsSubmitting(true);
-  setSubmitError(null);
-
-  // Verifie ci il sagit d'une creation ou d'une modification
-  const requestPath =
-    isEditMode && selectedUserId
-      ? `/admin/users/${selectedUserId}`
-      : "/admin/users";
-  const requestMethod = isEditMode ? "PATCH" : "POST";
-
-  // Envoie une requete API en mode creation ou modification
-  const result = await apiRequest<CreateUserApiResponse>(requestPath, {
-    method: requestMethod,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      email,
-      first_name: firstName,
-      last_name: lastName,
-      role,
-    }),
-  });
-
-  // Gestion erreur API
-  if (result.error) {
-    setSubmitError(getApiErrorMessage(result.error));
-    setIsSubmitting(false);
-    return;
-  }
-
-  const fallbackUser = {
-    id: selectedUserId ?? "",
-    email,
-    display_name: `${firstName} ${lastName}`.trim(),
-    role,
-    created_at: selectedUser?.created_at ?? new Date().toISOString(),
-  };
-  handleUser(result.data.user ?? fallbackUser);
-  resetForm();
-  setIsSubmitting(false);
 }
 
 /** Affiche la modale d'ajout utilisateur.
@@ -188,22 +89,48 @@ export default function AddUserModal({
   };
 
   // Gere la soumission du formulaire d'ajout d'utilisateur
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) =>
-    submitAddUserForm({
-      event,
-      isFormInvalid,
-      isEditMode,
-      selectedUserId: selectedUser?.id ?? null,
-      selectedUser,
-      firstName,
-      lastName,
-      email,
-      role,
-      setIsSubmitting,
-      setSubmitError,
-      resetForm,
-      handleUser,
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isFormInvalid) return;
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    // Verifie ci il sagit d'une creation ou d'une modification
+    const requestPath =
+      isEditMode && selectedUser?.id
+        ? `/admin/users/${selectedUser.id}`
+        : "/admin/users";
+    const requestMethod = isEditMode ? "PATCH" : "POST";
+
+    const result = await apiRequest<CreateUserApiResponse>(requestPath, {
+      method: requestMethod,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        role,
+      }),
     });
+
+    if (result.error) {
+      setSubmitError(getApiErrorMessage(result.error));
+      setIsSubmitting(false);
+      return;
+    }
+
+    const fallbackUser = {
+      id: selectedUser?.id ?? "",
+      email,
+      display_name: `${firstName} ${lastName}`.trim(),
+      role,
+      created_at: selectedUser?.created_at ?? new Date().toISOString(),
+    };
+    handleUser(result.data.user ?? fallbackUser);
+    resetForm();
+    setIsSubmitting(false);
+  };
 
   // Gere la fermeture de la modal et reinitialise les etats associes
   const handleClose = () => {
