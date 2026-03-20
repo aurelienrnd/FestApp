@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useAdminUser } from "../../../components/AdminUserProvider";
 
 /** Affiche les informations principales du compte administrateur.
@@ -7,6 +8,7 @@ import { useAdminUser } from "../../../components/AdminUserProvider";
  */
 export default function DashboardContent() {
   const { user } = useAdminUser();
+  const [isChangePasswordModal, setIsChangePasswordModal] = useState(false);
 
   return (
     <div className="flex-1 flex flex-col justify-center items-center gap-(--space-xl)">
@@ -33,7 +35,11 @@ export default function DashboardContent() {
 
             <div className="card-dashboard-actions">
               <span>Password:</span>
-              <button type="button" className="btn-cta">
+              <button
+                type="button"
+                className="btn-cta"
+                onClick={() => setIsChangePasswordModal(true)}
+              >
                 Modifier
               </button>
             </div>
