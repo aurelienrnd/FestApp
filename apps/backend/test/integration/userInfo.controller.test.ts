@@ -37,18 +37,18 @@ describe("userInfo controller (integration)", () => {
     vi.clearAllMocks();
   });
 
-  it("should return 200 with user info when session is valid", async () => {
-    // Simulation d'un utilisateur trouve en base de donnees
+  it("should return 200 with user info and mustChangePassword false when password_changed_at is set", async () => {
+    // Simulation d'un utilisateur avec un mot de passe deja modifie
     mockQuery.mockResolvedValueOnce([
       {
         id: "user-1",
         email: "admin@test.fr",
         display_name: "Admin",
         role: "admin",
+        password_changed_at: new Date("2026-01-01"),
       },
     ]);
 
-    // Creation de l'application avec un userId valide dans res.locals
     const app = createApp("user-1");
     const res = await request(app).get("/me");
 
@@ -59,10 +59,30 @@ describe("userInfo controller (integration)", () => {
       display_name: "Admin",
       role: "admin",
     });
+    expect(res.body.mustChangePassword).toBe(false);
     expect(mockQuery).toHaveBeenCalledWith(
       expect.stringContaining("FROM users"),
       ["user-1"],
     );
+  });
+
+  it("should return mustChangePassword true when password_changed_at is null", async () => {
+    // Simulation d'un utilisateur avec un mot de passe provisoire jamais modifie
+    mockQuery.mockResolvedValueOnce([
+      {
+        id: "user-1",
+        email: "admin@test.fr",
+        display_name: "Admin",
+        role: "admin",
+        password_changed_at: null,
+      },
+    ]);
+
+    const app = createApp("user-1");
+    const res = await request(app).get("/me");
+
+    expect(res.status).toBe(200);
+    expect(res.body.mustChangePassword).toBe(true);
   });
 
   it("should return 401 when user is not found in database", async () => {

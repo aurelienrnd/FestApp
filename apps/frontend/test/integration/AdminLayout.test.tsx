@@ -40,9 +40,13 @@ describe("AdminLayout (server guard)", () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(
         JSON.stringify({
-          id: "admin-1",
-          email: "admin@test.fr",
-          role: "admin",
+          user: {
+            id: "admin-1",
+            email: "admin@test.fr",
+            display_name: "Admin",
+            role: "admin",
+          },
+          mustChangePassword: false,
         }),
         { status: 200, headers: { "content-type": "application/json" } },
       ),

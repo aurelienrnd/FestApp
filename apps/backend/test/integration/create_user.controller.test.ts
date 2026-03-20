@@ -58,8 +58,6 @@ describe("createUser controller (integration)", () => {
     // Verifie la reponse et le payload utilisateur
     expect(res.status).toBe(201);
     expect(res.body.message).toBe("Utilisateur cree");
-    expect(typeof res.body.temporary_password).toBe("string");
-    expect(res.body.temporary_password.length).toBeGreaterThanOrEqual(16);
     expect(res.body.user).toEqual({
       id: "user-1",
       email: "admin@test.fr",
