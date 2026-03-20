@@ -27,8 +27,8 @@ export default function Page() {
   // Initialise les champs du formulaire, le message d'erreur et l'etat d'ouverture de la modale
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
     useState(false);
 
@@ -44,12 +44,12 @@ export default function Page() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     // Empeche le rechargement de page, reset l'erreur, puis stoppe si formulaire invalide.
     event.preventDefault();
-    setSubmitError(null);
+    setError(null);
     if (isFormInvalid) {
       return;
     }
 
-    setIsSubmitting(true);
+    setIsLoading(true);
 
     // Envoie la requete de connexion avec email/mot de passe au format JSON.
     const result = await apiRequest<ApiMessageResponse>("/admin/auth/login", {
@@ -65,8 +65,8 @@ export default function Page() {
 
     // Si l'API renvoie une erreur, on l'affiche, sinon on redirige l'utilisateur vers le dashboard.
     if (result.error) {
-      setSubmitError(getApiErrorMessage(result.error));
-      setIsSubmitting(false);
+      setError(getApiErrorMessage(result.error));
+      setIsLoading(false);
       return;
     }
 
@@ -114,11 +114,11 @@ export default function Page() {
         </div>
 
         <div className="flex flex-col items-center gap-2 pt-2">
-          {submitError ? (
-            <p className="text-center text-(--color-1)">{submitError}</p>
+          {error ? (
+            <p className="text-center text-(--color-1)">{error}</p>
           ) : null}
 
-          <button type="submit" className="btn-cta" disabled={isFormInvalid || isSubmitting}>
+          <button type="submit" className="btn-cta" disabled={isFormInvalid || isLoading}>
             Envoyer
           </button>
         </div>

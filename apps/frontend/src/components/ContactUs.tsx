@@ -10,8 +10,8 @@ export default function ContactUs() {
   const [message, setMessage] = useState("");
 
   // Etats de gestion de la soumission
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
   // Verifie que tous les champs contiennent du texte valide
@@ -24,20 +24,20 @@ export default function ContactUs() {
   // Empeche le rechargement, valide le formulaire puis reinitialise les champs
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitError(null);
+    setError(null);
 
     if (isFormInvalid) {
       return;
     }
 
-    setIsSubmitting(true);
+    setIsLoading(true);
 
     // TODO requet
     setName("");
     setEmail("");
     setSubject("");
     setMessage("");
-    setIsSubmitting(false);
+    setIsLoading(false);
     setSuccess(true);
   };
 
@@ -109,12 +109,12 @@ export default function ContactUs() {
             />
           </div>
           <div className="submit-modal-area">
-            <button type="submit" className="btn-cta" disabled={isFormInvalid || isSubmitting}>
+            <button type="submit" className="btn-cta" disabled={isFormInvalid || isLoading}>
               Envoyer
             </button>
           </div>
-          {submitError ? (
-            <p className="text-center text-(--color-1)">{submitError}</p>
+          {error ? (
+            <p className="text-center text-(--color-1)">{error}</p>
           ) : null}
         </form>
       )}

@@ -38,7 +38,7 @@ export default function UsersContent({
 }) {
   // Etats lies aux donnees
   const [users, setUsers] = useState<UserListRow[]>([]);
-  const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Etats lies a la suppression
@@ -56,7 +56,7 @@ export default function UsersContent({
     const getUsers = async () => {
       // Active le chargement et reinitialise les erreurs
       setIsLoading(true);
-      setLoadErrorMessage(null);
+      setError(null);
 
       // Appel API pour recuperer la liste des utilisateurs
       const result = await apiRequest<ListUsersResponse>("/admin/users", {
@@ -66,7 +66,7 @@ export default function UsersContent({
 
       // Gestion des erreurs API
       if (result.error) {
-        setLoadErrorMessage(getApiErrorMessage(result.error));
+        setError(getApiErrorMessage(result.error));
         setIsLoading(false);
         return;
       }
@@ -155,8 +155,8 @@ export default function UsersContent({
       <div className="w-full max-w-5xl">
         {isLoading ? (
           <p className="text-center">Chargement...</p>
-        ) : loadErrorMessage ? (
-          <p className="text-center text-(--color-1)">{loadErrorMessage}</p>
+        ) : error ? (
+          <p className="text-center text-(--color-1)">{error}</p>
         ) : filteredUsers.length === 0 ? (
           <div className="flex h-full justify-center items-center">
             <p>Aucun utilisateur.</p>

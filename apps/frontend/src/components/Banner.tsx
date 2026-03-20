@@ -17,7 +17,6 @@ import { useAppUi } from "./AppUiProvider";
 import ModalCloseButton from "./ModalCloseButton";
 import Navigation from "./Navigation";
 import { apiRequest, type ApiMessageResponse } from "../functions/apiRequest";
-import { getApiErrorMessage } from "../functions/getApiErrorMessage";
 
 /** Affiche un bouton de billetterie
  * Contient un lien externe vers un site de recherche de billetterie
@@ -193,7 +192,6 @@ export default function Banner() {
     });
 
     if (result.error) {
-      console.error(getApiErrorMessage(result.error));
       return;
     }
 

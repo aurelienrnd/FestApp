@@ -15,7 +15,7 @@ type ListArtistsResponse = { artists: ArtistListRow[] };
 export default function LineupContent() {
   // Etats lies aux donnees
   const [artists, setArtists] = useState<ArtistListRow[]>([]);
-  const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Charge la liste des artistes au montage du composant
@@ -23,7 +23,7 @@ export default function LineupContent() {
     const getArtists = async () => {
       // Active le chargement et reinitialise les erreurs
       setIsLoading(true);
-      setLoadErrorMessage(null);
+      setError(null);
 
       // Appel API pour recuperer la liste des artistes
       const result = await apiRequest<ListArtistsResponse>("/public/lineup", {
@@ -33,7 +33,7 @@ export default function LineupContent() {
 
       // Gestion des erreurs API
       if (result.error) {
-        setLoadErrorMessage(getApiErrorMessage(result.error));
+        setError(getApiErrorMessage(result.error));
         setIsLoading(false);
         return;
       }
@@ -51,8 +51,8 @@ export default function LineupContent() {
       <div className="w-full max-w-5xl">
         {isLoading ? (
           <p className="text-center">Chargement...</p>
-        ) : loadErrorMessage ? (
-          <p className="text-center text-(--color-1)">{loadErrorMessage}</p>
+        ) : error ? (
+          <p className="text-center text-(--color-1)">{error}</p>
         ) : artists.length === 0 ? (
           <div className="flex h-full justify-center items-center">
             <p>Aucun artiste.</p>

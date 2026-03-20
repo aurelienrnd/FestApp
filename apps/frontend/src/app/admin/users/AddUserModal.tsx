@@ -68,9 +68,9 @@ export default function AddUserModal({
   const [role, setRole] = useState(selectedUser?.role ?? "");
 
   // Gestion des erreurs lors de la soumission du formulaire
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   // Indique si le formulaire envoye
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Definit l'element racine de l'application pour l'accessibilite de la modal
   useEffect(() => {
@@ -93,8 +93,8 @@ export default function AddUserModal({
     event.preventDefault();
     if (isFormInvalid) return;
 
-    setIsSubmitting(true);
-    setSubmitError(null);
+    setIsLoading(true);
+    setError(null);
 
     // Verifie ci il sagit d'une creation ou d'une modification
     const requestPath =
@@ -115,8 +115,8 @@ export default function AddUserModal({
     });
 
     if (result.error) {
-      setSubmitError(getApiErrorMessage(result.error));
-      setIsSubmitting(false);
+      setError(getApiErrorMessage(result.error));
+      setIsLoading(false);
       return;
     }
 
@@ -129,13 +129,13 @@ export default function AddUserModal({
     };
     handleUser(result.data.user ?? fallbackUser);
     resetForm();
-    setIsSubmitting(false);
+    setIsLoading(false);
   };
 
   // Gere la fermeture de la modal et reinitialise les etats associes
   const handleClose = () => {
-    setSubmitError(null);
-    setIsSubmitting(false);
+    setError(null);
+    setIsLoading(false);
     onClose();
   };
 
@@ -233,13 +233,13 @@ export default function AddUserModal({
             <button
               type="submit"
               className="btn-cta"
-              disabled={isFormInvalid || isSubmitting}
+              disabled={isFormInvalid || isLoading}
             >
               {isEditMode ? "Modifier" : "Ajouter"}
             </button>
           </div>
-          {submitError ? (
-            <p className="text-center text-(--color-1)">{submitError}</p>
+          {error ? (
+            <p className="text-center text-(--color-1)">{error}</p>
           ) : null}
         </form>
       </div>

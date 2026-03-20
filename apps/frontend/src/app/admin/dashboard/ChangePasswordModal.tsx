@@ -31,8 +31,8 @@ export default function ChangePasswordModal({
   const [confirmPassword, setConfirmPassword] = useState("");
 
   // etats de gestion de la soumission
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Valeur de succes de la modification du mot de passe, affiche un message de succes et masque le formulaire
   const [success, setSuccess] = useState(false);
@@ -54,12 +54,12 @@ export default function ChangePasswordModal({
 
     // Verifie que les deux nouveaux mots de passe sont identiques
     if (newPassword !== confirmPassword) {
-      setSubmitError("Les nouveaux mots de passe ne correspondent pas.");
+      setError("Les nouveaux mots de passe ne correspondent pas.");
       return;
     }
 
-    setIsSubmitting(true);
-    setSubmitError(null);
+    setIsLoading(true);
+    setError(null);
 
     const result = await apiRequest<ApiMessageResponse>("/admin/auth/password", {
       method: "PATCH",
@@ -68,13 +68,13 @@ export default function ChangePasswordModal({
     });
 
     if (result.error) {
-      setSubmitError(getApiErrorMessage(result.error));
-      setIsSubmitting(false);
+      setError(getApiErrorMessage(result.error));
+      setIsLoading(false);
       return;
     }
 
     setSuccess(true);
-    setIsSubmitting(false);
+    setIsLoading(false);
   };
 
   // Gere la fermeture de la modal et reinitialise les etats associes
@@ -82,8 +82,8 @@ export default function ChangePasswordModal({
     setOldPassword("");
     setNewPassword("");
     setConfirmPassword("");
-    setSubmitError(null);
-    setIsSubmitting(false);
+    setError(null);
+    setIsLoading(false);
     setSuccess(false);
     onClose();
   };
@@ -158,14 +158,14 @@ export default function ChangePasswordModal({
               <button
                 type="submit"
                 className="btn-cta"
-                disabled={isFormInvalid || isSubmitting}
+                disabled={isFormInvalid || isLoading}
               >
                 Modifier
               </button>
             </div>
 
-            {submitError ? (
-              <p className="text-center text-(--color-1)">{submitError}</p>
+            {error ? (
+              <p className="text-center text-(--color-1)">{error}</p>
             ) : null}
           </form>
         )}

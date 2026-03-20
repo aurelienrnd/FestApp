@@ -10,8 +10,8 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
 
   // Etats de gestion de la soumission
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const isFormInvalid = email.trim() === "";
@@ -19,15 +19,15 @@ export default function ForgotPassword() {
   // Intercepte la soumission du formulaire et annule l'envoi si l'email est invalide.
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitError(null);
+    setError(null);
     if (isFormInvalid) {
       return;
     }
 
-    setIsSubmitting(true);
+    setIsLoading(true);
 
     // TODO requet
-    setIsSubmitting(false);
+    setIsLoading(false);
     setSuccess(true);
   };
 
@@ -61,13 +61,13 @@ export default function ForgotPassword() {
             </div>
 
             <div className="submit-modal-area">
-              <button type="submit" className="btn-cta" disabled={isFormInvalid || isSubmitting}>
+              <button type="submit" className="btn-cta" disabled={isFormInvalid || isLoading}>
                 Envoyer
               </button>
             </div>
 
-            {submitError ? (
-              <p className="text-center text-(--color-1)">{submitError}</p>
+            {error ? (
+              <p className="text-center text-(--color-1)">{error}</p>
             ) : null}
           </form>
         </>
