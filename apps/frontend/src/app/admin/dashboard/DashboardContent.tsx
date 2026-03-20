@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAdminUser } from "../../../components/AdminUserProvider";
+import ChangePasswordModal from "./ChangePasswordModal";
 
 /** Affiche les informations principales du compte administrateur.
  * Recupere l'utilisateur connecte et presente les donnees de profil.
@@ -50,6 +51,11 @@ export default function DashboardContent() {
       <p className="text-base md:text-lg lg:text-2xl text-(--color-text-input) lg:text-center">
         Prochain evenement : du 23 mai 2026 au 24 mai 2026
       </p>
+
+      <ChangePasswordModal
+        isOpen={isChangePasswordModal}
+        onClose={() => setIsChangePasswordModal(false)}
+      />
     </div>
   );
 }
