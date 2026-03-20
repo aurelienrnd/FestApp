@@ -18,6 +18,11 @@ export function createApp() {
   const app = express();
   const frontendOrigin = process.env.FRONTEND_ORIGIN || "http://localhost:3000";
 
+  // En production, l'app est derriere un proxy trust proxy permet a express-rate-limit de lire la vraie IP client.
+  if (process.env.NODE_ENV === "production") {
+    app.set("trust proxy", 1);
+  }
+
   app.use(express.json()); // Permet de lire le JSON envoye par le client dans le body des requetes HTTP.
 
   // Autorise le frontend a appeler l'API backend en local.
