@@ -4,9 +4,10 @@
 
 | Méthode | Route                | Accès       | Description                                     |
 | ------- | -------------------- | ----------- | ----------------------------------------------- |
-| POST    | `/admin/auth/login`  | Public      | Connexion administrateur                        |
-| POST    | `/admin/auth/logout` | Authentifié | Déconnexion                                     |
-| GET     | `/admin/auth/me`     | Authentifié | Informations utilisateur + renouvellement token |
+| POST    | `/admin/auth/login`     | Public      | Connexion administrateur                        |
+| POST    | `/admin/auth/logout`    | Authentifié | Déconnexion                                     |
+| GET     | `/admin/auth/me`        | Authentifié | Informations utilisateur + renouvellement token |
+| PATCH   | `/admin/auth/password`  | Authentifié | Modifier le mot de passe de l'utilisateur connecte |
 | GET     | `/admin/users`       | Authentifié | Liste des utilisateurs                          |
 | POST    | `/admin/users`       | Authentifié | Créer un utilisateur                            |
 | PATCH   | `/admin/users/:id`   | Authentifié | Modifier un utilisateur                         |
@@ -111,6 +112,53 @@ Reponses d'erreur:
 - `401` `{ "error": "Session introuvable" }`
 - `401` `{ "error": "Session deja fermee ou expiree" }`
 - `401` `{ "error": "Session manquante" }`
+
+### PATCH `/admin/auth/password`
+
+Modifie le mot de passe de l'utilisateur connecte.
+
+Middlewares: `auth`, `sessionIsOpen`, `validateBody`, `hashPassword("newPassword")`
+
+Authentification:
+
+- Cookie d'authentification valide requis.
+- L'`id` de l'utilisateur est extrait du token JWT (`res.locals.user.id`).
+
+Corps de requete:
+
+```json
+{
+  "password": "AncienMotDePasse1!",
+  "newPassword": "NouveauMotDePasse1!"
+}
+```
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "message": "Mot de passe modifie"
+}
+```
+
+- Header: `Set-Cookie` (token d'acces renouvele)
+
+Reponses d'erreur:
+
+- `400` `{ "error": "Donnees invalides" }`
+- `401` `{ "error": "Cookie d'authentification manquant" }`
+- `401` `{ "error": "Token d'acces manquant" }`
+- `401` `{ "error": "Token d'acces invalide" }`
+- `401` `{ "error": "Session introuvable" }`
+- `401` `{ "error": "Session deja fermee ou expiree" }`
+- `401` `{ "error": "Session manquante" }`
+- `401` `{ "error": "Mot de passe incorrect" }`
+- `404` `{ "error": "Utilisateur introuvable" }`
+
+---
 
 ## Users
 
