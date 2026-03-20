@@ -50,23 +50,24 @@ export function createApp() {
     res.json({ status: "ok", message: "Backend is running" });
   });
 
-  // TODO - remove it for production
-  // Test de connexion a la base de donnees
-  app.get("/debug/db", async (req, res) => {
-    try {
-      const rows = await query("SELECT NOW() as now");
-      console.log("Connexion to the DB successful at:", rows[0].now);
-      res.json({
-        db: "ok",
-        now: rows[0].now,
-      });
-    } catch (err) {
-      console.error("Erreur de connexion DB :", err);
-      res
-        .status(500)
-        .json({ error: "Impossible de joindre la base de donnees" });
-    }
-  });
+  // Route de diagnostic — disponible uniquement hors production
+  if (process.env.NODE_ENV !== "production") {
+    app.get("/debug/db", async (req, res) => {
+      try {
+        const rows = await query("SELECT NOW() as now");
+        console.log("Connexion to the DB successful at:", rows[0].now);
+        res.json({
+          db: "ok",
+          now: rows[0].now,
+        });
+      } catch (err) {
+        console.error("Erreur de connexion DB :", err);
+        res
+          .status(500)
+          .json({ error: "Impossible de joindre la base de donnees" });
+      }
+    });
+  }
 
   // Routes API (auth, admin, public, etc.)
   app.use("/admin", adminArticles);

@@ -406,7 +406,7 @@ Reponses d'erreur:
 
 ## Diagnostic
 
-> Ces routes sont uniquement destinées au développement. **À supprimer avant la mise en production.**
+> `/health` est disponible en toutes circonstances. `/debug/db` est conditionné à `NODE_ENV !== "production"` — il retourne `404` en production.
 
 ### GET `/health`
 

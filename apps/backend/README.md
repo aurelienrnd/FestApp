@@ -176,7 +176,7 @@ Crée et configure l'application Express sans démarrer le serveur — ce qui pe
 - Configure le middleware JSON (`express.json()`)
 - Gère le CORS manuellement (validation de l'origine, preflight `OPTIONS`)
 - Monte toutes les routes sous leurs préfixes (`/admin`, `/public`, `/contact`)
-- Expose les routes de diagnostic (`/health`, `/debug/db`) — à supprimer en production
+- Expose les routes de diagnostic : `/health` (toujours disponible), `/debug/db` (conditionné à `NODE_ENV !== "production"`, retourne `404` en production)
 - Attache `notFoundHandler` et `errorHandler` en fin de chaîne
 
 ### `index.ts`
