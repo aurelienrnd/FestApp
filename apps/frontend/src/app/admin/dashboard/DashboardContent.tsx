@@ -1,15 +1,24 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAdminUser } from "../../../components/AdminUserProvider";
 import ChangePasswordModal from "./ChangePasswordModal";
 
 /** Affiche les informations principales du compte administrateur.
  * Recupere l'utilisateur connecte et presente les donnees de profil.
+ * Si mustChangePassword est vrai, ouvre automatiquement la modale en mode force.
  */
 export default function DashboardContent() {
-  const { user } = useAdminUser();
-  const [isChangePasswordModal, setIsChangePasswordModal] = useState(false);
+  const { user, mustChangePassword } = useAdminUser();
+  const router = useRouter();
+  const [isChangePasswordModal, setIsChangePasswordModal] = useState(mustChangePassword);
+
+  // Ferme la modale et rafraichit le layout serveur si le changement etait force
+  const handleModalClose = () => {
+    setIsChangePasswordModal(false);
+    if (mustChangePassword) router.refresh();
+  };
 
   return (
     <div className="flex-1 flex flex-col justify-center items-center gap-(--space-xl)">
@@ -54,7 +63,8 @@ export default function DashboardContent() {
 
       <ChangePasswordModal
         isOpen={isChangePasswordModal}
-        onClose={() => setIsChangePasswordModal(false)}
+        onClose={handleModalClose}
+        forced={mustChangePassword}
       />
     </div>
   );

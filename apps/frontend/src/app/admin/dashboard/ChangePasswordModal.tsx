@@ -12,18 +12,22 @@ import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 type ChangePasswordModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  forced?: boolean;
 };
 
 /** Affiche la modale de changement de mot de passe.
  * Gere les trois champs du formulaire, la validation locale, la soumission API et les retours visuels.
+ * En mode forced, le bouton de fermeture est masque et la modale ne peut pas etre fermee avant succes.
  * @param {ChangePasswordModalProps} props Proprietes de controle de la modale
  * @param {boolean} props.isOpen Definit si la modale est ouverte
  * @param {() => void} props.onClose Ferme la modale
+ * @param {boolean} [props.forced] Si vrai, force le changement de mot de passe sans possibilite de fermer
  * @children ModalCloseButton Ferme la modale
  */
 export default function ChangePasswordModal({
   isOpen,
   onClose,
+  forced = false,
 }: ChangePasswordModalProps) {
   // Champs du formulaire
   const [oldPassword, setOldPassword] = useState("");
@@ -91,19 +95,26 @@ export default function ChangePasswordModal({
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={handleClose}
+      onRequestClose={forced ? undefined : handleClose}
       contentLabel="Modifier le mot de passe"
       className="modal"
       overlayClassName="modal-overlay"
     >
-      <ModalCloseButton onClose={handleClose} />
+      {!forced && <ModalCloseButton onClose={handleClose} />}
       <h2 className="title-modal">Mot de passe</h2>
 
       <div className="m-(--space-md)">
         {success ? (
-          <p className="text-center text-(--color-1)">
-            Votre mot de passe a ete modifie avec succes.
-          </p>
+          <div className="flex flex-col items-center gap-(--space-sm)">
+            <p className="text-center text-(--color-1)">
+              Votre mot de passe a ete modifie avec succes.
+            </p>
+            {forced && (
+              <button type="button" className="btn-cta" onClick={handleClose}>
+                Continuer
+              </button>
+            )}
+          </div>
         ) : (
           <form className="form-modal" onSubmit={handleSubmit}>
             <div>
