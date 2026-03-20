@@ -167,6 +167,8 @@ Reponses d'erreur:
 
 Base path: `/admin/users`
 
+> Toutes les routes de cette section sont réservées au rôle `admin`. Un rôle `lineup` ou `news` recevra une réponse `403`.
+
 ### GET `/admin/users`
 
 Afficher la liste des utilisateurs.

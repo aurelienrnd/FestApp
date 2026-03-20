@@ -15,6 +15,7 @@ export const ERRORS = {
   USER_EMAIL_ALREADY_USED: "Email deja utilise",
   USER_DISPLAY_NAME_ALREADY_USED: "Nom deja utilise",
   USER_NOT_FOUND: "Utilisateur introuvable",
+  FORBIDDEN: "Acces refuse",
   ROUTE_NOT_FOUND: "Route introuvable",
   INTERNAL_SERVER_ERROR: "Erreur interne du serveur",
   RATE_LIMIT_TOO_MANY_ATTEMPTS: "Trop de tentatives, reessayer plus tard",

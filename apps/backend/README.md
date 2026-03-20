@@ -245,18 +245,20 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 
 **Ordre des middlewares sur les routes protégées :**
 
-1. `asyncHandler(auth)` — vérifie le cookie/token et charge `userId` + `sessionId` dans `res.locals`
+1. `asyncHandler(auth)` — vérifie le cookie/token et charge `userId`, `userRole` + `sessionId` dans `res.locals`
 2. `asyncHandler(sessionIsOpen)` — vérifie la session en base (existe, non révoquée, non expirée) et renouvelle le token
-3. `validateBody(schema)` *(si applicable)* — valide le body avec Zod
-4. `asyncHandler(controller)` — logique métier
+3. `requireRole(...roles)` *(si applicable)* — vérifie que le rôle de l'utilisateur est autorisé, renvoie `403` sinon
+4. `validateBody(schema)` *(si applicable)* — valide le body avec Zod
+5. `asyncHandler(controller)` — logique métier
 
 ### `middlewares/`
 
 | Fichier | Description |
 | --- | --- |
 | `asyncHandler.ts` | Enveloppe un handler async et transfère automatiquement les erreurs vers `next(error)` |
-| `auth.ts` | Extrait et vérifie le JWT depuis le cookie — charge `userId` et `sessionId` dans `res.locals` |
+| `auth.ts` | Extrait et vérifie le JWT depuis le cookie — charge `userId`, `userRole` et `sessionId` dans `res.locals` |
 | `sessionIsOpen.ts` | Vérifie en base que la session existe, n'est pas révoquée et n'est pas expirée — renouvelle le token |
+| `requireRole.ts` | Factory middleware — vérifie que `res.locals.userRole` est dans la liste des rôles autorisés, renvoie `403` sinon |
 | `hashPassword.ts` | Factory middleware — hashe le champ mot de passe spécifié dans `req.body` avec bcrypt avant de passer au handler suivant |
 | `rateLimitLogin.ts` | Limite le nombre de tentatives de connexion par IP (`express-rate-limit`) |
 | `validateBody.ts` | Valide `req.body` contre un schéma Zod — renvoie `400` si invalide |
