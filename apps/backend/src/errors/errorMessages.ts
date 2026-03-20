@@ -4,6 +4,7 @@ export const ERRORS = {
   AUTH_MISSING_ACCESS_TOKEN: "Token d'acces manquant",
   AUTH_INVALID_ACCESS_TOKEN: "Token d'acces invalide",
   AUTH_INVALID_CREDENTIALS: "Email ou mot de passe incorrect",
+  AUTH_WRONG_PASSWORD: "Mot de passe incorrect",
   AUTH_USER_NOT_FOUND: "Utilisateur introuvable",
   AUTH_MISSING_USER: "Utilisateur manquant",
   AUTH_MISSING_SESSION: "Session manquante",

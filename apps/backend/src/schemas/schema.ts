@@ -17,6 +17,12 @@ export const updateUserSchema = z.object({
   role: z.enum(["admin", "lineup", "news"]),
 });
 
+/** Schema Zod de changement de mot de passe — valide le mot de passe actuel et le nouveau (min 8 caracteres). */
+export const changePasswordSchema = z.object({
+  password: z.string().min(8),
+  newPassword: z.string().min(8),
+});
+
 /** Schema Zod de connexion — valide l'email et le mot de passe (min 8 caracteres). */
 export const loginSchema = z.object({
   email: z.email(), // pas de trim() ici car zod cree deja une regex qui prend en compte les espaces
