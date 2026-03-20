@@ -17,7 +17,7 @@ import { getApiErrorMessage } from "../../functions/getApiErrorMessage";
  * Redirige vers `/admin/dashboard` si la connexion reussit.
  * Ouvre une modale "Mot de passe oublie" au clic sur le bouton dedie.
  * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
- * @function setErrorMessage Définit un message à retourner à l'utilisateur selon le statut de l'erreur
+ * @function getApiErrorMessage Definit un message a retourner a l'utilisateur selon le statut de l'erreur
  * @children ForgotPassword Affiche le formulaire d'initialisation de reinitialisation du mot de passe.
  */
 export default function Page() {
@@ -27,7 +27,8 @@ export default function Page() {
   // Initialise les champs du formulaire, le message d'erreur et l'etat d'ouverture de la modale
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
     useState(false);
 
@@ -43,10 +44,12 @@ export default function Page() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     // Empeche le rechargement de page, reset l'erreur, puis stoppe si formulaire invalide.
     event.preventDefault();
-    setErrorMessage(null);
+    setSubmitError(null);
     if (isFormInvalid) {
       return;
     }
+
+    setIsSubmitting(true);
 
     // Envoie la requete de connexion avec email/mot de passe au format JSON.
     const result = await apiRequest<ApiMessageResponse>("/admin/auth/login", {
@@ -62,7 +65,8 @@ export default function Page() {
 
     // Si l'API renvoie une erreur, on l'affiche, sinon on redirige l'utilisateur vers le dashboard.
     if (result.error) {
-      setErrorMessage(getApiErrorMessage(result.error));
+      setSubmitError(getApiErrorMessage(result.error));
+      setIsSubmitting(false);
       return;
     }
 
@@ -110,11 +114,11 @@ export default function Page() {
         </div>
 
         <div className="flex flex-col items-center gap-2 pt-2">
-          {errorMessage ? (
-            <p className="mb-3 text-sm text-(--color-1)">{errorMessage}</p>
+          {submitError ? (
+            <p className="text-center text-(--color-1)">{submitError}</p>
           ) : null}
 
-          <button type="submit" className="btn-cta" disabled={isFormInvalid}>
+          <button type="submit" className="btn-cta" disabled={isFormInvalid || isSubmitting}>
             Envoyer
           </button>
         </div>

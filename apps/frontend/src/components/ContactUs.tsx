@@ -3,12 +3,16 @@ import { useState, type FormEvent } from "react";
 // TODO requet
 /** Affiche un formulaire de contact avec les champs nom, email, sujet et message */
 export default function ContactUs() {
-  // Stocke l'etat d'envoi du formulaire et les valeurs des champs
-  const [isSubmit, setIsSubmit] = useState(false);
+  // Champs du formulaire
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+
+  // Etats de gestion de la soumission
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   // Verifie que tous les champs contiennent du texte valide
   const isFormInvalid =
@@ -20,21 +24,26 @@ export default function ContactUs() {
   // Empeche le rechargement, valide le formulaire puis reinitialise les champs
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setSubmitError(null);
 
     if (isFormInvalid) {
       return;
     }
 
+    setIsSubmitting(true);
+
+    // TODO requet
     setName("");
     setEmail("");
     setSubject("");
     setMessage("");
-    setIsSubmit(true);
+    setIsSubmitting(false);
+    setSuccess(true);
   };
 
   return (
     <div className="m-(--space-md)">
-      {isSubmit ? (
+      {success ? (
         <p className="mt-(--spacing-paragraph) text-center">
           votre message est envoye
         </p>
@@ -100,10 +109,13 @@ export default function ContactUs() {
             />
           </div>
           <div className="submit-modal-area">
-            <button type="submit" className="btn-cta" disabled={isFormInvalid}>
+            <button type="submit" className="btn-cta" disabled={isFormInvalid || isSubmitting}>
               Envoyer
             </button>
           </div>
+          {submitError ? (
+            <p className="text-center text-(--color-1)">{submitError}</p>
+          ) : null}
         </form>
       )}
     </div>
