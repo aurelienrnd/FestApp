@@ -69,7 +69,8 @@ apps/frontend/
 │   │   │   ├── layout.tsx
 │   │   │   ├── dashboard/
 │   │   │   │   ├── page.tsx
-│   │   │   │   └── DashboardContent.tsx
+│   │   │   │   ├── DashboardContent.tsx
+│   │   │   │   └── ChangePasswordModal.tsx
 │   │   │   ├── lineup/
 │   │   │   │   ├── page.tsx
 │   │   │   │   └── LineupContent.tsx
@@ -178,7 +179,7 @@ Le frontend bénéficie de 5 stages car il possède plus de dépendances, ce qui
 | Dossier | Route | Description |
 | --- | --- | --- |
 | `admin/layout.tsx` | — | Layout partagé — vérifie la session via `/admin/auth/me` et redirige vers `/login` si non authentifié |
-| `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`) |
+| `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe en mode forcé si `mustChangePassword` est vrai |
 | `admin/lineup/` | `/admin/lineup` | Gestion de la programmation (`LineupContent.tsx`) |
 | `admin/news/` | `/admin/news` | Gestion des actualités |
 | `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) |

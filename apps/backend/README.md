@@ -84,6 +84,7 @@ apps/backend/
 │   ├── controllers/
 │   │   ├── admin/
 │   │   │   ├── auth/
+│   │   │   │   ├── change_password.controller.ts
 │   │   │   │   ├── login.controller.ts
 │   │   │   │   ├── logout.controller.ts
 │   │   │   │   └── userInfo.controller.ts
@@ -195,7 +196,7 @@ Centralise tous les types TypeScript partagés du backend :
 - `SessionRow` — ligne de session retournée par la base de données
 - `UserListRow` — ligne utilisateur pour les endpoints de liste/CRUD
 - `ArtistListRow` — ligne artiste pour l'endpoint de programmation
-- `UserInfoRow` — ligne utilisateur pour l'endpoint `/admin/auth/me`
+- `UserInfoRow` — ligne utilisateur pour l'endpoint `/admin/auth/me` (inclut `password_changed_at` pour calculer `mustChangePassword`)
 
 ### `functions.ts`
 
@@ -212,9 +213,10 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 
 | Fichier | Endpoint | Description |
 | --- | --- | --- |
+| `admin/auth/change_password.controller.ts` | PATCH `/admin/auth/password` | Vérifie l'ancien mot de passe et met à jour le hash + `password_changed_at` |
 | `admin/auth/login.controller.ts` | POST `/admin/auth/login` | Vérifie les identifiants, crée une session, retourne un cookie JWT |
 | `admin/auth/logout.controller.ts` | POST `/admin/auth/logout` | Révoque la session en base |
-| `admin/auth/userInfo.controller.ts` | GET `/admin/auth/me` | Retourne les infos de l'utilisateur connecté et renouvelle le token |
+| `admin/auth/userInfo.controller.ts` | GET `/admin/auth/me` | Retourne les infos de l'utilisateur connecté, `mustChangePassword` et renouvelle le token |
 | `admin/users/list_users.controller.ts` | GET `/admin/users` | Liste tous les utilisateurs admin |
 | `admin/users/create_user.controller.ts` | POST `/admin/users` | Crée un utilisateur et envoie le mot de passe provisoire par email |
 | `admin/users/update_user.controller.ts` | PATCH `/admin/users/:id` | Modifie les informations d'un utilisateur |
@@ -229,7 +231,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 
 | Fichier | Endpoints actifs |
 | --- | --- |
-| `admin.auth.routes.ts` | POST `/admin/auth/login`, POST `/admin/auth/logout`, GET `/admin/auth/me` |
+| `admin.auth.routes.ts` | POST `/admin/auth/login`, POST `/admin/auth/logout`, GET `/admin/auth/me`, PATCH `/admin/auth/password` |
 | `admin.users.routes.ts` | GET `/admin/users`, POST `/admin/users`, PATCH `/admin/users/:id`, DELETE `/admin/users/:id` |
 | `public.programming.routes.ts` | GET `/public/lineup` |
 

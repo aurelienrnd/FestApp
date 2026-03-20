@@ -97,9 +97,12 @@ Reponse en succes:
     "email": "admin@test.fr",
     "display_name": "Admin",
     "role": "admin"
-  }
+  },
+  "mustChangePassword": false
 }
 ```
+
+> `mustChangePassword` est `true` si `password_changed_at` est `null` en base (mot de passe provisoire jamais modifié).
 
 - Header: `Set-Cookie` (token d'acces renouvele)
 
