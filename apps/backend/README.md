@@ -123,6 +123,7 @@ apps/backend/
 │   │   └── mailer.ts
 │   ├── app.ts
 │   ├── db.ts
+│   ├── env.ts
 │   ├── functions.ts
 │   ├── index.ts
 │   └── type.ts
@@ -181,7 +182,11 @@ Crée et configure l'application Express sans démarrer le serveur — ce qui pe
 
 ### `index.ts`
 
-Point d'entrée du serveur — importe `createApp()` et démarre `app.listen()` sur le port configuré.
+Point d'entrée du serveur — charge les variables d'environnement via `dotenv.config()`, appelle `validateEnv()`, puis démarre `app.listen()`.
+
+### `env.ts`
+
+Valide toutes les variables d'environnement obligatoires au démarrage via un schéma Zod. Si une variable est manquante, le processus s'arrête immédiatement avec un message explicite (`Missing env vars: JWT_ACCESS_SECRET, ...`) avant même que `app.listen()` soit appelé.
 
 ### `db.ts`
 
