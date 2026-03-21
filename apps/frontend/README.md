@@ -201,9 +201,9 @@ Le groupe de routes `(auth)` est transparent pour les URLs. Son layout est ident
 | --- | --- | --- |
 | `admin/layout.tsx` | — | Vérifie la session via `/admin/auth/me`, redirige vers `/login` si non authentifié. Fournit `AdminUserProvider`, `Banner` et `Footer` — `Banner` a accès aux données utilisateur pour filtrer les liens par rôle |
 | `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe si `mustChangePassword` est vrai |
-| `admin/lineup/` | `/admin/lineup` | Gestion de la programmation (`LineupContent.tsx`) |
-| `admin/news/` | `/admin/news` | Gestion des actualités |
-| `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) |
+| `admin/lineup/` | `/admin/lineup` | Gestion de la programmation (`LineupContent.tsx`) — accès restreint aux rôles `admin` et `lineup` via `useRoleGuard` |
+| `admin/news/` | `/admin/news` | Gestion des actualités — accès restreint aux rôles `admin` et `news` via `useRoleGuard` |
+| `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) — accès restreint au rôle `admin` via `useRoleGuard` |
 
 ### `components/`
 
@@ -230,6 +230,7 @@ Hooks React réutilisables découplés des composants.
 | --- | --- |
 | `useIsDesktop.ts` | Détecte si l'écran est en mode desktop (≥ 768px) via `matchMedia` — consommé par `Banner` pour choisir entre `DesktopNav` et `MobilNav` |
 | `useNavPath.ts` | Expose `pathname` et `isAdminPath` dérivés de `usePathname()` — consommé par `Banner`, `SideBarTool` et `AddButton` |
+| `useRoleGuard.ts` | Redirige vers `/admin/dashboard` si le rôle de l'utilisateur ne lui permet pas d'accéder à la route courante — compare le rôle via `useAdminUser()` et la route via `useNavPath()` avec les restrictions définies dans `navAdminItem` |
 
 ### `config/`
 
