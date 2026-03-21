@@ -33,6 +33,12 @@ vi.mock("../../../src/hooks/useIsDesktop", () => ({
   useIsDesktop: () => mockUseIsDesktop(),
 }));
 
+// Mock du hook useAdminUser pour controler l'utilisateur connecte dans les tests
+const mockUseAdminUser = vi.fn();
+vi.mock("../../../src/components/AdminUserProvider", () => ({
+  useAdminUser: () => mockUseAdminUser(),
+}));
+
 // Mock du composant Image de Next.js
 vi.mock("next/image", () => ({
   default: (props: Record<string, unknown>) => <img alt="" {...props} />,
@@ -73,6 +79,7 @@ describe("Banner", () => {
     cleanup();
     mockUseAppUi.mockReset();
     mockUseIsDesktop.mockReset();
+    mockUseAdminUser.mockReset();
     mockPush.mockReset();
     mockApiRequest.mockReset();
   });
@@ -81,6 +88,7 @@ describe("Banner", () => {
     // Simule une route publique en mode desktop
     mockUseAppUi.mockReturnValue({ pathname: "/", isAdminPath: false });
     mockUseIsDesktop.mockReturnValue(true);
+    mockUseAdminUser.mockReturnValue(null);
 
     // Monte le composant
     render(<Banner />);
@@ -93,6 +101,7 @@ describe("Banner", () => {
     // Simule une route publique en mode mobile
     mockUseAppUi.mockReturnValue({ pathname: "/", isAdminPath: false });
     mockUseIsDesktop.mockReturnValue(false);
+    mockUseAdminUser.mockReturnValue(null);
 
     // Monte le composant
     render(<Banner />);
@@ -101,9 +110,10 @@ describe("Banner", () => {
   });
 
   it("hides the ticket button on admin routes", () => {
-    // Simule une route admin en mode desktop
+    // Simule une route admin en mode desktop avec un utilisateur admin
     mockUseAppUi.mockReturnValue({ pathname: "/admin/dashboard", isAdminPath: true });
     mockUseIsDesktop.mockReturnValue(true);
+    mockUseAdminUser.mockReturnValue({ user: { id: "1", email: "a@a.fr", display_name: "Admin", role: "admin" }, mustChangePassword: false });
 
     // Monte le composant
     render(<Banner />);
@@ -115,9 +125,10 @@ describe("Banner", () => {
     // Initialise userEvent pour simuler les interactions utilisateur
     const user = userEvent.setup();
 
-    // Simule une route admin en mode desktop
+    // Simule une route admin en mode desktop avec un utilisateur admin
     mockUseAppUi.mockReturnValue({ pathname: "/admin/dashboard", isAdminPath: true });
     mockUseIsDesktop.mockReturnValue(true);
+    mockUseAdminUser.mockReturnValue({ user: { id: "1", email: "a@a.fr", display_name: "Admin", role: "admin" }, mustChangePassword: false });
 
     // Simule une deconnexion reussie retournant un message de confirmation
     mockApiRequest.mockResolvedValueOnce({ data: { message: "OK" }, error: null });
@@ -135,9 +146,10 @@ describe("Banner", () => {
     // Initialise userEvent pour simuler les interactions utilisateur
     const user = userEvent.setup();
 
-    // Simule une route admin en mode desktop
+    // Simule une route admin en mode desktop avec un utilisateur admin
     mockUseAppUi.mockReturnValue({ pathname: "/admin/dashboard", isAdminPath: true });
     mockUseIsDesktop.mockReturnValue(true);
+    mockUseAdminUser.mockReturnValue({ user: { id: "1", email: "a@a.fr", display_name: "Admin", role: "admin" }, mustChangePassword: false });
 
     // Simule une erreur serveur lors de la deconnexion
     mockApiRequest.mockResolvedValueOnce({

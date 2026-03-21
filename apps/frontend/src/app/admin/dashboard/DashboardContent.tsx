@@ -10,7 +10,9 @@ import ChangePasswordModal from "./ChangePasswordModal";
  * Si mustChangePassword est vrai, ouvre automatiquement la modale en mode force.
  */
 export default function DashboardContent() {
-  const { user, mustChangePassword } = useAdminUser();
+  const adminUser = useAdminUser();
+  if (!adminUser) return null;
+  const { user, mustChangePassword } = adminUser;
   const router = useRouter();
   const [isChangePasswordModal, setIsChangePasswordModal] = useState(mustChangePassword);
 
