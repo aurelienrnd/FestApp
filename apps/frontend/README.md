@@ -100,7 +100,6 @@ apps/frontend/
 │   ├── components/
 │   │   ├── AddButton.tsx
 │   │   ├── AdminUserProvider.tsx
-│   │   ├── AppUiProvider.tsx
 │   │   ├── Banner.tsx
 │   │   ├── ContactUs.tsx
 │   │   ├── Footer.tsx
@@ -113,7 +112,8 @@ apps/frontend/
 │   │   ├── footer.ts
 │   │   └── navigation.ts
 │   ├── hooks/
-│   │   └── useIsDesktop.ts
+│   │   ├── useIsDesktop.ts
+│   │   └── useNavPath.ts
 │   ├── functions/
 │   │   ├── apiRequest.ts
 │   │   └── getApiErrorMessage.ts
@@ -125,7 +125,6 @@ apps/frontend/
 │   │   └── AdminLayout.test.tsx
 │   └── unitaire/
 │       ├── components/
-│       │   ├── AppUiProvider.test.tsx
 │       │   ├── Banner.test.tsx
 │       │   ├── ContactUs.test.tsx
 │       │   ├── Footer.test.tsx
@@ -179,7 +178,7 @@ L'application est divisée en trois zones distinctes avec chacune leur layout :
 
 **Zone publique — `(public)/`**
 
-Le groupe de routes `(public)` est transparent pour les URLs (n'affecte pas les chemins). Son layout fournit `AppUiProvider`, `Banner` et `Footer` aux pages visiteur, avec `data-theme="visitor"` posé côté serveur.
+Le groupe de routes `(public)` est transparent pour les URLs (n'affecte pas les chemins). Son layout fournit `Banner` et `Footer` aux pages visiteur, avec `data-theme="visitor"` posé côté serveur.
 
 | Dossier | Route | Description |
 | --- | --- | --- |
@@ -200,7 +199,7 @@ Le groupe de routes `(auth)` est transparent pour les URLs. Son layout est ident
 
 | Dossier | Route | Description |
 | --- | --- | --- |
-| `admin/layout.tsx` | — | Vérifie la session via `/admin/auth/me`, redirige vers `/login` si non authentifié. Fournit `AdminUserProvider`, `AppUiProvider`, `Banner` et `Footer` — `Banner` a accès aux données utilisateur pour filtrer les liens par rôle |
+| `admin/layout.tsx` | — | Vérifie la session via `/admin/auth/me`, redirige vers `/login` si non authentifié. Fournit `AdminUserProvider`, `Banner` et `Footer` — `Banner` a accès aux données utilisateur pour filtrer les liens par rôle |
 | `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe si `mustChangePassword` est vrai |
 | `admin/lineup/` | `/admin/lineup` | Gestion de la programmation (`LineupContent.tsx`) |
 | `admin/news/` | `/admin/news` | Gestion des actualités |
@@ -213,7 +212,6 @@ Composants UI réutilisables à travers l'application.
 | Fichier | Description |
 | --- | --- |
 | `AdminUserProvider.tsx` | Context React qui expose les données de l'utilisateur admin connecté (`AdminUser`, `mustChangePassword`) — retourne `null` hors provider |
-| `AppUiProvider.tsx` | Context global de navigation — expose `pathname` et `isAdminPath`. Thème délégué aux layouts, détection desktop déléguée au hook `useIsDesktop` |
 | `AddButton.tsx` | Bouton d'ajout réutilisable (ex : ajouter un utilisateur) |
 | `Banner.tsx` | Bannière de navigation principale — filtre les liens admin par rôle via `filterNavByRole`, gère aussi le logout |
 | `ContactUs.tsx` | Formulaire de contact (modale) |
@@ -231,6 +229,7 @@ Hooks React réutilisables découplés des composants.
 | Fichier | Description |
 | --- | --- |
 | `useIsDesktop.ts` | Détecte si l'écran est en mode desktop (≥ 768px) via `matchMedia` — consommé par `Banner` pour choisir entre `DesktopNav` et `MobilNav` |
+| `useNavPath.ts` | Expose `pathname` et `isAdminPath` dérivés de `usePathname()` — consommé par `Banner`, `SideBarTool` et `AddButton` |
 
 ### `config/`
 
@@ -282,7 +281,7 @@ Tests unitaires des composants React réutilisables.
 
 | Fichier | Description |
 | --- | --- |
-| `AppUiProvider.test.tsx` | Vérifie la détection de la route admin (`isAdminPath`) et du mode desktop (`isDesktop`) |
+| `useNavPath.test.tsx` | Vérifie la détection de la route admin (`isAdminPath`) via le hook `useNavPath` |
 | `Banner.test.tsx` | Vérifie le rendu desktop/mobile et l'affichage conditionnel du bouton billetterie |
 | `ContactUs.test.tsx` | Vérifie le formulaire de contact — activation du bouton et soumission |
 | `Footer.test.tsx` | Vérifie l'ouverture/fermeture des modales mentions légales et contact |

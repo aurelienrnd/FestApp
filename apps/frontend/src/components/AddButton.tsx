@@ -5,7 +5,7 @@ import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import type { NavItem } from "../config/navigation";
-import { useAppUi } from "./AppUiProvider";
+import { useNavPath } from "../hooks/useNavPath";
 import ModalCloseButton from "./ModalCloseButton";
 import Navigation from "./Navigation";
 
@@ -21,7 +21,7 @@ export default function AddButton({
   className?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { pathname, isAdminPath } = useAppUi();
+  const { pathname, isAdminPath } = useNavPath();
 
   useEffect(() => {
     Modal.setAppElement("#app-root");

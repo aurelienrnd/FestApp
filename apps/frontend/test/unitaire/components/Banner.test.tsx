@@ -21,10 +21,10 @@ vi.mock("../../../src/functions/apiRequest", async () => {
   };
 });
 
-// Mock du hook useAppUi pour contrôler les valeurs retournées par le contexte
-const mockUseAppUi = vi.fn();
-vi.mock("../../../src/components/AppUiProvider", () => ({
-  useAppUi: () => mockUseAppUi(),
+// Mock du hook useNavPath pour contrôler les valeurs retournées par le hook
+const mockUseNavPath = vi.fn();
+vi.mock("../../../src/hooks/useNavPath", () => ({
+  useNavPath: () => mockUseNavPath(),
 }));
 
 // Mock du hook useIsDesktop pour contrôler le mode desktop dans les tests
@@ -77,7 +77,7 @@ describe("Banner", () => {
   // Réinitialise les mocks apres chaque utilisation
   afterEach(() => {
     cleanup();
-    mockUseAppUi.mockReset();
+    mockUseNavPath.mockReset();
     mockUseIsDesktop.mockReset();
     mockUseAdminUser.mockReset();
     mockPush.mockReset();
@@ -86,7 +86,7 @@ describe("Banner", () => {
 
   it("renders desktop navigation when isDesktop is true", () => {
     // Simule une route publique en mode desktop
-    mockUseAppUi.mockReturnValue({ pathname: "/", isAdminPath: false });
+    mockUseNavPath.mockReturnValue({ pathname: "/", isAdminPath: false });
     mockUseIsDesktop.mockReturnValue(true);
     mockUseAdminUser.mockReturnValue(null);
 
@@ -99,7 +99,7 @@ describe("Banner", () => {
 
   it("renders mobile navigation when isDesktop is false", () => {
     // Simule une route publique en mode mobile
-    mockUseAppUi.mockReturnValue({ pathname: "/", isAdminPath: false });
+    mockUseNavPath.mockReturnValue({ pathname: "/", isAdminPath: false });
     mockUseIsDesktop.mockReturnValue(false);
     mockUseAdminUser.mockReturnValue(null);
 
@@ -111,7 +111,7 @@ describe("Banner", () => {
 
   it("hides the ticket button on admin routes", () => {
     // Simule une route admin en mode desktop avec un utilisateur admin
-    mockUseAppUi.mockReturnValue({ pathname: "/admin/dashboard", isAdminPath: true });
+    mockUseNavPath.mockReturnValue({ pathname: "/admin/dashboard", isAdminPath: true });
     mockUseIsDesktop.mockReturnValue(true);
     mockUseAdminUser.mockReturnValue({ user: { id: "1", email: "a@a.fr", display_name: "Admin", role: "admin" }, mustChangePassword: false });
 
@@ -126,7 +126,7 @@ describe("Banner", () => {
     const user = userEvent.setup();
 
     // Simule une route admin en mode desktop avec un utilisateur admin
-    mockUseAppUi.mockReturnValue({ pathname: "/admin/dashboard", isAdminPath: true });
+    mockUseNavPath.mockReturnValue({ pathname: "/admin/dashboard", isAdminPath: true });
     mockUseIsDesktop.mockReturnValue(true);
     mockUseAdminUser.mockReturnValue({ user: { id: "1", email: "a@a.fr", display_name: "Admin", role: "admin" }, mustChangePassword: false });
 
@@ -147,7 +147,7 @@ describe("Banner", () => {
     const user = userEvent.setup();
 
     // Simule une route admin en mode desktop avec un utilisateur admin
-    mockUseAppUi.mockReturnValue({ pathname: "/admin/dashboard", isAdminPath: true });
+    mockUseNavPath.mockReturnValue({ pathname: "/admin/dashboard", isAdminPath: true });
     mockUseIsDesktop.mockReturnValue(true);
     mockUseAdminUser.mockReturnValue({ user: { id: "1", email: "a@a.fr", display_name: "Admin", role: "admin" }, mustChangePassword: false });
 

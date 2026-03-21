@@ -1,4 +1,3 @@
-import { AppUiProvider } from "../../components/AppUiProvider";
 import Banner from "../../components/Banner";
 import Footer from "../../components/Footer";
 
@@ -11,12 +10,10 @@ export default function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <AppUiProvider>
-      <div data-theme="admin" id="app-root" className="flex min-h-screen flex-col bg-(--color-bg) text-(--color-text)">
-        <Banner />
-        <main className="flex flex-1 flex-col">{children}</main>
-        <Footer />
-      </div>
-    </AppUiProvider>
+    <div data-theme="admin" id="app-root" className="flex min-h-screen flex-col bg-(--color-bg) text-(--color-text)">
+      <Banner />
+      <main className="flex flex-1 flex-col">{children}</main>
+      <Footer />
+    </div>
   );
 }

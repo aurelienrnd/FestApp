@@ -4,7 +4,6 @@ import {
   AdminUserProvider,
   type AdminAuthMeResponse,
 } from "../../components/AdminUserProvider";
-import { AppUiProvider } from "../../components/AppUiProvider";
 import Banner from "../../components/Banner";
 import Footer from "../../components/Footer";
 
@@ -52,13 +51,11 @@ export default async function AdminLayout({
   // Fournit les donnees utilisateur a toutes les pages enfants de la zone admin via le contexte
   return (
     <AdminUserProvider value={me}>
-      <AppUiProvider>
-        <div data-theme="admin" id="app-root" className="flex min-h-screen flex-col bg-(--color-bg) text-(--color-text)">
-          <Banner />
-          <main className="flex flex-1 flex-col">{children}</main>
-          <Footer />
-        </div>
-      </AppUiProvider>
+      <div data-theme="admin" id="app-root" className="flex min-h-screen flex-col bg-(--color-bg) text-(--color-text)">
+        <Banner />
+        <main className="flex flex-1 flex-col">{children}</main>
+        <Footer />
+      </div>
     </AdminUserProvider>
   );
 }

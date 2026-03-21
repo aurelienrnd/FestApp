@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useAppUi } from "./AppUiProvider";
+import { useNavPath } from "../hooks/useNavPath";
 import Navigation from "./Navigation";
 import type { NavItem } from "../config/navigation";
 
@@ -19,7 +19,7 @@ export default function SideBarTool({
   items: NavItem[];
   children: ReactNode;
 }) {
-  const { pathname, isAdminPath } = useAppUi();
+  const { pathname, isAdminPath } = useNavPath();
 
   return (
     <div className="flex flex-1 gap-(--space-md) pr-0 md:pr-(--space-md)">
