@@ -4,6 +4,9 @@ import {
   AdminUserProvider,
   type AdminAuthMeResponse,
 } from "../../components/AdminUserProvider";
+import { AppUiProvider } from "../../components/AppUiProvider";
+import Banner from "../../components/Banner";
+import Footer from "../../components/Footer";
 
 /** Verifie la session via le backend avant de rendre les pages `/admin`.
  * Redirige vers `/login` si la session est absente, invalide ou si le backend est inaccessible.
@@ -47,5 +50,15 @@ export default async function AdminLayout({
   const me = (await response.json()) as AdminAuthMeResponse;
 
   // Fournit les donnees utilisateur a toutes les pages enfants de la zone admin via le contexte
-  return <AdminUserProvider value={me}>{children}</AdminUserProvider>;
+  return (
+    <AdminUserProvider value={me}>
+      <AppUiProvider>
+        <div id="app-root" className="flex min-h-screen flex-col">
+          <Banner />
+          <main className="flex flex-1 flex-col">{children}</main>
+          <Footer />
+        </div>
+      </AppUiProvider>
+    </AdminUserProvider>
+  );
 }

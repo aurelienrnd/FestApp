@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
 import { Koulen } from "next/font/google";
-import { AppUiProvider } from "../components/AppUiProvider";
-import Banner from "../components/Banner";
-import Footer from "../components/Footer";
 import "./globals.css";
 
 // Police Google
@@ -19,10 +16,9 @@ export const metadata: Metadata = {
   description: "A music festival website built with Next.js", //TODO a modifier
 };
 
-/**Layout global de l'aplication
- * @children AppUiProvider : Fournit un contexte global d’interface utilisateur (UI) à l’application.
- * @children Banner : Affiché sur toutes les pages
- * @children Footer : Affiché sur toutes les pages
+/** Layout racine — definit uniquement le squelette HTML commun a toutes les pages.
+ * Banner, Footer et providers sont deleguees aux layouts de section.
+ * @children {ReactNode} children Layouts de section (public ou admin)
  */
 export default function RootLayout({
   children,
@@ -34,13 +30,7 @@ export default function RootLayout({
       <body
         className={`${koulen.className} min-h-screen bg-(--color-bg) text-(--color-text) flex flex-col`}
       >
-        <AppUiProvider>
-          <div id="app-root" className="flex min-h-screen flex-col">
-            <Banner />
-            <main className="flex flex-1 flex-col">{children}</main>
-            <Footer />
-          </div>
-        </AppUiProvider>
+        {children}
       </body>
     </html>
   );

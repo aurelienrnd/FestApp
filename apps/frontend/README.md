@@ -65,6 +65,17 @@ apps/frontend/
 │   └── header_logo.png
 ├── src/
 │   ├── app/
+│   │   ├── (public)/
+│   │   │   ├── layout.tsx
+│   │   │   ├── lineup/
+│   │   │   │   └── page.tsx
+│   │   │   ├── login/
+│   │   │   │   └── page.tsx
+│   │   │   ├── news/
+│   │   │   │   └── page.tsx
+│   │   │   ├── practical-info/
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
 │   │   ├── admin/
 │   │   │   ├── layout.tsx
 │   │   │   ├── dashboard/
@@ -81,18 +92,9 @@ apps/frontend/
 │   │   │       ├── UsersContent.tsx
 │   │   │       ├── AddUserModal.tsx
 │   │   │       └── DelateUserModal.tsx
-│   │   ├── lineup/
-│   │   │   └── page.tsx
-│   │   ├── login/
-│   │   │   └── page.tsx
-│   │   ├── news/
-│   │   │   └── page.tsx
-│   │   ├── practical-info/
-│   │   │   └── page.tsx
 │   │   ├── globals.css
 │   │   ├── icon.png
-│   │   ├── layout.tsx
-│   │   └── page.tsx
+│   │   └── layout.tsx
 │   ├── components/
 │   │   ├── AddButton.tsx
 │   │   ├── AdminUserProvider.tsx
@@ -128,6 +130,8 @@ apps/frontend/
 │       │   ├── apiRequest.test.ts
 │       │   └── getApiErrorMessage.test.ts
 │       └── pages/
+│           ├── ChangePasswordModal.test.tsx
+│           ├── DashboardContent.test.tsx
 │           ├── LoginPage.test.tsx
 │           └── UsersContent.test.tsx
 ├── .dockerignore
@@ -162,24 +166,28 @@ Le frontend bénéficie de 5 stages car il possède plus de dépendances, ce qui
 ### `app/`
 
 - **`globals.css`** : Déclare les variables CSS globales, les thèmes `admin`/`visitor` et les classes utilitaires Tailwind partagées (cards, layouts…).
-- **`layout.tsx`** : Layout racine Next.js — charge la police Google, définit les métadonnées SEO et enveloppe l'app avec les providers, la bannière et le footer.
-- **`page.tsx`** : Page d'accueil (route `/`).
+- **`layout.tsx`** : Layout racine Next.js — charge la police Google, définit les métadonnées SEO. Ne contient pas de Banner/Footer (délégués aux layouts de section).
 
-**Pages publiques**
+L'application est divisée en deux zones distinctes avec chacune leur layout :
 
-| Dossier | Route | Description |
-| --- | --- | --- |
-| `lineup/` | `/lineup` | Programmation du festival — liste les artistes depuis l'API publique |
-| `login/` | `/login` | Formulaire de connexion à l'espace admin |
-| `news/` | `/news` | Actualités de l'événement |
-| `practical-info/` | `/practical-info` | Informations pratiques |
+**Zone publique — `(public)/`**
 
-**Pages d'administration (accès protégé)**
+Le groupe de routes `(public)` est transparent pour les URLs (n'affecte pas les chemins). Son layout fournit `AppUiProvider`, `Banner` et `Footer` aux pages visiteur.
 
 | Dossier | Route | Description |
 | --- | --- | --- |
-| `admin/layout.tsx` | — | Layout partagé — vérifie la session via `/admin/auth/me` et redirige vers `/login` si non authentifié |
-| `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe en mode forcé si `mustChangePassword` est vrai |
+| `(public)/page.tsx` | `/` | Page d'accueil |
+| `(public)/lineup/` | `/lineup` | Programmation du festival — liste les artistes depuis l'API publique |
+| `(public)/login/` | `/login` | Formulaire de connexion à l'espace admin |
+| `(public)/news/` | `/news` | Actualités de l'événement |
+| `(public)/practical-info/` | `/practical-info` | Informations pratiques |
+
+**Zone admin — `admin/` (accès protégé)**
+
+| Dossier | Route | Description |
+| --- | --- | --- |
+| `admin/layout.tsx` | — | Vérifie la session via `/admin/auth/me`, redirige vers `/login` si non authentifié. Fournit `AdminUserProvider`, `AppUiProvider`, `Banner` et `Footer` — `Banner` a accès aux données utilisateur pour filtrer les liens par rôle |
+| `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe si `mustChangePassword` est vrai |
 | `admin/lineup/` | `/admin/lineup` | Gestion de la programmation (`LineupContent.tsx`) |
 | `admin/news/` | `/admin/news` | Gestion des actualités |
 | `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) |
@@ -273,6 +281,8 @@ Tests unitaires des pages et de leurs flux principaux.
 
 | Fichier | Description |
 | --- | --- |
+| `ChangePasswordModal.test.tsx` | Vérifie la modale de changement de mot de passe — validation des saisies, gestion des erreurs API et mode forcé (sans bouton de fermeture) |
+| `DashboardContent.test.tsx` | Vérifie le tableau de bord — ouverture automatique de la modale si `mustChangePassword` est vrai et affichage des informations utilisateur |
 | `LoginPage.test.tsx` | Vérifie le formulaire de connexion — gestion des erreurs (401, 429, 500) et redirection en cas de succès |
 | `UsersContent.test.tsx` | Vérifie le CRUD utilisateurs — chargement de la liste, ajout, modification, suppression et gestion des erreurs |
 
