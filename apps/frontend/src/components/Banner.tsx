@@ -66,6 +66,7 @@ function DesktopNav({
           const isActive = pathname === item.path;
           const isLogoutItem = isAdminPath && Boolean(item.labelBtn);
 
+          // Instruction pour rendre le bouton Logout dans la navigation
           if (isLogoutItem) {
             return (
               <li key={`logout-${index}`}>
@@ -84,10 +85,12 @@ function DesktopNav({
             );
           }
 
+          // Evite de rendre un <Link> sans href
           if (!item.path) {
             return null;
           }
 
+          // Instruction pour rendre les liens de navigation
           return (
             <li key={`${item.path}-${index}`}>
               <Link
@@ -103,6 +106,7 @@ function DesktopNav({
             </li>
           );
         })}
+        // Instruction pour rendre le bouton de billetterie
         {isAdminPath ? null : <BtnTicket />}
       </ul>
     </nav>

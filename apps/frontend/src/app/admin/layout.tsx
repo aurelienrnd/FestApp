@@ -5,8 +5,10 @@ import {
   type AdminAuthMeResponse,
 } from "../../components/AdminUserProvider";
 
-/** Verifie la session via le backend avant de rendre les pages `/admin`
- * Redirige vers `/login` si la session est absente ou invalide.
+/** Verifie la session via le backend avant de rendre les pages `/admin`.
+ * Redirige vers `/login` si la session est absente, invalide ou si le backend est inaccessible.
+ * Injecte les donnees utilisateur dans AdminUserProvider pour les rendre accessibles a toutes les pages admin.
+ * @children {ReactNode} children Pages enfants de la zone admin
  */
 export default async function AdminLayout({
   children,
@@ -41,8 +43,9 @@ export default async function AdminLayout({
     redirect("/login");
   }
 
-  // Parse les donnees utilisateur et les fournit a toutes les pages admin
+  // Parse les donnees utilisateur retournees par l'API
   const me = (await response.json()) as AdminAuthMeResponse;
 
+  // Fournit les donnees utilisateur a toutes les pages enfants de la zone admin via le contexte
   return <AdminUserProvider value={me}>{children}</AdminUserProvider>;
 }

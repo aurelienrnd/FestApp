@@ -5,6 +5,7 @@ export type NavItem = {
   path?: string;
   active?: boolean;
   value?: string;
+  role?: string;
   onClick?: () => void;
 };
 
@@ -18,19 +19,27 @@ export const navVisitorItems: NavItem[] = [
 
 /** Liens affiches dans la navigation de l'espace administrateur. */
 export const navAdminItem: NavItem[] = [
-  { label: "Dashboard", path: "/admin/dashboard" },
-  { label: "Programmation", path: "/admin/lineup" },
-  { label: "Articles", path: "/admin/news" },
-  { label: "Utilisateurs", path: "/admin/users" },
+  {
+    label: "Dashboard",
+    path: "/admin/dashboard",
+    role: "admin, line-up, news",
+  },
+  { label: "Programmation", path: "/admin/lineup", role: "admin, line-up" },
+  { label: "Articles", path: "/admin/news", role: "admin, news" },
+  { label: "Utilisateurs", path: "/admin/users", role: "admin" },
   { labelBtn: "Logout", active: false },
 ];
 
 /** Liens affiches dans la navigation de la page Dashboard. */
 export const navDashBordItems: NavItem[] = [
-  { label: "Dashboard", path: "/admin/dashboard" },
-  { label: "Programmation", path: "/admin/lineup" },
-  { label: "Articles", path: "/admin/news" },
-  { label: "Utilisateurs", path: "/admin/users" },
+  {
+    label: "Dashboard",
+    path: "/admin/dashboard",
+    role: "admin, line-up, news",
+  },
+  { label: "Programmation", path: "/admin/lineup", role: "admin, line-up" },
+  { label: "Articles", path: "/admin/news", role: "admin, news" },
+  { label: "Utilisateurs", path: "/admin/users", role: "admin" },
 ];
 
 /** Filtres affiches dans la navigation de la page LineUp et admin/Lineup. */
