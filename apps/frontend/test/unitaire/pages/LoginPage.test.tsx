@@ -1,7 +1,7 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import Page from "../../../src/app/login/page";
+import Page from "../../../src/app/(auth)/login/page";
 import { ApiRequestError } from "../../../src/functions/apiRequest";
 
 const mockPush = vi.fn();

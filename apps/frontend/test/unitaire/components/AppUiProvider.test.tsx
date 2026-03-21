@@ -20,10 +20,8 @@ function Consumer() {
 }
 
 describe("AppUiProvider", () => {
-  // Nettoie le DOM et reinitialise le data-theme apres chaque test
   afterEach(() => {
     cleanup();
-    delete document.documentElement.dataset.theme;
   });
 
   it("exposes admin flag and desktop state", async () => {
@@ -71,54 +69,6 @@ describe("AppUiProvider", () => {
     await waitFor(() => {
       expect(screen.getByText("desktop:false")).toBeInTheDocument();
       expect(screen.getByText("admin:false")).toBeInTheDocument();
-    });
-  });
-
-  it("applies admin theme on /login route", async () => {
-    // Simule une URL de connexion (traitee comme route admin pour le theme)
-    mockPathname = "/login";
-
-    // Mock la media query pour simuler un ecran mobile
-    window.matchMedia = vi.fn().mockImplementation(() => ({
-      matches: false,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    }));
-
-    // Monte le composant
-    render(
-      <AppUiProvider>
-        <Consumer />
-      </AppUiProvider>,
-    );
-
-    // Verifie que le theme admin est applique sur la balise html
-    await waitFor(() => {
-      expect(document.documentElement.dataset.theme).toBe("admin");
-    });
-  });
-
-  it("applies visitor theme on public route", async () => {
-    // Simule une URL publique (non admin)
-    mockPathname = "/lineup";
-
-    // Mock la media query pour simuler un ecran mobile
-    window.matchMedia = vi.fn().mockImplementation(() => ({
-      matches: false,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    }));
-
-    // Monte le composant
-    render(
-      <AppUiProvider>
-        <Consumer />
-      </AppUiProvider>,
-    );
-
-    // Verifie que le theme visitor est applique sur la balise html
-    await waitFor(() => {
-      expect(document.documentElement.dataset.theme).toBe("visitor");
     });
   });
 

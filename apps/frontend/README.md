@@ -69,13 +69,15 @@ apps/frontend/
 │   │   │   ├── layout.tsx
 │   │   │   ├── lineup/
 │   │   │   │   └── page.tsx
-│   │   │   ├── login/
-│   │   │   │   └── page.tsx
 │   │   │   ├── news/
 │   │   │   │   └── page.tsx
 │   │   │   ├── practical-info/
 │   │   │   │   └── page.tsx
 │   │   │   └── page.tsx
+│   │   ├── (auth)/
+│   │   │   ├── layout.tsx
+│   │   │   └── login/
+│   │   │       └── page.tsx
 │   │   ├── admin/
 │   │   │   ├── layout.tsx
 │   │   │   ├── dashboard/
@@ -171,19 +173,26 @@ Le frontend bénéficie de 5 stages car il possède plus de dépendances, ce qui
 - **`globals.css`** : Déclare les variables CSS globales, les thèmes `admin`/`visitor` et les classes utilitaires Tailwind partagées (cards, layouts…).
 - **`layout.tsx`** : Layout racine Next.js — charge la police Google, définit les métadonnées SEO. Ne contient pas de Banner/Footer (délégués aux layouts de section).
 
-L'application est divisée en deux zones distinctes avec chacune leur layout :
+L'application est divisée en trois zones distinctes avec chacune leur layout :
 
 **Zone publique — `(public)/`**
 
-Le groupe de routes `(public)` est transparent pour les URLs (n'affecte pas les chemins). Son layout fournit `AppUiProvider`, `Banner` et `Footer` aux pages visiteur.
+Le groupe de routes `(public)` est transparent pour les URLs (n'affecte pas les chemins). Son layout fournit `AppUiProvider`, `Banner` et `Footer` aux pages visiteur, avec `data-theme="visitor"` posé côté serveur.
 
 | Dossier | Route | Description |
 | --- | --- | --- |
 | `(public)/page.tsx` | `/` | Page d'accueil |
 | `(public)/lineup/` | `/lineup` | Programmation du festival — liste les artistes depuis l'API publique |
-| `(public)/login/` | `/login` | Formulaire de connexion à l'espace admin |
 | `(public)/news/` | `/news` | Actualités de l'événement |
 | `(public)/practical-info/` | `/practical-info` | Informations pratiques |
+
+**Zone authentification — `(auth)/`**
+
+Le groupe de routes `(auth)` est transparent pour les URLs. Son layout est identique au layout public mais applique `data-theme="admin"` côté serveur, permettant à la page login d'afficher le thème admin sans appartenir à la zone admin.
+
+| Dossier | Route | Description |
+| --- | --- | --- |
+| `(auth)/login/` | `/login` | Formulaire de connexion à l'espace admin |
 
 **Zone admin — `admin/` (accès protégé)**
 
@@ -202,7 +211,7 @@ Composants UI réutilisables à travers l'application.
 | Fichier | Description |
 | --- | --- |
 | `AdminUserProvider.tsx` | Context React qui expose les données de l'utilisateur admin connecté (`AdminUser`, `mustChangePassword`) aux pages enfants |
-| `AppUiProvider.tsx` | Context global d'UI — détecte la route courante (`isAdminPath`), le mode desktop (`isDesktop`) et applique le thème `admin` ou `visitor` sur `<html>` |
+| `AppUiProvider.tsx` | Context global d'UI — détecte la route courante (`isAdminPath`) et le mode desktop (`isDesktop`). Le thème est désormais délégué aux layouts via `data-theme` |
 | `AddButton.tsx` | Bouton d'ajout réutilisable (ex : ajouter un utilisateur) |
 | `Banner.tsx` | Bannière de navigation principale — gère aussi le logout |
 | `ContactUs.tsx` | Formulaire de contact (modale) |
@@ -315,7 +324,7 @@ La gestion des erreurs est centralisée autour de deux helpers :
 
 ### Utilisation dans l'UI
 
-- `src/app/(public)/login/page.tsx` : affiche le message d'erreur formaté.
+- `src/app/(auth)/login/page.tsx` : affiche le message d'erreur formaté.
 - `src/components/Banner.tsx` : journalise l'erreur formatée en cas d'échec du logout, puis redirige vers `/login` en cas de succès.
 - `src/app/admin/layout.tsx` : vérifie la session via `/admin/auth/me` et redirige vers `/login` en cas d'échec.
 
