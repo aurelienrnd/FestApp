@@ -85,6 +85,7 @@ apps/backend/
 │   │   ├── admin/
 │   │   │   ├── auth/
 │   │   │   │   ├── change_password.controller.ts
+│   │   │   │   ├── forgot_password.controller.ts
 │   │   │   │   ├── login.controller.ts
 │   │   │   │   ├── logout.controller.ts
 │   │   │   │   └── userInfo.controller.ts
@@ -219,6 +220,7 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 | Fichier | Endpoint | Description |
 | --- | --- | --- |
 | `admin/auth/change_password.controller.ts` | PATCH `/admin/auth/password` | Vérifie l'ancien mot de passe et met à jour le hash + `password_changed_at` |
+| `admin/auth/forgot_password.controller.ts` | POST `/admin/auth/forgot-password` | Génère un mot de passe temporaire, met à jour le hash, remet `password_changed_at` à `null` et envoie le nouveau mot de passe par email |
 | `admin/auth/login.controller.ts` | POST `/admin/auth/login` | Vérifie les identifiants, crée une session, retourne un cookie JWT |
 | `admin/auth/logout.controller.ts` | POST `/admin/auth/logout` | Révoque la session en base |
 | `admin/auth/userInfo.controller.ts` | GET `/admin/auth/me` | Retourne les infos de l'utilisateur connecté, `mustChangePassword` et renouvelle le token |
@@ -236,7 +238,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 
 | Fichier | Endpoints actifs |
 | --- | --- |
-| `admin.auth.routes.ts` | POST `/admin/auth/login`, POST `/admin/auth/logout`, GET `/admin/auth/me`, PATCH `/admin/auth/password` |
+| `admin.auth.routes.ts` | POST `/admin/auth/login`, POST `/admin/auth/logout`, GET `/admin/auth/me`, PATCH `/admin/auth/password`, POST `/admin/auth/forgot-password` |
 | `admin.users.routes.ts` | GET `/admin/users`, POST `/admin/users`, PATCH `/admin/users/:id`, DELETE `/admin/users/:id` |
 | `public.programming.routes.ts` | GET `/public/lineup` |
 

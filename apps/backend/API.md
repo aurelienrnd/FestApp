@@ -4,10 +4,11 @@
 
 | Méthode | Route                | Accès       | Description                                     |
 | ------- | -------------------- | ----------- | ----------------------------------------------- |
-| POST    | `/admin/auth/login`     | Public      | Connexion administrateur                        |
-| POST    | `/admin/auth/logout`    | Authentifié | Déconnexion                                     |
-| GET     | `/admin/auth/me`        | Authentifié | Informations utilisateur + renouvellement token |
-| PATCH   | `/admin/auth/password`  | Authentifié | Modifier le mot de passe de l'utilisateur connecte |
+| POST    | `/admin/auth/login`            | Public      | Connexion administrateur                        |
+| POST    | `/admin/auth/logout`           | Authentifié | Déconnexion                                     |
+| GET     | `/admin/auth/me`               | Authentifié | Informations utilisateur + renouvellement token |
+| PATCH   | `/admin/auth/password`         | Authentifié | Modifier le mot de passe de l'utilisateur connecte |
+| POST    | `/admin/auth/forgot-password`  | Public      | Reinitialiser le mot de passe et envoyer un nouveau par email |
 | GET     | `/admin/users`       | Authentifié | Liste des utilisateurs                          |
 | POST    | `/admin/users`       | Authentifié | Créer un utilisateur                            |
 | PATCH   | `/admin/users/:id`   | Authentifié | Modifier un utilisateur                         |
@@ -115,6 +116,41 @@ Reponses d'erreur:
 - `401` `{ "error": "Session introuvable" }`
 - `401` `{ "error": "Session deja fermee ou expiree" }`
 - `401` `{ "error": "Session manquante" }`
+
+### POST `/admin/auth/forgot-password`
+
+Reinitialise le mot de passe d'un utilisateur en generant un mot de passe temporaire et en l'envoyant par email.
+
+Middlewares: `rateLimitLogin`, `validateBody`
+
+Corps de requete:
+
+```json
+{
+  "email": "admin@test.fr"
+}
+```
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "message": "Nouveau mot de passe envoye par email"
+}
+```
+
+> L'utilisateur devra changer son mot de passe a la prochaine connexion (`mustChangePassword` sera `true`).
+
+Reponses d'erreur:
+
+- `400` `{ "error": "Donnees invalides" }`
+- `404` `{ "error": "Aucun compte associe a cet email" }`
+- `429` `{ "error": "Trop de tentatives, reessayer plus tard" }`
+
+---
 
 ### PATCH `/admin/auth/password`
 
