@@ -19,4 +19,5 @@ export const ERRORS = {
   ROUTE_NOT_FOUND: "Route introuvable",
   INTERNAL_SERVER_ERROR: "Erreur interne du serveur",
   RATE_LIMIT_TOO_MANY_ATTEMPTS: "Trop de tentatives, reessayer plus tard",
+  AUTH_EMAIL_NOT_FOUND: "Aucun compte associe a cet email",
 } as const;

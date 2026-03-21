@@ -13,6 +13,26 @@ function createTransporter() {
   });
 }
 
+/** Envoie un nouveau mot de passe temporaire a l'utilisateur qui a demande la reinitialisation.
+ * @param {string} to adresse email du destinataire
+ * @param {string} displayName nom complet de l'utilisateur
+ * @param {string} tempPassword nouveau mot de passe temporaire en clair
+ */
+export async function sendPasswordResetEmail(
+  to: string,
+  displayName: string,
+  tempPassword: string,
+): Promise<void> {
+  const transporter = createTransporter();
+
+  await transporter.sendMail({
+    from: `"Vindhellfest" <${getEnv("SMTP_USER")}>`,
+    to,
+    subject: "Reinitialisation de votre mot de passe",
+    text: `Bonjour ${displayName},\n\nVous avez demande la reinitialisation de votre mot de passe.\nVotre nouveau mot de passe provisoire : ${tempPassword}\n\nVeuillez le modifier des votre prochaine connexion.`,
+  });
+}
+
 /** Envoie les identifiants provisoires au nouvel utilisateur cree par un admin.
  * @param {string} to adresse email du destinataire
  * @param {string} displayName nom complet de l'utilisateur
