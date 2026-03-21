@@ -136,6 +136,7 @@ apps/frontend/
 │           └── UsersContent.test.tsx
 ├── .dockerignore
 ├── .gitignore
+├── .prettierignore
 ├── .prettierrc
 ├── Dockerfile
 ├── eslint.config.mjs
@@ -143,7 +144,9 @@ apps/frontend/
 ├── package.json
 ├── postcss.config.mjs
 ├── tsconfig.json
-└── README.md
+├── vitest.config.ts
+├── README.md
+└── STYLE.md
 ```
 
 ---
@@ -312,7 +315,7 @@ La gestion des erreurs est centralisée autour de deux helpers :
 
 ### Utilisation dans l'UI
 
-- `src/app/login/page.tsx` : affiche le message d'erreur formaté.
+- `src/app/(public)/login/page.tsx` : affiche le message d'erreur formaté.
 - `src/components/Banner.tsx` : journalise l'erreur formatée en cas d'échec du logout, puis redirige vers `/login` en cas de succès.
 - `src/app/admin/layout.tsx` : vérifie la session via `/admin/auth/me` et redirige vers `/login` en cas d'échec.
 
