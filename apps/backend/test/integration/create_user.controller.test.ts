@@ -12,6 +12,11 @@ vi.mock("../../src/db", () => ({
   query: vi.fn(),
 }));
 
+// Mock du service mailer pour eviter les appels SMTP en test
+vi.mock("../../src/services/mailer", () => ({
+  sendWelcomeEmail: vi.fn().mockResolvedValue(undefined),
+}));
+
 // Creation d'une version typee du mock pour configurer son comportement
 const mockQuery = vi.mocked(query);
 
