@@ -212,10 +212,10 @@ Composants UI réutilisables à travers l'application.
 
 | Fichier | Description |
 | --- | --- |
-| `AdminUserProvider.tsx` | Context React qui expose les données de l'utilisateur admin connecté (`AdminUser`, `mustChangePassword`) aux pages enfants |
+| `AdminUserProvider.tsx` | Context React qui expose les données de l'utilisateur admin connecté (`AdminUser`, `mustChangePassword`) — retourne `null` hors provider |
 | `AppUiProvider.tsx` | Context global de navigation — expose `pathname` et `isAdminPath`. Thème délégué aux layouts, détection desktop déléguée au hook `useIsDesktop` |
 | `AddButton.tsx` | Bouton d'ajout réutilisable (ex : ajouter un utilisateur) |
-| `Banner.tsx` | Bannière de navigation principale — gère aussi le logout |
+| `Banner.tsx` | Bannière de navigation principale — filtre les liens admin par rôle via `filterNavByRole`, gère aussi le logout |
 | `ContactUs.tsx` | Formulaire de contact (modale) |
 | `Footer.tsx` | Pied de page avec liens réseaux sociaux et liens légaux |
 | `ForgotPassword.tsx` | Modale mot de passe oublié |
@@ -238,7 +238,7 @@ Centralise les constantes de configuration du frontend.
 
 | Fichier | Description |
 | --- | --- |
-| `navigation.ts` | Définit les items de navigation : liens visiteur (`navVisitorItems`), liens admin (`navAdminItem`), items de dashboard (`navDashBordItems`), filtres lineup/news/users |
+| `navigation.ts` | Définit les items de navigation : liens visiteur (`navVisitorItems`), liens admin (`navAdminItem`), items de dashboard (`navDashBordItems`), filtres lineup/news/users. Expose `filterNavByRole` pour filtrer les liens selon le rôle de l'utilisateur |
 | `footer.ts` | Définit les liens du footer : liens légaux (`legalLinks`) et réseaux sociaux (`socialLinks`) |
 
 ### `functions/`
