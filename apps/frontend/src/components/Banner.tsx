@@ -8,8 +8,10 @@ import Modal from "react-modal";
 import {
   navVisitorItems,
   navAdminItem,
+  filterNavByRole,
   type NavItem,
 } from "../config/navigation";
+import { useAdminUser } from "./AdminUserProvider";
 import logo from "../../public/header_logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
@@ -189,7 +191,10 @@ export default function Banner() {
   // Fournit l'etat UI puis choisit automatiquement la navigation admin ou visiteur.
   const { pathname, isAdminPath } = useAppUi();
   const isDesktop = useIsDesktop();
-  const items = isAdminPath ? navAdminItem : navVisitorItems;
+  const adminUser = useAdminUser();
+  const items = isAdminPath
+    ? filterNavByRole(navAdminItem, adminUser?.user.role ?? "")
+    : navVisitorItems;
 
   // Envoie la requete de deconnexion puis redirige vers `/login`
   const handleLogout = async () => {
