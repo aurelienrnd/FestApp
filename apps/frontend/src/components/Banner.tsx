@@ -90,7 +90,7 @@ function DesktopNav({
             return null;
           }
 
-          // Instruction pour rendre les liens de navigation
+          // Instruction pour rendre le bouton de billetterie dans la navigation
           return (
             <li key={`${item.path}-${index}`}>
               <Link
@@ -106,7 +106,7 @@ function DesktopNav({
             </li>
           );
         })}
-        // Instruction pour rendre le bouton de billetterie
+        {/* Affiche le bouton de billetterie uniquement sur les pages publiques */}
         {isAdminPath ? null : <BtnTicket />}
       </ul>
     </nav>

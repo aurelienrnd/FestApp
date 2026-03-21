@@ -3,13 +3,13 @@
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
 import Modal from "react-modal";
-import ModalCloseButton from "../../components/ModalCloseButton";
-import ForgotPassword from "../../components/ForgotPassword";
+import ModalCloseButton from "../../../components/ModalCloseButton";
+import ForgotPassword from "../../../components/ForgotPassword";
 import {
   apiRequest,
   type ApiMessageResponse,
-} from "../../functions/apiRequest";
-import { getApiErrorMessage } from "../../functions/getApiErrorMessage";
+} from "../../../functions/apiRequest";
+import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 
 /** Affiche la page de connexion admin avec un formulaire email/mot de passe.
  * Envoie la requete de connexion via `apiRequest` avec les credentials inclus.
