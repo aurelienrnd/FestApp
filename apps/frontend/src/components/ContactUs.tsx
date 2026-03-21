@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
-
-// TODO requet
+import { apiRequest, type ApiMessageResponse } from "../functions/apiRequest";
+import { getApiErrorMessage } from "../functions/getApiErrorMessage";
 /** Affiche un formulaire de contact avec les champs nom, email, sujet et message */
 export default function ContactUs() {
   // Champs du formulaire
@@ -22,7 +22,7 @@ export default function ContactUs() {
     message.trim() === "";
 
   // Empeche le rechargement, valide le formulaire puis reinitialise les champs
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
 
@@ -32,12 +32,28 @@ export default function ContactUs() {
 
     setIsLoading(true);
 
-    // TODO requet
+    const result = await apiRequest<ApiMessageResponse>("/contact/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email.trim(),
+        name: name.trim(),
+        subject: subject.trim(),
+        message: message.trim(),
+      }),
+    });
+
+    if (result.error) {
+      setError(getApiErrorMessage(result.error));
+      setIsLoading(false);
+      return;
+    }
+
+    // reinitialise les champs et affiche le message de succes
     setName("");
     setEmail("");
     setSubject("");
     setMessage("");
-    setIsLoading(false);
     setSuccess(true);
   };
 
@@ -109,7 +125,11 @@ export default function ContactUs() {
             />
           </div>
           <div className="submit-modal-area">
-            <button type="submit" className="btn-cta" disabled={isFormInvalid || isLoading}>
+            <button
+              type="submit"
+              className="btn-cta"
+              disabled={isFormInvalid || isLoading}
+            >
               Envoyer
             </button>
           </div>
