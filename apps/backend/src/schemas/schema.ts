@@ -33,3 +33,11 @@ export const loginSchema = z.object({
 export const forgotPasswordSchema = z.object({
   email: z.email(),
 });
+
+/** Schema Zod du formulaire de contact — valide l'email, le nom, le sujet et le message. */
+export const contactSchema = z.object({
+  email: z.email(),
+  name: z.string().min(2).max(100).trim(),
+  subject: z.string().min(2).max(150).trim(),
+  message: z.string().min(10).max(2000).trim(),
+});
