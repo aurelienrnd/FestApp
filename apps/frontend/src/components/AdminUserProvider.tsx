@@ -39,13 +39,9 @@ export function AdminUserProvider({
   );
 }
 
-/** Accede au context admin utilisateur */
-export function useAdminUser() {
-  const context = useContext(AdminUserContext);
-
-  if (!context) {
-    throw new Error("useAdminUser must be used within AdminUserProvider");
-  }
-
-  return context;
+/** Accede au context admin utilisateur.
+ * Retourne null si appele hors AdminUserProvider (ex : layouts public et auth).
+ */
+export function useAdminUser(): AdminAuthMeResponse | null {
+  return useContext(AdminUserContext);
 }
