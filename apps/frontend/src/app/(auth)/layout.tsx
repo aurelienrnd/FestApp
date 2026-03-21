@@ -12,7 +12,7 @@ export default function AuthLayout({
 }>) {
   return (
     <AppUiProvider>
-      <div data-theme="admin" id="app-root" className="flex min-h-screen flex-col">
+      <div data-theme="admin" id="app-root" className="flex min-h-screen flex-col bg-(--color-bg) text-(--color-text)">
         <Banner />
         <main className="flex flex-1 flex-col">{children}</main>
         <Footer />

@@ -12,7 +12,7 @@ export default function PublicLayout({
 }>) {
   return (
     <AppUiProvider>
-      <div id="app-root" className="flex min-h-screen flex-col">
+      <div data-theme="visitor" id="app-root" className="flex min-h-screen flex-col bg-(--color-bg) text-(--color-text)">
         <Banner />
         <main className="flex flex-1 flex-col">{children}</main>
         <Footer />

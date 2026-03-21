@@ -12,12 +12,12 @@
   --color-text-input: #47474f;
 }
 
-:root[data-theme="admin"] {
+[data-theme="admin"] {
   --color-text: var(--color-text-admin);
   --color-bg: var(--color-bg-admin);
 }
 
-:root[data-theme="visitor"] {
+[data-theme="visitor"] {
   --color-text: var(--color-text-visitor);
   --color-bg: var(--color-bg-visitor);
 }

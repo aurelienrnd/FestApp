@@ -16,7 +16,6 @@ const AppUiContext = createContext<AppUiState | null>(null);
 /** Fournit un contexte global d’interface utilisateur (UI) à l’application.
  * Récupère l’URL pour déterminer si l’on est sur une page admin.
  * Détecte si l’affichage est en mode desktop via une media query.
- * Applique dynamiquement le thème (admin ou visitor) sur la balise <html> selon l’URL.
  * Expose ces informations aux composants enfants via AppUiContext.
  * @param {Object} props
  * @param {React.ReactNode} props.children - Composants enfants ayant accès au contexte.
@@ -42,17 +41,7 @@ export function AppUiProvider({ children }: { children: React.ReactNode }) {
     return () => media.removeEventListener("change", handleChange);
   }, []);
 
-  useEffect(() => {
-    // vérifie si la route est admin/login.
-    const path = pathname ?? "";
-    const isAdmin = path.includes("/admin") || path.includes("/login");
-
-    // Définit data-theme à admin ou visitor selon la route.
-    const root = document.documentElement;
-    root.dataset.theme = isAdmin ? "admin" : "visitor";
-  }, [pathname]);
-
-  return (
+return (
     <AppUiContext.Provider
       value={{
         pathname,
