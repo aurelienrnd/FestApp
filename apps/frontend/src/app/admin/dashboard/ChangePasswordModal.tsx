@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import {
@@ -41,9 +41,6 @@ export default function ChangePasswordModal({
   // Valeur de succes de la modification du mot de passe, affiche un message de succes et masque le formulaire
   const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    Modal.setAppElement("#app-root");
-  }, []);
 
   // Verifie si le formulaire de changement de mot de passe est incomplet
   const isFormInvalid =

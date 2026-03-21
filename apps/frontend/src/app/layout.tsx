@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Koulen } from "next/font/google";
 import "./globals.css";
+import ModalSetup from "../components/ModalSetup";
 
 // Police Google
 const koulen = Koulen({
@@ -28,8 +29,10 @@ export default function RootLayout({
   return (
     <html lang="fr" className={koulen.variable}>
       <body
+        id="app-root"
         className={`${koulen.className} min-h-screen bg-(--color-bg) text-(--color-text) flex flex-col`}
       >
+        <ModalSetup />
         {children}
       </body>
     </html>

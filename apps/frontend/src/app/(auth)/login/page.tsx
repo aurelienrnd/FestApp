@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useState } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import ForgotPassword from "../../../components/ForgotPassword";
@@ -31,11 +31,6 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
     useState(false);
-
-  // Definit la racine pour l'accessibilite de react-modal.
-  useEffect(() => {
-    Modal.setAppElement("#app-root");
-  }, []);
 
   // Valide le contenu du formulaire.
   const isFormInvalid = email.trim() === "" || password.trim() === "";

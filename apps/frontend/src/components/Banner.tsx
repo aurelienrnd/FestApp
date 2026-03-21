@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Modal from "react-modal";
 import {
   navVisitorItems,
@@ -140,36 +140,33 @@ export function MobilNav({
   onLogout: () => void;
 }) {
   // Verifie si la modale est ouverte
-  const [isOpen, setIsOpen] = useState(false);
-  useEffect(() => {
-    Modal.setAppElement("#app-root");
-  }, []);
+  const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
 
   return (
     <nav>
       <ul className="nav-list">
         <li className="mobil-menu">
-          <button type="button" onClick={() => setIsOpen(true)}>
+          <button type="button" onClick={() => setIsMenuModalOpen(true)}>
             <FontAwesomeIcon icon={faBars} />
           </button>
         </li>
         {isAdminPath ? null : <BtnTicket />}
       </ul>
       <Modal
-        isOpen={isOpen}
-        onRequestClose={() => setIsOpen(false)}
+        isOpen={isMenuModalOpen}
+        onRequestClose={() => setIsMenuModalOpen(false)}
         contentLabel="Menu"
         className="modal"
         overlayClassName="modal-overlay"
       >
-        <ModalCloseButton onClose={() => setIsOpen(false)} />
+        <ModalCloseButton onClose={() => setIsMenuModalOpen(false)} />
         <Navigation
           items={items}
           pathname={pathname}
           isAdminPath={isAdminPath}
           onLogout={onLogout}
           variant="modal"
-          setmodal={() => setIsOpen(false)}
+          setmodal={() => setIsMenuModalOpen(false)}
         />
       </Modal>
     </nav>

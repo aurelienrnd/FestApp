@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -20,12 +20,9 @@ export default function AddButton({
   items: NavItem[];
   className?: string;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
   const { pathname, isAdminPath } = useNavPath();
 
-  useEffect(() => {
-    Modal.setAppElement("#app-root");
-  }, []);
 
   return (
     <>
@@ -33,25 +30,25 @@ export default function AddButton({
         type="button"
         className="mb-(--margin-bottom-title) md:hidden"
         aria-label="Ouvrir les filtres"
-        onClick={() => setIsOpen(true)}
+        onClick={() => setIsFiltersModalOpen(true)}
       >
         <FontAwesomeIcon icon={faPlus} />
       </button>
 
       <Modal
-        isOpen={isOpen}
-        onRequestClose={() => setIsOpen(false)}
+        isOpen={isFiltersModalOpen}
+        onRequestClose={() => setIsFiltersModalOpen(false)}
         contentLabel="Filtres"
         className="modal"
         overlayClassName="modal-overlay"
       >
-        <ModalCloseButton onClose={() => setIsOpen(false)} />
+        <ModalCloseButton onClose={() => setIsFiltersModalOpen(false)} />
         <Navigation
           items={items}
           pathname={pathname}
           isAdminPath={isAdminPath}
           variant="modal"
-          setmodal={() => setIsOpen(false)}
+          setmodal={() => setIsFiltersModalOpen(false)}
         />
       </Modal>
     </>

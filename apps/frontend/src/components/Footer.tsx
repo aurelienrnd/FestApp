@@ -1,6 +1,6 @@
 "use client";
 // Import
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ModalCloseButton from "./ModalCloseButton";
@@ -14,9 +14,6 @@ import { legalLinks, socialLinks, type LegalLinkId } from "@/config/footer";
 export default function Footer() {
   // Stocke si la modale est ouverte et initialise react-modal sur body.
   const [activeModal, setActiveModal] = useState<LegalLinkId | null>(null);
-  useEffect(() => {
-    Modal.setAppElement("#app-root");
-  }, []);
 
   return (
     <>

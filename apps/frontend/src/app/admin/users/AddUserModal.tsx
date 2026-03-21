@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import { apiRequest } from "../../../functions/apiRequest";
@@ -72,10 +72,6 @@ export default function AddUserModal({
   // Indique si le formulaire envoye
   const [isLoading, setIsLoading] = useState(false);
 
-  // Definit l'element racine de l'application pour l'accessibilite de la modal
-  useEffect(() => {
-    Modal.setAppElement("#app-root");
-  }, []);
 
   // Verifie si le formulaire d'ajout utilisateur est incomplet.
   const isFormInvalid = isAddUserFormInvalid(firstName, lastName, email, role);

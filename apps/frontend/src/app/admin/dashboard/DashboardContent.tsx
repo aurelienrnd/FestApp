@@ -12,7 +12,7 @@ import ChangePasswordModal from "./ChangePasswordModal";
 export default function DashboardContent() {
   const adminUser = useAdminUser();
   const router = useRouter();
-  const [isChangePasswordModal, setIsChangePasswordModal] = useState(
+  const [isChangePasswordModalOpen, setIsChangePasswordModal] = useState(
     adminUser?.mustChangePassword ?? false,
   );
 
@@ -67,7 +67,7 @@ export default function DashboardContent() {
       </p>
 
       <ChangePasswordModal
-        isOpen={isChangePasswordModal}
+        isOpen={isChangePasswordModalOpen}
         onClose={handleModalClose}
         forced={mustChangePassword}
       />

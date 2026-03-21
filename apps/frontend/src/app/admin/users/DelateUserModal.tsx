@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import {
@@ -41,10 +41,6 @@ export default function DelateUserModal({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isDeleted, setIsDeleted] = useState(false);
 
-  // Definit l'element racine pour l'accessibilite de react-modal
-  useEffect(() => {
-    Modal.setAppElement("#app-root");
-  }, []);
 
   // Reinitialise l'etat interne et ferme la modale
   const handleClose = () => {
