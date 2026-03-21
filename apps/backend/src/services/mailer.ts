@@ -33,6 +33,29 @@ export async function sendPasswordResetEmail(
   });
 }
 
+/** Transmet le message du formulaire de contact a l'adresse de l'organisation.
+ * @param {string} from adresse email de l'expediteur (visiteur)
+ * @param {string} name nom complet de l'expediteur
+ * @param {string} subject sujet du message
+ * @param {string} message contenu du message
+ */
+export async function sendContactEmail(
+  from: string,
+  name: string,
+  subject: string,
+  message: string,
+): Promise<void> {
+  const transporter = createTransporter();
+
+  await transporter.sendMail({
+    from: `"Vindhellfest" <${getEnv("SMTP_USER")}>`,
+    to: getEnv("CONTACT_EMAIL"),
+    replyTo: from,
+    subject: `[Contact] ${subject}`,
+    text: `Message de : ${name} <${from}>\n\n${message}`,
+  });
+}
+
 /** Envoie les identifiants provisoires au nouvel utilisateur cree par un admin.
  * @param {string} to adresse email du destinataire
  * @param {string} displayName nom complet de l'utilisateur

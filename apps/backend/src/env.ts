@@ -18,6 +18,7 @@ const envSchema = z.object({
   SMTP_PORT: z.string(),
   SMTP_USER: z.string(),
   SMTP_PASS: z.string(),
+  CONTACT_EMAIL: z.string(),
 });
 
 /** Valide toutes les variables d'environnement obligatoires au demarrage.
