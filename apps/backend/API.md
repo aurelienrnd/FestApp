@@ -13,6 +13,7 @@
 | POST    | `/admin/users`       | Authentifié | Créer un utilisateur                            |
 | PATCH   | `/admin/users/:id`   | Authentifié | Modifier un utilisateur                         |
 | DELETE  | `/admin/users/:id`   | Authentifié | Supprimer un utilisateur                        |
+| POST    | `/contact/submit`    | Public      | Soumettre le formulaire de contact              |
 | GET     | `/public/lineup`     | Public      | Liste des artistes de la programmation          |
 | GET     | `/health`            | Public      | Santé du serveur (diagnostic)                   |
 | GET     | `/debug/db`          | Public      | Connexion à la base de données (diagnostic)     |
@@ -404,6 +405,45 @@ Reponses d'erreur:
 - `401` `{ "error": "Session deja fermee ou expiree" }`
 - `401` `{ "error": "Session manquante" }`
 - `404` `{ "error": "Utilisateur introuvable" }`
+
+## Contact
+
+Base path: `/contact`
+
+### POST `/contact/submit`
+
+Transmet le message du formulaire de contact par email a l'adresse de l'organisation.
+
+Middlewares: `validateBody`
+
+Corps de requete:
+
+```json
+{
+  "email": "visiteur@example.fr",
+  "name": "Jean Dupont",
+  "subject": "Question sur le festival",
+  "message": "Bonjour, je souhaitais savoir..."
+}
+```
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "message": "Message envoye"
+}
+```
+
+Reponses d'erreur:
+
+- `400` `{ "error": "Donnees invalides" }`
+- `500` `{ "error": "Erreur interne du serveur" }`
+
+---
 
 ## Lineup
 
