@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AppUiProvider, useAppUi } from "../../../src/components/AppUiProvider";
 
@@ -10,11 +10,10 @@ vi.mock("next/navigation", () => ({
 
 // Composant consommateur qui expose les valeurs du contexte dans le DOM
 function Consumer() {
-  const { isAdminPath, isDesktop } = useAppUi();
+  const { isAdminPath } = useAppUi();
   return (
     <div>
       <span>admin:{String(isAdminPath)}</span>
-      <span>desktop:{String(isDesktop)}</span>
     </div>
   );
 }
@@ -24,17 +23,10 @@ describe("AppUiProvider", () => {
     cleanup();
   });
 
-  it("exposes admin flag and desktop state", async () => {
+  it("exposes isAdminPath:true on admin route", () => {
     // Simule une URL admin
     mockPathname = "/admin/dashboard";
 
-    // Mock la media query pour simuler un ecran desktop (au moins 768px)
-    window.matchMedia = vi.fn().mockImplementation(() => ({
-      matches: true,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    }));
-
     // Monte le composant
     render(
       <AppUiProvider>
@@ -42,23 +34,13 @@ describe("AppUiProvider", () => {
       </AppUiProvider>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByText("admin:true")).toBeInTheDocument();
-      expect(screen.getByText("desktop:true")).toBeInTheDocument();
-    });
+    expect(screen.getByText("admin:true")).toBeInTheDocument();
   });
 
-  it("exposes isDesktop:false when viewport is mobile", async () => {
+  it("exposes isAdminPath:false on public route", () => {
     // Simule une URL publique (non admin)
     mockPathname = "/";
 
-    // Mock la media query pour simuler un ecran mobile (moins de 768px)
-    window.matchMedia = vi.fn().mockImplementation(() => ({
-      matches: false,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    }));
-
     // Monte le composant
     render(
       <AppUiProvider>
@@ -66,10 +48,7 @@ describe("AppUiProvider", () => {
       </AppUiProvider>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByText("desktop:false")).toBeInTheDocument();
-      expect(screen.getByText("admin:false")).toBeInTheDocument();
-    });
+    expect(screen.getByText("admin:false")).toBeInTheDocument();
   });
 
   it("throws when useAppUi is used outside AppUiProvider", () => {

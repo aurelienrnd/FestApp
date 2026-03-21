@@ -21,21 +21,17 @@ export default function AddButton({
   className?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { pathname, isAdminPath, isDesktop } = useAppUi();
+  const { pathname, isAdminPath } = useAppUi();
 
   useEffect(() => {
     Modal.setAppElement("#app-root");
   }, []);
 
-  if (isDesktop) {
-    return null;
-  }
-
   return (
     <>
       <button
         type="button"
-        className="mb-(--margin-bottom-title)"
+        className="mb-(--margin-bottom-title) md:hidden"
         aria-label="Ouvrir les filtres"
         onClick={() => setIsOpen(true)}
       >

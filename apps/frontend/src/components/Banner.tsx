@@ -14,6 +14,7 @@ import logo from "../../public/header_logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { useAppUi } from "./AppUiProvider";
+import { useIsDesktop } from "../hooks/useIsDesktop";
 import ModalCloseButton from "./ModalCloseButton";
 import Navigation from "./Navigation";
 import { apiRequest, type ApiMessageResponse } from "../functions/apiRequest";
@@ -186,7 +187,8 @@ export function MobilNav({
 export default function Banner() {
   const router = useRouter();
   // Fournit l'etat UI puis choisit automatiquement la navigation admin ou visiteur.
-  const { pathname, isAdminPath, isDesktop } = useAppUi();
+  const { pathname, isAdminPath } = useAppUi();
+  const isDesktop = useIsDesktop();
   const items = isAdminPath ? navAdminItem : navVisitorItems;
 
   // Envoie la requete de deconnexion puis redirige vers `/login`

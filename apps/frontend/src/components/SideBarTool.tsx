@@ -19,19 +19,17 @@ export default function SideBarTool({
   items: NavItem[];
   children: ReactNode;
 }) {
-  const { pathname, isDesktop, isAdminPath } = useAppUi();
+  const { pathname, isAdminPath } = useAppUi();
 
   return (
     <div className="flex flex-1 gap-(--space-md) pr-0 md:pr-(--space-md)">
-      {isDesktop ? (
-        <div className="sticky flex items-center">
-          <Navigation
-            items={items}
-            pathname={pathname}
-            isAdminPath={isAdminPath}
-          />
-        </div>
-      ) : null}
+      <div className="hidden md:flex sticky items-center">
+        <Navigation
+          items={items}
+          pathname={pathname}
+          isAdminPath={isAdminPath}
+        />
+      </div>
 
       {children}
     </div>
