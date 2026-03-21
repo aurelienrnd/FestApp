@@ -112,6 +112,8 @@ apps/frontend/
 │   ├── config/
 │   │   ├── footer.ts
 │   │   └── navigation.ts
+│   ├── hooks/
+│   │   └── useIsDesktop.ts
 │   ├── functions/
 │   │   ├── apiRequest.ts
 │   │   └── getApiErrorMessage.ts
@@ -211,7 +213,7 @@ Composants UI réutilisables à travers l'application.
 | Fichier | Description |
 | --- | --- |
 | `AdminUserProvider.tsx` | Context React qui expose les données de l'utilisateur admin connecté (`AdminUser`, `mustChangePassword`) aux pages enfants |
-| `AppUiProvider.tsx` | Context global d'UI — détecte la route courante (`isAdminPath`) et le mode desktop (`isDesktop`). Le thème est désormais délégué aux layouts via `data-theme` |
+| `AppUiProvider.tsx` | Context global de navigation — expose `pathname` et `isAdminPath`. Thème délégué aux layouts, détection desktop déléguée au hook `useIsDesktop` |
 | `AddButton.tsx` | Bouton d'ajout réutilisable (ex : ajouter un utilisateur) |
 | `Banner.tsx` | Bannière de navigation principale — gère aussi le logout |
 | `ContactUs.tsx` | Formulaire de contact (modale) |
@@ -221,6 +223,14 @@ Composants UI réutilisables à travers l'application.
 | `ModalCloseButton.tsx` | Bouton de fermeture générique pour les modales |
 | `Navigation.tsx` | Barre de navigation — adapte les liens selon le contexte (visiteur / admin) et les filtres de page |
 | `SideBarTool.tsx` | Barre d'outils latérale de l'espace admin |
+
+### `hooks/`
+
+Hooks React réutilisables découplés des composants.
+
+| Fichier | Description |
+| --- | --- |
+| `useIsDesktop.ts` | Détecte si l'écran est en mode desktop (≥ 768px) via `matchMedia` — consommé par `Banner` pour choisir entre `DesktopNav` et `MobilNav` |
 
 ### `config/`
 
