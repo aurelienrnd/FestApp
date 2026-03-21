@@ -22,9 +22,9 @@ export const navAdminItem: NavItem[] = [
   {
     label: "Dashboard",
     path: "/admin/dashboard",
-    role: "admin, line-up, news",
+    role: "admin, lineup, news",
   },
-  { label: "Programmation", path: "/admin/lineup", role: "admin, line-up" },
+  { label: "Programmation", path: "/admin/lineup", role: "admin, lineup" },
   { label: "Articles", path: "/admin/news", role: "admin, news" },
   { label: "Utilisateurs", path: "/admin/users", role: "admin" },
   { labelBtn: "Logout", active: false },
@@ -35,12 +35,23 @@ export const navDashBordItems: NavItem[] = [
   {
     label: "Dashboard",
     path: "/admin/dashboard",
-    role: "admin, line-up, news",
+    role: "admin, lineup, news",
   },
-  { label: "Programmation", path: "/admin/lineup", role: "admin, line-up" },
+  { label: "Programmation", path: "/admin/lineup", role: "admin, lineup" },
   { label: "Articles", path: "/admin/news", role: "admin, news" },
   { label: "Utilisateurs", path: "/admin/users", role: "admin" },
 ];
+
+/** Filtre les items de navigation selon le role de l'utilisateur connecte.
+ * Les items sans champ `role` sont toujours inclus (ex : Logout).
+ * @param {NavItem[]} items liste des items a filtrer
+ * @param {string} role role de l'utilisateur connecte
+ */
+export function filterNavByRole(items: NavItem[], role: string): NavItem[] {
+  return items.filter(
+    (item) => !item.role || item.role.split(", ").includes(role),
+  );
+}
 
 /** Filtres affiches dans la navigation de la page LineUp et admin/Lineup. */
 export const filterLineUpItems: NavItem[] = [
