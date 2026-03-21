@@ -40,7 +40,13 @@ export async function forgotPassword(req: Request, res: Response) {
     [passwordHash, user.id],
   );
 
-  await sendPasswordResetEmail(user.email, user.display_name, temporaryPassword);
+  await sendPasswordResetEmail(
+    user.email,
+    user.display_name,
+    temporaryPassword,
+  );
 
-  return res.status(200).json({ message: "Nouveau mot de passe envoye par email" });
+  return res
+    .status(200)
+    .json({ message: "Nouveau mot de passe envoye par email" });
 }

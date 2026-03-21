@@ -12,7 +12,11 @@ import { userInfo } from "../controllers/admin/auth/userInfo.controller";
 import { changePassword } from "../controllers/admin/auth/change_password.controller";
 import { forgotPassword } from "../controllers/admin/auth/forgot_password.controller";
 // schema
-import { loginSchema, changePasswordSchema, forgotPasswordSchema } from "../schemas/schema";
+import {
+  loginSchema,
+  changePasswordSchema,
+  forgotPasswordSchema,
+} from "../schemas/schema";
 // middlewares
 import { hashPassword } from "../middlewares/hashPassword";
 
