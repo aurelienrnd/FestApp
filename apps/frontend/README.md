@@ -106,6 +106,7 @@ apps/frontend/
 │   │   ├── ForgotPassword.tsx
 │   │   ├── LegalMention.tsx
 │   │   ├── ModalCloseButton.tsx
+│   │   ├── ModalSetup.tsx
 │   │   ├── Navigation.tsx
 │   │   └── SideBarTool.tsx
 │   ├── config/
@@ -220,6 +221,7 @@ Composants UI réutilisables à travers l'application.
 | `ForgotPassword.tsx` | Modale mot de passe oublié |
 | `LegalMention.tsx` | Modale mentions légales |
 | `ModalCloseButton.tsx` | Bouton de fermeture générique pour les modales |
+| `ModalSetup.tsx` | Initialise `Modal.setAppElement("#app-root")` une seule fois au niveau du layout racine |
 | `Navigation.tsx` | Barre de navigation — adapte les liens selon le contexte (visiteur / admin) et les filtres de page |
 | `SideBarTool.tsx` | Barre d'outils latérale de l'espace admin |
 
