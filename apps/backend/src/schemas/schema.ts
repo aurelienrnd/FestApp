@@ -28,3 +28,8 @@ export const loginSchema = z.object({
   email: z.email(), // pas de trim() ici car zod cree deja une regex qui prend en compte les espaces
   password: z.string().min(8),
 });
+
+/** Schema Zod de reinitialisation de mot de passe — valide uniquement l'email. */
+export const forgotPasswordSchema = z.object({
+  email: z.email(),
+});
