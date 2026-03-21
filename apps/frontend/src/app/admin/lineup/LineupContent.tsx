@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import type { ArtistListRow } from "../../../types";
@@ -62,9 +63,11 @@ export default function LineupContent() {
             {artists.map((artist) => (
               <li key={artist.id} className="card-row">
                 <div className="card-lineup-media">
-                  <img
+                  <Image
                     src={artist.url_media}
                     alt={artist.description_media}
+                    width={192}
+                    height={128}
                     className="card-media-img"
                   />
                 </div>
