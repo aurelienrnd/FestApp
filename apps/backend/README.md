@@ -134,6 +134,7 @@ apps/backend/
 │   │   ├── create_user.controller.test.ts
 │   │   ├── delete_user.controller.test.ts
 │   │   ├── errorHandler.test.ts
+│   │   ├── forgot_password.controller.test.ts
 │   │   ├── hashPassword.test.ts
 │   │   ├── health.test.ts
 │   │   ├── list_users.controller.test.ts
@@ -329,6 +330,7 @@ Vitest exécute les tests, Supertest simule les appels HTTP sur l'API Express.
 | `logout.controller.test.ts` | Contrôleur `logout` |
 | `list_users.controller.test.ts` | Contrôleur `listUsers` |
 | `create_user.controller.test.ts` | Contrôleur `createUser` |
+| `forgot_password.controller.test.ts` | Contrôleur `forgotPassword` |
 | `update_user.controller.test.ts` | Contrôleur `updateUser` |
 | `delete_user.controller.test.ts` | Contrôleur `deleteUser` |
 
