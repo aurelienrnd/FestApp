@@ -11,10 +11,13 @@ import ChangePasswordModal from "./ChangePasswordModal";
  */
 export default function DashboardContent() {
   const adminUser = useAdminUser();
+  const router = useRouter();
+  const [isChangePasswordModal, setIsChangePasswordModal] = useState(
+    adminUser?.mustChangePassword ?? false,
+  );
+
   if (!adminUser) return null;
   const { user, mustChangePassword } = adminUser;
-  const router = useRouter();
-  const [isChangePasswordModal, setIsChangePasswordModal] = useState(mustChangePassword);
 
   // Ferme la modale et rafraichit le layout serveur si le changement etait force
   const handleModalClose = () => {
