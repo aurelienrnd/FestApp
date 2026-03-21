@@ -1,9 +1,12 @@
+"use client";
 import SideBarTool from "../../../components/SideBarTool";
 import { filterNewsItems } from "../../../config/navigation";
 import AddButton from "../../../components/AddButton";
+import { useRoleGuard } from "../../../hooks/useRoleGuard";
 
 /** Page admin de gestion des articles. */
 export default function Page() {
+  useRoleGuard();
   return (
     <section className="section-page">
       <div className="flex justify-center item-center gap-6">

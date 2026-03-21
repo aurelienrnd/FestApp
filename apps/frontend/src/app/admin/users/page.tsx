@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import UsersContent from "./UsersContent";
+import { useRoleGuard } from "../../../hooks/useRoleGuard";
 
 /** Affiche la page d'administration des utilisateurs.
  * Affiche les filtres (sidebar + modal mobile) et la liste des utilisateurs.
@@ -16,6 +17,8 @@ import UsersContent from "./UsersContent";
  * @children UsersContent : Affiche le contenu de la page utilisateurs
  */
 export default function Page() {
+  useRoleGuard();
+
   // Initialise l'etat d'ouverture de la modal pour ajouter un utilisateur
   const [isOpen, setIsOpen] = useState(false);
 
