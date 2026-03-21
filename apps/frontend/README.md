@@ -285,7 +285,7 @@ Tests unitaires des composants React réutilisables.
 | --- | --- |
 | `useNavPath.test.tsx` | Vérifie la détection de la route admin (`isAdminPath`) via le hook `useNavPath` |
 | `Banner.test.tsx` | Vérifie le rendu desktop/mobile et l'affichage conditionnel du bouton billetterie |
-| `ContactUs.test.tsx` | Vérifie le formulaire de contact — activation du bouton et soumission |
+| `ContactUs.test.tsx` | Vérifie le formulaire de contact — activation du bouton, succès, erreur 400 et fallback 500 |
 | `Footer.test.tsx` | Vérifie l'ouverture/fermeture des modales mentions légales et contact |
 | `ForgotPassword.test.tsx` | Vérifie le formulaire mot de passe oublié — désactivation du bouton, succès, erreur 404 et fallback 500 |
 | `MobilNav.test.tsx` | Vérifie l'ouverture/fermeture de la navigation mobile |

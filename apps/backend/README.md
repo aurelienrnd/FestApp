@@ -94,6 +94,8 @@ apps/backend/
 │   │   │       ├── delete_user.controller.ts
 │   │   │       ├── list_users.controller.ts
 │   │   │       └── update_user.controller.ts
+│   │   ├── contact/
+│   │   │   └── submit_contact.controller.ts
 │   │   └── public/
 │   │       └── lineup/
 │   │           └── list_lineup.controller.ts
@@ -142,6 +144,7 @@ apps/backend/
 │   │   ├── logout.controller.test.ts
 │   │   ├── rateLimitLogin.test.ts
 │   │   ├── sessionIsOpen.test.ts
+│   │   ├── submit_contact.controller.test.ts
 │   │   ├── update_user.controller.test.ts
 │   │   └── validateBody.test.ts
 │   └── unitaire/
@@ -230,6 +233,7 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 | `admin/users/update_user.controller.ts` | PATCH `/admin/users/:id` | Modifie les informations d'un utilisateur |
 | `admin/users/delete_user.controller.ts` | DELETE `/admin/users/:id` | Supprime définitivement un utilisateur |
 | `public/lineup/list_lineup.controller.ts` | GET `/public/lineup` | Liste tous les artistes du festival |
+| `contact/submit_contact.controller.ts` | POST `/contact/submit` | Transmet le message du formulaire de contact par email a l'organisation |
 
 ### `routes/`
 
@@ -241,6 +245,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 | --- | --- |
 | `admin.auth.routes.ts` | POST `/admin/auth/login`, POST `/admin/auth/logout`, GET `/admin/auth/me`, PATCH `/admin/auth/password`, POST `/admin/auth/forgot-password` |
 | `admin.users.routes.ts` | GET `/admin/users`, POST `/admin/users`, PATCH `/admin/users/:id`, DELETE `/admin/users/:id` |
+| `contact.routes.ts` | POST `/contact/submit` |
 | `public.programming.routes.ts` | GET `/public/lineup` |
 
 **Routes déclarées mais non encore implémentées :**
@@ -331,6 +336,7 @@ Vitest exécute les tests, Supertest simule les appels HTTP sur l'API Express.
 | `list_users.controller.test.ts` | Contrôleur `listUsers` |
 | `create_user.controller.test.ts` | Contrôleur `createUser` |
 | `forgot_password.controller.test.ts` | Contrôleur `forgotPassword` |
+| `submit_contact.controller.test.ts` | Contrôleur `submitContact` |
 | `update_user.controller.test.ts` | Contrôleur `updateUser` |
 | `delete_user.controller.test.ts` | Contrôleur `deleteUser` |
 
