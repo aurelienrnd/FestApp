@@ -2,23 +2,23 @@
 
 ## Résumé des endpoints
 
-| Méthode | Route                | Accès       | Description                                     |
-| ------- | -------------------- | ----------- | ----------------------------------------------- |
-| GET     | `/admin/artists`     | Authentifié | Liste des artistes                              |
-| POST    | `/admin/artists`     | Authentifié | Créer un artiste (multipart/form-data)          |
-| POST    | `/admin/auth/login`            | Public      | Connexion administrateur                        |
-| POST    | `/admin/auth/logout`           | Authentifié | Déconnexion                                     |
-| GET     | `/admin/auth/me`               | Authentifié | Informations utilisateur + renouvellement token |
-| PATCH   | `/admin/auth/password`         | Authentifié | Modifier le mot de passe de l'utilisateur connecte |
-| POST    | `/admin/auth/forgot-password`  | Public      | Reinitialiser le mot de passe et envoyer un nouveau par email |
-| GET     | `/admin/users`       | Authentifié | Liste des utilisateurs                          |
-| POST    | `/admin/users`       | Authentifié | Créer un utilisateur                            |
-| PATCH   | `/admin/users/:id`   | Authentifié | Modifier un utilisateur                         |
-| DELETE  | `/admin/users/:id`   | Authentifié | Supprimer un utilisateur                        |
-| POST    | `/contact/submit`    | Public      | Soumettre le formulaire de contact              |
-| GET     | `/public/lineup`     | Public      | Liste des artistes de la programmation          |
-| GET     | `/health`            | Public      | Santé du serveur (diagnostic)                   |
-| GET     | `/debug/db`          | Public      | Connexion à la base de données (diagnostic)     |
+| Méthode | Route                         | Accès       | Description                                                   |
+| ------- | ----------------------------- | ----------- | ------------------------------------------------------------- |
+| GET     | `/admin/artists`              | Authentifié | Liste des artistes                                            |
+| POST    | `/admin/artists`              | Authentifié | Créer un artiste (multipart/form-data)                        |
+| POST    | `/admin/auth/login`           | Public      | Connexion administrateur                                      |
+| POST    | `/admin/auth/logout`          | Authentifié | Déconnexion                                                   |
+| GET     | `/admin/auth/me`              | Authentifié | Informations utilisateur + renouvellement token               |
+| PATCH   | `/admin/auth/password`        | Authentifié | Modifier le mot de passe de l'utilisateur connecte            |
+| POST    | `/admin/auth/forgot-password` | Public      | Reinitialiser le mot de passe et envoyer un nouveau par email |
+| GET     | `/admin/users`                | Authentifié | Liste des utilisateurs                                        |
+| POST    | `/admin/users`                | Authentifié | Créer un utilisateur                                          |
+| PATCH   | `/admin/users/:id`            | Authentifié | Modifier un utilisateur                                       |
+| DELETE  | `/admin/users/:id`            | Authentifié | Supprimer un utilisateur                                      |
+| POST    | `/contact/submit`             | Public      | Soumettre le formulaire de contact                            |
+| GET     | `/public/lineup`              | Public      | Liste des artistes de la programmation                        |
+| GET     | `/health`                     | Public      | Santé du serveur (diagnostic)                                 |
+| GET     | `/debug/db`                   | Public      | Connexion à la base de données (diagnostic)                   |
 
 ---
 
@@ -409,46 +409,6 @@ Reponses d'erreur:
 - `404` `{ "error": "Utilisateur introuvable" }`
 
 ## Artists
-
-Base path: `/admin/artists`
-
-> Les routes de cette section sont réservées aux rôles `admin` et `lineup`. Un rôle `news` recevra une réponse `403`.
-
-### GET `/admin/artists`
-
-Afficher la liste des artistes.
-
-Authentification:
-
-- Cookie d'authentification valide requis.
-
-Reponse en succes:
-
-- Statut: `200`
-- Corps:
-
-```json
-{
-  "artists": [
-    {
-      "id": "uuid",
-      "name": "Red Hot Chili Peppers",
-      "genre": "Rock",
-      "origin": "Etats-Unis, Los Angeles",
-      "bio": "Groupe de rock melant riffs lourds et funky.",
-      "url_media": "/uploads/artists/uuid.webp",
-      "description_media": "Photo promo du groupe"
-    }
-  ]
-}
-```
-
-Reponses d'erreur:
-
-- `401` `{ "error": "Cookie d'authentification manquant" }`
-- `403` `{ "error": "Acces refuse" }`
-
----
 
 ### POST `/admin/artists`
 

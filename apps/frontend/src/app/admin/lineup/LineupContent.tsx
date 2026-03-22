@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import AddArtistModal from "./AddArtistModal";
 import type { ArtistListRow } from "../../../types";
 
 type ListArtistsResponse = { artists: ArtistListRow[] };
@@ -12,8 +13,17 @@ type ListArtistsResponse = { artists: ArtistListRow[] };
  * Recupere les artistes via l'API puis affiche un etat de chargement/erreur.
  * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
  * @function getApiErrorMessage Definit un message a retourner selon le statut de l'erreur
+ * @param {boolean} isAddModalOpen Ouvre la modale d'ajout artiste.
+ * @param {() => void} onCloseAddModal Ferme la modale d'ajout artiste.
+ * @children AddArtistModal - Affiche la modale d'ajout d'artiste.
  */
-export default function LineupContent() {
+export default function LineupContent({
+  isAddModalOpen = false,
+  onCloseAddModal = () => {},
+}: {
+  isAddModalOpen?: boolean;
+  onCloseAddModal?: () => void;
+}) {
   // Etats lies aux donnees
   const [artists, setArtists] = useState<ArtistListRow[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -89,6 +99,8 @@ export default function LineupContent() {
           </ul>
         )}
       </div>
+
+      <AddArtistModal isOpen={isAddModalOpen} onClose={onCloseAddModal} />
     </div>
   );
 }
