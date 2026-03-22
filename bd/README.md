@@ -43,11 +43,13 @@ Stocke les comptes des utilisateurs administrateurs de l'application.
 | `email` | `CITEXT` | NOT NULL, UNIQUE | Email insensible à la casse |
 | `password_hash` | `VARCHAR(255)` | NOT NULL | Mot de passe hashé (bcrypt) |
 | `display_name` | `VARCHAR(100)` | NOT NULL | Nom affiché dans l'interface admin |
-| `role` | `VARCHAR(50)` | NOT NULL, DEFAULT `'user'` | Rôle de l'utilisateur (`admin`, `lineup`, `news`) |
+| `role` | `VARCHAR(50)` | NOT NULL, DEFAULT `'lineup'` | Rôle de l'utilisateur (`admin`, `lineup`, `news`) |
 | `password_changed_at` | `TIMESTAMPTZ` | NULL | Date du dernier changement de mot de passe |
 | `created_at` | `TIMESTAMPTZ` | NOT NULL, DEFAULT `NOW()` | Date de création du compte |
 
 **Données de développement :** Un utilisateur `admin@example.com` avec le mot de passe `MyPassword` est inséré au démarrage.
+
+> **Choix de conception :** Le rôle utilisateur est une valeur parmi un ensemble fermé et connu à l'avance. Une entité `ROLE` séparée aurait été possible en Merise strict, mais dans ce contexte applicatif simple, un `VARCHAR` avec validation en backend suffit et évite une jointure supplémentaire inutile.
 
 ---
 
@@ -132,7 +134,7 @@ Décrit les événements musicaux et modélise la programmation du festival.
 | --- | --- | --- | --- |
 | `id` | `UUID` | PRIMARY KEY | Identifiant unique du concert |
 | `artist_id` | `UUID` | NOT NULL, FK → `artists(id)` ON DELETE CASCADE | Artiste qui se produit |
-| `stage` | `TEXT` | NOT NULL | Nom ou identifiant de la scène |
+| `stage` | `TEXT` | NOT NULL | Nom de la scène où se produit l'artiste |
 | `start_time` | `TIMESTAMPTZ` | NOT NULL | Date et heure de début |
 | `end_time` | `TIMESTAMPTZ` | NOT NULL | Date et heure de fin |
 
@@ -145,4 +147,6 @@ Décrit les événements musicaux et modélise la programmation du festival.
 
 **Index :** `(stage, start_time)`, `start_time`
 
-**Données de développement :** Un concert de Red Hot Chili Peppers sur `main-stage` est planifié le lendemain du démarrage.
+**Données de développement :** Un concert de Red Hot Chili Peppers sur `main-stage` et un concert de Foo Fighters sur `second-stage` sont planifiés le lendemain du démarrage.
+
+> **Choix de conception :** Dans une modélisation Merise stricte, `stage` pourrait être une entité à part entière. Ce choix a été fait de le garder comme attribut texte car les scènes du festival sont des libellés fixes et simples — elles n'ont pas d'attributs propres qui justifieraient une table dédiée. Ce choix évite une complexité inutile tout en respectant la 3FN.
