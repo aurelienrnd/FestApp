@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
+import { useState, type FormEvent, type ChangeEvent } from "react";
 import Image from "next/image";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
@@ -56,8 +56,15 @@ function isStep2Invalid(descriptionMedia: string, image: File | null) {
  * @param {string} startTime Heure de debut
  * @param {string} endTime Heure de fin
  */
-function isStep3Invalid(stage: string, date: string, startTime: string, endTime: string) {
-  return stage.trim() === "" || date === "" || startTime === "" || endTime === "";
+function isStep3Invalid(
+  stage: string,
+  date: string,
+  startTime: string,
+  endTime: string,
+) {
+  return (
+    stage.trim() === "" || date === "" || startTime === "" || endTime === ""
+  );
 }
 
 /** Affiche la modale d'ajout d'un artiste en trois etapes.
@@ -100,17 +107,6 @@ export default function AddArtistModal({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Genere une URL de previsualisation quand l'image change et libere l'ancienne
-  useEffect(() => {
-    if (!image) {
-      setPreviewUrl(null);
-      return;
-    }
-    const url = URL.createObjectURL(image);
-    setPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [image]);
-
   const step1Invalid = isStep1Invalid(name, genre, origin, bio);
   const step2Invalid = isStep2Invalid(descriptionMedia, image);
   const step3Invalid = isStep3Invalid(stage, date, startTime, endTime);
@@ -124,6 +120,8 @@ export default function AddArtistModal({
     setBio("");
     setDescriptionMedia("");
     setImage(null);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
     setStage("");
     setDate("");
     setStartTime("");
@@ -138,9 +136,12 @@ export default function AddArtistModal({
     onClose();
   };
 
-  // Gere la selection du fichier image
+  // Gere la selection du fichier image et met a jour la previsualisation
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setImage(event.target.files?.[0] ?? null);
+    const file = event.target.files?.[0] ?? null;
+    setImage(file);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(file ? URL.createObjectURL(file) : null);
   };
 
   // Gere la soumission du formulaire d'ajout d'artiste
@@ -160,7 +161,10 @@ export default function AddArtistModal({
     formData.append("description_media", descriptionMedia);
     formData.append("image", image as File);
     formData.append("stage", stage);
-    formData.append("start_time", new Date(`${date}T${startTime}`).toISOString());
+    formData.append(
+      "start_time",
+      new Date(`${date}T${startTime}`).toISOString(),
+    );
     formData.append("end_time", new Date(`${date}T${endTime}`).toISOString());
 
     const result = await apiRequest<CreateArtistApiResponse>("/admin/artists", {
@@ -281,22 +285,8 @@ export default function AddArtistModal({
               />
             </div>
 
-            <div>
-              <label htmlFor="artistImage" className="sr-only">
-                Photo de l&apos;artiste
-              </label>
-              <input
-                id="artistImage"
-                name="image"
-                type="file"
-                accept="image/*"
-                className="input"
-                onChange={handleImageChange}
-              />
-            </div>
-
-            {previewUrl ? (
-              <div className="flex justify-center">
+            <div className="upload-zone">
+              {previewUrl ? (
                 <Image
                   src={previewUrl}
                   alt="Previsualisation"
@@ -304,8 +294,40 @@ export default function AddArtistModal({
                   height={200}
                   className="card-media-img"
                 />
-              </div>
-            ) : null}
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="80"
+                  height="80"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-(--color-text-input)"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <polyline points="21 15 16 10 5 21" />
+                </svg>
+              )}
+              <input
+                id="artistImage"
+                name="image"
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                aria-label="Photo de l'artiste"
+                onChange={handleImageChange}
+              />
+              <label htmlFor="artistImage" className="upload-btn">
+                + Ajouter photo
+              </label>
+              <p className="text-xs text-(--color-text-input)">
+                jpg, png, webp : 5mo max
+              </p>
+            </div>
 
             <div className="submit-modal-area">
               <button

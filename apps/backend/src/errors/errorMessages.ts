@@ -22,5 +22,6 @@ export const ERRORS = {
   AUTH_EMAIL_NOT_FOUND: "Aucun compte associe a cet email",
   ARTIST_NOT_FOUND: "Artiste introuvable",
   ARTIST_FILE_REQUIRED: "Image requise",
-  ARTIST_INVALID_FILE_TYPE: "Type de fichier non autorise (jpeg, png ou webp uniquement)",
+  ARTIST_INVALID_FILE_TYPE:
+    "Type de fichier non autorise (jpeg, png ou webp uniquement)",
 } as const;

@@ -41,6 +41,7 @@ vi.mock("../../../src/components/AdminUserProvider", () => ({
 
 // Mock du composant Image de Next.js
 vi.mock("next/image", () => ({
+  // eslint-disable-next-line @next/next/no-img-element
   default: (props: Record<string, unknown>) => <img alt="" {...props} />,
 }));
 

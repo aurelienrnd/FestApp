@@ -93,7 +93,14 @@
     font-family: var(--font-family-input);
   }
   .submit-modal-area {
-    @apply flex justify-center pt-1;
+    @apply flex justify-center gap-(--space-sm) pt-1;
+  }
+
+  .upload-zone {
+    @apply flex w-full flex-col items-center gap-(--space-sm) rounded-lg bg-(--color-bg-input) p-(--space-md);
+  }
+  .upload-btn {
+    @apply cursor-pointer rounded-full border border-(--color-text-input) px-(--space-md) py-(--space-xs) text-sm transition-opacity hover:opacity-70;
   }
 
   .section-page {

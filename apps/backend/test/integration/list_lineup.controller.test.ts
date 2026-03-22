@@ -31,8 +31,8 @@ describe("listLineup controller (integration)", () => {
     vi.clearAllMocks();
   });
 
-  it("should return 200 with artists list", async () => {
-    // Simulation d'une reponse base de donnees retournant deux artistes
+  it("should return 200 with artists list including concert data", async () => {
+    // Simulation d'une reponse base de donnees retournant deux artistes avec concert associe
     mockQuery.mockResolvedValueOnce([
       {
         id: "artist-1",
@@ -42,6 +42,9 @@ describe("listLineup controller (integration)", () => {
         bio: "Une bio",
         url_media: "https://youtube.com/bandA",
         description_media: "Live at Hellfest",
+        stage: "Grande Scene",
+        start_time: "2025-06-20T18:00:00.000Z",
+        end_time: "2025-06-20T19:30:00.000Z",
       },
       {
         id: "artist-2",
@@ -51,6 +54,9 @@ describe("listLineup controller (integration)", () => {
         bio: "Autre bio",
         url_media: "https://youtube.com/bandB",
         description_media: "Studio session",
+        stage: "Scene Metal",
+        start_time: "2025-06-21T20:00:00.000Z",
+        end_time: "2025-06-21T21:30:00.000Z",
       },
     ]);
 
@@ -68,10 +74,39 @@ describe("listLineup controller (integration)", () => {
       bio: "Une bio",
       url_media: "https://youtube.com/bandA",
       description_media: "Live at Hellfest",
+      stage: "Grande Scene",
+      start_time: "2025-06-20T18:00:00.000Z",
+      end_time: "2025-06-20T19:30:00.000Z",
     });
     expect(mockQuery).toHaveBeenCalledWith(
-      expect.stringContaining("FROM artists"),
+      expect.stringContaining("LEFT JOIN concerts"),
     );
+  });
+
+  it("should return 200 with null concert fields when artist has no concert", async () => {
+    // Simulation d'un artiste sans concert associe (LEFT JOIN retourne null)
+    mockQuery.mockResolvedValueOnce([
+      {
+        id: "artist-1",
+        name: "Band A",
+        genre: "Metal",
+        origin: "France",
+        bio: "Une bio",
+        url_media: "https://youtube.com/bandA",
+        description_media: "Live at Hellfest",
+        stage: null,
+        start_time: null,
+        end_time: null,
+      },
+    ]);
+
+    const app = createApp();
+    const res = await request(app).get("/lineup");
+
+    expect(res.status).toBe(200);
+    expect(res.body.artists[0].stage).toBeNull();
+    expect(res.body.artists[0].start_time).toBeNull();
+    expect(res.body.artists[0].end_time).toBeNull();
   });
 
   it("should return 200 with empty array when no artists", async () => {

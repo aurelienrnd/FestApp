@@ -21,7 +21,16 @@ export async function createArtist(req: Request, res: Response) {
   }
 
   // extrait les champs de la requete
-  const { name, genre, origin, bio, description_media, stage, start_time, end_time } = req.body;
+  const {
+    name,
+    genre,
+    origin,
+    bio,
+    description_media,
+    stage,
+    start_time,
+    end_time,
+  } = req.body;
 
   // genere un nom de fichier unique pour l'image, construit le chemin de destination et l'URL d'acces
   const uuid = randomUUID();
