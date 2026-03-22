@@ -14,7 +14,7 @@ CREATE TABLE articles (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),                -- Date de creation
   url_media VARCHAR(255) NOT NULL,                              -- URL/chemin du media associe
   description_media VARCHAR(255) NOT NULL,                      -- Texte alternatif / description courte
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT -- Reference l'utilisateur createur
+  user_id UUID NULL REFERENCES users(id) ON DELETE SET NULL -- Reference l'utilisateur createur, NULL si supprime
 );
 
 -- Indexes pour optimiser les requetes courantes

@@ -1,8 +1,10 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import { useAdminUser } from "../../../components/AdminUserProvider";
 import AddUserModal from "./AddUserModal";
 import DelateUserModal from "./DelateUserModal";
 import type { UserListRow } from "../../../types";
@@ -36,6 +38,9 @@ export default function UsersContent({
   onCloseAddModal?: () => void;
   filterBy?: "all" | "admin" | "lineup" | "news";
 }) {
+  const router = useRouter();
+  const currentUser = useAdminUser();
+
   // Etats lies aux donnees
   const [users, setUsers] = useState<UserListRow[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -86,8 +91,15 @@ export default function UsersContent({
   };
   // Met a jour la liste des utilisateurs apres suppression en retirant l'utilisateur correspondant a l'id fourni
   const handleUserDeleted = (userId: string) => {
+    // Redirige vers /login si l'utilisateur supprime est l'utilisateur connecte
+    if (userId === currentUser?.user.id) {
+      router.push("/login");
+      return;
+    }
+
+    // Filtre la liste des utilisateurs pour retirer l'utilisateur supprime
     setUsers((currentUsers) =>
-      currentUsers.filter((currentUser) => currentUser.id !== userId),
+      currentUsers.filter((user) => user.id !== userId),
     );
   };
   // Masque la modal de suppression et reinitialise l'utilisateur selectionne

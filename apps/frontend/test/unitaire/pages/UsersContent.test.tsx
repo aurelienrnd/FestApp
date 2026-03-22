@@ -10,6 +10,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import UsersContent from "../../../src/app/admin/users/UsersContent";
 import { ApiRequestError } from "../../../src/functions/apiRequest";
 
+// Mock de useRouter pour eviter l'erreur "invariant expected app router to be mounted"
+const mockPush = vi.fn();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
+// Mock de useAdminUser pour simuler un utilisateur connecte different des utilisateurs de la liste
+vi.mock("../../../src/components/AdminUserProvider", () => ({
+  useAdminUser: () => ({ user: { id: "current-user-id" }, mustChangePassword: false }),
+}));
+
 // Création d'un mock pour simuler les appels à l'API
 const mockApiRequest = vi.fn();
 
@@ -330,6 +341,41 @@ describe("UsersContent", () => {
     // Verifie que seul l'utilisateur admin est affiche
     expect(await screen.findByText("Admin User")).toBeInTheDocument();
     expect(screen.queryByText("News User")).not.toBeInTheDocument();
+  });
+
+  it("redirects to /login when the current user deletes themselves", async () => {
+    const user = userEvent.setup();
+
+    mockApiRequest
+      .mockResolvedValueOnce({
+        data: {
+          users: [
+            {
+              id: "current-user-id",
+              email: "me@test.fr",
+              display_name: "Me",
+              role: "admin",
+              created_at: "2026-03-12T10:15:30.000Z",
+              password_changed_at: "2026-03-12T12:00:00.000Z",
+            },
+          ],
+        },
+        error: null,
+      })
+      .mockResolvedValueOnce({
+        data: { message: "Utilisateur supprime" },
+        error: null,
+      });
+
+    render(<UsersContent />);
+
+    await screen.findByText("Me");
+    await user.click(screen.getByRole("button", { name: "Supprimer" }));
+    await user.click(screen.getByRole("button", { name: "Confirmer" }));
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith("/login");
+    });
   });
 
   it("shows error message when delete fails", async () => {
