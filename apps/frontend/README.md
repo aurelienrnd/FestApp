@@ -174,7 +174,7 @@ Le frontend bénéficie de 5 stages car il possède plus de dépendances, ce qui
 ### `app/`
 
 - **`globals.css`** : Déclare les variables CSS globales, les thèmes `admin`/`visitor` et les classes utilitaires Tailwind partagées (cards, layouts…).
-- **`layout.tsx`** : Layout racine Next.js — charge la police Google, définit les métadonnées SEO. Ne contient pas de Banner/Footer (délégués aux layouts de section).
+- **`layout.tsx`** : Layout racine Next.js — charge la police Google, définit les métadonnées SEO. Ne contient pas de Banner/Footer (délégués aux layouts de section). Inclut un `<div id="app-root">` wrapper à l'intérieur du `<body>` pour permettre à `react-modal` d'appliquer `aria-hidden` correctement sans masquer l'intégralité de l'arbre d'accessibilité.
 
 L'application est divisée en trois zones distinctes avec chacune leur layout :
 
@@ -205,7 +205,7 @@ Le groupe de routes `(auth)` est transparent pour les URLs. Son layout est ident
 | `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe si `mustChangePassword` est vrai |
 | `admin/lineup/` | `/admin/lineup` | Gestion de la programmation (`LineupContent.tsx`) — accès restreint aux rôles `admin` et `lineup` via `useRoleGuard` |
 | `admin/news/` | `/admin/news` | Gestion des actualités — accès restreint aux rôles `admin` et `news` via `useRoleGuard` |
-| `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) — accès restreint au rôle `admin` via `useRoleGuard` |
+| `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) — accès restreint au rôle `admin` via `useRoleGuard`. Si l'utilisateur connecté se supprime lui-même, il est redirigé vers `/login` |
 
 ### `components/`
 
@@ -310,7 +310,7 @@ Tests unitaires des pages et de leurs flux principaux.
 | `ChangePasswordModal.test.tsx` | Vérifie la modale de changement de mot de passe — validation des saisies, gestion des erreurs API et mode forcé (sans bouton de fermeture) |
 | `DashboardContent.test.tsx` | Vérifie le tableau de bord — ouverture automatique de la modale si `mustChangePassword` est vrai et affichage des informations utilisateur |
 | `LoginPage.test.tsx` | Vérifie le formulaire de connexion — gestion des erreurs (401, 429, 500) et redirection en cas de succès |
-| `UsersContent.test.tsx` | Vérifie le CRUD utilisateurs — chargement de la liste, ajout, modification, suppression et gestion des erreurs |
+| `UsersContent.test.tsx` | Vérifie le CRUD utilisateurs — chargement de la liste, ajout, modification, suppression, gestion des erreurs et redirection vers `/login` si l'utilisateur connecté se supprime lui-même |
 
 ---
 

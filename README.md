@@ -81,17 +81,11 @@ vindhellfest/
 ├── .env.frontend
 ├── .gitignore
 ├── docker-compose.yml
-├── POSSIBLE_IMPROVEMENTS.md
 └── README.md
 ```
 
 ---
 
-## `POSSIBLE_IMPROVEMENTS.md`
-
-Ce fichier recense les pistes d'amélioration identifiées au fil du développement : limitations connues, points de sécurité à adresser avant une mise en production, et évolutions fonctionnelles envisagées.
-
----
 
 ## `.github/workflows/`
 
@@ -174,10 +168,13 @@ Ce dossier inclut :
 | POST | `/admin/auth/login` | Public | Connexion (rate limité) |
 | POST | `/admin/auth/logout` | Authentifié | Déconnexion |
 | GET | `/admin/auth/me` | Authentifié | Infos utilisateur connecté + renouvellement du token |
-| GET | `/admin/users` | Authentifié | Liste des utilisateurs admin |
-| POST | `/admin/users` | Authentifié | Créer un utilisateur admin |
-| PATCH | `/admin/users/:id` | Authentifié | Modifier un utilisateur |
-| DELETE | `/admin/users/:id` | Authentifié | Supprimer un utilisateur |
+| PATCH | `/admin/auth/password` | Authentifié | Modifier son mot de passe |
+| POST | `/admin/auth/forgot-password` | Public | Réinitialiser son mot de passe (rate limité) |
+| GET | `/admin/users` | Authentifié (admin) | Liste des utilisateurs admin |
+| POST | `/admin/users` | Authentifié (admin) | Créer un utilisateur admin |
+| PATCH | `/admin/users/:id` | Authentifié (admin) | Modifier un utilisateur |
+| DELETE | `/admin/users/:id` | Authentifié (admin) | Supprimer un utilisateur — redirige vers `/login` si l'utilisateur se supprime lui-même |
+| POST | `/contact/submit` | Public | Envoyer un message de contact |
 
 > La documentation complète des endpoints est disponible dans [`apps/backend/API.md`](apps/backend/API.md).
 
@@ -198,7 +195,7 @@ Le modèle s'articule autour de plusieurs entités principales représentant les
 
 - La table `users` centralise les informations liées aux comptes utilisateurs (identité, authentification, rôles).
 - La table `sessions` est liée aux utilisateurs et permet de gérer la persistance des connexions et la sécurité des accès, notamment dans le cadre de l'authentification par JWT.
-- La table `articles` permet de stocker le contenu éditorial (actualités, annonces, informations liées à l'événement) et peut être reliée aux utilisateurs pour identifier les auteurs.
+- La table `articles` permet de stocker le contenu éditorial (actualités, annonces, informations liées à l'événement). Elle est reliée aux utilisateurs via `user_id` (nullable) — si un utilisateur est supprimé, `user_id` passe à `NULL` et l'article est conservé (auteur affiché comme "Auteur inconnu").
 - La table `artists` représente les groupes ou artistes programmés pour le festival.
 - La table `concerts` décrit les événements musicaux et est associée aux artistes, ce qui permet de modéliser la programmation et la planification des prestations.
 
