@@ -50,6 +50,15 @@ export type ArtistListRow = {
   end_time: string | null;
 };
 
+/** Type representant une ligne concert retournee par la base de donnees. */
+export type ConcertRow = {
+  id: string;
+  artist_id: string;
+  stage: string;
+  start_time: string;
+  end_time: string;
+};
+
 /** Type representant les informations de l'utilisateur connecte. */
 export type UserInfoRow = {
   id: string;

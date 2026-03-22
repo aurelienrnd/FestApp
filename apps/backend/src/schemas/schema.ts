@@ -42,11 +42,16 @@ export const contactSchema = z.object({
   message: z.string().min(10).max(2000).trim(),
 });
 
-/** Schema Zod de creation d'un artiste — valide les champs texte uniquement (l'image arrive via req.file). */
+/** Schema Zod de creation d'un artiste — valide les champs texte uniquement (l'image arrive via req.file).
+ * Inclut les champs de programmation du concert associe (scene, heure de debut et de fin).
+ */
 export const createArtistSchema = z.object({
   name: z.string().min(2).max(100).trim(),
   genre: z.string().min(1).max(60).trim(),
   origin: z.string().min(1).max(80).trim(),
   bio: z.string().min(1).trim(),
   description_media: z.string().min(1).max(255).trim(),
+  stage: z.string().min(1).trim(),
+  start_time: z.iso.datetime(),
+  end_time: z.iso.datetime(),
 });

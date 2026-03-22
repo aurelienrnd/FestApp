@@ -19,7 +19,7 @@ type CreateArtistApiResponse = {
   artist: ArtistListRow;
 };
 
-/** Verifie si le formulaire de la partie 1 est incomplet.
+/** Verifie si le formulaire de l'etape 1 est incomplet.
  * Retourne `true` si au moins un champ requis est vide.
  * @param {string} name Nom de l'artiste
  * @param {string} genre Genre musical
@@ -40,7 +40,7 @@ function isStep1Invalid(
   );
 }
 
-/** Verifie si le formulaire de la partie 2 est incomplet.
+/** Verifie si le formulaire de l'etape 2 est incomplet.
  * Retourne `true` si au moins un champ requis est vide ou absent.
  * @param {string} descriptionMedia Texte alternatif de l'image
  * @param {File | null} image Fichier image
@@ -49,8 +49,19 @@ function isStep2Invalid(descriptionMedia: string, image: File | null) {
   return descriptionMedia.trim() === "" || image === null;
 }
 
-/** Affiche la modale d'ajout d'un artiste en deux etapes.
- * Etape 1 : nom, genre, origine. Etape 2 : bio, description image, fichier image.
+/** Verifie si le formulaire de l'etape 3 est incomplet.
+ * Retourne `true` si au moins un champ requis est vide.
+ * @param {string} stage Nom de la scene
+ * @param {string} date Date du concert
+ * @param {string} startTime Heure de debut
+ * @param {string} endTime Heure de fin
+ */
+function isStep3Invalid(stage: string, date: string, startTime: string, endTime: string) {
+  return stage.trim() === "" || date === "" || startTime === "" || endTime === "";
+}
+
+/** Affiche la modale d'ajout d'un artiste en trois etapes.
+ * Etape 1 : nom, genre, origine, bio. Etape 2 : description image, fichier image. Etape 3 : scene, heure de debut et de fin.
  * Soumet les donnees en multipart/form-data a POST /admin/artists.
  * @param {AddArtistModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
@@ -64,17 +75,23 @@ export default function AddArtistModal({
   handleArtist,
 }: AddArtistModalProps) {
   // Etape active de la modal
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
 
   // Champs de l'etape 1
   const [name, setName] = useState("");
   const [genre, setGenre] = useState("");
   const [origin, setOrigin] = useState("");
+  const [bio, setBio] = useState("");
 
   // Champs de l'etape 2
-  const [bio, setBio] = useState("");
   const [descriptionMedia, setDescriptionMedia] = useState("");
   const [image, setImage] = useState<File | null>(null);
+
+  // Champs de l'etape 3
+  const [stage, setStage] = useState("");
+  const [date, setDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
 
   // URL de previsualisation de l'image selectionnee
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -96,6 +113,7 @@ export default function AddArtistModal({
 
   const step1Invalid = isStep1Invalid(name, genre, origin, bio);
   const step2Invalid = isStep2Invalid(descriptionMedia, image);
+  const step3Invalid = isStep3Invalid(stage, date, startTime, endTime);
 
   // Reinitialise tous les champs et revient a l'etape 1
   const resetForm = () => {
@@ -106,6 +124,10 @@ export default function AddArtistModal({
     setBio("");
     setDescriptionMedia("");
     setImage(null);
+    setStage("");
+    setDate("");
+    setStartTime("");
+    setEndTime("");
   };
 
   // Gere la fermeture de la modal et reinitialise les etats associes
@@ -124,7 +146,7 @@ export default function AddArtistModal({
   // Gere la soumission du formulaire d'ajout d'artiste
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (step2Invalid) return;
+    if (step3Invalid) return;
 
     setIsLoading(true);
     setError(null);
@@ -137,6 +159,9 @@ export default function AddArtistModal({
     formData.append("bio", bio);
     formData.append("description_media", descriptionMedia);
     formData.append("image", image as File);
+    formData.append("stage", stage);
+    formData.append("start_time", new Date(`${date}T${startTime}`).toISOString());
+    formData.append("end_time", new Date(`${date}T${endTime}`).toISOString());
 
     const result = await apiRequest<CreateArtistApiResponse>("/admin/artists", {
       method: "POST",
@@ -149,9 +174,9 @@ export default function AddArtistModal({
       return;
     }
 
-    handleArtist(result.data.artist);
     resetForm();
     setIsLoading(false);
+    handleArtist(result.data.artist);
   };
 
   return (
@@ -167,7 +192,7 @@ export default function AddArtistModal({
 
       <div className="m-(--space-md)">
         {step === 1 ? (
-          <div className="form-modal">
+          <div key="step-1" className="form-modal">
             <div>
               <label htmlFor="artistName" className="sr-only">
                 Nom de l&apos;artiste
@@ -239,8 +264,8 @@ export default function AddArtistModal({
               </button>
             </div>
           </div>
-        ) : (
-          <form className="form-modal" onSubmit={handleSubmit}>
+        ) : step === 2 ? (
+          <div key="step-2" className="form-modal">
             <div>
               <label htmlFor="artistDescriptionMedia" className="sr-only">
                 Description de l&apos;image
@@ -291,9 +316,86 @@ export default function AddArtistModal({
                 Retour
               </button>
               <button
+                type="button"
+                className="btn-cta"
+                disabled={step2Invalid}
+                onClick={() => setStep(3)}
+              >
+                Suivant
+              </button>
+            </div>
+          </div>
+        ) : (
+          <form key="step-3" className="form-modal" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="artistStage" className="sr-only">
+                Scène
+              </label>
+              <input
+                id="artistStage"
+                name="stage"
+                type="text"
+                placeholder="Nom de la scène"
+                className="input"
+                value={stage}
+                onChange={(e) => setStage(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="artistDate" className="sr-only">
+                Date du concert
+              </label>
+              <input
+                id="artistDate"
+                name="date"
+                type="date"
+                className="input"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="artistStartTime" className="sr-only">
+                Heure de début
+              </label>
+              <input
+                id="artistStartTime"
+                name="start_time"
+                type="time"
+                className="input"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="artistEndTime" className="sr-only">
+                Heure de fin
+              </label>
+              <input
+                id="artistEndTime"
+                name="end_time"
+                type="time"
+                className="input"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+              />
+            </div>
+
+            <div className="submit-modal-area">
+              <button
+                type="button"
+                className="btn-type-2 rounded-md border border-(--color-text-input) p-(--space-xs)"
+                onClick={() => setStep(2)}
+              >
+                Retour
+              </button>
+              <button
                 type="submit"
                 className="btn-cta"
-                disabled={step2Invalid || isLoading}
+                disabled={step3Invalid || isLoading}
               >
                 Ajouter
               </button>

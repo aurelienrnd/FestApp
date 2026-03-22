@@ -6,7 +6,7 @@ import sharp from "sharp";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import type { ArtistListRow } from "../../../type";
+import type { ArtistListRow, ConcertRow } from "../../../type";
 
 const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/artists");
 
@@ -21,7 +21,7 @@ export async function createArtist(req: Request, res: Response) {
   }
 
   // extrait les champs de la requete
-  const { name, genre, origin, bio, description_media } = req.body;
+  const { name, genre, origin, bio, description_media, stage, start_time, end_time } = req.body;
 
   // genere un nom de fichier unique pour l'image, construit le chemin de destination et l'URL d'acces
   const uuid = randomUUID();
@@ -33,19 +33,45 @@ export async function createArtist(req: Request, res: Response) {
   await mkdir(UPLOADS_DIR, { recursive: true });
   await sharp(req.file.buffer).webp({ quality: 80 }).toFile(filepath);
 
-  // insere l'artiste en base de donnees et retourne les donnees de l'artiste cree
-  const createdArtists = await query<ArtistListRow>(
-    `INSERT INTO artists (name, genre, origin, bio, url_media, description_media)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING id, name, genre, origin, bio, url_media, description_media`,
-    [name, genre, origin, bio, url_media, description_media],
-  );
+  // ouvre une transaction SQL
+  await query("BEGIN");
 
-  // si l'insertion a echoue, retourne une erreur 500
-  const artist = createdArtists[0];
-  if (!artist) {
-    throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
+  try {
+    // insere l'artiste en base de donnees et retourne les donnees de l'artiste cree
+    const createdArtists = await query<ArtistListRow>(
+      `INSERT INTO artists (name, genre, origin, bio, url_media, description_media)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id, name, genre, origin, bio, url_media, description_media`,
+      [name, genre, origin, bio, url_media, description_media],
+    );
+
+    // si l'insertion a echoue, retourne une erreur 500
+    const artist = createdArtists[0];
+    if (!artist) {
+      throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
+    }
+
+    // insere le concert associe a l'artiste
+    const createdConcerts = await query<ConcertRow>(
+      `INSERT INTO concerts (artist_id, stage, start_time, end_time)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, artist_id, stage, start_time, end_time`,
+      [artist.id, stage, start_time, end_time],
+    );
+
+    // si l'insertion a echoue, retourne une erreur 500
+    const concert = createdConcerts[0];
+    if (!concert) {
+      throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
+    }
+
+    // valide la transaction
+    await query("COMMIT");
+
+    return res.status(201).json({ message: "Artiste cree", artist });
+  } catch (error) {
+    // annule la transaction en cas d'erreur puis relance pour le middleware
+    await query("ROLLBACK");
+    throw error;
   }
-
-  return res.status(201).json({ message: "Artiste cree", artist });
 }
