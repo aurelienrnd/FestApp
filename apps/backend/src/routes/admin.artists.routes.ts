@@ -1,10 +1,28 @@
 import { Router } from "express";
+// middlewares
+import { auth } from "../middlewares/auth";
+import { sessionIsOpen } from "../middlewares/sessionIsOpen";
+import { requireRole } from "../middlewares/requireRole";
+import { asyncHandler } from "../middlewares/asyncHandler";
+import { validateBody } from "../middlewares/validateBody";
+import { upload } from "../middlewares/upload";
+// controllers
+import { createArtist } from "../controllers/admin/artists/create_artist.controller";
+// schema
+import { createArtistSchema } from "../schemas/schema";
 
 const router = Router();
 
-// Artistes (back-office)
-//router.get("/admin/artists", notImplemented); // Lister les artistes
-//router.post("/admin/artists", notImplemented); // Creer un artiste
+router.post(
+  "/artists",
+  asyncHandler(auth),
+  asyncHandler(sessionIsOpen),
+  requireRole("admin", "lineup"),
+  upload.single("image"),
+  validateBody(createArtistSchema),
+  asyncHandler(createArtist),
+); // Creer un artiste
+
 //router.put("/admin/artists/:id", notImplemented); // Modifier un artiste
 //router.delete("/admin/artists/:id", notImplemented); // Supprimer un artiste
 
