@@ -29,11 +29,12 @@ export default function RootLayout({
   return (
     <html lang="fr" className={koulen.variable}>
       <body
-        id="app-root"
         className={`${koulen.className} min-h-screen bg-(--color-bg) text-(--color-text) flex flex-col`}
       >
-        <ModalSetup />
-        {children}
+        <div id="app-root" className="flex flex-col min-h-screen">
+          <ModalSetup />
+          {children}
+        </div>
       </body>
     </html>
   );
