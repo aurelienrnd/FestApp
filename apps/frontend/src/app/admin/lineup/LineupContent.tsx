@@ -16,6 +16,7 @@ type ListArtistsResponse = { artists: ArtistListRow[] };
  * @param {boolean} isAddModalOpen Ouvre la modale d'ajout artiste.
  * @param {() => void} onCloseAddModal Ferme la modale d'ajout artiste.
  * @children AddArtistModal - Affiche la modale d'ajout d'artiste.
+ * @function handleArtistAdded Ajoute l'artiste cree a la liste locale et ferme la modale.
  */
 export default function LineupContent({
   isAddModalOpen = false,
@@ -56,6 +57,12 @@ export default function LineupContent({
 
     getArtists();
   }, []);
+
+  // Ajoute l'artiste cree a la liste locale puis ferme la modale
+  const handleArtistAdded = (artist: ArtistListRow) => {
+    setArtists((current) => [...current, artist]);
+    onCloseAddModal();
+  };
 
   return (
     <div className="flex-1 flex justify-center">
@@ -100,7 +107,7 @@ export default function LineupContent({
         )}
       </div>
 
-      <AddArtistModal isOpen={isAddModalOpen} onClose={onCloseAddModal} />
+      <AddArtistModal isOpen={isAddModalOpen} onClose={onCloseAddModal} handleArtist={handleArtistAdded} />
     </div>
   );
 }
