@@ -20,4 +20,7 @@ export const ERRORS = {
   INTERNAL_SERVER_ERROR: "Erreur interne du serveur",
   RATE_LIMIT_TOO_MANY_ATTEMPTS: "Trop de tentatives, reessayer plus tard",
   AUTH_EMAIL_NOT_FOUND: "Aucun compte associe a cet email",
+  ARTIST_NOT_FOUND: "Artiste introuvable",
+  ARTIST_FILE_REQUIRED: "Image requise",
+  ARTIST_INVALID_FILE_TYPE: "Type de fichier non autorise (jpeg, png ou webp uniquement)",
 } as const;
