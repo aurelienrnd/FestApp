@@ -111,10 +111,12 @@ Représente les groupes ou artistes programmés au festival.
 | `genre` | `VARCHAR(60)` | NOT NULL | Genre musical |
 | `origin` | `VARCHAR(80)` | NOT NULL | Origine (pays, ville) |
 | `bio` | `TEXT` | NOT NULL | Biographie |
-| `url_media` | `VARCHAR(255)` | NOT NULL | URL ou chemin du média associé |
+| `url_media` | `VARCHAR(255)` | NOT NULL | Chemin local de l'image uploadée (ex : `/uploads/artists/<uuid>.webp`) |
 | `description_media` | `VARCHAR(255)` | NOT NULL | Texte alternatif du média |
 
 **Index :** `genre`, `name`
+
+> `url_media` stocke un chemin local vers une image WebP générée par sharp lors de l'upload. Les données de développement utilisent encore des URLs externes — elles seront remplacées lors du premier ajout via le back-office.
 
 **Données de développement :** Red Hot Chili Peppers et Foo Fighters sont insérés au démarrage.
 

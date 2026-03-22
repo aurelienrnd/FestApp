@@ -4,6 +4,8 @@
 
 | Méthode | Route                | Accès       | Description                                     |
 | ------- | -------------------- | ----------- | ----------------------------------------------- |
+| GET     | `/admin/artists`     | Authentifié | Liste des artistes                              |
+| POST    | `/admin/artists`     | Authentifié | Créer un artiste (multipart/form-data)          |
 | POST    | `/admin/auth/login`            | Public      | Connexion administrateur                        |
 | POST    | `/admin/auth/logout`           | Authentifié | Déconnexion                                     |
 | GET     | `/admin/auth/me`               | Authentifié | Informations utilisateur + renouvellement token |
@@ -405,6 +407,100 @@ Reponses d'erreur:
 - `401` `{ "error": "Session deja fermee ou expiree" }`
 - `401` `{ "error": "Session manquante" }`
 - `404` `{ "error": "Utilisateur introuvable" }`
+
+## Artists
+
+Base path: `/admin/artists`
+
+> Les routes de cette section sont réservées aux rôles `admin` et `lineup`. Un rôle `news` recevra une réponse `403`.
+
+### GET `/admin/artists`
+
+Afficher la liste des artistes.
+
+Authentification:
+
+- Cookie d'authentification valide requis.
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "artists": [
+    {
+      "id": "uuid",
+      "name": "Red Hot Chili Peppers",
+      "genre": "Rock",
+      "origin": "Etats-Unis, Los Angeles",
+      "bio": "Groupe de rock melant riffs lourds et funky.",
+      "url_media": "/uploads/artists/uuid.webp",
+      "description_media": "Photo promo du groupe"
+    }
+  ]
+}
+```
+
+Reponses d'erreur:
+
+- `401` `{ "error": "Cookie d'authentification manquant" }`
+- `403` `{ "error": "Acces refuse" }`
+
+---
+
+### POST `/admin/artists`
+
+Creer un artiste avec une image uploadée.
+
+Authentification:
+
+- Cookie d'authentification valide requis.
+
+Corps de requete:
+
+- Format: `multipart/form-data`
+- Champ fichier: `image` (jpeg, png ou webp — 5 Mo max)
+
+```
+name=Red Hot Chili Peppers
+genre=Rock
+origin=Etats-Unis, Los Angeles
+bio=Groupe de rock melant riffs lourds et funky.
+description_media=Photo promo du groupe
+image=<fichier image>
+```
+
+Reponse en succes:
+
+- Statut: `201`
+- Corps:
+
+```json
+{
+  "message": "Artiste cree",
+  "artist": {
+    "id": "uuid",
+    "name": "Red Hot Chili Peppers",
+    "genre": "Rock",
+    "origin": "Etats-Unis, Los Angeles",
+    "bio": "Groupe de rock melant riffs lourds et funky.",
+    "url_media": "/uploads/artists/uuid.webp",
+    "description_media": "Photo promo du groupe"
+  }
+}
+```
+
+Reponses d'erreur:
+
+- `400` `{ "error": "Donnees invalides" }`
+- `400` `{ "error": "Image requise" }`
+- `400` `{ "error": "Type de fichier non autorise (jpeg, png ou webp uniquement)" }`
+- `401` `{ "error": "Cookie d'authentification manquant" }`
+- `403` `{ "error": "Acces refuse" }`
+
+---
 
 ## Contact
 
