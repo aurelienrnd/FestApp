@@ -91,9 +91,30 @@ export default function LineupContent({
 
                 <div className="card-lineup-content">
                   <span>{artist.name}</span>
-                  <span>Scene principale</span>
-                  <span>Samedi 23 mai</span>
-                  <span>22h30</span>
+                  <span>{artist.stage ?? "Scene non definie"}</span>
+                  <span>
+                    {artist.start_time
+                      ? new Date(artist.start_time).toLocaleDateString(
+                          "fr-FR",
+                          {
+                            weekday: "long",
+                            day: "numeric",
+                            month: "long",
+                          },
+                        )
+                      : "Date non definie"}
+                  </span>
+                  <span>
+                    {artist.start_time
+                      ? new Date(artist.start_time).toLocaleTimeString(
+                          "fr-FR",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          },
+                        )
+                      : ""}
+                  </span>
                 </div>
 
                 <div className="card-lineup-actions">
@@ -107,7 +128,11 @@ export default function LineupContent({
         )}
       </div>
 
-      <AddArtistModal isOpen={isAddModalOpen} onClose={onCloseAddModal} handleArtist={handleArtistAdded} />
+      <AddArtistModal
+        isOpen={isAddModalOpen}
+        onClose={onCloseAddModal}
+        handleArtist={handleArtistAdded}
+      />
     </div>
   );
 }

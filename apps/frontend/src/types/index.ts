@@ -17,4 +17,7 @@ export type ArtistListRow = {
   bio: string;
   url_media: string;
   description_media: string;
+  stage: string | null;
+  start_time: string | null;
+  end_time: string | null;
 };

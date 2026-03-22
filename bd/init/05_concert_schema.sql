@@ -40,3 +40,12 @@ SELECT
   now() + interval '1 day 1 hour'
 FROM artists
 WHERE name = 'Red Hot Chili Peppers';
+
+INSERT INTO concerts (artist_id, stage, start_time, end_time)
+SELECT
+  id,
+  'second-stage',
+  now() + interval '1 day',
+  now() + interval '1 day 1 hour'
+FROM artists
+WHERE name = 'Foo Fighters';
