@@ -86,6 +86,7 @@ apps/frontend/
 │   │   │   │   └── ChangePasswordModal.tsx
 │   │   │   ├── lineup/
 │   │   │   │   ├── page.tsx
+│   │   │   │   ├── AddArtistModal.tsx
 │   │   │   │   └── LineupContent.tsx
 │   │   │   ├── news/
 │   │   │   │   └── page.tsx
@@ -135,8 +136,10 @@ apps/frontend/
 │       │   ├── apiRequest.test.ts
 │       │   └── getApiErrorMessage.test.ts
 │       └── pages/
+│           ├── AddArtistModal.test.tsx
 │           ├── ChangePasswordModal.test.tsx
 │           ├── DashboardContent.test.tsx
+│           ├── LineupContent.test.tsx
 │           ├── LoginPage.test.tsx
 │           └── UsersContent.test.tsx
 ├── .dockerignore
@@ -203,7 +206,7 @@ Le groupe de routes `(auth)` est transparent pour les URLs. Son layout est ident
 | --- | --- | --- |
 | `admin/layout.tsx` | — | Vérifie la session via `/admin/auth/me`, redirige vers `/login` si non authentifié. Fournit `AdminUserProvider`, `Banner` et `Footer` — `Banner` a accès aux données utilisateur pour filtrer les liens par rôle |
 | `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe si `mustChangePassword` est vrai |
-| `admin/lineup/` | `/admin/lineup` | Programation — liste les artistes depuis l'API admin (`LineupContent.tsx`) — accès restreint aux rôles `admin` et `lineup` via `useRoleGuard` |
+| `admin/lineup/` | `/admin/lineup` | Programmation — liste les artistes avec leur concert (`LineupContent.tsx`) et modale d'ajout 3 étapes (`AddArtistModal.tsx`) — accès restreint aux rôles `admin` et `lineup` via `useRoleGuard` |
 | `admin/news/` | `/admin/news` | Gestion des actualités — accès restreint aux rôles `admin` et `news` via `useRoleGuard` |
 | `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) — accès restreint au rôle `admin` via `useRoleGuard`. Si l'utilisateur connecté se supprime lui-même, il est redirigé vers `/login` |
 
@@ -259,7 +262,7 @@ Types TypeScript partagés entre plusieurs composants.
 
 | Fichier | Description |
 | --- | --- |
-| `index.ts` | Centralise les types métier réutilisables : `UserListRow` (données utilisateur API), `ArtistListRow` (données artiste API) |
+| `index.ts` | Centralise les types métier réutilisables : `UserListRow` (données utilisateur API), `ArtistListRow` (données artiste API avec `stage`, `start_time`, `end_time` nullables) |
 
 ---
 
@@ -307,8 +310,10 @@ Tests unitaires des pages et de leurs flux principaux.
 
 | Fichier | Description |
 | --- | --- |
+| `AddArtistModal.test.tsx` | Vérifie la modale d'ajout artiste — navigation entre les 3 étapes, validation des champs, soumission réussie et gestion des erreurs API |
 | `ChangePasswordModal.test.tsx` | Vérifie la modale de changement de mot de passe — validation des saisies, gestion des erreurs API et mode forcé (sans bouton de fermeture) |
 | `DashboardContent.test.tsx` | Vérifie le tableau de bord — ouverture automatique de la modale si `mustChangePassword` est vrai et affichage des informations utilisateur |
+| `LineupContent.test.tsx` | Vérifie la liste des artistes — chargement, affichage avec données concert, fallbacks null (scène/date non définies), liste vide et erreur API |
 | `LoginPage.test.tsx` | Vérifie le formulaire de connexion — gestion des erreurs (401, 429, 500) et redirection en cas de succès |
 | `UsersContent.test.tsx` | Vérifie le CRUD utilisateurs — chargement de la liste, ajout, modification, suppression, gestion des erreurs et redirection vers `/login` si l'utilisateur connecté se supprime lui-même |
 

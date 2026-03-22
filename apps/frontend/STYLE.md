@@ -88,6 +88,8 @@ Details :
 | `.input` | Champ texte — bordure, fond `--color-bg-input`, police Arial |
 | `.text-area` | Zone de texte redimensionnable — hauteur fixe, même style que `.input` |
 | `.submit-modal-area` | Zone du bouton de soumission — flex centré |
+| `.upload-zone` | Zone d'upload d'image — flex colonne centré, fond `--color-bg-input`, arrondi |
+| `.upload-btn` | Bouton d'upload — pill, bordure `--color-text-input`, hover opacity |
 | `.section-page` | Conteneur de section de page — padding vertical/horizontal responsive |
 | `.side-bar` | Texte de la sidebar admin — taille responsive |
 | `.card-row` | Carte en ligne — bordure, flex colonne sur mobile, ligne sur desktop |

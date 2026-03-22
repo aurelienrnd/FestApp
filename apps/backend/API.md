@@ -430,7 +430,12 @@ origin=Etats-Unis, Los Angeles
 bio=Groupe de rock melant riffs lourds et funky.
 description_media=Photo promo du groupe
 image=<fichier image>
+stage=Grande Scene
+start_time=2025-06-20T18:00:00.000Z
+end_time=2025-06-20T19:30:00.000Z
 ```
+
+> `start_time` et `end_time` doivent etre au format ISO 8601 (`YYYY-MM-DDTHH:mm:ss.sssZ`). L'artiste et son concert sont inseres en base dans une seule transaction SQL.
 
 Reponse en succes:
 
@@ -526,12 +531,18 @@ Reponse en succes:
       "name": "Red Hot Chili Peppers",
       "genre": "Rock",
       "origin": "Etats-Unis, Los Angeles",
-      "bio": "Groupe de rock melant riffs lourds et funcky.",
-      "url_media": "https://www.franceinfo.fr/pictures/wgYIq-vpdl_9MeEJWHXBaIz0ns8/186x42:2836x1535/2656x1494/filters:format(avif):quality(50)/2022/04/01/phpPAEw95.jpg",
-      "description_media": "Photo promo du groupe Red Hot Chili Peppers"
+      "bio": "Groupe de rock melant riffs lourds et funky.",
+      "url_media": "/uploads/artists/uuid.webp",
+      "description_media": "Photo promo du groupe Red Hot Chili Peppers",
+      "stage": "Grande Scene",
+      "start_time": "2025-06-20T18:00:00.000Z",
+      "end_time": "2025-06-20T19:30:00.000Z"
     }
   ]
 }
+```
+
+> `stage`, `start_time` et `end_time` sont `null` si aucun concert n'est encore associe a l'artiste (LEFT JOIN).
 ```
 
 Reponses d'erreur:

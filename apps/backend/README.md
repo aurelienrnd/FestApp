@@ -83,6 +83,8 @@ apps/backend/
 ├── src/
 │   ├── controllers/
 │   │   ├── admin/
+│   │   │   ├── artists/
+│   │   │   │   └── create_artist.controller.ts
 │   │   │   ├── auth/
 │   │   │   │   ├── change_password.controller.ts
 │   │   │   │   ├── forgot_password.controller.ts
@@ -133,12 +135,14 @@ apps/backend/
 ├── test/
 │   ├── integration/
 │   │   ├── auth.test.ts
+│   │   ├── create_artist.controller.test.ts
 │   │   ├── create_user.controller.test.ts
 │   │   ├── delete_user.controller.test.ts
 │   │   ├── errorHandler.test.ts
 │   │   ├── forgot_password.controller.test.ts
 │   │   ├── hashPassword.test.ts
 │   │   ├── health.test.ts
+│   │   ├── list_lineup.controller.test.ts
 │   │   ├── list_users.controller.test.ts
 │   │   ├── login.controller.test.ts
 │   │   ├── logout.controller.test.ts
@@ -205,7 +209,8 @@ Centralise tous les types TypeScript partagés du backend :
 - `DbUser` — ligne utilisateur retournée pour l'authentification (email, password_hash…)
 - `SessionRow` — ligne de session retournée par la base de données
 - `UserListRow` — ligne utilisateur pour les endpoints de liste/CRUD
-- `ArtistListRow` — ligne artiste pour l'endpoint de programmation
+- `ArtistListRow` — ligne artiste pour l'endpoint de programmation (inclut `stage`, `start_time`, `end_time` nullables via LEFT JOIN concerts)
+- `ConcertRow` — ligne concert retournee lors de l'insertion en base
 - `UserInfoRow` — ligne utilisateur pour l'endpoint `/admin/auth/me` (inclut `password_changed_at` pour calculer `mustChangePassword`)
 
 ### `functions.ts`
@@ -228,11 +233,12 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 | `admin/auth/login.controller.ts` | POST `/admin/auth/login` | Vérifie les identifiants, crée une session, retourne un cookie JWT |
 | `admin/auth/logout.controller.ts` | POST `/admin/auth/logout` | Révoque la session en base |
 | `admin/auth/userInfo.controller.ts` | GET `/admin/auth/me` | Retourne les infos de l'utilisateur connecté, `mustChangePassword` et renouvelle le token |
+| `admin/artists/create_artist.controller.ts` | POST `/admin/artists` | Cree un artiste avec upload image (sharp → WebP) et insere le concert associe en transaction |
 | `admin/users/list_users.controller.ts` | GET `/admin/users` | Liste tous les utilisateurs admin |
 | `admin/users/create_user.controller.ts` | POST `/admin/users` | Crée un utilisateur et envoie le mot de passe provisoire par email |
 | `admin/users/update_user.controller.ts` | PATCH `/admin/users/:id` | Modifie les informations d'un utilisateur |
 | `admin/users/delete_user.controller.ts` | DELETE `/admin/users/:id` | Supprime définitivement un utilisateur |
-| `public/lineup/list_lineup.controller.ts` | GET `/public/lineup` | Liste tous les artistes du festival |
+| `public/lineup/list_lineup.controller.ts` | GET `/public/lineup` | Liste tous les artistes avec leur concert associe (LEFT JOIN concerts) |
 | `contact/submit_contact.controller.ts` | POST `/contact/submit` | Transmet le message du formulaire de contact par email a l'organisation |
 
 ### `routes/`
@@ -243,13 +249,14 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 
 | Fichier | Endpoints actifs |
 | --- | --- |
+| `admin.artists.routes.ts` | POST `/admin/artists` |
 | `admin.auth.routes.ts` | POST `/admin/auth/login`, POST `/admin/auth/logout`, GET `/admin/auth/me`, PATCH `/admin/auth/password`, POST `/admin/auth/forgot-password` |
 | `admin.users.routes.ts` | GET `/admin/users`, POST `/admin/users`, PATCH `/admin/users/:id`, DELETE `/admin/users/:id` |
 | `contact.routes.ts` | POST `/contact/submit` |
 | `public.programming.routes.ts` | GET `/public/lineup` |
 
 **Routes déclarées mais non encore implémentées :**
-`admin.articles.routes.ts`, `admin.artists.routes.ts`, `admin.concerts.routes.ts`, `contact.routes.ts`, `public.articles.routes.ts`, `public.artists.routes.ts`
+`admin.articles.routes.ts`, `admin.concerts.routes.ts`, `public.articles.routes.ts`, `public.artists.routes.ts`
 
 **Ordre des middlewares sur les routes protégées :**
 
@@ -288,7 +295,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 
 ### `schemas/`
 
-- `schema.ts` : schémas Zod utilisés pour la validation des body (`createUserSchema`, `updateUserSchema`, etc.).
+- `schema.ts` : schémas Zod utilisés pour la validation des body (`createUserSchema`, `updateUserSchema`, `createArtistSchema`, etc.).
 
 ---
 
@@ -328,9 +335,11 @@ Vitest exécute les tests, Supertest simule les appels HTTP sur l'API Express.
 | `sessionIsOpen.test.ts` | Middleware `sessionIsOpen` |
 | `hashPassword.test.ts` | Middleware `hashPassword` |
 | `rateLimitLogin.test.ts` | Middleware `rateLimitLogin` |
-| `validateBody.test.ts` | Middleware `validateBody` |
+| `validateBody.test.ts` | Middleware `validateBody` (`createUserSchema`, `loginSchema`, `createArtistSchema`) |
 | `errorHandler.test.ts` | Middleware `errorHandler` et `notFoundHandler` |
 | `health.test.ts` | Route `/health` |
+| `create_artist.controller.test.ts` | Contrôleur `createArtist` — upload image, transaction SQL, rollback |
+| `list_lineup.controller.test.ts` | Contrôleur `listLineup` — liste artistes avec concerts (LEFT JOIN) |
 | `login.controller.test.ts` | Contrôleur `login` |
 | `logout.controller.test.ts` | Contrôleur `logout` |
 | `list_users.controller.test.ts` | Contrôleur `listUsers` |

@@ -164,12 +164,13 @@ Ce dossier inclut :
 
 | Méthode | Route | Accès | Description |
 | --- | --- | --- | --- |
-| GET | `/public/lineup` | Public | Liste tous les artistes du festival |
+| GET | `/public/lineup` | Public | Liste tous les artistes avec leur concert associé |
 | POST | `/admin/auth/login` | Public | Connexion (rate limité) |
 | POST | `/admin/auth/logout` | Authentifié | Déconnexion |
 | GET | `/admin/auth/me` | Authentifié | Infos utilisateur connecté + renouvellement du token |
 | PATCH | `/admin/auth/password` | Authentifié | Modifier son mot de passe |
 | POST | `/admin/auth/forgot-password` | Public | Réinitialiser son mot de passe (rate limité) |
+| POST | `/admin/artists` | Authentifié (admin, lineup) | Créer un artiste avec upload image et concert associé |
 | GET | `/admin/users` | Authentifié (admin) | Liste des utilisateurs admin |
 | POST | `/admin/users` | Authentifié (admin) | Créer un utilisateur admin |
 | PATCH | `/admin/users/:id` | Authentifié (admin) | Modifier un utilisateur |
