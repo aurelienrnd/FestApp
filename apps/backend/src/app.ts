@@ -1,4 +1,5 @@
 import express from "express";
+import path from "path";
 import { query } from "./db";
 
 // Importation des routes
@@ -73,6 +74,9 @@ export function createApp() {
       }
     });
   }
+
+  // Sert les fichiers images uploades (artistes, etc.)
+  app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
   // Routes API (auth, admin, public, etc.)
   app.use("/admin", adminArticles);
