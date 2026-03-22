@@ -24,7 +24,7 @@ export const navAdminItem: NavItem[] = [
     path: "/admin/dashboard",
     role: "admin, lineup, news",
   },
-  { label: "Programmation", path: "/admin/lineup", role: "admin, lineup" },
+  { label: "Programation", path: "/admin/lineup", role: "admin, lineup" },
   { label: "Articles", path: "/admin/news", role: "admin, news" },
   { label: "Utilisateurs", path: "/admin/users", role: "admin" },
   { labelBtn: "Logout", active: false },
@@ -37,7 +37,7 @@ export const navDashBordItems: NavItem[] = [
     path: "/admin/dashboard",
     role: "admin, lineup, news",
   },
-  { label: "Programmation", path: "/admin/lineup", role: "admin, lineup" },
+  { label: "Programation", path: "/admin/lineup", role: "admin, lineup" },
   { label: "Articles", path: "/admin/news", role: "admin, news" },
   { label: "Utilisateurs", path: "/admin/users", role: "admin" },
 ];

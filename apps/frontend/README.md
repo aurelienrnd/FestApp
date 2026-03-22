@@ -203,7 +203,7 @@ Le groupe de routes `(auth)` est transparent pour les URLs. Son layout est ident
 | --- | --- | --- |
 | `admin/layout.tsx` | — | Vérifie la session via `/admin/auth/me`, redirige vers `/login` si non authentifié. Fournit `AdminUserProvider`, `Banner` et `Footer` — `Banner` a accès aux données utilisateur pour filtrer les liens par rôle |
 | `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe si `mustChangePassword` est vrai |
-| `admin/lineup/` | `/admin/lineup` | Gestion de la programmation (`LineupContent.tsx`) — accès restreint aux rôles `admin` et `lineup` via `useRoleGuard` |
+| `admin/lineup/` | `/admin/lineup` | Programation — liste les artistes depuis l'API admin (`LineupContent.tsx`) — accès restreint aux rôles `admin` et `lineup` via `useRoleGuard` |
 | `admin/news/` | `/admin/news` | Gestion des actualités — accès restreint aux rôles `admin` et `news` via `useRoleGuard` |
 | `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) — accès restreint au rôle `admin` via `useRoleGuard`. Si l'utilisateur connecté se supprime lui-même, il est redirigé vers `/login` |
 

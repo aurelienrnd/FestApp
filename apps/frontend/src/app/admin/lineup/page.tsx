@@ -5,14 +5,14 @@ import AddButton from "../../../components/AddButton";
 import LineupContent from "./LineupContent";
 import { useRoleGuard } from "../../../hooks/useRoleGuard";
 
-/** Page admin de gestion de la programmation. */
+/** Page admin de gestion des artistes. */
 export default function Page() {
   useRoleGuard();
   return (
     <section className="section-page">
       <div className="flex justify-center item-center gap-6">
         <AddButton items={filterLineUpItems} className="mb-12" />
-        <h1 className="title1">Admin Lineup</h1>
+        <h1 className="title1">Programation</h1>
       </div>
 
       <SideBarTool items={filterLineUpItems}>
