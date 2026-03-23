@@ -5,6 +5,7 @@ import Image from "next/image";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import AddArtistModal from "./AddArtistModal";
+import { useNavPath } from "../../../hooks/useNavPath";
 import type { ArtistListRow } from "../../../types";
 
 type ListArtistsResponse = { artists: ArtistListRow[] };
@@ -25,6 +26,8 @@ export default function LineupContent({
   isAddModalOpen?: boolean;
   onCloseAddModal?: () => void;
 }) {
+  const { isAdminPath } = useNavPath();
+
   // Etats lies aux donnees
   const [artists, setArtists] = useState<ArtistListRow[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -120,6 +123,22 @@ export default function LineupContent({
                   <button type="button" className="btn-cta">
                     Voir plus
                   </button>
+                  {isAdminPath && (
+                    <>
+                      <button
+                        type="button"
+                        className="btn-type-2 rounded-md border border-(--color-text-input) p-(--space-xs)"
+                      >
+                        Modifier
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-type-2 rounded-md border border-(--color-text-input) p-(--space-xs)"
+                      >
+                        Supprimer
+                      </button>
+                    </>
+                  )}
                 </div>
               </li>
             ))}

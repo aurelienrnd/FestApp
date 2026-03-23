@@ -194,7 +194,7 @@
     }
 
     .card-lineup-actions {
-      @apply flex justify-center items-center mb-(--space-sm) lg:m-(--space-sm);
+      @apply flex justify-center items-center gap-(--space-sm) mb-(--space-sm) lg:m-(--space-sm);
     }
   }
 }
