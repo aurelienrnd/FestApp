@@ -181,12 +181,12 @@
   }
 
   @layer lineup {
-    .card-lineup-media {
-      @apply flex-shrink-0;
+    .card-media-img-wrapper {
+      @apply relative w-full h-48 lg:w-48 lg:h-28 lg:self-stretch flex-shrink-0;
     }
 
     .card-media-img {
-      @apply rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none lg:w-48;
+      @apply rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none object-cover;
     }
 
     .card-lineup-content {

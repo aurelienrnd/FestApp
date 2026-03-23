@@ -79,12 +79,11 @@ export default function LineupContent({
           <ul className="flex w-full flex-col items-center gap-(--space-md)">
             {artists.map((artist) => (
               <li key={artist.id} className="card-row">
-                <div className="card-lineup-media">
+                <div className="card-media-img-wrapper">
                   <Image
                     src={artist.url_media}
                     alt={artist.description_media}
-                    width={192}
-                    height={128}
+                    fill
                     className="card-media-img"
                   />
                 </div>

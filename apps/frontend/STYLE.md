@@ -118,8 +118,8 @@ Details :
 
 | Classe | Description |
 | --- | --- |
-| `.card-lineup-media` | Conteneur de l'image artiste — flex-shrink-0 |
-| `.card-media-img` | Image de l'artiste — arrondie en haut sur mobile, à gauche sur desktop, largeur fixe (`w-48`) |
+| `.card-media-img-wrapper` | Conteneur de l'image artiste — `relative`, pleine largeur et hauteur fixe (`h-48`) sur mobile, `w-48` et hauteur auto (`self-stretch`) sur desktop, `flex-shrink-0` |
+| `.card-media-img` | Image de l'artiste — `object-cover`, arrondie en haut sur mobile, à gauche sur desktop |
 | `.card-lineup-content` | Contenu de la carte lineup — flex colonne/ligne, space-between |
 | `.card-lineup-actions` | Zone d'actions — flex centré, marges responsive |
 
