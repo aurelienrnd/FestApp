@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent, type ChangeEvent } from "react";
+import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
 import Image from "next/image";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
@@ -12,6 +12,7 @@ type AddArtistModalProps = {
   isOpen: boolean;
   onClose: () => void;
   handleArtist: (artist: ArtistListRow) => void;
+  artistToEdit?: ArtistListRow | null;
 };
 
 type CreateArtistApiResponse = {
@@ -67,20 +68,25 @@ function isStep3Invalid(
   );
 }
 
-/** Affiche la modale d'ajout d'un artiste en trois etapes.
+/** Affiche la modale d'ajout ou de modification d'un artiste en trois etapes.
  * Etape 1 : nom, genre, origine, bio. Etape 2 : description image, fichier image. Etape 3 : scene, heure de debut et de fin.
  * Soumet les donnees en multipart/form-data a POST /admin/artists.
+ * En mode edition (artistToEdit defini), pre-remplit les champs et affiche "Modifier" a la place de "Ajouter".
  * @param {AddArtistModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
  * @param {() => void} props.onClose Ferme la modale.
  * @param {(artist: ArtistListRow) => void} props.handleArtist Met a jour la liste des artistes et ferme la modale.
+ * @param {ArtistListRow | null} props.artistToEdit Artiste a modifier — pre-remplit le formulaire si defini.
  * @children ModalCloseButton Ferme la modale.
  */
 export default function AddArtistModal({
   isOpen,
   onClose,
   handleArtist,
+  artistToEdit = null,
 }: AddArtistModalProps) {
+  const isEditMode = artistToEdit !== null;
+
   // Etape active de la modal
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
@@ -107,8 +113,31 @@ export default function AddArtistModal({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Pre-remplit le formulaire quand un artiste a modifier est fourni
+  useEffect(() => {
+    if (!artistToEdit) return;
+    setName(artistToEdit.name);
+    setGenre(artistToEdit.genre);
+    setOrigin(artistToEdit.origin);
+    setBio(artistToEdit.bio);
+    setDescriptionMedia(artistToEdit.description_media);
+    setPreviewUrl(artistToEdit.url_media);
+    if (artistToEdit.start_time) {
+      const start = new Date(artistToEdit.start_time);
+      setDate(start.toISOString().slice(0, 10));
+      setStartTime(start.toTimeString().slice(0, 5));
+    }
+    if (artistToEdit.end_time) {
+      setEndTime(new Date(artistToEdit.end_time).toTimeString().slice(0, 5));
+    }
+    if (artistToEdit.stage) setStage(artistToEdit.stage);
+  }, [artistToEdit]);
+
   const step1Invalid = isStep1Invalid(name, genre, origin, bio);
-  const step2Invalid = isStep2Invalid(descriptionMedia, image);
+  // En mode edition, l'image est optionnelle (on conserve l'existante si aucune nouvelle n'est choisie)
+  const step2Invalid = isEditMode
+    ? descriptionMedia.trim() === ""
+    : isStep2Invalid(descriptionMedia, image);
   const step3Invalid = isStep3Invalid(stage, date, startTime, endTime);
 
   // Reinitialise tous les champs et revient a l'etape 1
@@ -419,7 +448,7 @@ export default function AddArtistModal({
                 className="btn-cta"
                 disabled={step3Invalid || isLoading}
               >
-                Ajouter
+                {isEditMode ? "Modifier" : "Ajouter"}
               </button>
             </div>
 

@@ -61,9 +61,26 @@ export default function LineupContent({
     getArtists();
   }, []);
 
+  // Artiste en cours d'edition (null = mode ajout)
+  const [artistToEdit, setArtistToEdit] = useState<ArtistListRow | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   // Ajoute l'artiste cree a la liste locale puis ferme la modale
   const handleArtistAdded = (artist: ArtistListRow) => {
     setArtists((current) => [...current, artist]);
+    onCloseAddModal();
+  };
+
+  // Ouvre la modale d'edition pour l'artiste selectionne
+  const openEditModal = (artist: ArtistListRow) => {
+    setArtistToEdit(artist);
+    setIsEditModalOpen(true);
+  };
+
+  // Ferme la modale (ajout ou edition) et reinitialise l'artiste selectionne
+  const closeModal = () => {
+    setIsEditModalOpen(false);
+    setArtistToEdit(null);
     onCloseAddModal();
   };
 
@@ -128,6 +145,7 @@ export default function LineupContent({
                       <button
                         type="button"
                         className="btn-type-2 rounded-md border border-(--color-text-input) p-(--space-xs)"
+                        onClick={() => openEditModal(artist)}
                       >
                         Modifier
                       </button>
@@ -147,9 +165,10 @@ export default function LineupContent({
       </div>
 
       <AddArtistModal
-        isOpen={isAddModalOpen}
-        onClose={onCloseAddModal}
-        handleArtist={handleArtistAdded}
+        isOpen={isAddModalOpen || isEditModalOpen}
+        onClose={closeModal}
+        handleArtist={isEditModalOpen ? closeModal : handleArtistAdded}
+        artistToEdit={artistToEdit}
       />
     </div>
   );
