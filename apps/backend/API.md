@@ -6,6 +6,7 @@
 | ------- | ----------------------------- | ----------- | ------------------------------------------------------------- |
 | GET     | `/admin/artists`              | Authentifié | Liste des artistes                                            |
 | POST    | `/admin/artists`              | Authentifié | Créer un artiste (multipart/form-data)                        |
+| PATCH   | `/admin/artists/:id`          | Authentifié | Modifier un artiste (multipart/form-data)                     |
 | DELETE  | `/admin/artists/:id`          | Authentifié | Supprimer un artiste et son concert associé                   |
 | POST    | `/admin/auth/login`           | Public      | Connexion administrateur                                      |
 | POST    | `/admin/auth/logout`          | Authentifié | Déconnexion                                                   |
@@ -465,6 +466,79 @@ Reponses d'erreur:
 - `400` `{ "error": "Type de fichier non autorise (jpeg, png ou webp uniquement)" }`
 - `401` `{ "error": "Cookie d'authentification manquant" }`
 - `403` `{ "error": "Acces refuse" }`
+
+### PATCH `/admin/artists/:id`
+
+Modifier un artiste existant et son concert associe.
+
+Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "lineup")`, `upload.single("image")`, `validateBody`
+
+Authentification:
+
+- Cookie d'authentification valide requis.
+
+Parametre d'URL:
+
+- `id`: UUID de l'artiste a modifier.
+
+Corps de requete:
+
+- Format: `multipart/form-data`
+- Champ fichier: `image` (jpeg, png ou webp — 5 Mo max, optionnel — si absent, l'image existante est conservee)
+
+```
+name=Red Hot Chili Peppers
+genre=Rock
+origin=Etats-Unis, Los Angeles
+bio=Groupe de rock melant riffs lourds et funky.
+description_media=Photo promo du groupe
+image=<fichier image>
+stage=Grande Scene
+start_time=2025-06-20T18:00:00.000Z
+end_time=2025-06-20T19:30:00.000Z
+```
+
+> `start_time` et `end_time` doivent etre au format ISO 8601 (`YYYY-MM-DDTHH:mm:ss.sssZ`). La mise a jour de l'artiste et de son concert se fait dans une seule transaction SQL. Si une nouvelle image est fournie, l'ancienne est supprimee du disque.
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "message": "Artiste modifie",
+  "artist": {
+    "id": "uuid",
+    "name": "Red Hot Chili Peppers",
+    "genre": "Rock",
+    "origin": "Etats-Unis, Los Angeles",
+    "bio": "Groupe de rock melant riffs lourds et funky.",
+    "url_media": "/uploads/artists/uuid.webp",
+    "description_media": "Photo promo du groupe",
+    "stage": "Grande Scene",
+    "start_time": "2025-06-20T18:00:00.000Z",
+    "end_time": "2025-06-20T19:30:00.000Z"
+  }
+}
+```
+
+- Header: `Set-Cookie` (token d'acces renouvele)
+
+Reponses d'erreur:
+
+- `400` `{ "error": "Donnees invalides" }` (id invalide ou corps invalide)
+- `400` `{ "error": "Type de fichier non autorise (jpeg, png ou webp uniquement)" }`
+- `401` `{ "error": "Cookie d'authentification manquant" }`
+- `401` `{ "error": "Token d'acces manquant" }`
+- `401` `{ "error": "Token d'acces invalide" }`
+- `401` `{ "error": "Session introuvable" }`
+- `401` `{ "error": "Session deja fermee ou expiree" }`
+- `401` `{ "error": "Session manquante" }`
+- `403` `{ "error": "Acces refuse" }`
+- `404` `{ "error": "Artiste introuvable" }`
+
+---
 
 ### DELETE `/admin/artists/:id`
 
