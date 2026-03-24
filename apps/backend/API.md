@@ -6,6 +6,7 @@
 | ------- | ----------------------------- | ----------- | ------------------------------------------------------------- |
 | GET     | `/admin/artists`              | Authentifié | Liste des artistes                                            |
 | POST    | `/admin/artists`              | Authentifié | Créer un artiste (multipart/form-data)                        |
+| DELETE  | `/admin/artists/:id`          | Authentifié | Supprimer un artiste et son concert associé                   |
 | POST    | `/admin/auth/login`           | Public      | Connexion administrateur                                      |
 | POST    | `/admin/auth/logout`          | Authentifié | Déconnexion                                                   |
 | GET     | `/admin/auth/me`              | Authentifié | Informations utilisateur + renouvellement token               |
@@ -465,6 +466,47 @@ Reponses d'erreur:
 - `401` `{ "error": "Cookie d'authentification manquant" }`
 - `403` `{ "error": "Acces refuse" }`
 
+### DELETE `/admin/artists/:id`
+
+Supprime definitivement un artiste, son concert associe et son fichier image.
+
+> Le concert est supprime automatiquement en cascade par la base de donnees (`ON DELETE CASCADE`). Le fichier image est supprime du disque apres la suppression en base.
+
+Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "lineup")`
+
+Authentification:
+
+- Cookie d'authentification valide requis.
+
+Parametre d'URL:
+
+- `id`: UUID de l'artiste a supprimer.
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "message": "Artiste supprime"
+}
+```
+
+- Header: `Set-Cookie` (token d'acces renouvele)
+
+Reponses d'erreur:
+
+- `400` `{ "error": "Donnees invalides" }` (id invalide)
+- `401` `{ "error": "Cookie d'authentification manquant" }`
+- `401` `{ "error": "Token d'acces manquant" }`
+- `401` `{ "error": "Token d'acces invalide" }`
+- `401` `{ "error": "Session introuvable" }`
+- `401` `{ "error": "Session deja fermee ou expiree" }`
+- `401` `{ "error": "Session manquante" }`
+- `403` `{ "error": "Acces refuse" }`
+- `404` `{ "error": "Artiste introuvable" }`
+
 ---
 
 ## Contact
@@ -506,7 +548,7 @@ Reponses d'erreur:
 
 ---
 
-## Lineup
+## Public
 
 Base path: `/public/lineup`
 
@@ -543,7 +585,8 @@ Reponse en succes:
 ```
 
 > `stage`, `start_time` et `end_time` sont `null` si aucun concert n'est encore associe a l'artiste (LEFT JOIN).
-```
+
+````
 
 Reponses d'erreur:
 
@@ -569,29 +612,7 @@ Réponse en succès :
   "status": "ok",
   "message": "Backend is running"
 }
-```
-
-### GET `/debug/db`
-
-Vérifie que la connexion à la base de données est opérationnelle.
-
-Authentification : aucune.
-
-Réponse en succès :
-
-- Statut : `200`
-- Corps :
-
-```json
-{
-  "db": "ok",
-  "now": "2026-03-17T10:00:00.000Z"
-}
-```
-
-Réponse d'erreur :
-
-- `500` `{ "error": "Impossible de joindre la base de donnees" }`
+````
 
 ---
 
