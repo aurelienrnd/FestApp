@@ -100,6 +100,15 @@ export default function LineupContent({
     setIsEditModalOpen(true);
   };
 
+  // Met a jour l'artiste modifie dans la liste locale puis ferme la modale
+  const handleArtistEdited = (artist: ArtistListRow) => {
+    setArtists((current) =>
+      current.map((a) => (a.id === artist.id ? artist : a)),
+    );
+    setIsEditModalOpen(false);
+    setArtistToEdit(null);
+  };
+
   // Ferme la modale (ajout ou edition) et reinitialise l'artiste selectionne
   const closeModal = () => {
     setIsEditModalOpen(false);
@@ -191,7 +200,7 @@ export default function LineupContent({
       <AddArtistModal
         isOpen={isAddModalOpen || isEditModalOpen}
         onClose={closeModal}
-        handleArtist={isEditModalOpen ? closeModal : handleArtistAdded}
+        handleArtist={isEditModalOpen ? handleArtistEdited : handleArtistAdded}
         artistToEdit={artistToEdit}
       />
 

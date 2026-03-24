@@ -188,7 +188,8 @@ export default function AddArtistModal({
     formData.append("origin", origin);
     formData.append("bio", bio);
     formData.append("description_media", descriptionMedia);
-    formData.append("image", image as File);
+    // en mode edition, l'image n'est ajoutee que si une nouvelle a ete selectionnee
+    if (image !== null) formData.append("image", image);
     formData.append("stage", stage);
     formData.append(
       "start_time",
@@ -196,8 +197,13 @@ export default function AddArtistModal({
     );
     formData.append("end_time", new Date(`${date}T${endTime}`).toISOString());
 
-    const result = await apiRequest<CreateArtistApiResponse>("/admin/artists", {
-      method: "POST",
+    const endpoint = isEditMode
+      ? `/admin/artists/${artistToEdit.id}`
+      : "/admin/artists";
+    const method = isEditMode ? "PATCH" : "POST";
+
+    const result = await apiRequest<CreateArtistApiResponse>(endpoint, {
+      method,
       body: formData,
     });
 
