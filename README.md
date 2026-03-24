@@ -171,6 +171,8 @@ Ce dossier inclut :
 | PATCH | `/admin/auth/password` | Authentifié | Modifier son mot de passe |
 | POST | `/admin/auth/forgot-password` | Public | Réinitialiser son mot de passe (rate limité) |
 | POST | `/admin/artists` | Authentifié (admin, lineup) | Créer un artiste avec upload image et concert associé |
+| PATCH | `/admin/artists/:id` | Authentifié (admin, lineup) | Modifier un artiste (image optionnelle) et son concert |
+| DELETE | `/admin/artists/:id` | Authentifié (admin, lineup) | Supprimer un artiste, son concert et son image |
 | GET | `/admin/users` | Authentifié (admin) | Liste des utilisateurs admin |
 | POST | `/admin/users` | Authentifié (admin) | Créer un utilisateur admin |
 | PATCH | `/admin/users/:id` | Authentifié (admin) | Modifier un utilisateur |

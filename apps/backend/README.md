@@ -84,7 +84,9 @@ apps/backend/
 │   ├── controllers/
 │   │   ├── admin/
 │   │   │   ├── artists/
-│   │   │   │   └── create_artist.controller.ts
+│   │   │   │   ├── create_artist.controller.ts
+│   │   │   │   ├── delete_artist.controller.ts
+│   │   │   │   └── update_artist.controller.ts
 │   │   │   ├── auth/
 │   │   │   │   ├── change_password.controller.ts
 │   │   │   │   ├── forgot_password.controller.ts
@@ -136,6 +138,8 @@ apps/backend/
 │   ├── integration/
 │   │   ├── auth.test.ts
 │   │   ├── create_artist.controller.test.ts
+│   │   ├── delete_artist.controller.test.ts
+│   │   ├── update_artist.controller.test.ts
 │   │   ├── create_user.controller.test.ts
 │   │   ├── delete_user.controller.test.ts
 │   │   ├── errorHandler.test.ts
@@ -234,6 +238,8 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 | `admin/auth/logout.controller.ts` | POST `/admin/auth/logout` | Révoque la session en base |
 | `admin/auth/userInfo.controller.ts` | GET `/admin/auth/me` | Retourne les infos de l'utilisateur connecté, `mustChangePassword` et renouvelle le token |
 | `admin/artists/create_artist.controller.ts` | POST `/admin/artists` | Cree un artiste avec upload image (sharp → WebP) et insere le concert associe en transaction |
+| `admin/artists/delete_artist.controller.ts` | DELETE `/admin/artists/:id` | Supprime un artiste, son concert associe (CASCADE) et son image du disque |
+| `admin/artists/update_artist.controller.ts` | PATCH `/admin/artists/:id` | Modifie un artiste et son concert en transaction — remplace l'image (sharp → WebP) si une nouvelle est fournie |
 | `admin/users/list_users.controller.ts` | GET `/admin/users` | Liste tous les utilisateurs admin |
 | `admin/users/create_user.controller.ts` | POST `/admin/users` | Crée un utilisateur et envoie le mot de passe provisoire par email |
 | `admin/users/update_user.controller.ts` | PATCH `/admin/users/:id` | Modifie les informations d'un utilisateur |
@@ -249,7 +255,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 
 | Fichier | Endpoints actifs |
 | --- | --- |
-| `admin.artists.routes.ts` | POST `/admin/artists` |
+| `admin.artists.routes.ts` | POST `/admin/artists`, PATCH `/admin/artists/:id`, DELETE `/admin/artists/:id` |
 | `admin.auth.routes.ts` | POST `/admin/auth/login`, POST `/admin/auth/logout`, GET `/admin/auth/me`, PATCH `/admin/auth/password`, POST `/admin/auth/forgot-password` |
 | `admin.users.routes.ts` | GET `/admin/users`, POST `/admin/users`, PATCH `/admin/users/:id`, DELETE `/admin/users/:id` |
 | `contact.routes.ts` | POST `/contact/submit` |
@@ -339,6 +345,8 @@ Vitest exécute les tests, Supertest simule les appels HTTP sur l'API Express.
 | `errorHandler.test.ts` | Middleware `errorHandler` et `notFoundHandler` |
 | `health.test.ts` | Route `/health` |
 | `create_artist.controller.test.ts` | Contrôleur `createArtist` — upload image, transaction SQL, rollback |
+| `delete_artist.controller.test.ts` | Contrôleur `deleteArtist` — suppression, UUID invalide, artiste introuvable, erreur DB |
+| `update_artist.controller.test.ts` | Contrôleur `updateArtist` — modification sans/avec image, UUID invalide, artiste introuvable, rollback transaction |
 | `list_lineup.controller.test.ts` | Contrôleur `listLineup` — liste artistes avec concerts (LEFT JOIN) |
 | `login.controller.test.ts` | Contrôleur `login` |
 | `logout.controller.test.ts` | Contrôleur `logout` |
