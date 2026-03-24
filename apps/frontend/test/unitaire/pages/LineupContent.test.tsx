@@ -1,4 +1,5 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import LineupContent from "../../../src/app/admin/lineup/LineupContent";
 import { ApiRequestError } from "../../../src/functions/apiRequest";
@@ -21,6 +22,11 @@ vi.mock("react-modal", () => {
   Modal.setAppElement = () => {};
   return { default: Modal };
 });
+
+// Mock de useNavPath pour simuler une route admin
+vi.mock("../../../src/hooks/useNavPath", () => ({
+  useNavPath: () => ({ isAdminPath: true }),
+}));
 
 // Mock de apiRequest pour eviter les appels reseau
 const mockApiRequest = vi.fn();
@@ -113,6 +119,43 @@ describe("LineupContent", () => {
 
     expect(await screen.findByText("Scene non definie")).toBeInTheDocument();
     expect(screen.getByText("Date non definie")).toBeInTheDocument();
+  });
+
+  it("deletes an artist and removes it from the list", async () => {
+    const user = userEvent.setup();
+
+    mockApiRequest
+      // 1. Chargement initial de la liste
+      .mockResolvedValueOnce({
+        data: {
+          artists: [
+            mockArtist,
+            { ...mockArtist, id: "artist-2", name: "Band B" },
+          ],
+        },
+        error: null,
+      })
+      // 2. Suppression reussie
+      .mockResolvedValueOnce({
+        data: { message: "Artiste supprime" },
+        error: null,
+      });
+
+    render(<LineupContent />);
+
+    await screen.findByText("Band A");
+    await user.click(screen.getAllByRole("button", { name: "Supprimer" })[0]);
+    await user.click(screen.getByRole("button", { name: "Confirmer" }));
+
+    await screen.findByText("L'artiste a ete supprime.");
+    await waitFor(() => {
+      expect(screen.queryByText("Band A")).not.toBeInTheDocument();
+    });
+    expect(screen.getByText("Band B")).toBeInTheDocument();
+    expect(mockApiRequest).toHaveBeenNthCalledWith(2, "/admin/artists/artist-1", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
   });
 
   it("displays multiple artists", async () => {
