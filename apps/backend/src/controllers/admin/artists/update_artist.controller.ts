@@ -41,8 +41,16 @@ export async function updateArtist(req: Request, res: Response) {
   }
 
   // extrait les champs texte de la requete
-  const { name, genre, origin, bio, description_media, stage, start_time, end_time } =
-    req.body;
+  const {
+    name,
+    genre,
+    origin,
+    bio,
+    description_media,
+    stage,
+    start_time,
+    end_time,
+  } = req.body;
 
   // determine l'url_media finale : nouvelle image ou conservation de l'existante
   let url_media = existingArtist.url_media;
@@ -102,7 +110,12 @@ export async function updateArtist(req: Request, res: Response) {
 
     return res.status(200).json({
       message: "Artiste modifie",
-      artist: { ...artist, stage: concert.stage, start_time: concert.start_time, end_time: concert.end_time },
+      artist: {
+        ...artist,
+        stage: concert.stage,
+        start_time: concert.start_time,
+        end_time: concert.end_time,
+      },
     });
   } catch (error) {
     // annule la transaction en cas d'erreur puis relance pour le middleware

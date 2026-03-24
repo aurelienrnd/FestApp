@@ -106,7 +106,9 @@ describe("updateArtist controller (integration)", () => {
     mockQuery
       .mockResolvedValueOnce([mockExistingArtist]) // SELECT artiste existant
       .mockResolvedValueOnce([]) // BEGIN
-      .mockResolvedValueOnce([{ ...mockUpdatedArtist, url_media: "/uploads/artists/new-uuid.webp" }]) // UPDATE artists
+      .mockResolvedValueOnce([
+        { ...mockUpdatedArtist, url_media: "/uploads/artists/new-uuid.webp" },
+      ]) // UPDATE artists
       .mockResolvedValueOnce([mockUpdatedConcert]) // UPDATE concerts
       .mockResolvedValueOnce([]); // COMMIT
 
@@ -114,7 +116,10 @@ describe("updateArtist controller (integration)", () => {
     const res = await request(app)
       .patch(`/artists/${ARTIST_ID}`)
       .field(validFields)
-      .attach("image", Buffer.from("fake-image"), { filename: "photo.jpg", contentType: "image/jpeg" });
+      .attach("image", Buffer.from("fake-image"), {
+        filename: "photo.jpg",
+        contentType: "image/jpeg",
+      });
 
     expect(res.status).toBe(200);
     expect(res.body.artist.url_media).toBe("/uploads/artists/new-uuid.webp");
