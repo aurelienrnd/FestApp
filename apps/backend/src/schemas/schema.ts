@@ -55,3 +55,17 @@ export const createArtistSchema = z.object({
   start_time: z.iso.datetime(),
   end_time: z.iso.datetime(),
 });
+
+/** Schema Zod de modification d'un artiste — memes regles que la creation.
+ * L'image est optionnelle : si absente, l'image existante est conservee.
+ */
+export const updateArtistSchema = z.object({
+  name: z.string().min(2).max(100).trim(),
+  genre: z.string().min(1).max(60).trim(),
+  origin: z.string().min(1).max(80).trim(),
+  bio: z.string().min(1).trim(),
+  description_media: z.string().min(1).max(255).trim(),
+  stage: z.string().min(1).trim(),
+  start_time: z.iso.datetime(),
+  end_time: z.iso.datetime(),
+});
