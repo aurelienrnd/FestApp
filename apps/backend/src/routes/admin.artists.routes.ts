@@ -8,9 +8,10 @@ import { validateBody } from "../middlewares/validateBody";
 import { upload } from "../middlewares/upload";
 // controllers
 import { createArtist } from "../controllers/admin/artists/create_artist.controller";
+import { updateArtist } from "../controllers/admin/artists/update_artist.controller";
 import { deleteArtist } from "../controllers/admin/artists/delete_artist.controller";
 // schema
-import { createArtistSchema } from "../schemas/schema";
+import { createArtistSchema, updateArtistSchema } from "../schemas/schema";
 
 const router = Router();
 
@@ -23,6 +24,16 @@ router.post(
   validateBody(createArtistSchema),
   asyncHandler(createArtist),
 ); // Creer un artiste
+
+router.patch(
+  "/artists/:id",
+  asyncHandler(auth),
+  asyncHandler(sessionIsOpen),
+  requireRole("admin", "lineup"),
+  upload.single("image"),
+  validateBody(updateArtistSchema),
+  asyncHandler(updateArtist),
+); // Modifier un artiste
 
 router.delete(
   "/artists/:id",
