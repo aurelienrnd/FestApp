@@ -198,6 +198,7 @@ export default function LineupContent({
       </div>
 
       <AddArtistModal
+        key={artistToEdit?.id ?? "new"}
         isOpen={isAddModalOpen || isEditModalOpen}
         onClose={closeModal}
         handleArtist={isEditModalOpen ? handleArtistEdited : handleArtistAdded}

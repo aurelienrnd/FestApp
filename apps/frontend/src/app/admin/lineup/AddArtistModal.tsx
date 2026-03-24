@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
+import { useState, type FormEvent, type ChangeEvent } from "react";
 import Image from "next/image";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
@@ -87,51 +87,48 @@ export default function AddArtistModal({
 }: AddArtistModalProps) {
   const isEditMode = artistToEdit !== null;
 
+  // Calcul des valeurs initiales depuis artistToEdit en mode edition
+  const initialStart = artistToEdit?.start_time
+    ? new Date(artistToEdit.start_time)
+    : null;
+
   // Etape active de la modal
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
   // Champs de l'etape 1
-  const [name, setName] = useState("");
-  const [genre, setGenre] = useState("");
-  const [origin, setOrigin] = useState("");
-  const [bio, setBio] = useState("");
+  const [name, setName] = useState(artistToEdit?.name ?? "");
+  const [genre, setGenre] = useState(artistToEdit?.genre ?? "");
+  const [origin, setOrigin] = useState(artistToEdit?.origin ?? "");
+  const [bio, setBio] = useState(artistToEdit?.bio ?? "");
 
   // Champs de l'etape 2
-  const [descriptionMedia, setDescriptionMedia] = useState("");
+  const [descriptionMedia, setDescriptionMedia] = useState(
+    artistToEdit?.description_media ?? "",
+  );
   const [image, setImage] = useState<File | null>(null);
 
   // Champs de l'etape 3
-  const [stage, setStage] = useState("");
-  const [date, setDate] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [stage, setStage] = useState(artistToEdit?.stage ?? "");
+  const [date, setDate] = useState(
+    initialStart ? initialStart.toISOString().slice(0, 10) : "",
+  );
+  const [startTime, setStartTime] = useState(
+    initialStart ? initialStart.toTimeString().slice(0, 5) : "",
+  );
+  const [endTime, setEndTime] = useState(
+    artistToEdit?.end_time
+      ? new Date(artistToEdit.end_time).toTimeString().slice(0, 5)
+      : "",
+  );
 
   // URL de previsualisation de l'image selectionnee
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    artistToEdit?.url_media ?? null,
+  );
 
   // Gestion des erreurs et du chargement
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Pre-remplit le formulaire quand un artiste a modifier est fourni
-  useEffect(() => {
-    if (!artistToEdit) return;
-    setName(artistToEdit.name);
-    setGenre(artistToEdit.genre);
-    setOrigin(artistToEdit.origin);
-    setBio(artistToEdit.bio);
-    setDescriptionMedia(artistToEdit.description_media);
-    setPreviewUrl(artistToEdit.url_media);
-    if (artistToEdit.start_time) {
-      const start = new Date(artistToEdit.start_time);
-      setDate(start.toISOString().slice(0, 10));
-      setStartTime(start.toTimeString().slice(0, 5));
-    }
-    if (artistToEdit.end_time) {
-      setEndTime(new Date(artistToEdit.end_time).toTimeString().slice(0, 5));
-    }
-    if (artistToEdit.stage) setStage(artistToEdit.stage);
-  }, [artistToEdit]);
 
   const step1Invalid = isStep1Invalid(name, genre, origin, bio);
   // En mode edition, l'image est optionnelle (on conserve l'existante si aucune nouvelle n'est choisie)
@@ -148,13 +145,13 @@ export default function AddArtistModal({
     setOrigin("");
     setBio("");
     setDescriptionMedia("");
-    setImage(null);
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setPreviewUrl(null);
     setStage("");
     setDate("");
     setStartTime("");
     setEndTime("");
+    setImage(null);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
   };
 
   // Gere la fermeture de la modal et reinitialise les etats associes

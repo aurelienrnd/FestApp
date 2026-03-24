@@ -220,6 +220,33 @@ describe("AddArtistModal", () => {
     expect(mockHandleArtist).not.toHaveBeenCalled();
   });
 
+  it("calls PATCH endpoint in edit mode without new image", async () => {
+    const user = userEvent.setup();
+    const updatedArtist = { ...mockArtist, name: "Band A Updated" };
+    mockApiRequest.mockResolvedValueOnce({
+      data: { message: "Artiste modifie", artist: updatedArtist },
+      error: null,
+    });
+
+    render(
+      <AddArtistModal {...defaultProps} artistToEdit={mockArtist} />,
+    );
+
+    // les champs sont pre-remplis, on navigue directement jusqu'a l'etape 3
+    await user.click(screen.getByRole("button", { name: "Suivant" }));
+    await user.click(screen.getByRole("button", { name: "Suivant" }));
+    fillStep3();
+    await user.click(screen.getByRole("button", { name: "Modifier" }));
+
+    await waitFor(() => {
+      expect(mockHandleArtist).toHaveBeenCalledWith(updatedArtist);
+    });
+    expect(mockApiRequest).toHaveBeenCalledWith(
+      `/admin/artists/${mockArtist.id}`,
+      expect.objectContaining({ method: "PATCH" }),
+    );
+  });
+
   it("resets to step 1 after closing", async () => {
     const user = userEvent.setup();
     render(<AddArtistModal {...defaultProps} />);

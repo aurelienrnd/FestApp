@@ -158,6 +158,43 @@ describe("LineupContent", () => {
     });
   });
 
+  it("edits an artist and updates it in the list", async () => {
+    const user = userEvent.setup();
+    const updatedArtist = { ...mockArtist, name: "Band A Updated" };
+
+    mockApiRequest
+      // 1. Chargement initial de la liste
+      .mockResolvedValueOnce({
+        data: { artists: [mockArtist] },
+        error: null,
+      })
+      // 2. Modification reussie
+      .mockResolvedValueOnce({
+        data: { message: "Artiste modifie", artist: updatedArtist },
+        error: null,
+      });
+
+    render(<LineupContent />);
+
+    await screen.findByText("Band A");
+    await user.click(screen.getByRole("button", { name: "Modifier" }));
+
+    // les champs sont pre-remplis, on navigue jusqu'a l'etape 3 et on soumet
+    await user.click(screen.getByRole("button", { name: "Suivant" }));
+    await user.click(screen.getByRole("button", { name: "Suivant" }));
+    await user.click(screen.getByRole("button", { name: "Modifier" }));
+
+    await waitFor(() => {
+      expect(screen.queryByText("Band A")).not.toBeInTheDocument();
+    });
+    expect(screen.getByText("Band A Updated")).toBeInTheDocument();
+    expect(mockApiRequest).toHaveBeenNthCalledWith(
+      2,
+      `/admin/artists/${mockArtist.id}`,
+      expect.objectContaining({ method: "PATCH" }),
+    );
+  });
+
   it("displays multiple artists", async () => {
     mockApiRequest.mockResolvedValueOnce({
       data: {
