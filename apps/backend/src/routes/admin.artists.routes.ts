@@ -8,6 +8,7 @@ import { validateBody } from "../middlewares/validateBody";
 import { upload } from "../middlewares/upload";
 // controllers
 import { createArtist } from "../controllers/admin/artists/create_artist.controller";
+import { deleteArtist } from "../controllers/admin/artists/delete_artist.controller";
 // schema
 import { createArtistSchema } from "../schemas/schema";
 
@@ -23,7 +24,12 @@ router.post(
   asyncHandler(createArtist),
 ); // Creer un artiste
 
-//router.put("/admin/artists/:id", notImplemented); // Modifier un artiste
-//router.delete("/admin/artists/:id", notImplemented); // Supprimer un artiste
+router.delete(
+  "/artists/:id",
+  asyncHandler(auth),
+  asyncHandler(sessionIsOpen),
+  requireRole("admin", "lineup"),
+  asyncHandler(deleteArtist),
+); // Supprimer un artiste
 
 export default router;
