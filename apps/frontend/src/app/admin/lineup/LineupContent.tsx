@@ -5,6 +5,7 @@ import Image from "next/image";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import AddArtistModal from "./AddArtistModal";
+import DeleteArtistModal from "./DeleteArtistModal";
 import { useNavPath } from "../../../hooks/useNavPath";
 import type { ArtistListRow } from "../../../types";
 
@@ -64,6 +65,28 @@ export default function LineupContent({
   // Artiste en cours d'edition (null = mode ajout)
   const [artistToEdit, setArtistToEdit] = useState<ArtistListRow | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Etats lies a la suppression d'un artiste
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedArtistToDelete, setSelectedArtistToDelete] =
+    useState<ArtistListRow | null>(null);
+
+  // Ouvre la modale de suppression pour l'artiste selectionne
+  const openDeleteModal = (artist: ArtistListRow) => {
+    setSelectedArtistToDelete(artist);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Retire l'artiste supprime de la liste locale
+  const handleArtistDeleted = (artistId: string) => {
+    setArtists((current) => current.filter((a) => a.id !== artistId));
+  };
+
+  // Ferme la modale de suppression et reinitialise l'artiste selectionne
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedArtistToDelete(null);
+  };
 
   // Ajoute l'artiste cree a la liste locale puis ferme la modale
   const handleArtistAdded = (artist: ArtistListRow) => {
@@ -152,6 +175,7 @@ export default function LineupContent({
                       <button
                         type="button"
                         className="btn-type-2 rounded-md border border-(--color-text-input) p-(--space-xs)"
+                        onClick={() => openDeleteModal(artist)}
                       >
                         Supprimer
                       </button>
@@ -169,6 +193,13 @@ export default function LineupContent({
         onClose={closeModal}
         handleArtist={isEditModalOpen ? closeModal : handleArtistAdded}
         artistToEdit={artistToEdit}
+      />
+
+      <DeleteArtistModal
+        isOpen={isDeleteModalOpen}
+        selectedArtist={selectedArtistToDelete}
+        onClose={closeDeleteModal}
+        handleArtist={handleArtistDeleted}
       />
     </div>
   );
