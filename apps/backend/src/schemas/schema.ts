@@ -1,16 +1,10 @@
 // Schema pour la creation d'un utilisateur
 import { z } from "zod";
 
-/** Schema Zod de creation d'un utilisateur — valide et trim email, prénom, nom et role. */
+/** Schema Zod de creation et modification d'un utilisateur — valide et trim email, prénom, nom et role.
+ * Utilise pour la creation (POST) et la modification (PATCH).
+ */
 export const createUserSchema = z.object({
-  email: z.email(), // pas de trim() ici car zod cree deja une regex qui prend en compte les espaces
-  first_name: z.string().min(2).max(30).trim(),
-  last_name: z.string().min(2).max(30).trim(),
-  role: z.enum(["admin", "lineup", "news"]),
-});
-
-/** Schema Zod de modification d'un utilisateur — valide et trim email, prénom, nom et role. */
-export const updateUserSchema = z.object({
   email: z.email(), // pas de trim() ici car zod cree deja une regex qui prend en compte les espaces
   first_name: z.string().min(2).max(30).trim(),
   last_name: z.string().min(2).max(30).trim(),
@@ -42,24 +36,11 @@ export const contactSchema = z.object({
   message: z.string().min(10).max(2000).trim(),
 });
 
-/** Schema Zod de creation d'un artiste — valide les champs texte uniquement (l'image arrive via req.file).
+/** Schema Zod de creation et modification d'un artiste — valide les champs texte uniquement (l'image arrive via req.file).
  * Inclut les champs de programmation du concert associe (scene, heure de debut et de fin).
+ * Utilise pour la creation (POST) et la modification (PATCH).
  */
 export const createArtistSchema = z.object({
-  name: z.string().min(2).max(100).trim(),
-  genre: z.string().min(1).max(60).trim(),
-  origin: z.string().min(1).max(80).trim(),
-  bio: z.string().min(1).trim(),
-  description_media: z.string().min(1).max(255).trim(),
-  stage: z.string().min(1).trim(),
-  start_time: z.iso.datetime(),
-  end_time: z.iso.datetime(),
-});
-
-/** Schema Zod de modification d'un artiste — memes regles que la creation.
- * L'image est optionnelle : si absente, l'image existante est conservee.
- */
-export const updateArtistSchema = z.object({
   name: z.string().min(2).max(100).trim(),
   genre: z.string().min(1).max(60).trim(),
   origin: z.string().min(1).max(80).trim(),

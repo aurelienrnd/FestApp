@@ -11,7 +11,7 @@ import { createArtist } from "../controllers/admin/artists/create_artist.control
 import { updateArtist } from "../controllers/admin/artists/update_artist.controller";
 import { deleteArtist } from "../controllers/admin/artists/delete_artist.controller";
 // schema
-import { createArtistSchema, updateArtistSchema } from "../schemas/schema";
+import { createArtistSchema } from "../schemas/schema";
 
 const router = Router();
 
@@ -31,7 +31,7 @@ router.patch(
   asyncHandler(sessionIsOpen),
   requireRole("admin", "lineup"),
   upload.single("image"),
-  validateBody(updateArtistSchema),
+  validateBody(createArtistSchema),
   asyncHandler(updateArtist),
 ); // Modifier un artiste
 

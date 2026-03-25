@@ -11,7 +11,7 @@ import { deleteUser } from "../controllers/admin/users/delete_user.controller";
 import { listUsers } from "../controllers/admin/users/list_users.controller";
 import { updateUser } from "../controllers/admin/users/update_user.controller";
 // schema
-import { createUserSchema, updateUserSchema } from "../schemas/schema";
+import { createUserSchema } from "../schemas/schema";
 
 const router = Router();
 
@@ -37,7 +37,7 @@ router.patch(
   asyncHandler(auth),
   asyncHandler(sessionIsOpen),
   requireRole("admin"),
-  validateBody(updateUserSchema),
+  validateBody(createUserSchema),
   asyncHandler(updateUser),
 ); // Modifier un utilisateur
 
