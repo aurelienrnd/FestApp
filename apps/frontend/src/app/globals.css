@@ -197,4 +197,54 @@
       @apply flex justify-center items-center gap-(--space-sm) mb-(--space-sm) lg:m-(--space-sm);
     }
   }
+
+  @layer artist-detail {
+    .modal-artist-detail {
+      @apply w-4xl rounded-2xl bg-[#fbfbfb] text-[#111111] outline-none overflow-hidden min-h-96 flex flex-col;
+    }
+
+    .artist-detail-layout {
+      @apply relative flex flex-col flex-1;
+    }
+
+    .artist-detail-close-btn {
+      @apply absolute top-(--space-sm) right-(--space-sm) z-10 text-black cursor-pointer;
+    }
+
+    .artist-detail-top {
+      @apply flex flex-col lg:flex-row flex-1;
+    }
+
+    .artist-detail-left {
+      @apply flex flex-col lg:w-2/5 flex-shrink-0;
+    }
+
+    .artist-detail-img-wrapper {
+      @apply relative h-48 lg:h-auto lg:flex-1;
+    }
+
+    .artist-detail-right {
+      @apply flex flex-col lg:flex-1 pt-(--space-lg);
+    }
+
+    .artist-detail-name-block {
+      @apply flex items-center justify-center bg-(--color-1) p-(--space-sm);
+    }
+
+    .artist-detail-name {
+      @apply text-white text-4xl font-bold uppercase text-center;
+    }
+
+    .artist-detail-date-block {
+      @apply flex items-center justify-center bg-black text-white p-(--space-sm) text-2xl font-bold mt-(--space-md) tracking-wide;
+    }
+
+    .artist-detail-bio {
+      @apply p-(--space-md) overflow-y-auto text-sm uppercase lg:flex-1;
+    }
+
+    .artist-detail-social {
+      @apply flex justify-center gap-(--space-lg) bg-black p-(--space-sm) text-2xl mt-(--space-md);
+    }
+  }
 }
