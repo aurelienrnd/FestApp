@@ -1,9 +1,12 @@
+/** Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`. */
+export type UserRole = "admin" | "lineup" | "news";
+
 /** Type representant une ligne utilisateur retournee par l'API. */
 export type UserListRow = {
   id: string;
   email: string;
   display_name: string | null;
-  role: string;
+  role: UserRole;
   created_at: string;
   password_changed_at?: string | null;
 };

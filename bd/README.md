@@ -43,13 +43,13 @@ Stocke les comptes des utilisateurs administrateurs de l'application.
 | `email` | `CITEXT` | NOT NULL, UNIQUE | Email insensible à la casse |
 | `password_hash` | `VARCHAR(255)` | NOT NULL | Mot de passe hashé (bcrypt) |
 | `display_name` | `VARCHAR(100)` | NOT NULL | Nom affiché dans l'interface admin |
-| `role` | `VARCHAR(50)` | NOT NULL, DEFAULT `'lineup'` | Rôle de l'utilisateur (`admin`, `lineup`, `news`) |
+| `role` | `user_role` (ENUM) | NOT NULL | Rôle de l'utilisateur (`admin`, `lineup`, `news`) |
 | `password_changed_at` | `TIMESTAMPTZ` | NULL | Date du dernier changement de mot de passe |
 | `created_at` | `TIMESTAMPTZ` | NOT NULL, DEFAULT `NOW()` | Date de création du compte |
 
 **Données de développement :** Un utilisateur `admin@example.com` avec le mot de passe `MyPassword` est inséré au démarrage.
 
-> **Choix de conception :** Le rôle utilisateur est une valeur parmi un ensemble fermé et connu à l'avance. Une entité `ROLE` séparée aurait été possible en Merise strict, mais dans ce contexte applicatif simple, un `VARCHAR` avec validation en backend suffit et évite une jointure supplémentaire inutile.
+> **Choix de conception :** Le rôle utilisateur est une valeur parmi un ensemble fermé et connu à l'avance. Un type `ENUM` PostgreSQL (`user_role`) garantit la contrainte directement en base — toute valeur invalide est rejetée même en contournant l'API. Une table `ROLE` séparée aurait été possible en Merise strict mais aurait ajouté une jointure inutile.
 
 ---
 

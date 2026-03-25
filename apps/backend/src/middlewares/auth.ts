@@ -7,6 +7,7 @@ import type { JwtPayload } from "jsonwebtoken";
 import { query } from "../db";
 import { AppError } from "../errors/AppError";
 import { ERRORS } from "../errors/errorMessages";
+import type { UserRole } from "../type";
 
 /** Verifie qu'un token est present dans le cookie de la requete
  * @return le token
@@ -65,7 +66,7 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
   const user = await query<{
     id: string;
     display_name: string | null;
-    role: string;
+    role: UserRole;
   }>("SELECT id, display_name, role FROM users WHERE id = $1", [userId]);
   if (!user[0]) {
     throw new AppError(ERRORS.AUTH_USER_NOT_FOUND, 401);

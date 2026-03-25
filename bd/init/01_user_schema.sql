@@ -3,8 +3,12 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;   -- Pour les UUID aléatoires (gen_ran
 CREATE EXTENSION IF NOT EXISTS citext;     -- Pour rendre les emails insensibles à la casse
 
 -- //NOTE : Utiliser uniquement en phase de développement.
--- Elle supprime la table si elle existe déjà, afin d'éviter des erreurs lors des modifications du schéma.
+-- Elle supprime la table si elle existe déjà, afin d’éviter des erreurs lors des modifications du schéma.
 DROP TABLE IF EXISTS users CASCADE;
+DROP TYPE IF EXISTS user_role CASCADE;
+
+-- Type ENUM pour les rôles utilisateur — valeurs autorisées uniquement
+CREATE TYPE user_role AS ENUM (‘admin’, ‘lineup’, ‘news’);
 
 -- Table des utilisateurs administrateurs
 CREATE TABLE users (
@@ -12,7 +16,7 @@ CREATE TABLE users (
   email CITEXT NOT NULL UNIQUE,                         -- Email insensible à la casse, doit être unique
   password_hash VARCHAR(255) NOT NULL,                  -- Mot de passe chiffré (hashé en backend)
   display_name VARCHAR(100) NOT NULL,                   -- Nom affiché dans l’espace d’administration
-  role VARCHAR(50) NOT NULL DEFAULT 'user',             -- Role de l'utilisateur
+  role user_role NOT NULL,                              -- Role de l’utilisateur (admin, lineup, news)
   password_changed_at TIMESTAMPTZ NULL,                 -- Date/heure du dernier changement de mot de passe
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()         -- Date de création
 );

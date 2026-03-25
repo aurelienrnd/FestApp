@@ -1,10 +1,13 @@
+/** Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`. */
+export type UserRole = "admin" | "lineup" | "news";
+
 /** Augmentation du type Express.Locals pour typer res.locals dans les middlewares et controllers. */
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Locals {
       userId?: string;
-      userRole?: string;
+      userRole?: UserRole;
       userDisplayName?: string | null;
       sessionId?: string;
     }
@@ -31,7 +34,7 @@ export type UserListRow = {
   id: string;
   email: string;
   display_name: string | null;
-  role: string;
+  role: UserRole;
   created_at: string;
   password_changed_at: string | null;
 };
@@ -64,6 +67,6 @@ export type UserInfoRow = {
   id: string;
   email: string;
   display_name: string;
-  role: string;
+  role: UserRole;
   password_changed_at: Date | null;
 };
