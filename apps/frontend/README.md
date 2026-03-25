@@ -210,7 +210,7 @@ Le groupe de routes `(auth)` est transparent pour les URLs. Son layout est ident
 | `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe si `mustChangePassword` est vrai |
 | `admin/lineup/` | `/admin/lineup` | Programmation — liste les artistes avec leur concert (`LineupContent.tsx`), modale d'ajout/modification 3 étapes (`AddArtistModal.tsx`), modale de suppression (`DeleteArtistModal.tsx`) — accès restreint aux rôles `admin` et `lineup` via `useRoleGuard` |
 | `admin/news/` | `/admin/news` | Gestion des actualités — accès restreint aux rôles `admin` et `news` via `useRoleGuard` |
-| `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) — accès restreint au rôle `admin` via `useRoleGuard`. Si l'utilisateur connecté se supprime lui-même, il est redirigé vers `/login` |
+| `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) — accès restreint au rôle `admin` via `useRoleGuard`. `AddUserModal` gère l'ajout et la modification via une seule instance (prop `userToEdit`). Si l'utilisateur connecté se supprime lui-même, il est redirigé vers `/login` |
 
 ### `components/`
 
@@ -264,7 +264,7 @@ Types TypeScript partagés entre plusieurs composants.
 
 | Fichier | Description |
 | --- | --- |
-| `index.ts` | Centralise les types métier réutilisables : `UserListRow` (données utilisateur API), `ArtistListRow` (données artiste API avec `stage`, `start_time`, `end_time` nullables) |
+| `index.ts` | Centralise les types métier réutilisables : `UserRole` (union des rôles valides), `UserListRow` (données utilisateur API), `ArtistListRow` (données artiste API avec `stage`, `start_time`, `end_time` nullables) |
 
 ---
 

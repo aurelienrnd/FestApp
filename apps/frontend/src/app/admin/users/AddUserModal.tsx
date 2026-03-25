@@ -11,7 +11,7 @@ type AddUserModalProps = {
   isOpen: boolean;
   onClose: () => void;
   handleUser: (user: UserListRow) => void;
-  selectedUser?: UserListRow | null;
+  userToEdit?: UserListRow | null;
 };
 
 type CreateUserApiResponse = {
@@ -40,32 +40,33 @@ function isAddUserFormInvalid(
   );
 }
 
-/** Affiche la modale d'ajout utilisateur.
+/** Affiche la modale d'ajout ou de modification d'un utilisateur.
  * Gere les champs du formulaire, la soumission API et les retours visuels (erreur/succes).
+ * En mode edition (userToEdit defini), pre-remplit les champs et affiche "Modifier" a la place de "Ajouter".
  * @param {AddUserModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
  * @param {() => void} props.onClose Ferme la modale.
  * @param {(user) => void} props.handleUser Met a jour la liste des users et ferme la modale.
- * @param  * @param {UserToDelete | null} props.selectedUser Utilisateur selectionne pour la modification.
+ * @param {UserListRow | null} props.userToEdit Utilisateur a modifier — pre-remplit le formulaire si defini.
  * @children ModalCloseButton Ferme la modale.
  */
 export default function AddUserModal({
   isOpen,
   onClose,
   handleUser,
-  selectedUser = null,
+  userToEdit = null,
 }: AddUserModalProps) {
-  const isEditMode = selectedUser !== null;
+  const isEditMode = userToEdit !== null;
 
-  // Initialise les champs depuis selectedUser en mode modification, vide en mode creation
-  const displayName = selectedUser?.display_name?.trim() ?? "";
+  // Initialise les champs depuis userToEdit en mode modification, vide en mode creation
+  const displayName = userToEdit?.display_name?.trim() ?? "";
   const [initialFirstName, ...initialLastNameParts] = displayName.split(/\s+/);
 
   // Champs du formulaire utilisateur
   const [firstName, setFirstName] = useState(initialFirstName ?? "");
   const [lastName, setLastName] = useState(initialLastNameParts.join(" "));
-  const [email, setEmail] = useState(selectedUser?.email ?? "");
-  const [role, setRole] = useState(selectedUser?.role ?? "");
+  const [email, setEmail] = useState(userToEdit?.email ?? "");
+  const [role, setRole] = useState(userToEdit?.role ?? "");
 
   // Gestion des erreurs lors de la soumission du formulaire
   const [error, setError] = useState<string | null>(null);
@@ -94,8 +95,8 @@ export default function AddUserModal({
 
     // Verifie ci il sagit d'une creation ou d'une modification
     const requestPath =
-      isEditMode && selectedUser?.id
-        ? `/admin/users/${selectedUser.id}`
+      isEditMode && userToEdit?.id
+        ? `/admin/users/${userToEdit.id}`
         : "/admin/users";
     const requestMethod = isEditMode ? "PATCH" : "POST";
 
@@ -117,11 +118,11 @@ export default function AddUserModal({
     }
 
     const fallbackUser = {
-      id: selectedUser?.id ?? "",
+      id: userToEdit?.id ?? "",
       email,
       display_name: `${firstName} ${lastName}`.trim(),
       role,
-      created_at: selectedUser?.created_at ?? new Date().toISOString(),
+      created_at: userToEdit?.created_at ?? new Date().toISOString(),
     };
     handleUser(result.data.user ?? fallbackUser);
     resetForm();

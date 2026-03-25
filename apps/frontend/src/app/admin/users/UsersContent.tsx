@@ -25,8 +25,7 @@ const formatDateFr = (value: string) =>
  * @param isAddModalOpen Ouvre la modale d'ajout utilisateur.
  * @param onCloseAddModal Ferme la modale d'ajout utilisateur.
  * @param filterBy filtre les utilisateurs
- * @children AddUserModal - Affiche la modale d'ajout d'utilisateur.
- * @children AddUserModal - Affiche la modale d'edition d'utilisateur.
+ * @children AddUserModal - Affiche la modale d'ajout ou d'edition d'utilisateur.
  * @children DelateUserModal - Affiche la modale de confirmation pour supprimer un utilisateur.
  */
 export default function UsersContent({
@@ -51,10 +50,8 @@ export default function UsersContent({
   const [selectedUserToDelete, setSelectedUserToDelete] =
     useState<UserListRow | null>(null);
 
-  // Etats lies a la modification
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedUserToBeUpdate, setSelectedUserToBeUpdate] =
-    useState<UserListRow | null>(null);
+  // Utilisateur en cours d'edition (null = mode ajout)
+  const [userToEdit, setUserToEdit] = useState<UserListRow | null>(null);
 
   // Charge la liste des utilisateurs au montage du composant
   useEffect(() => {
@@ -127,26 +124,21 @@ export default function UsersContent({
     });
   };
 
-  // Ouvre la modal de modification et definit l'utilisateur selectionne
+  // Ouvre la modale d'edition pour l'utilisateur selectionne
   const openEditModal = (user: UserListRow) => {
-    setSelectedUserToBeUpdate(user);
-    setIsEditModalOpen(true);
-  };
-  // Ferme la fenetre modale de modification et reinitialise l'utilisateur selectionne
-  const closeEditModal = () => {
-    setIsEditModalOpen(false);
-    setSelectedUserToBeUpdate(null);
-  };
-  // Met a jour la liste apres modification utilisateur puis ferme la modal d'edition
-  const handleUserEdited = (savedUser: UserListRow) => {
-    upsertUser(savedUser);
-    closeEditModal();
+    setUserToEdit(user);
   };
 
-  // Met a jour la liste apres ajout utilisateur puis ferme la modal d'ajout
-  const handleUserAdded = (savedUser: UserListRow) => {
-    upsertUser(savedUser);
+  // Ferme la modale (ajout ou edition) et reinitialise l'utilisateur selectionne
+  const closeModal = () => {
+    setUserToEdit(null);
     onCloseAddModal();
+  };
+
+  // Met a jour la liste apres ajout ou modification puis ferme la modale
+  const handleUser = (savedUser: UserListRow) => {
+    upsertUser(savedUser);
+    closeModal();
   };
 
   // On crée un nouveau tableau contenant uniquement les utilisateurs correspondant au filtre sélectionné
@@ -236,16 +228,11 @@ export default function UsersContent({
         handleUser={handleUserDeleted}
       />
       <AddUserModal
-        isOpen={isAddModalOpen}
-        onClose={onCloseAddModal}
-        handleUser={handleUserAdded}
-      />
-      <AddUserModal
-        key={selectedUserToBeUpdate?.id ?? "edit"}
-        isOpen={isEditModalOpen}
-        onClose={closeEditModal}
-        handleUser={handleUserEdited}
-        selectedUser={selectedUserToBeUpdate}
+        key={userToEdit?.id ?? "new"}
+        isOpen={isAddModalOpen || userToEdit !== null}
+        onClose={closeModal}
+        handleUser={handleUser}
+        userToEdit={userToEdit}
       />
     </div>
   );
