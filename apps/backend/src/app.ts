@@ -47,14 +47,13 @@ export function createApp() {
   });
 
   // Test de demarrage du serveur
-  app.get("/health", (req, res) => {
-    console.log("Health check successful serveur backend operationnel");
+  app.get("/health", (_req, res) => {
     res.json({ status: "ok", message: "Backend is running" });
   });
 
   // Route de diagnostic — disponible uniquement hors production
   if (process.env.NODE_ENV !== "production") {
-    app.get("/debug/db", async (req, res) => {
+    app.get("/debug/db", async (_req, res) => {
       try {
         const rows = await query("SELECT NOW() as now");
         console.log("Connexion to the DB successful at:", rows[0].now);
