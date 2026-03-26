@@ -31,14 +31,11 @@ function formatConcertDateTime(isoString: string): string {
   return `${weekday} ${day} ${month} ${time}`.toUpperCase();
 }
 
-/** Affiche la modale de detail d'un artiste — photo, nom, date de concert, bio et icones reseaux sociaux decoratives.
- * Colonne gauche : photo puis date. Colonne droite : nom (fond rouge) puis bio.
- * Barre sociale pleine largeur en bas avec les couleurs de marque.
- * @param {ArtistDetailModalProps} props Proprietes de controle de la modale.
+/** Affiche la modale de detail d'un artiste en layout mobile — image pleine largeur, nom (fond rouge),
+ * biographie (fond sombre), date du concert, puis icones reseaux sociaux en bas.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
  * @param {() => void} props.onClose Ferme la modale.
  * @param {ArtistListRow | null} props.artist Artiste a afficher.
- * @children ModalCloseButton Ferme la modale.
  */
 export default function ArtistDetailModal({
   isOpen,
@@ -55,44 +52,42 @@ export default function ArtistDetailModal({
     >
       {artist && (
         <div className="artist-detail-layout">
-          <button
-            type="button"
-            className="artist-detail-close-btn"
-            onClick={onClose}
-            aria-label="Fermer la modal"
-          >
-            <FontAwesomeIcon icon={faX} />
-          </button>
-          <div className="artist-detail-top">
-            {/* Colonne gauche : image + date */}
-            <div className="artist-detail-left">
-              <div className="artist-detail-img-wrapper">
-                <Image
-                  src={artist.url_media}
-                  alt={artist.description_media}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="artist-detail-date-block">
-                {artist.start_time
-                  ? formatConcertDateTime(artist.start_time)
-                  : "Date non definie"}
-              </div>
-            </div>
-
-            {/* Colonne droite : nom + bio */}
-            <div className="artist-detail-right">
-              <div className="artist-detail-name-block">
-                <h2 className="artist-detail-name">{artist.name}</h2>
-              </div>
-              <div className="artist-detail-bio">
-                <p>{artist.bio}</p>
-              </div>
-            </div>
+          {/* Image pleine largeur avec bouton fermer */}
+          <div className="artist-detail-img-wrapper">
+            <Image
+              src={artist.url_media}
+              alt={artist.description_media}
+              fill
+              className="object-cover"
+            />
+            <button
+              type="button"
+              className="artist-detail-close-btn"
+              onClick={onClose}
+              aria-label="Fermer la modal"
+            >
+              <FontAwesomeIcon icon={faX} />
+            </button>
           </div>
 
-          {/* Barre sociale pleine largeur */}
+          {/* Nom sur fond rouge */}
+          <div className="artist-detail-name-block">
+            <h2 className="artist-detail-name">{artist.name}</h2>
+          </div>
+
+          {/* Biographie */}
+          <div className="artist-detail-bio">
+            <p>{artist.bio}</p>
+          </div>
+
+          {/* Date du concert */}
+          <div className="artist-detail-date-block">
+            {artist.start_time
+              ? formatConcertDateTime(artist.start_time)
+              : "Date non definie"}
+          </div>
+
+          {/* Reseaux sociaux */}
           <div className="artist-detail-social">
             <FontAwesomeIcon icon={faInstagram} style={{ color: "#e4e4e7" }} />
             <FontAwesomeIcon icon={faYoutube} style={{ color: "#e4e4e7" }} />

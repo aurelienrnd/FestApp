@@ -200,51 +200,39 @@
 
   @layer artist-detail {
     .modal-artist-detail {
-      @apply w-4xl rounded-2xl bg-[#fbfbfb] text-[#111111] outline-none overflow-hidden min-h-96 flex flex-col;
+      @apply w-[90vw] max-w-sm rounded-2xl overflow-hidden flex flex-col outline-none bg-white;
     }
 
     .artist-detail-layout {
-      @apply relative flex flex-col flex-1;
+      @apply relative flex flex-col;
+    }
+
+    .artist-detail-img-wrapper {
+      @apply relative w-full h-56;
     }
 
     .artist-detail-close-btn {
       @apply absolute top-(--space-sm) right-(--space-sm) z-10 text-black cursor-pointer;
     }
 
-    .artist-detail-top {
-      @apply flex flex-col lg:flex-row flex-1;
-    }
-
-    .artist-detail-left {
-      @apply flex flex-col lg:w-2/5 flex-shrink-0;
-    }
-
-    .artist-detail-img-wrapper {
-      @apply relative h-48 lg:h-auto lg:flex-1;
-    }
-
-    .artist-detail-right {
-      @apply flex flex-col lg:flex-1 pt-(--space-lg);
-    }
-
     .artist-detail-name-block {
-      @apply flex items-center justify-center bg-(--color-1) p-(--space-sm);
+      @apply bg-(--color-1) px-(--space-md) py-(--space-sm) ml-(--space-lg) mb-(--space-sm) mt-(--space-sm);
     }
 
     .artist-detail-name {
-      @apply text-white text-4xl font-bold uppercase text-center;
-    }
-
-    .artist-detail-date-block {
-      @apply flex items-center justify-center bg-black text-white p-(--space-sm) text-2xl font-bold mt-(--space-md) tracking-wide;
+      @apply text-white font-bold uppercase text-2xl;
     }
 
     .artist-detail-bio {
-      @apply p-(--space-md) overflow-y-auto text-sm uppercase lg:flex-1;
+      @apply bg-white px-(--space-md) py-(--space-sm) text-black uppercase text-xs overflow-y-auto max-h-48;
+    }
+
+    .artist-detail-date-block {
+      @apply bg-black text-white font-bold uppercase text-center px-(--space-md) py-(--space-md) tracking-wide text-xl mr-(--space-lg) mb-(--space-sm) mt-(--space-sm);
     }
 
     .artist-detail-social {
-      @apply flex justify-center gap-(--space-lg) bg-black p-(--space-sm) text-2xl mt-(--space-md);
+      @apply flex justify-center gap-(--space-lg) bg-black p-(--space-md) text-2xl;
     }
   }
 }
