@@ -6,7 +6,7 @@ import { ERRORS } from "../../src/errors/errorMessages";
 import { asyncHandler } from "../../src/middlewares/asyncHandler";
 import { errorHandler } from "../../src/middlewares/errorHandler";
 import { validateBody } from "../../src/middlewares/validateBody";
-import { updateUserSchema } from "../../src/schemas/schema";
+import { createUserSchema } from "../../src/schemas/schema";
 import { updateUser } from "../../src/controllers/admin/users/update_user.controller";
 
 // Mock du module de base de donnees pour isoler les tests
@@ -23,7 +23,7 @@ function createApp() {
   app.use(express.json());
   app.patch(
     "/users/:id",
-    validateBody(updateUserSchema),
+    validateBody(createUserSchema),
     asyncHandler(updateUser),
   );
   app.use(errorHandler);
