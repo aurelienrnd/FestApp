@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import LineupContent from "../../../src/app/admin/lineup/LineupContent";
@@ -23,9 +23,10 @@ vi.mock("react-modal", () => {
   return { default: Modal };
 });
 
-// Mock de useNavPath pour simuler une route admin
+// Mock de useNavPath pour simuler une route admin (surchargeable par test via mockUseNavPath)
+const mockUseNavPath = vi.fn();
 vi.mock("../../../src/hooks/useNavPath", () => ({
-  useNavPath: () => ({ isAdminPath: true }),
+  useNavPath: () => mockUseNavPath(),
 }));
 
 // Mock de apiRequest pour eviter les appels reseau
@@ -54,6 +55,7 @@ const mockArtist = {
 describe("LineupContent", () => {
   beforeEach(() => {
     mockApiRequest.mockReset();
+    mockUseNavPath.mockReturnValue({ isAdminPath: true });
   });
 
   afterEach(() => {
@@ -193,6 +195,93 @@ describe("LineupContent", () => {
       `/admin/artists/${mockArtist.id}`,
       expect.objectContaining({ method: "PATCH" }),
     );
+  });
+
+  it("opens add modal when isAddModalOpen is true", async () => {
+    mockApiRequest.mockResolvedValueOnce({
+      data: { artists: [] },
+      error: null,
+    });
+
+    render(<LineupContent isAddModalOpen={true} />);
+
+    expect(await screen.findByTestId("modal")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Nom de l'artiste"),
+    ).toBeInTheDocument();
+  });
+
+  it("adds an artist and appends it to the list", async () => {
+    const user = userEvent.setup();
+    const newArtist = { ...mockArtist, id: "artist-new", name: "New Band" };
+
+    mockApiRequest
+      .mockResolvedValueOnce({ data: { artists: [] }, error: null })
+      .mockResolvedValueOnce({
+        data: { message: "Artiste cree", artist: newArtist },
+        error: null,
+      });
+
+    render(<LineupContent isAddModalOpen={true} />);
+
+    await screen.findByTestId("modal");
+
+    // Etape 1 — infos textuelles
+    await user.type(screen.getByPlaceholderText("Nom de l'artiste"), "New Band");
+    await user.type(screen.getByPlaceholderText("Genre musical"), "Rock");
+    await user.type(screen.getByPlaceholderText("Origine (pays / ville)"), "France");
+    await user.type(screen.getByPlaceholderText("Biographie"), "Une bio");
+    await user.click(screen.getByRole("button", { name: "Suivant" }));
+
+    // Etape 2 — image
+    await user.type(
+      screen.getByPlaceholderText("Description de l'image (texte alternatif)"),
+      "Photo de New Band",
+    );
+    const file = new File(["image"], "photo.webp", { type: "image/webp" });
+    await user.upload(screen.getByLabelText("Photo de l'artiste"), file);
+    await user.click(screen.getByRole("button", { name: "Suivant" }));
+
+    // Etape 3 — scene et horaires
+    await user.type(screen.getByPlaceholderText("Nom de la scène"), "Grande Scene");
+    fireEvent.change(screen.getByLabelText("Date du concert"), {
+      target: { value: "2025-06-20" },
+    });
+    fireEvent.change(screen.getByLabelText("Heure de début"), {
+      target: { value: "18:00" },
+    });
+    fireEvent.change(screen.getByLabelText("Heure de fin"), {
+      target: { value: "19:30" },
+    });
+    await user.click(
+      within(screen.getByTestId("modal")).getByRole("button", { name: "Ajouter" }),
+    );
+
+    expect(await screen.findByText("New Band")).toBeInTheDocument();
+    expect(mockApiRequest).toHaveBeenNthCalledWith(
+      2,
+      "/admin/artists",
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
+  it("hides Modifier and Supprimer buttons on non-admin path", async () => {
+    mockUseNavPath.mockReturnValue({ isAdminPath: false });
+    mockApiRequest.mockResolvedValueOnce({
+      data: { artists: [mockArtist] },
+      error: null,
+    });
+
+    render(<LineupContent />);
+
+    await screen.findByText("Band A");
+    expect(
+      screen.queryByRole("button", { name: "Modifier" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Supprimer" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Voir plus" })).toBeInTheDocument();
   });
 
   it("displays multiple artists", async () => {
