@@ -200,7 +200,7 @@
 
   @layer artist-detail {
     .modal-artist-detail {
-      @apply w-[90vw] max-w-sm rounded-2xl overflow-hidden flex flex-col outline-none bg-white;
+      @apply w-[90vw] max-w-sm lg:max-w-3xl rounded-2xl overflow-hidden flex flex-col outline-none bg-white;
     }
 
     .artist-detail-layout {
@@ -208,7 +208,7 @@
     }
 
     .artist-detail-img-wrapper {
-      @apply relative w-full h-56;
+      @apply relative w-full h-80;
     }
 
     .artist-detail-close-btn {
