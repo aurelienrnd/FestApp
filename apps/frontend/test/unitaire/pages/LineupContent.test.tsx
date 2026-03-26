@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import LineupContent from "../../../src/app/admin/lineup/LineupContent";
@@ -182,7 +182,7 @@ describe("LineupContent", () => {
     // les champs sont pre-remplis, on navigue jusqu'a l'etape 3 et on soumet
     await user.click(screen.getByRole("button", { name: "Suivant" }));
     await user.click(screen.getByRole("button", { name: "Suivant" }));
-    await user.click(screen.getByRole("button", { name: "Modifier" }));
+    await user.click(within(screen.getByTestId("modal")).getByRole("button", { name: "Modifier" }));
 
     await waitFor(() => {
       expect(screen.queryByText("Band A")).not.toBeInTheDocument();
