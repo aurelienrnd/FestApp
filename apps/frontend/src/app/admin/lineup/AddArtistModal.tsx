@@ -7,6 +7,7 @@ import ModalCloseButton from "../../../components/ModalCloseButton";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import type { ArtistListRow } from "../../../types";
+import { FESTIVAL_DAYS } from "../../../config/festival";
 
 type AddArtistModalProps = {
   isOpen: boolean;
@@ -400,14 +401,24 @@ export default function AddArtistModal({
               <label htmlFor="artistDate" className="sr-only">
                 Date du concert
               </label>
-              <input
+              <select
                 id="artistDate"
                 name="date"
-                type="date"
                 className="input"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-              />
+              >
+                <option value="">-- Choisir un jour --</option>
+                {FESTIVAL_DAYS.map((d) => (
+                  <option key={d} value={d}>
+                    {new Date(d).toLocaleDateString("fr-FR", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
