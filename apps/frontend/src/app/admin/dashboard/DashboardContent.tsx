@@ -9,6 +9,7 @@ import ChangePasswordModal from "./ChangePasswordModal";
 /** Affiche les informations principales du compte administrateur.
  * Recupere l'utilisateur connecte et presente les donnees de profil.
  * Si mustChangePassword est vrai, ouvre automatiquement la modale en mode force.
+ * Les dates du festival sont derivees dynamiquement depuis FESTIVAL_DAYS.
  */
 export default function DashboardContent() {
   const adminUser = useAdminUser();

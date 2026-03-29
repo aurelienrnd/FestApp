@@ -12,12 +12,13 @@ import type { ArtistListRow } from "../../../types";
 
 type ListArtistsResponse = { artists: ArtistListRow[] };
 
-/** Affiche la liste des artistes.
+/** Affiche la liste des artistes filtrée par jour si activeFilter est defini.
  * Recupere les artistes via l'API puis affiche un etat de chargement/erreur.
  * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
  * @function getApiErrorMessage Definit un message a retourner selon le statut de l'erreur
- * @param {boolean} isAddModalOpen Ouvre la modale d'ajout artiste.
- * @param {() => void} onCloseAddModal Ferme la modale d'ajout artiste.
+ * @param {boolean} props.isAddModalOpen Ouvre la modale d'ajout artiste.
+ * @param {() => void} props.onCloseAddModal Ferme la modale d'ajout artiste.
+ * @param {string | null} props.activeFilter Date ISO (ex: "2026-05-22") utilisee pour filtrer les artistes par jour — null affiche tous les artistes.
  * @children AddArtistModal - Affiche la modale d'ajout ou d'edition d'artiste.
  * @children ArtistDetailModal - Affiche la modale de detail d'un artiste.
  * @function handleArtistAdded Ajoute l'artiste cree a la liste locale et ferme la modale.
@@ -25,9 +26,11 @@ type ListArtistsResponse = { artists: ArtistListRow[] };
 export default function LineupContent({
   isAddModalOpen = false,
   onCloseAddModal = () => {},
+  activeFilter = null,
 }: {
   isAddModalOpen?: boolean;
   onCloseAddModal?: () => void;
+  activeFilter?: string | null;
 }) {
   const { isAdminPath } = useNavPath();
 
@@ -121,6 +124,11 @@ export default function LineupContent({
     onCloseAddModal();
   };
 
+  // Filtre les artistes selon la date selectionnee — null affiche tous les artistes
+  const visibleArtists = activeFilter
+    ? artists.filter((a) => a.start_time?.startsWith(activeFilter))
+    : artists;
+
   return (
     <div className="flex-1 flex justify-center">
       <div className="w-full max-w-5xl">
@@ -128,13 +136,13 @@ export default function LineupContent({
           <p className="text-center">Chargement...</p>
         ) : error ? (
           <p className="text-center text-(--color-1)">{error}</p>
-        ) : artists.length === 0 ? (
+        ) : visibleArtists.length === 0 ? (
           <div className="flex h-full justify-center items-center">
             <p>Aucun artiste.</p>
           </div>
         ) : (
           <ul className="flex w-full flex-col items-center gap-(--space-md)">
-            {artists.map((artist, index) => (
+            {visibleArtists.map((artist, index) => (
               <li key={artist.id} className="card-row">
                 <div className="card-media-img-wrapper">
                   <Image
