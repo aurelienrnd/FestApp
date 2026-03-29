@@ -77,7 +77,15 @@ export async function createArtist(req: Request, res: Response) {
     // valide la transaction
     await query("COMMIT");
 
-    return res.status(201).json({ message: "Artiste cree", artist });
+    return res.status(201).json({
+      message: "Artiste cree",
+      artist: {
+        ...artist,
+        stage: concert.stage,
+        start_time: concert.start_time,
+        end_time: concert.end_time,
+      },
+    });
   } catch (error) {
     // annule la transaction en cas d'erreur puis relance pour le middleware
     await query("ROLLBACK");
