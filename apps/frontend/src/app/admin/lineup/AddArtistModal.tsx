@@ -185,16 +185,31 @@ export default function AddArtistModal({
     formData.append("genre", genre);
     formData.append("origin", origin);
     formData.append("bio", bio);
+
     formData.append("description_media", descriptionMedia);
     // en mode edition, l'image n'est ajoutee que si une nouvelle a ete selectionnee
     if (image !== null) formData.append("image", image);
     formData.append("stage", stage);
+
+    // Si l'heure de fin est inferieure a l'heure de debut, le concert passe minuit — end_time est le lendemains du date selectionnee
+    const endDate =
+      endTime < startTime
+        ? new Date(new Date(date).getTime() + 86400000)
+            .toISOString()
+            .slice(0, 10)
+        : date;
+
     formData.append(
       "start_time",
       new Date(`${date}T${startTime}`).toISOString(),
     );
-    formData.append("end_time", new Date(`${date}T${endTime}`).toISOString());
 
+    formData.append(
+      "end_time",
+      new Date(`${endDate}T${endTime}`).toISOString(),
+    );
+
+    // En mode edition, appel PATCH sur l'artiste existant, sinon POST pour creer
     const endpoint = isEditMode
       ? `/admin/artists/${artistToEdit.id}`
       : "/admin/artists";
@@ -205,12 +220,14 @@ export default function AddArtistModal({
       body: formData,
     });
 
+    // Affiche l'erreur retournee par l'API si la requete a echoue
     if (result.error) {
       setError(getApiErrorMessage(result.error));
       setIsLoading(false);
       return;
     }
 
+    // Reinitialise le formulaire et notifie le parent avec l'artiste cree ou modifie
     resetForm();
     setIsLoading(false);
     handleArtist(result.data.artist);
