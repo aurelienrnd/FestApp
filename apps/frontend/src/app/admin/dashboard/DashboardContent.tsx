@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAdminUser } from "../../../components/AdminUserProvider";
+import { FESTIVAL_DAYS } from "../../../config/festival";
 import ChangePasswordModal from "./ChangePasswordModal";
 
 /** Affiche les informations principales du compte administrateur.
@@ -63,7 +64,17 @@ export default function DashboardContent() {
       </div>
 
       <p className="text-base md:text-lg lg:text-2xl text-(--color-text-input) lg:text-center">
-        Prochain evenement : du 23 mai 2026 au 24 mai 2026
+        Prochain evenement : du{" "}
+        {new Date(FESTIVAL_DAYS[0]).toLocaleDateString("fr-FR", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })}{" "}
+        au{" "}
+        {new Date(FESTIVAL_DAYS[FESTIVAL_DAYS.length - 1]).toLocaleDateString(
+          "fr-FR",
+          { day: "numeric", month: "long", year: "numeric" },
+        )}
       </p>
 
       <ChangePasswordModal
