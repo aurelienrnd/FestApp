@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Koulen } from "next/font/google";
+import { Bebas_Neue } from "next/font/google";
 import "./globals.css";
 import ModalSetup from "../components/ModalSetup";
 
 // Police Google
-const koulen = Koulen({
-  subsets: ["latin"],
-  weight: "400", // OBLIGATOIRE pour Koulen
+const bebasNeue = Bebas_Neue({
+  subsets: ["latin", "latin-ext"],
+  weight: "400",
   display: "swap",
-  variable: "--font-koulen",
+  variable: "--font-display",
 });
 
 // Métadonnées SEO
@@ -27,9 +27,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={koulen.variable}>
+    <html lang="fr" className={bebasNeue.variable}>
       <body
-        className={`${koulen.className} min-h-screen bg-(--color-bg) text-(--color-text) flex flex-col`}
+        className={`${bebasNeue.className} min-h-screen bg-(--color-bg) text-(--color-text) flex flex-col`}
       >
         <div id="app-root" className="flex flex-col min-h-screen">
           <ModalSetup />

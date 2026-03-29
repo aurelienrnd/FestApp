@@ -13,7 +13,7 @@ Il contient :
 - les classes composants reutilisables (`@layer components`)
 
 Details :
-- `--font-koulen` est reference dans `apps/frontend/src/app/layout.tsx:13` et provient de Next Font.
+- `--font-display` est reference dans `apps/frontend/src/app/layout.tsx:7` et provient de Next Font (Bebas Neue avec subsets latin + latin-ext).
 
 ---
 
