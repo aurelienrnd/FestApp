@@ -53,11 +53,21 @@ export function filterNavByRole(items: NavItem[], role: string): NavItem[] {
   );
 }
 
-/** Filtres affiches dans la navigation de la page LineUp et admin/Lineup. */
+import { FESTIVAL_DAYS } from "./festival";
+
+/** Filtres affiches dans la navigation de la page LineUp et admin/Lineup.
+ * Genere un bouton par jour du festival depuis FESTIVAL_DAYS.
+ */
 export const filterLineUpItems: NavItem[] = [
   { labelBtn: "Toutes les dates", active: true },
-  { labelBtn: "Jours: 1", active: false },
-  { labelBtn: "Jours: 2", active: false },
+  ...FESTIVAL_DAYS.map((d) => ({
+    labelBtn: new Date(d).toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "long",
+    }),
+    active: false,
+    value: d,
+  })),
 ];
 
 /** Filtres affiches dans la navigation de la page News et admin/News. */
