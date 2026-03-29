@@ -454,7 +454,10 @@ Reponse en succes:
     "origin": "Etats-Unis, Los Angeles",
     "bio": "Groupe de rock melant riffs lourds et funky.",
     "url_media": "/uploads/artists/uuid.webp",
-    "description_media": "Photo promo du groupe"
+    "description_media": "Photo promo du groupe",
+    "stage": "Grande Scene",
+    "start_time": "2026-05-22T21:00:00.000Z",
+    "end_time": "2026-05-22T22:30:00.000Z"
   }
 }
 ```
