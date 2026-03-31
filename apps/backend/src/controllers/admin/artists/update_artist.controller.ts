@@ -54,20 +54,20 @@ export async function updateArtist(req: Request, res: Response) {
 
   // determine l'url_media finale : nouvelle image ou conservation de l'existante
   let url_media = existingArtist.url_media;
+  let newFilepath: string | null = null;
 
   if (req.file) {
-    // genere un nom de fichier unique, construit le chemin et convertit en WebP
+    // genere un nom de fichier unique et construit le chemin de destination
     const uuid = randomUUID();
     const filename = `${uuid}.webp`;
-    const filepath = path.join(UPLOADS_DIR, filename);
+    newFilepath = path.join(UPLOADS_DIR, filename);
     url_media = `/uploads/artists/${filename}`;
-
-    await mkdir(UPLOADS_DIR, { recursive: true });
-    await sharp(req.file.buffer).webp({ quality: 80 }).toFile(filepath);
   }
 
   // ouvre une transaction SQL
   await query("BEGIN");
+
+  let newFileWritten = false;
 
   try {
     // met a jour l'artiste en base de donnees
@@ -98,6 +98,13 @@ export async function updateArtist(req: Request, res: Response) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
     }
 
+    // cree le dossier de destination s'il n'existe pas, convertit l'image en WebP et l'ecrit sur le disque
+    if (req.file && newFilepath) {
+      await mkdir(UPLOADS_DIR, { recursive: true });
+      await sharp(req.file.buffer).webp({ quality: 80 }).toFile(newFilepath);
+      newFileWritten = true;
+    }
+
     // valide la transaction
     await query("COMMIT");
 
@@ -118,8 +125,9 @@ export async function updateArtist(req: Request, res: Response) {
       },
     });
   } catch (error) {
-    // annule la transaction en cas d'erreur puis relance pour le middleware
+    // annule la transaction en cas d'erreur, supprime le nouveau fichier si deja ecrit, puis relance pour le middleware
     await query("ROLLBACK");
+    if (newFileWritten && newFilepath) await unlink(newFilepath).catch(() => undefined);
     throw error;
   }
 }
