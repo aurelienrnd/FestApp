@@ -1,27 +1,27 @@
-﻿-- Extensions nécessaires
-CREATE EXTENSION IF NOT EXISTS pgcrypto;   -- Pour les UUID aléatoires (gen_random_uuid)
-CREATE EXTENSION IF NOT EXISTS citext;     -- Pour rendre les emails insensibles à la casse
+-- Extensions necessaires
+CREATE EXTENSION IF NOT EXISTS pgcrypto;   -- Pour les UUID aleatoires (gen_random_uuid)
+CREATE EXTENSION IF NOT EXISTS citext;     -- Pour rendre les emails insensibles a la casse
 
--- //NOTE : Utiliser uniquement en phase de développement.
--- Elle supprime la table si elle existe déjà, afin d’éviter des erreurs lors des modifications du schéma.
+-- //NOTE : Utiliser uniquement en phase de developpement.
+-- Elle supprime la table si elle existe deja, afin d'eviter des erreurs lors des modifications du schema.
 DROP TABLE IF EXISTS users CASCADE;
 DROP TYPE IF EXISTS user_role CASCADE;
 
--- Type ENUM pour les rôles utilisateur — valeurs autorisées uniquement
-CREATE TYPE user_role AS ENUM (‘admin’, ‘lineup’, ‘news’);
+-- Type ENUM pour les roles utilisateur -- valeurs autorisees uniquement
+CREATE TYPE user_role AS ENUM ('admin', 'lineup', 'news');
 
 -- Table des utilisateurs administrateurs
 CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),        -- Identifiant unique généré automatiquement
-  email CITEXT NOT NULL UNIQUE,                         -- Email insensible à la casse, doit être unique
-  password_hash VARCHAR(255) NOT NULL,                  -- Mot de passe chiffré (hashé en backend)
-  display_name VARCHAR(100) NOT NULL,                   -- Nom affiché dans l’espace d’administration
-  role user_role NOT NULL,                              -- Role de l’utilisateur (admin, lineup, news)
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),        -- Identifiant unique genere automatiquement
+  email CITEXT NOT NULL UNIQUE,                         -- Email insensible a la casse, doit etre unique
+  password_hash VARCHAR(255) NOT NULL,                  -- Mot de passe chiffre (hashe en backend)
+  display_name VARCHAR(100) NOT NULL,                   -- Nom affiche dans l'espace d'administration
+  role user_role NOT NULL,                              -- Role de l'utilisateur (admin, lineup, news)
   password_changed_at TIMESTAMPTZ NULL,                 -- Date/heure du dernier changement de mot de passe
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()         -- Date de création
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()         -- Date de creation
 );
 
--- //NOTE : Utiliser uniquement en phase de développement.
+-- //NOTE : Utiliser uniquement en phase de developpement.
 INSERT INTO users (email, password_hash, display_name, role, password_changed_at)
 VALUES (
   'admin@example.com',
@@ -30,5 +30,3 @@ VALUES (
   'admin',
   NOW()
 );
-
-
