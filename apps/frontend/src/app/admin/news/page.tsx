@@ -9,7 +9,7 @@ export default function Page() {
   useRoleGuard();
   return (
     <section className="section-page">
-      <div className="flex justify-center item-center gap-6">
+      <div className="flex justify-center item-center gap-(--space-md)">
         <AddButton items={filterNewsItems} className="mb-12" />
         <h1 className="title1">Admin News</h1>
       </div>

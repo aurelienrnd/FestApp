@@ -103,6 +103,18 @@
     @apply cursor-pointer rounded-full border border-(--color-text-input) px-(--space-md) py-(--space-xs) text-sm transition-opacity hover:opacity-70;
   }
 
+  .text-festival-date {
+    @apply text-base md:text-lg lg:text-2xl lg:text-center;
+  }
+
+  .footer-separator {
+    @apply h-0.5 w-40 md:w-80 mx-auto;
+  }
+
+  .social-btn {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded text-xs;
+  }
+
   .section-page {
     @apply w-full h-full py-(--space-lg) md:py-(--space-lg) px-(--space-md) md:px-0 flex flex-col flex-1 text-base;
   }

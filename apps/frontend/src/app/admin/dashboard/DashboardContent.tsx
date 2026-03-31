@@ -64,7 +64,7 @@ export default function DashboardContent() {
         </div>
       </div>
 
-      <p className="text-base md:text-lg lg:text-2xl text-(--color-text-input) lg:text-center">
+      <p className="text-festival-date text-(--color-text-input)">
         Prochain evenement : du{" "}
         {new Date(FESTIVAL_DAYS[0]).toLocaleDateString("fr-FR", {
           day: "numeric",

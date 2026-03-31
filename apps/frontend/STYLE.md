@@ -24,14 +24,14 @@ Details :
 | Variable | Valeur | Usages |
 | --- | --- | --- |
 | `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`), `components/Banner.tsx`, `components/Footer.tsx`, `app/login/page.tsx`, `app/admin/users/AddUserModal.tsx`, `app/admin/users/DelateUserModal.tsx`, `app/admin/users/UsersContent.tsx` |
-| `--color-2` | `#e4e4e7` | `globals.css` (`.mobil-menu`) |
+| `--color-2` | `#e4e4e7` | `globals.css` (`.mobil-menu`), `app/admin/lineup/ArtistDetailModal.tsx` (icônes réseaux sociaux) |
 | `--color-3` | `#0ea5e9` | `components/Footer.tsx` (separateur) |
 | `--color-text-visitor` | `#ffffff` | `globals.css` (theme visitor) |
 | `--color-bg-visitor` | `black` | `globals.css` (theme visitor) |
 | `--color-bg-admin` | `#ffffff` | `globals.css` (theme admin) |
 | `--color-text-admin` | `black` | `globals.css` (theme admin) |
 | `--color-bg-input` | `#e4e4e7` | `globals.css` (`.input`, `.text-area`) |
-| `--color-text-input` | `#47474f` | `globals.css` (`.mobil-menu`, `.input`, `.text-area`, `.card-row`), `app/admin/dashboard/DashboardContent.tsx`, `app/admin/users/UsersContent.tsx` |
+| `--color-text-input` | `#47474f` | `globals.css` (`.mobil-menu`, `.input`, `.text-area`, `.card-row`), `globals.css` (`.text-festival-date` via composant), `app/admin/users/UsersContent.tsx` |
 | `--color-text` | thème actif | `globals.css` (`.btn-cta`, `.mobil-menu`), `app/layout.tsx` |
 | `--color-bg` | thème actif | `globals.css` (`.card-dashboard-avatar`), `app/layout.tsx`, `components/Footer.tsx` |
 
@@ -90,6 +90,9 @@ Details :
 | `.submit-modal-area` | Zone du bouton de soumission — flex centré |
 | `.upload-zone` | Zone d'upload d'image — flex colonne centré, fond `--color-bg-input`, arrondi |
 | `.upload-btn` | Bouton d'upload — pill, bordure `--color-text-input`, hover opacity |
+| `.text-festival-date` | Texte de date du festival — taille responsive (`text-base` → `text-2xl`), centré sur desktop |
+| `.footer-separator` | Séparateur horizontal du footer — `h-0.5`, largeur responsive |
+| `.social-btn` | Bouton icône réseau social — carré `h-9 w-9`, centré, arrondi |
 | `.section-page` | Conteneur de section de page — padding vertical/horizontal responsive |
 | `.side-bar` | Texte de la sidebar admin — taille responsive |
 | `.card-row` | Carte en ligne — bordure, flex colonne sur mobile, ligne sur desktop |

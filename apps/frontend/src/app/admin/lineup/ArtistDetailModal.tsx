@@ -90,9 +90,9 @@ export default function ArtistDetailModal({
 
           {/* Reseaux sociaux */}
           <div className="artist-detail-social">
-            <FontAwesomeIcon icon={faInstagram} style={{ color: "#e4e4e7" }} />
-            <FontAwesomeIcon icon={faYoutube} style={{ color: "#e4e4e7" }} />
-            <FontAwesomeIcon icon={faSpotify} style={{ color: "#e4e4e7" }} />
+            <FontAwesomeIcon icon={faInstagram} className="text-(--color-2)" />
+            <FontAwesomeIcon icon={faYoutube} className="text-(--color-2)" />
+            <FontAwesomeIcon icon={faSpotify} className="text-(--color-2)" />
           </div>
         </div>
       )}
