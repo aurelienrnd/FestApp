@@ -18,7 +18,7 @@ type ListArtistsResponse = { artists: ArtistListRow[] };
  * @function getApiErrorMessage Definit un message a retourner selon le statut de l'erreur
  * @param {boolean} props.isAddModalOpen Ouvre la modale d'ajout artiste.
  * @param {() => void} props.onCloseAddModal Ferme la modale d'ajout artiste.
- * @param {string | null} props.activeFilter Date ISO (ex: "2026-05-22") utilisee pour filtrer les artistes par jour — null affiche tous les artistes.
+ * @param {string | null} props.activeFilter utilisee pour filtrer les artistes par jour — null affiche tous les artistes.
  * @children AddArtistModal - Affiche la modale d'ajout ou d'edition d'artiste.
  * @children ArtistDetailModal - Affiche la modale de detail d'un artiste.
  * @function handleArtistAdded Ajoute l'artiste cree a la liste locale et ferme la modale.
@@ -32,6 +32,7 @@ export default function LineupContent({
   onCloseAddModal?: () => void;
   activeFilter?: string | null;
 }) {
+  // Verifie si le chemin d'acces contient "/admin" pour afficher les boutons de modification/suppression
   const { isAdminPath } = useNavPath();
 
   // Etats lies aux donnees
@@ -150,6 +151,7 @@ export default function LineupContent({
                     alt={artist.description_media}
                     fill
                     priority={index === 0}
+                    sizes="(max-width: 768px) 100vw, 192px"
                     className="card-media-img"
                   />
                 </div>

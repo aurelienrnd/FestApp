@@ -18,14 +18,19 @@ import { useRoleGuard } from "../../../hooks/useRoleGuard";
  * @children LineupContent : Affiche le contenu de la page artistes filtree
  */
 export default function Page() {
+  // Verifie que l'utilisateur a les droits d'accès à la page admin
   useRoleGuard();
 
+  // Etat pour ouvrir la modale d'ajout d'artiste et pour stocker le filtre actif
   const [isOpen, setIsOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
+  // Mappe les items de filtre pour ajouter la logique d'activation et de clic
   const items = filterLineUpItems.map((item) => ({
     ...item,
-    active: item.value === activeFilter || (item.value === undefined && activeFilter === null),
+    active:
+      item.value === activeFilter ||
+      (item.value === undefined && activeFilter === null),
     onClick: () => setActiveFilter(item.value ?? null),
   }));
 

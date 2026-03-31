@@ -117,6 +117,7 @@ export default function AddArtistModal({
     initialStart ? initialStart.toTimeString().slice(0, 5) : "",
   );
   const [endTime, setEndTime] = useState(
+    // Si l'heure de fin est inferieure a l'heure de debut, le concert passe minuit — endTime est le lendemains du date selectionnee
     artistToEdit?.end_time
       ? new Date(artistToEdit.end_time).toTimeString().slice(0, 5)
       : "",

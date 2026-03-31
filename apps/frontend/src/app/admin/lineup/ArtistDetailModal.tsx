@@ -36,6 +36,7 @@ function formatConcertDateTime(isoString: string): string {
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
  * @param {() => void} props.onClose Ferme la modale.
  * @param {ArtistListRow | null} props.artist Artiste a afficher.
+ * @function formatConcertDateTime Formate une date ISO en "JOUR JJ MOIS HHhMM" en francais majuscule.
  */
 export default function ArtistDetailModal({
   isOpen,

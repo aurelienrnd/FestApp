@@ -1,6 +1,6 @@
-/** Jours d'ouverture du festival — source de vérité unique pour les dates. */
+/** Jours d'ouverture du festival — source de vérité unique pour les dates.*/
 export const FESTIVAL_DAYS: string[] = [
-  "2026-05-22",
-  "2026-05-23",
-  "2026-05-24",
+  new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+  new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+  new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
 ];
