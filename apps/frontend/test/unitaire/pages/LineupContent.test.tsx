@@ -4,6 +4,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import LineupContent from "../../../src/app/admin/lineup/LineupContent";
 import { ApiRequestError } from "../../../src/functions/apiRequest";
 
+// Mock de FESTIVAL_DAYS avec des dates fixes pour eviter les valeurs dynamiques en production
+vi.mock("../../../src/config/festival", () => ({
+  FESTIVAL_DAYS: ["2025-06-20", "2025-06-21", "2025-06-22"],
+}));
+
 // Mock de next/image pour eviter les erreurs de rendu dans jsdom
 vi.mock("next/image", () => ({
   // eslint-disable-next-line @next/next/no-img-element
