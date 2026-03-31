@@ -87,6 +87,7 @@ apps/frontend/
 │   │   │   ├── lineup/
 │   │   │   │   ├── page.tsx
 │   │   │   │   ├── AddArtistModal.tsx
+│   │   │   │   ├── ArtistDetailModal.tsx
 │   │   │   │   ├── DeleteArtistModal.tsx
 │   │   │   │   └── LineupContent.tsx
 │   │   │   ├── news/
@@ -112,11 +113,13 @@ apps/frontend/
 │   │   ├── Navigation.tsx
 │   │   └── SideBarTool.tsx
 │   ├── config/
+│   │   ├── festival.ts
 │   │   ├── footer.ts
 │   │   └── navigation.ts
 │   ├── hooks/
 │   │   ├── useIsDesktop.ts
-│   │   └── useNavPath.ts
+│   │   ├── useNavPath.ts
+│   │   └── useRoleGuard.ts
 │   ├── functions/
 │   │   ├── apiRequest.ts
 │   │   └── getApiErrorMessage.ts
@@ -132,15 +135,18 @@ apps/frontend/
 │       │   ├── ContactUs.test.tsx
 │       │   ├── Footer.test.tsx
 │       │   ├── ForgotPassword.test.tsx
-│       │   └── MobilNav.test.tsx
+│       │   ├── MobilNav.test.tsx
+│       │   └── useRoleGuard.test.tsx
 │       ├── functions/
 │       │   ├── apiRequest.test.ts
 │       │   └── getApiErrorMessage.test.ts
 │       └── pages/
 │           ├── AddArtistModal.test.tsx
-│           ├── DeleteArtistModal.test.tsx
+│           ├── AddUserModal.test.tsx
+│           ├── ArtistDetailModal.test.tsx
 │           ├── ChangePasswordModal.test.tsx
 │           ├── DashboardContent.test.tsx
+│           ├── DeleteArtistModal.test.tsx
 │           ├── LineupContent.test.tsx
 │           ├── LoginPage.test.tsx
 │           └── UsersContent.test.tsx

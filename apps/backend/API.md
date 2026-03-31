@@ -4,7 +4,6 @@
 
 | Méthode | Route                         | Accès       | Description                                                   |
 | ------- | ----------------------------- | ----------- | ------------------------------------------------------------- |
-| GET     | `/admin/artists`              | Authentifié | Liste des artistes                                            |
 | POST    | `/admin/artists`              | Authentifié | Créer un artiste (multipart/form-data)                        |
 | PATCH   | `/admin/artists/:id`          | Authentifié | Modifier un artiste (multipart/form-data)                     |
 | DELETE  | `/admin/artists/:id`          | Authentifié | Supprimer un artiste et son concert associé                   |

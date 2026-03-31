@@ -90,9 +90,9 @@ Stocke le contenu éditorial du festival (actualités, annonces).
 | `created_at` | `TIMESTAMPTZ` | NOT NULL, DEFAULT `NOW()` | Date de création |
 | `url_media` | `VARCHAR(255)` | NOT NULL | URL ou chemin du média associé |
 | `description_media` | `VARCHAR(255)` | NOT NULL | Texte alternatif du média |
-| `user_id` | `UUID` | NOT NULL, FK → `users(id)` ON DELETE RESTRICT | Auteur de l'article |
+| `user_id` | `UUID` | NULL, FK → `users(id)` ON DELETE SET NULL | Auteur de l'article (`NULL` si l'utilisateur a été supprimé) |
 
-**Contrainte :** La suppression d'un utilisateur est bloquée s'il est auteur d'un article (`ON DELETE RESTRICT`).
+**Contrainte :** Si un utilisateur est supprimé, son `user_id` passe à `NULL` dans les articles qu'il a rédigés — l'article est conservé et l'auteur s'affiche comme « Auteur inconnu » (`ON DELETE SET NULL`).
 
 **Index :** `created_at`, `is_published`
 

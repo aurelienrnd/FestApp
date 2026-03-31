@@ -109,21 +109,19 @@ apps/backend/
 │   │   ├── errorHandler.ts
 │   │   ├── hashPassword.ts
 │   │   ├── rateLimitLogin.ts
+│   │   ├── requireRole.ts
 │   │   ├── sessionIsOpen.ts
+│   │   ├── upload.ts
 │   │   └── validateBody.ts
 │   ├── errors/
 │   │   ├── AppError.ts
 │   │   └── errorMessages.ts
 │   ├── routes/
-│   │   ├── admin.articles.routes.ts
 │   │   ├── admin.artists.routes.ts
 │   │   ├── admin.auth.routes.ts
-│   │   ├── admin.concerts.routes.ts
 │   │   ├── admin.users.routes.ts
 │   │   ├── contact.routes.ts
-│   │   ├── public.articles.routes.ts
-│   │   ├── public.artists.routes.ts
-│   │   └── public.programming.routes.ts
+│   │   └── lineup.routes.ts
 │   ├── schemas/
 │   │   └── schema.ts
 │   ├── services/
@@ -259,10 +257,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 | `admin.auth.routes.ts` | POST `/admin/auth/login`, POST `/admin/auth/logout`, GET `/admin/auth/me`, PATCH `/admin/auth/password`, POST `/admin/auth/forgot-password` |
 | `admin.users.routes.ts` | GET `/admin/users`, POST `/admin/users`, PATCH `/admin/users/:id`, DELETE `/admin/users/:id` |
 | `contact.routes.ts` | POST `/contact/submit` |
-| `public.programming.routes.ts` | GET `/public/lineup` |
-
-**Routes déclarées mais non encore implémentées :**
-`admin.articles.routes.ts`, `admin.concerts.routes.ts`, `public.articles.routes.ts`, `public.artists.routes.ts`
+| `lineup.routes.ts` | GET `/public/lineup` |
 
 **Ordre des middlewares sur les routes protégées :**
 
@@ -282,6 +277,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 | `requireRole.ts` | Factory middleware — vérifie que `res.locals.userRole` est dans la liste des rôles autorisés, renvoie `403` sinon |
 | `hashPassword.ts` | Factory middleware — hashe le champ mot de passe spécifié dans `req.body` avec bcrypt avant de passer au handler suivant |
 | `rateLimitLogin.ts` | Limite le nombre de tentatives de connexion par IP (`express-rate-limit`) |
+| `upload.ts` | Middleware Multer — gère l'upload d'image (`image` field, jpeg/png/webp, 5 Mo max) et expose `req.file` au contrôleur |
 | `validateBody.ts` | Valide `req.body` contre un schéma Zod — renvoie `400` si invalide |
 | `errorHandler.ts` | Gestion globale des erreurs : `notFoundHandler` (404 pour routes inconnues) et `errorHandler` (centralise la réponse HTTP finale) |
 
