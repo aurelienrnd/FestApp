@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { randomUUID } from "crypto";
-import { mkdir } from "fs/promises";
+import { mkdir, unlink } from "fs/promises";
 import path from "path";
 import sharp from "sharp";
 import { query } from "../../../db";
@@ -38,12 +38,11 @@ export async function createArtist(req: Request, res: Response) {
   const filepath = path.join(UPLOADS_DIR, filename);
   const url_media = `/uploads/artists/${filename}`;
 
-  // cree le dossier de destination s'il n'existe pas, convertit l'image en WebP et l'ecrit sur le disque
-  await mkdir(UPLOADS_DIR, { recursive: true });
-  await sharp(req.file.buffer).webp({ quality: 80 }).toFile(filepath);
-
   // ouvre une transaction SQL
   await query("BEGIN");
+
+  // indique si le fichier a deja ete ecrit pour le supprimer en cas d'erreur
+  let fileWritten = false;
 
   try {
     // insere l'artiste en base de donnees et retourne les donnees de l'artiste cree
@@ -74,6 +73,11 @@ export async function createArtist(req: Request, res: Response) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
     }
 
+    // cree le dossier de destination s'il n'existe pas, convertit l'image en WebP et l'ecrit sur le disque
+    await mkdir(UPLOADS_DIR, { recursive: true });
+    await sharp(req.file.buffer).webp({ quality: 80 }).toFile(filepath);
+    fileWritten = true;
+
     // valide la transaction
     await query("COMMIT");
 
@@ -87,8 +91,9 @@ export async function createArtist(req: Request, res: Response) {
       },
     });
   } catch (error) {
-    // annule la transaction en cas d'erreur puis relance pour le middleware
+    // annule la transaction en cas d'erreur, supprime le fichier si deja ecrit, puis relance pour le middleware
     await query("ROLLBACK");
+    if (fileWritten) await unlink(filepath).catch(() => undefined);
     throw error;
   }
 }
