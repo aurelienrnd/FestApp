@@ -4,6 +4,7 @@ import express from "express";
 import multer from "multer";
 import { updateArtist } from "../../src/controllers/admin/artists/update_artist.controller";
 import { query } from "../../src/db";
+import { unlink } from "fs/promises";
 import { ERRORS } from "../../src/errors/errorMessages";
 import { asyncHandler } from "../../src/middlewares/asyncHandler";
 import { errorHandler } from "../../src/middlewares/errorHandler";
@@ -179,5 +180,31 @@ describe("updateArtist controller (integration)", () => {
 
     expect(res.status).toBe(500);
     expect(mockQuery).toHaveBeenCalledWith("ROLLBACK");
+    expect(vi.mocked(unlink)).not.toHaveBeenCalled();
+  });
+
+  it("should rollback and unlink new file when COMMIT fails after sharp wrote the file", async () => {
+    mockQuery
+      .mockResolvedValueOnce([mockExistingArtist]) // SELECT artiste existant
+      .mockResolvedValueOnce([]) // BEGIN
+      .mockResolvedValueOnce([mockUpdatedArtist]) // UPDATE artists
+      .mockResolvedValueOnce([mockUpdatedConcert]) // UPDATE concerts
+      .mockRejectedValueOnce(new Error("commit fail")) // COMMIT
+      .mockResolvedValueOnce([]); // ROLLBACK
+
+    const app = createApp();
+    const res = await request(app)
+      .patch(`/artists/${ARTIST_ID}`)
+      .field(validFields)
+      .attach("image", Buffer.from("fake-image"), {
+        filename: "photo.jpg",
+        contentType: "image/jpeg",
+      });
+
+    expect(res.status).toBe(500);
+    expect(mockQuery).toHaveBeenCalledWith("ROLLBACK");
+    expect(vi.mocked(unlink)).toHaveBeenCalledWith(
+      expect.stringContaining("new-uuid.webp"),
+    );
   });
 });

@@ -5,6 +5,7 @@ import multer from "multer";
 
 import { createArtist } from "../../src/controllers/admin/artists/create_artist.controller";
 import { query } from "../../src/db";
+import { unlink } from "fs/promises";
 import { ERRORS } from "../../src/errors/errorMessages";
 import { asyncHandler } from "../../src/middlewares/asyncHandler";
 import { errorHandler } from "../../src/middlewares/errorHandler";
@@ -21,9 +22,10 @@ vi.mock("sharp", () => {
   return { default: vi.fn().mockReturnValue({ webp }) };
 });
 
-// Mock de fs/promises pour eviter la creation reelle du dossier
+// Mock de fs/promises pour eviter les operations reelles sur le disque
 vi.mock("fs/promises", () => ({
   mkdir: vi.fn().mockResolvedValue(undefined),
+  unlink: vi.fn().mockResolvedValue(undefined),
 }));
 
 // Mock de randomUUID pour un nom de fichier deterministe
@@ -152,5 +154,30 @@ describe("createArtist controller (integration)", () => {
 
     expect(res.status).toBe(500);
     expect(mockQuery).toHaveBeenCalledWith("ROLLBACK");
+    expect(vi.mocked(unlink)).not.toHaveBeenCalled();
+  });
+
+  it("should rollback and unlink file when COMMIT fails after sharp wrote the file", async () => {
+    mockQuery
+      .mockResolvedValueOnce([]) // BEGIN
+      .mockResolvedValueOnce([mockArtist]) // INSERT artists
+      .mockResolvedValueOnce([mockConcert]) // INSERT concerts
+      .mockRejectedValueOnce(new Error("commit fail")) // COMMIT
+      .mockResolvedValueOnce([]); // ROLLBACK
+
+    const app = createApp();
+    const res = await request(app)
+      .post("/artists")
+      .field(validFields)
+      .attach("image", fakeImage, {
+        filename: "photo.jpg",
+        contentType: "image/jpeg",
+      });
+
+    expect(res.status).toBe(500);
+    expect(mockQuery).toHaveBeenCalledWith("ROLLBACK");
+    expect(vi.mocked(unlink)).toHaveBeenCalledWith(
+      expect.stringContaining("test-uuid.webp"),
+    );
   });
 });
