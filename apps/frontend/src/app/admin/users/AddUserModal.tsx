@@ -117,11 +117,11 @@ export default function AddUserModal({
       return;
     }
 
-    const fallbackUser = {
+    const fallbackUser: UserListRow = {
       id: userToEdit?.id ?? "",
       email,
       display_name: `${firstName} ${lastName}`.trim(),
-      role,
+      role: role as UserListRow["role"],
       created_at: userToEdit?.created_at ?? new Date().toISOString(),
     };
     handleUser(result.data.user ?? fallbackUser);
