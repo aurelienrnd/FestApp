@@ -11,6 +11,18 @@ export type UserListRow = {
   password_changed_at?: string | null;
 };
 
+/** Type representant une ligne article retournee par l'API. */
+export type ArticleRow = {
+  id: string;
+  title: string;
+  content: string | null;
+  is_published: boolean;
+  created_at: string;
+  url_media: string;
+  description_media: string;
+  author_name: string | null;
+};
+
 /** Type representant une ligne artiste retournee par l'API. */
 export type ArtistListRow = {
   id: string;
