@@ -254,7 +254,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="artists" parent="1" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;fontSize=14;" value="artists" vertex="1">
-          <mxGeometry height="250" width="280" x="160" y="480" as="geometry" />
+          <mxGeometry height="310" width="280" x="160" y="480" as="geometry" />
         </mxCell>
         <mxCell id="arst_id" parent="artists" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;top=0;left=0;right=0;bottom=1;" value="" vertex="1">
           <mxGeometry height="30" width="280" y="30" as="geometry" />
@@ -343,6 +343,32 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="arst_desc_v" parent="arst_desc" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="description_media (VARCHAR 255)" vertex="1">
+          <mxGeometry height="30" width="230" x="50" as="geometry">
+            <mxRectangle height="30" width="230" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arst_youtube" parent="artists" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;top=0;left=0;right=0;bottom=0;" value="" vertex="1">
+          <mxGeometry height="30" width="280" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="arst_youtube_l" parent="arst_youtube" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="" vertex="1">
+          <mxGeometry height="30" width="50" as="geometry">
+            <mxRectangle height="30" width="50" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arst_youtube_v" parent="arst_youtube" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="youtube_url (VARCHAR 255)" vertex="1">
+          <mxGeometry height="30" width="230" x="50" as="geometry">
+            <mxRectangle height="30" width="230" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arst_spotify" parent="artists" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;top=0;left=0;right=0;bottom=0;" value="" vertex="1">
+          <mxGeometry height="30" width="280" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="arst_spotify_l" parent="arst_spotify" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="" vertex="1">
+          <mxGeometry height="30" width="50" as="geometry">
+            <mxRectangle height="30" width="50" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arst_spotify_v" parent="arst_spotify" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="spotify_url (VARCHAR 255)" vertex="1">
           <mxGeometry height="30" width="230" x="50" as="geometry">
             <mxRectangle height="30" width="230" as="alternateBounds" />
           </mxGeometry>

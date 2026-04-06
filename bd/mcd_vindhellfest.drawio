@@ -25,8 +25,8 @@
         <mxCell id="artiste" parent="1" style="text;html=1;strokeColor=none;fillColor=#d5e8d4;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=13;" value="ARTISTE" vertex="1">
           <mxGeometry height="40" width="200" x="230" y="520" as="geometry" />
         </mxCell>
-        <mxCell id="artiste_attrs" parent="1" style="text;html=1;strokeColor=#82b366;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="name&#xa;genre&#xa;origin&#xa;bio&#xa;url_media&#xa;description_media" vertex="1">
-          <mxGeometry height="140" width="200" x="230" y="560" as="geometry" />
+        <mxCell id="artiste_attrs" parent="1" style="text;html=1;strokeColor=#82b366;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="name&#xa;genre&#xa;origin&#xa;bio&#xa;url_media&#xa;description_media&#xa;youtube_url&#xa;spotify_url" vertex="1">
+          <mxGeometry height="200" width="200" x="230" y="560" as="geometry" />
         </mxCell>
         <mxCell id="concert" parent="1" style="text;html=1;strokeColor=none;fillColor=#d5e8d4;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=13;" value="CONCERT" vertex="1">
           <mxGeometry height="40" width="200" x="910" y="560" as="geometry" />

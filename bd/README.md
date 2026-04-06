@@ -115,12 +115,16 @@ Représente les groupes ou artistes programmés au festival.
 | `bio` | `TEXT` | NOT NULL | Biographie |
 | `url_media` | `VARCHAR(255)` | NOT NULL | Chemin local de l'image uploadée (ex : `/uploads/artists/<uuid>.webp`) |
 | `description_media` | `VARCHAR(255)` | NOT NULL | Texte alternatif du média |
+| `youtube_url` | `VARCHAR(255)` | NULL | Lien vers la chaîne YouTube officielle de l'artiste (optionnel) |
+| `spotify_url` | `VARCHAR(255)` | NULL | Lien vers la page Spotify officielle de l'artiste (optionnel) |
 
 **Index :** `genre`, `name`
 
 > `url_media` stocke un chemin local vers une image WebP générée par sharp lors de l'upload. Les données de développement utilisent encore des URLs externes — elles seront remplacées lors du premier ajout via le back-office.
 
-**Données de développement :** Red Hot Chili Peppers et Foo Fighters sont insérés au démarrage.
+> **Choix de conception :** Les URLs YouTube et Spotify sont stockées en colonnes directes sur `artists` (plutôt qu'une table `artist_links` séparée) car les plateformes sont fixes pour ce projet. Si une 3ème plateforme (ex. Instagram) est ajoutée, préférer une table dédiée pour éviter de multiplier les colonnes. Pour l'instant, l'icône Instagram dans `ArtistDetailModal` est purement décorative.
+
+**Données de développement :** Red Hot Chili Peppers et Foo Fighters sont insérés au démarrage, avec leurs liens YouTube et Spotify officiels.
 
 ---
 
