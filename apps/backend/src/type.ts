@@ -64,6 +64,19 @@ export type ConcertRow = {
   end_time: string;
 };
 
+/** Type representant une ligne article retournee par les requetes. */
+export type ArticleRow = {
+  id: string;
+  title: string;
+  content: string | null;
+  is_published: boolean;
+  created_at: string;
+  url_media: string;
+  description_media: string;
+  user_id: string | null;
+  author_name: string | null;
+};
+
 /** Type representant les informations de l'utilisateur connecte. */
 export type UserInfoRow = {
   id: string;

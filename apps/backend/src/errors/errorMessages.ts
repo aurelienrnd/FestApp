@@ -24,4 +24,6 @@ export const ERRORS = {
   ARTIST_FILE_REQUIRED: "Image requise",
   ARTIST_INVALID_FILE_TYPE:
     "Type de fichier non autorise (jpeg, png ou webp uniquement)",
+  ARTICLE_NOT_FOUND: "Article introuvable",
+  ARTICLE_FILE_REQUIRED: "Image requise",
 } as const;
