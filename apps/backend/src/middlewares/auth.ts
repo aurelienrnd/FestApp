@@ -50,6 +50,34 @@ function decodedToken(token: string) {
   return { userId, sessionId };
 }
 
+/** Tente d'authentifier l'utilisateur sans bloquer la requete si absent ou invalide.
+ * Peuple res.locals.userId, res.locals.userRole et res.locals.userDisplayName si le token est valide.
+ * Appelle next() dans tous les cas — utilise pour les routes semi-publiques.
+ */
+export async function optionalAuth(req: Request, res: Response, next: NextFunction) {
+  try {
+    const token = getTokenFromCookie(req);
+    const { userId, sessionId } = decodedToken(token);
+
+    const user = await query<{
+      id: string;
+      display_name: string | null;
+      role: UserRole;
+    }>("SELECT id, display_name, role FROM users WHERE id = $1", [userId]);
+
+    if (user[0]) {
+      res.locals.userId = user[0].id;
+      res.locals.userRole = user[0].role;
+      res.locals.userDisplayName = user[0].display_name;
+      res.locals.sessionId = sessionId;
+    }
+  } catch {
+    // token absent ou invalide — on continue sans authentification
+  }
+
+  next();
+}
+
 /** Verifie que l'utilisateur est autorise a effectuer cette requete
  * Recupere et decode le token
  * Recherche l'utilisateur dans la BDD

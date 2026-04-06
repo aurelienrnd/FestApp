@@ -4,10 +4,12 @@ import { query } from "./db";
 
 // Importation des routes
 import adminArtists from "./routes/admin.artists.routes";
+import adminArticles from "./routes/admin.articles.routes";
 import adminAuth from "./routes/admin.auth.routes";
 import adminUser from "./routes/admin.users.routes";
 import contact from "./routes/contact.routes";
 import publicLineup from "./routes/lineup.routes";
+import publicNews from "./routes/news.routes";
 import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
 
 /** Cree et configure l'application Express — CORS, routes API, handlers d'erreur. */
@@ -75,10 +77,12 @@ export function createApp() {
 
   // Routes API (auth, admin, public, etc.)
   app.use("/admin", adminArtists);
+  app.use("/admin", adminArticles);
   app.use("/admin", adminAuth);
   app.use("/admin", adminUser);
   app.use("/contact", contact);
   app.use("/public", publicLineup);
+  app.use("/public", publicNews);
 
   // Handlers globaux de fin de chaine
   app.use(notFoundHandler);
