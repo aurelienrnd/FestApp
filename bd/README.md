@@ -37,15 +37,15 @@ Le dossier `init/` regroupe l'ensemble des scripts SQL exécutés automatiquemen
 
 Stocke les comptes des utilisateurs administrateurs de l'application.
 
-| Colonne | Type | Contraintes | Description |
-| --- | --- | --- | --- |
-| `id` | `UUID` | PRIMARY KEY | Identifiant unique, généré automatiquement |
-| `email` | `CITEXT` | NOT NULL, UNIQUE | Email insensible à la casse |
-| `password_hash` | `VARCHAR(255)` | NOT NULL | Mot de passe hashé (bcrypt) |
-| `display_name` | `VARCHAR(100)` | NOT NULL | Nom affiché dans l'interface admin |
-| `role` | `user_role` (ENUM) | NOT NULL | Rôle de l'utilisateur (`admin`, `lineup`, `news`) |
-| `password_changed_at` | `TIMESTAMPTZ` | NULL | Date du dernier changement de mot de passe |
-| `created_at` | `TIMESTAMPTZ` | NOT NULL, DEFAULT `NOW()` | Date de création du compte |
+| Colonne               | Type               | Contraintes               | Description                                       |
+| --------------------- | ------------------ | ------------------------- | ------------------------------------------------- |
+| `id`                  | `UUID`             | PRIMARY KEY               | Identifiant unique, généré automatiquement        |
+| `email`               | `CITEXT`           | NOT NULL, UNIQUE          | Email insensible à la casse                       |
+| `password_hash`       | `VARCHAR(255)`     | NOT NULL                  | Mot de passe hashé (bcrypt)                       |
+| `display_name`        | `VARCHAR(100)`     | NOT NULL                  | Nom affiché dans l'interface admin                |
+| `role`                | `user_role` (ENUM) | NOT NULL                  | Rôle de l'utilisateur (`admin`, `lineup`, `news`) |
+| `password_changed_at` | `TIMESTAMPTZ`      | NULL                      | Date du dernier changement de mot de passe        |
+| `created_at`          | `TIMESTAMPTZ`      | NOT NULL, DEFAULT `NOW()` | Date de création du compte                        |
 
 **Données de développement :** Un utilisateur `admin@example.com` avec le mot de passe `MyPassword` est inséré au démarrage.
 
@@ -59,15 +59,16 @@ Stocke les comptes des utilisateurs administrateurs de l'application.
 
 Gère la persistance des connexions et la sécurité des accès dans le cadre de l'authentification JWT.
 
-| Colonne | Type | Contraintes | Description |
-| --- | --- | --- | --- |
-| `id` | `UUID` | PRIMARY KEY | Identifiant unique de session |
-| `user_id` | `UUID` | NOT NULL, FK → `users(id)` ON DELETE CASCADE | Utilisateur propriétaire de la session |
-| `expires_at` | `TIMESTAMPTZ` | NOT NULL | Date/heure d'expiration |
-| `created_at` | `TIMESTAMPTZ` | NOT NULL, DEFAULT `NOW()` | Date de création |
-| `revoked_at` | `TIMESTAMPTZ` | NULL | Date de révocation (`NULL` si la session est active) |
+| Colonne      | Type          | Contraintes                                  | Description                                          |
+| ------------ | ------------- | -------------------------------------------- | ---------------------------------------------------- |
+| `id`         | `UUID`        | PRIMARY KEY                                  | Identifiant unique de session                        |
+| `user_id`    | `UUID`        | NOT NULL, FK → `users(id)` ON DELETE CASCADE | Utilisateur propriétaire de la session               |
+| `expires_at` | `TIMESTAMPTZ` | NOT NULL                                     | Date/heure d'expiration                              |
+| `created_at` | `TIMESTAMPTZ` | NOT NULL, DEFAULT `NOW()`                    | Date de création                                     |
+| `revoked_at` | `TIMESTAMPTZ` | NULL                                         | Date de révocation (`NULL` si la session est active) |
 
 **Contraintes de cohérence :**
+
 - `expires_at > created_at` — une session ne peut pas expirer avant d'avoir été créée
 - `revoked_at IS NULL OR revoked_at >= created_at` — une session ne peut pas être révoquée avant sa création
 
@@ -81,16 +82,16 @@ Gère la persistance des connexions et la sécurité des accès dans le cadre de
 
 Stocke le contenu éditorial du festival (actualités, annonces).
 
-| Colonne | Type | Contraintes | Description |
-| --- | --- | --- | --- |
-| `id` | `UUID` | PRIMARY KEY | Identifiant unique de l'article |
-| `title` | `VARCHAR(150)` | NOT NULL | Titre de l'article |
-| `content` | `TEXT` | NULL | Corps de l'article |
-| `is_published` | `BOOLEAN` | NOT NULL, DEFAULT `FALSE` | Statut de publication |
-| `created_at` | `TIMESTAMPTZ` | NOT NULL, DEFAULT `NOW()` | Date de création |
-| `url_media` | `VARCHAR(255)` | NOT NULL | URL ou chemin du média associé |
-| `description_media` | `VARCHAR(255)` | NOT NULL | Texte alternatif du média |
-| `user_id` | `UUID` | NULL, FK → `users(id)` ON DELETE SET NULL | Auteur de l'article (`NULL` si l'utilisateur a été supprimé) |
+| Colonne             | Type           | Contraintes                               | Description                                                  |
+| ------------------- | -------------- | ----------------------------------------- | ------------------------------------------------------------ |
+| `id`                | `UUID`         | PRIMARY KEY                               | Identifiant unique de l'article                              |
+| `title`             | `VARCHAR(150)` | NOT NULL                                  | Titre de l'article                                           |
+| `content`           | `TEXT`         | NULL                                      | Corps de l'article                                           |
+| `is_published`      | `BOOLEAN`      | NOT NULL, DEFAULT `FALSE`                 | Statut de publication                                        |
+| `created_at`        | `TIMESTAMPTZ`  | NOT NULL, DEFAULT `NOW()`                 | Date de création                                             |
+| `url_media`         | `VARCHAR(255)` | NOT NULL                                  | URL ou chemin du média associé                               |
+| `description_media` | `VARCHAR(255)` | NOT NULL                                  | Texte alternatif du média                                    |
+| `user_id`           | `UUID`         | NULL, FK → `users(id)` ON DELETE SET NULL | Auteur de l'article (`NULL` si l'utilisateur a été supprimé) |
 
 **Contrainte :** Si un utilisateur est supprimé, son `user_id` passe à `NULL` dans les articles qu'il a rédigés — l'article est conservé et l'auteur s'affiche comme « Auteur inconnu » (`ON DELETE SET NULL`).
 
@@ -106,23 +107,23 @@ Stocke le contenu éditorial du festival (actualités, annonces).
 
 Représente les groupes ou artistes programmés au festival.
 
-| Colonne | Type | Contraintes | Description |
-| --- | --- | --- | --- |
-| `id` | `UUID` | PRIMARY KEY | Identifiant unique de l'artiste |
-| `name` | `CITEXT` | NOT NULL, `char_length >= 2` | Nom de l'artiste ou du groupe |
-| `genre` | `VARCHAR(60)` | NOT NULL | Genre musical |
-| `origin` | `VARCHAR(80)` | NOT NULL | Origine (pays, ville) |
-| `bio` | `TEXT` | NOT NULL | Biographie |
-| `url_media` | `VARCHAR(255)` | NOT NULL | Chemin local de l'image uploadée (ex : `/uploads/artists/<uuid>.webp`) |
-| `description_media` | `VARCHAR(255)` | NOT NULL | Texte alternatif du média |
-| `youtube_url` | `VARCHAR(255)` | NULL | Lien vers la chaîne YouTube officielle de l'artiste (optionnel) |
-| `spotify_url` | `VARCHAR(255)` | NULL | Lien vers la page Spotify officielle de l'artiste (optionnel) |
+| Colonne             | Type           | Contraintes                  | Description                                                            |
+| ------------------- | -------------- | ---------------------------- | ---------------------------------------------------------------------- |
+| `id`                | `UUID`         | PRIMARY KEY                  | Identifiant unique de l'artiste                                        |
+| `name`              | `CITEXT`       | NOT NULL, `char_length >= 2` | Nom de l'artiste ou du groupe                                          |
+| `genre`             | `VARCHAR(60)`  | NOT NULL                     | Genre musical                                                          |
+| `origin`            | `VARCHAR(80)`  | NOT NULL                     | Origine (pays, ville)                                                  |
+| `bio`               | `TEXT`         | NOT NULL                     | Biographie                                                             |
+| `url_media`         | `VARCHAR(255)` | NOT NULL                     | Chemin local de l'image uploadée (ex : `/uploads/artists/<uuid>.webp`) |
+| `description_media` | `VARCHAR(255)` | NOT NULL                     | Texte alternatif du média                                              |
+| `youtube_url`       | `VARCHAR(255)` | NULL                         | Lien vers la chaîne YouTube officielle de l'artiste (optionnel)        |
+| `spotify_url`       | `VARCHAR(255)` | NULL                         | Lien vers la page Spotify officielle de l'artiste (optionnel)          |
 
 **Index :** `genre`, `name`
 
 > `url_media` stocke un chemin local vers une image WebP générée par sharp lors de l'upload. Les données de développement utilisent encore des URLs externes — elles seront remplacées lors du premier ajout via le back-office.
 
-> **Choix de conception :** Les URLs YouTube et Spotify sont stockées en colonnes directes sur `artists` (plutôt qu'une table `artist_links` séparée) car les plateformes sont fixes pour ce projet. Si une 3ème plateforme (ex. Instagram) est ajoutée, préférer une table dédiée pour éviter de multiplier les colonnes. Pour l'instant, l'icône Instagram dans `ArtistDetailModal` est purement décorative.
+> **Choix de conception :** Les liens YouTube et Spotify sont stockés en colonnes directes sur `artists`, et le nom de scène (`stage`) est un attribut texte plutôt qu'une entité à part entière. Ces deux choix reposent sur le même principe : les plateformes de diffusion et les scènes du festival sont des valeurs fixes et simples pour ce projet — elles n'ont pas d'attributs propres qui justifieraient des tables dédiées. Une table `artist_links` et une table `stages` seraient possibles en Merise strict, mais elles auraient ajouté des jointures supplémentaires sans bénéfice réel à ce stade. Si le projet évolue (ajout d'une 3ème plateforme, attributs propres aux scènes), ces structures séparées seraient le bon choix.
 
 **Données de développement :** Red Hot Chili Peppers et Foo Fighters sont insérés au démarrage, avec leurs liens YouTube et Spotify officiels.
 
@@ -134,15 +135,16 @@ Représente les groupes ou artistes programmés au festival.
 
 Décrit les événements musicaux et modélise la programmation du festival.
 
-| Colonne | Type | Contraintes | Description |
-| --- | --- | --- | --- |
-| `id` | `UUID` | PRIMARY KEY | Identifiant unique du concert |
-| `artist_id` | `UUID` | NOT NULL, FK → `artists(id)` ON DELETE CASCADE | Artiste qui se produit |
-| `stage` | `TEXT` | NOT NULL | Nom de la scène où se produit l'artiste |
-| `start_time` | `TIMESTAMPTZ` | NOT NULL | Date et heure de début |
-| `end_time` | `TIMESTAMPTZ` | NOT NULL | Date et heure de fin |
+| Colonne      | Type          | Contraintes                                    | Description                             |
+| ------------ | ------------- | ---------------------------------------------- | --------------------------------------- |
+| `id`         | `UUID`        | PRIMARY KEY                                    | Identifiant unique du concert           |
+| `artist_id`  | `UUID`        | NOT NULL, FK → `artists(id)` ON DELETE CASCADE | Artiste qui se produit                  |
+| `stage`      | `TEXT`        | NOT NULL                                       | Nom de la scène où se produit l'artiste |
+| `start_time` | `TIMESTAMPTZ` | NOT NULL                                       | Date et heure de début                  |
+| `end_time`   | `TIMESTAMPTZ` | NOT NULL                                       | Date et heure de fin                    |
 
 **Contraintes de cohérence :**
+
 - `end_time > start_time` — un concert ne peut pas se terminer avant de commencer
 - `no_overlap_stage` — deux concerts ne peuvent pas se chevaucher sur la même scène (via `EXCLUDE USING gist`)
 - `no_overlap_artist` — un artiste ne peut pas jouer sur deux scènes en même temps (via `EXCLUDE USING gist`)

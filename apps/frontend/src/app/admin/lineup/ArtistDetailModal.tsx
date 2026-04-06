@@ -4,7 +4,6 @@ import Image from "next/image";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faInstagram,
   faYoutube,
   faSpotify,
 } from "@fortawesome/free-brands-svg-icons";
@@ -90,7 +89,6 @@ export default function ArtistDetailModal({
 
           {/* Reseaux sociaux */}
           <div className="artist-detail-social">
-            <FontAwesomeIcon icon={faInstagram} className="text-(--color-2)" />
             {artist.youtube_url && (
               <a href={artist.youtube_url} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
                 <FontAwesomeIcon icon={faYoutube} className="text-(--color-2)" />

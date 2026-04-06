@@ -35,7 +35,7 @@ docker exec -it vindhellfest-frontend npm run test:run
 - `@fortawesome/react-fontawesome` : Composants Font Awesome pour React.
 - `@fortawesome/fontawesome-svg-core` : Cœur Font Awesome.
 - `@fortawesome/free-solid-svg-icons` : Pack d'icônes solid Font Awesome.
-- `@fortawesome/free-brands-svg-icons` : Pack d'icônes de marques (Instagram, Facebook, YouTube…).
+- `@fortawesome/free-brands-svg-icons` : Pack d'icônes de marques (YouTube, Spotify…).
 
 **DevDependencies**
 
