@@ -16,11 +16,10 @@ vi.mock("react-modal", () => {
   return { default: Modal };
 });
 
-// Mock de next/image pour eviter le rendu SSR
+// next/image n'est pas compatible avec jsdom (environnement de test) — on le remplace par un <img> brut.
 vi.mock("next/image", () => ({
-  default: ({ src, alt }: { src: string; alt: string }) => (
-    <img src={src} alt={alt} />
-  ),
+  // eslint-disable-next-line @next/next/no-img-element
+  default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
 }));
 
 // Callback mocke passe en prop onClose a la modale
