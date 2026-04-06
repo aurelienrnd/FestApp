@@ -2,24 +2,28 @@
 
 ## Résumé des endpoints
 
-| Méthode | Route                         | Accès       | Description                                                   |
-| ------- | ----------------------------- | ----------- | ------------------------------------------------------------- |
-| POST    | `/admin/artists`              | Authentifié | Créer un artiste (multipart/form-data)                        |
-| PATCH   | `/admin/artists/:id`          | Authentifié | Modifier un artiste (multipart/form-data)                     |
-| DELETE  | `/admin/artists/:id`          | Authentifié | Supprimer un artiste et son concert associé                   |
-| POST    | `/admin/auth/login`           | Public      | Connexion administrateur                                      |
-| POST    | `/admin/auth/logout`          | Authentifié | Déconnexion                                                   |
-| GET     | `/admin/auth/me`              | Authentifié | Informations utilisateur + renouvellement token               |
-| PATCH   | `/admin/auth/password`        | Authentifié | Modifier le mot de passe de l'utilisateur connecte            |
-| POST    | `/admin/auth/forgot-password` | Public      | Reinitialiser le mot de passe et envoyer un nouveau par email |
-| GET     | `/admin/users`                | Authentifié | Liste des utilisateurs                                        |
-| POST    | `/admin/users`                | Authentifié | Créer un utilisateur                                          |
-| PATCH   | `/admin/users/:id`            | Authentifié | Modifier un utilisateur                                       |
-| DELETE  | `/admin/users/:id`            | Authentifié | Supprimer un utilisateur                                      |
-| POST    | `/contact/submit`             | Public      | Soumettre le formulaire de contact                            |
-| GET     | `/public/lineup`              | Public      | Liste des artistes de la programmation                        |
-| GET     | `/health`                     | Public      | Santé du serveur (diagnostic)                                 |
-| GET     | `/debug/db`                   | Public      | Connexion à la base de données (diagnostic)                   |
+| Méthode | Route                         | Accès              | Description                                                   |
+| ------- | ----------------------------- | ------------------ | ------------------------------------------------------------- |
+| POST    | `/admin/articles`             | admin, news        | Créer un article (multipart/form-data)                        |
+| PATCH   | `/admin/articles/:id`         | admin, news        | Modifier un article (multipart/form-data)                     |
+| DELETE  | `/admin/articles/:id`         | admin, news        | Supprimer un article et son fichier image                     |
+| POST    | `/admin/artists`              | admin, lineup      | Créer un artiste (multipart/form-data)                        |
+| PATCH   | `/admin/artists/:id`          | admin, lineup      | Modifier un artiste (multipart/form-data)                     |
+| DELETE  | `/admin/artists/:id`          | admin, lineup      | Supprimer un artiste et son concert associé                   |
+| POST    | `/admin/auth/login`           | Public             | Connexion administrateur                                      |
+| POST    | `/admin/auth/logout`          | Authentifié        | Déconnexion                                                   |
+| GET     | `/admin/auth/me`              | Authentifié        | Informations utilisateur + renouvellement token               |
+| PATCH   | `/admin/auth/password`        | Authentifié        | Modifier le mot de passe de l'utilisateur connecte            |
+| POST    | `/admin/auth/forgot-password` | Public             | Reinitialiser le mot de passe et envoyer un nouveau par email |
+| GET     | `/admin/users`                | admin              | Liste des utilisateurs                                        |
+| POST    | `/admin/users`                | admin              | Créer un utilisateur                                          |
+| PATCH   | `/admin/users/:id`            | admin              | Modifier un utilisateur                                       |
+| DELETE  | `/admin/users/:id`            | admin              | Supprimer un utilisateur                                      |
+| POST    | `/contact/submit`             | Public             | Soumettre le formulaire de contact                            |
+| GET     | `/public/lineup`              | Public             | Liste des artistes de la programmation                        |
+| GET     | `/public/news`                | Public / Privilégié | Liste des articles (tous si admin/news, publiés sinon)        |
+| GET     | `/health`                     | Public             | Santé du serveur (diagnostic)                                 |
+| GET     | `/debug/db`                   | Public             | Connexion à la base de données (diagnostic)                   |
 
 ---
 
@@ -408,6 +412,189 @@ Reponses d'erreur:
 - `401` `{ "error": "Session deja fermee ou expiree" }`
 - `401` `{ "error": "Session manquante" }`
 - `404` `{ "error": "Utilisateur introuvable" }`
+
+## Articles
+
+> Routes admin réservées aux rôles `admin` et `news`.
+
+### POST `/admin/articles`
+
+Creer un article avec une image uploadée.
+
+Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "news")`, `upload.single("image")`, `validateBody`
+
+Corps de requete:
+
+- Format: `multipart/form-data`
+- Champ fichier: `image` (jpeg, png ou webp — 5 Mo max)
+
+```
+title=Ouverture de la billetterie
+content=La billetterie du Vindhellfest ouvre officiellement ses portes.
+is_published=true
+description_media=Photo de la billetterie
+image=<fichier image>
+```
+
+> `content` est optionnel. `is_published` est une string `"true"` ou `"false"` (multipart ne supporte pas les booleens) — defaut `false` si absent.
+
+Reponse en succes:
+
+- Statut: `201`
+- Corps:
+
+```json
+{
+  "message": "Article cree",
+  "article": {
+    "id": "uuid",
+    "title": "Ouverture de la billetterie",
+    "content": "La billetterie du Vindhellfest ouvre officiellement ses portes.",
+    "is_published": true,
+    "created_at": "2026-04-06T10:00:00.000Z",
+    "url_media": "/uploads/articles/uuid.webp",
+    "description_media": "Photo de la billetterie",
+    "user_id": "uuid",
+    "author_name": "Admin"
+  }
+}
+```
+
+Reponses d'erreur:
+
+- `400` `{ "error": "Donnees invalides" }`
+- `400` `{ "error": "Image requise" }`
+- `400` `{ "error": "Type de fichier non autorise (jpeg, png ou webp uniquement)" }`
+- `401` `{ "error": "Cookie d'authentification manquant" }`
+- `403` `{ "error": "Acces refuse" }`
+
+---
+
+### PATCH `/admin/articles/:id`
+
+Modifier un article existant.
+
+Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "news")`, `upload.single("image")`, `validateBody`
+
+Parametre d'URL:
+
+- `id`: UUID de l'article a modifier.
+
+Corps de requete:
+
+- Format: `multipart/form-data`
+- Champ fichier: `image` (jpeg, png ou webp — 5 Mo max, optionnel — si absent, l'image existante est conservee)
+
+```
+title=Ouverture de la billetterie
+content=Contenu mis a jour.
+is_published=true
+description_media=Photo de la billetterie
+image=<fichier image>
+```
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "message": "Article modifie",
+  "article": {
+    "id": "uuid",
+    "title": "Ouverture de la billetterie",
+    "content": "Contenu mis a jour.",
+    "is_published": true,
+    "created_at": "2026-04-06T10:00:00.000Z",
+    "url_media": "/uploads/articles/uuid.webp",
+    "description_media": "Photo de la billetterie",
+    "user_id": "uuid",
+    "author_name": "Admin"
+  }
+}
+```
+
+Reponses d'erreur:
+
+- `400` `{ "error": "Donnees invalides" }` (id invalide ou corps invalide)
+- `400` `{ "error": "Type de fichier non autorise (jpeg, png ou webp uniquement)" }`
+- `401` `{ "error": "Cookie d'authentification manquant" }`
+- `403` `{ "error": "Acces refuse" }`
+- `404` `{ "error": "Article introuvable" }`
+
+---
+
+### DELETE `/admin/articles/:id`
+
+Supprime definitivement un article et son fichier image.
+
+Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "news")`
+
+Parametre d'URL:
+
+- `id`: UUID de l'article a supprimer.
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "message": "Article supprime"
+}
+```
+
+Reponses d'erreur:
+
+- `400` `{ "error": "Donnees invalides" }` (id invalide)
+- `401` `{ "error": "Cookie d'authentification manquant" }`
+- `403` `{ "error": "Acces refuse" }`
+- `404` `{ "error": "Article introuvable" }`
+
+---
+
+### GET `/public/news`
+
+Retourne la liste des articles tries par date de creation decroissante.
+
+Middleware: `optionalAuth` — si l'utilisateur est authentifie avec le role `admin` ou `news`, tous les articles sont retournes (y compris les brouillons). Sinon, seuls les articles avec `is_published = TRUE` sont retournes.
+
+Authentification:
+
+- Aucune requise (route semi-publique).
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "articles": [
+    {
+      "id": "uuid",
+      "title": "Ouverture de la billetterie",
+      "content": "La billetterie du Vindhellfest ouvre officiellement ses portes.",
+      "is_published": true,
+      "created_at": "2026-04-06T10:00:00.000Z",
+      "url_media": "/uploads/articles/uuid.webp",
+      "description_media": "Photo de la billetterie",
+      "user_id": "uuid",
+      "author_name": "Admin"
+    }
+  ]
+}
+```
+
+> `author_name` est `null` si l'utilisateur auteur a ete supprime.
+
+Reponses d'erreur:
+
+- `500` `{ "error": "Erreur interne du serveur" }`
+
+---
 
 ## Artists
 

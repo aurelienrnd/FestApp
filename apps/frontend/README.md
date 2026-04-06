@@ -197,7 +197,7 @@ Le groupe de routes `(public)` est transparent pour les URLs (n'affecte pas les 
 | --- | --- | --- |
 | `(public)/page.tsx` | `/` | Page d'accueil |
 | `(public)/lineup/` | `/lineup` | Programmation du festival — liste les artistes depuis l'API publique |
-| `(public)/news/` | `/news` | Actualités de l'événement |
+| `(public)/news/` | `/news` | Actualités du festival — liste les articles publiés depuis `GET /public/news` avec image, titre, auteur et date. Chaque carte ouvre `NewsDetailModal` |
 | `(public)/practical-info/` | `/practical-info` | Informations pratiques |
 
 **Zone authentification — `(auth)/`**
@@ -215,7 +215,7 @@ Le groupe de routes `(auth)` est transparent pour les URLs. Son layout est ident
 | `admin/layout.tsx` | — | Vérifie la session via `/admin/auth/me`, redirige vers `/login` si non authentifié. Fournit `AdminUserProvider`, `Banner` et `Footer` — `Banner` a accès aux données utilisateur pour filtrer les liens par rôle |
 | `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe si `mustChangePassword` est vrai. Affiche dynamiquement les dates du festival depuis `FESTIVAL_DAYS` |
 | `admin/lineup/` | `/admin/lineup` | Programmation — liste les artistes avec leur concert (`LineupContent.tsx`), modale d'ajout/modification 3 étapes (`AddArtistModal.tsx`), modale de suppression (`DeleteArtistModal.tsx`) — accès restreint aux rôles `admin` et `lineup` via `useRoleGuard`. Le champ date est un `<select>` limité aux jours de `FESTIVAL_DAYS`. Les concerts à cheval sur minuit sont gérés (end_time automatiquement décalé au lendemain) |
-| `admin/news/` | `/admin/news` | Gestion des actualités — accès restreint aux rôles `admin` et `news` via `useRoleGuard` |
+| `admin/news/` | `/admin/news` | Gestion des actualités (`NewsContent.tsx`, `AddArticleModal.tsx`, `DeleteArticleModal.tsx`) — accès restreint aux rôles `admin` et `news` via `useRoleGuard`. Les brouillons (`is_published = false`) sont visibles uniquement en admin. Le tri Croissant/Décroissant est géré côté client |
 | `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) — accès restreint au rôle `admin` via `useRoleGuard`. `AddUserModal` gère l'ajout et la modification via une seule instance (prop `userToEdit`). Si l'utilisateur connecté se supprime lui-même, il est redirigé vers `/login` |
 
 ### `components/`
@@ -271,7 +271,7 @@ Types TypeScript partagés entre plusieurs composants.
 
 | Fichier | Description |
 | --- | --- |
-| `index.ts` | Centralise les types métier réutilisables : `UserRole` (union des rôles valides), `UserListRow` (données utilisateur API), `ArtistListRow` (données artiste API avec `youtube_url`, `spotify_url` nullables et `stage`, `start_time`, `end_time` nullables) |
+| `index.ts` | Centralise les types métier réutilisables : `UserRole` (union des rôles valides), `UserListRow` (données utilisateur API), `ArtistListRow` (données artiste API avec `youtube_url`, `spotify_url` nullables et `stage`, `start_time`, `end_time` nullables), `ArticleRow` (données article API avec `author_name` nullable via JOIN users) |
 
 ---
 
