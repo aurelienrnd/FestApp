@@ -69,6 +69,8 @@ const mockUpdatedArtist = {
   bio: "Une bio",
   url_media: `/uploads/artists/${ARTIST_ID}.webp`,
   description_media: "Photo de Band A",
+  youtube_url: null,
+  spotify_url: null,
 };
 
 const mockUpdatedConcert = {

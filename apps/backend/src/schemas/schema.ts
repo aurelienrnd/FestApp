@@ -46,6 +46,8 @@ export const createArtistSchema = z.object({
   origin: z.string().min(1).max(80).trim(),
   bio: z.string().min(1).trim(),
   description_media: z.string().min(1).max(255).trim(),
+  youtube_url: z.url().max(255).optional().or(z.literal("")),
+  spotify_url: z.url().max(255).optional().or(z.literal("")),
   stage: z.string().min(1).trim(),
   start_time: z.iso.datetime(),
   end_time: z.iso.datetime(),

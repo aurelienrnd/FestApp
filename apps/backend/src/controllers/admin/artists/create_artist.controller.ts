@@ -27,6 +27,8 @@ export async function createArtist(req: Request, res: Response) {
     origin,
     bio,
     description_media,
+    youtube_url,
+    spotify_url,
     stage,
     start_time,
     end_time,
@@ -47,10 +49,10 @@ export async function createArtist(req: Request, res: Response) {
   try {
     // insere l'artiste en base de donnees et retourne les donnees de l'artiste cree
     const createdArtists = await query<ArtistListRow>(
-      `INSERT INTO artists (name, genre, origin, bio, url_media, description_media)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, name, genre, origin, bio, url_media, description_media`,
-      [name, genre, origin, bio, url_media, description_media],
+      `INSERT INTO artists (name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING id, name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url`,
+      [name, genre, origin, bio, url_media, description_media, youtube_url ?? null, spotify_url ?? null],
     );
 
     // si l'insertion a echoue, retourne une erreur 500

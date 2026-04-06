@@ -47,6 +47,8 @@ export async function updateArtist(req: Request, res: Response) {
     origin,
     bio,
     description_media,
+    youtube_url,
+    spotify_url,
     stage,
     start_time,
     end_time,
@@ -73,10 +75,10 @@ export async function updateArtist(req: Request, res: Response) {
     // met a jour l'artiste en base de donnees
     const updatedArtists = await query<ArtistListRow>(
       `UPDATE artists
-       SET name = $1, genre = $2, origin = $3, bio = $4, url_media = $5, description_media = $6
-       WHERE id = $7
-       RETURNING id, name, genre, origin, bio, url_media, description_media`,
-      [name, genre, origin, bio, url_media, description_media, artistId],
+       SET name = $1, genre = $2, origin = $3, bio = $4, url_media = $5, description_media = $6, youtube_url = $7, spotify_url = $8
+       WHERE id = $9
+       RETURNING id, name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url`,
+      [name, genre, origin, bio, url_media, description_media, youtube_url ?? null, spotify_url ?? null, artistId],
     );
 
     const artist = updatedArtists[0];

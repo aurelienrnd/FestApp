@@ -430,13 +430,15 @@ genre=Rock
 origin=Etats-Unis, Los Angeles
 bio=Groupe de rock melant riffs lourds et funky.
 description_media=Photo promo du groupe
+youtube_url=https://www.youtube.com/@RedHotChiliPeppers
+spotify_url=https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5
 image=<fichier image>
 stage=Grande Scene
 start_time=2025-06-20T18:00:00.000Z
 end_time=2025-06-20T19:30:00.000Z
 ```
 
-> `start_time` et `end_time` doivent etre au format ISO 8601 (`YYYY-MM-DDTHH:mm:ss.sssZ`). L'artiste et son concert sont inseres en base dans une seule transaction SQL.
+> `youtube_url` et `spotify_url` sont optionnels. `start_time` et `end_time` doivent etre au format ISO 8601 (`YYYY-MM-DDTHH:mm:ss.sssZ`). L'artiste et son concert sont inseres en base dans une seule transaction SQL.
 
 Reponse en succes:
 
@@ -454,6 +456,8 @@ Reponse en succes:
     "bio": "Groupe de rock melant riffs lourds et funky.",
     "url_media": "/uploads/artists/uuid.webp",
     "description_media": "Photo promo du groupe",
+    "youtube_url": "https://www.youtube.com/@RedHotChiliPeppers",
+    "spotify_url": "https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5",
     "stage": "Grande Scene",
     "start_time": "2026-05-22T21:00:00.000Z",
     "end_time": "2026-05-22T22:30:00.000Z"
@@ -494,13 +498,15 @@ genre=Rock
 origin=Etats-Unis, Los Angeles
 bio=Groupe de rock melant riffs lourds et funky.
 description_media=Photo promo du groupe
+youtube_url=https://www.youtube.com/@RedHotChiliPeppers
+spotify_url=https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5
 image=<fichier image>
 stage=Grande Scene
 start_time=2025-06-20T18:00:00.000Z
 end_time=2025-06-20T19:30:00.000Z
 ```
 
-> `start_time` et `end_time` doivent etre au format ISO 8601 (`YYYY-MM-DDTHH:mm:ss.sssZ`). La mise a jour de l'artiste et de son concert se fait dans une seule transaction SQL. Si une nouvelle image est fournie, l'ancienne est supprimee du disque.
+> `youtube_url` et `spotify_url` sont optionnels. `start_time` et `end_time` doivent etre au format ISO 8601 (`YYYY-MM-DDTHH:mm:ss.sssZ`). La mise a jour de l'artiste et de son concert se fait dans une seule transaction SQL. Si une nouvelle image est fournie, l'ancienne est supprimee du disque.
 
 Reponse en succes:
 
@@ -518,6 +524,8 @@ Reponse en succes:
     "bio": "Groupe de rock melant riffs lourds et funky.",
     "url_media": "/uploads/artists/uuid.webp",
     "description_media": "Photo promo du groupe",
+    "youtube_url": "https://www.youtube.com/@RedHotChiliPeppers",
+    "spotify_url": "https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5",
     "stage": "Grande Scene",
     "start_time": "2025-06-20T18:00:00.000Z",
     "end_time": "2025-06-20T19:30:00.000Z"
@@ -652,6 +660,8 @@ Reponse en succes:
       "bio": "Groupe de rock melant riffs lourds et funky.",
       "url_media": "/uploads/artists/uuid.webp",
       "description_media": "Photo promo du groupe Red Hot Chili Peppers",
+      "youtube_url": "https://www.youtube.com/@RedHotChiliPeppers",
+      "spotify_url": "https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5",
       "stage": "Grande Scene",
       "start_time": "2025-06-20T18:00:00.000Z",
       "end_time": "2025-06-20T19:30:00.000Z"

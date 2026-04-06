@@ -6,7 +6,7 @@ import type { ArtistListRow } from "../../../type";
 /** Liste la programmation (artistes) avec leur concert associe si existant. */
 export async function listLineup(_req: Request, res: Response) {
   const artists = await query<ArtistListRow>(
-    `SELECT a.id, a.name, a.genre, a.origin, a.bio, a.url_media, a.description_media,
+    `SELECT a.id, a.name, a.genre, a.origin, a.bio, a.url_media, a.description_media, a.youtube_url, a.spotify_url,
             c.stage, c.start_time, c.end_time
      FROM artists a
      LEFT JOIN concerts c ON c.artist_id = a.id

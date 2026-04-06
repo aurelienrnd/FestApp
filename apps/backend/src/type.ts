@@ -48,6 +48,8 @@ export type ArtistListRow = {
   bio: string;
   url_media: string;
   description_media: string;
+  youtube_url: string | null;
+  spotify_url: string | null;
   stage: string | null;
   start_time: string | null;
   end_time: string | null;

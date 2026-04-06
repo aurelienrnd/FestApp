@@ -65,6 +65,8 @@ const mockArtist = {
   bio: "Une bio",
   url_media: "/uploads/artists/test-uuid.webp",
   description_media: "Photo de Band A",
+  youtube_url: null,
+  spotify_url: null,
 };
 
 // Donnees de test pour les reponses de la base de donnees

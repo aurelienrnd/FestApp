@@ -211,7 +211,7 @@ Centralise tous les types TypeScript partagés du backend :
 - `DbUser` — ligne utilisateur retournée pour l'authentification (email, password_hash…)
 - `SessionRow` — ligne de session retournée par la base de données
 - `UserListRow` — ligne utilisateur pour les endpoints de liste/CRUD
-- `ArtistListRow` — ligne artiste pour l'endpoint de programmation (inclut `stage`, `start_time`, `end_time` nullables via LEFT JOIN concerts)
+- `ArtistListRow` — ligne artiste pour l'endpoint de programmation (inclut `youtube_url`, `spotify_url` nullables, et `stage`, `start_time`, `end_time` nullables via LEFT JOIN concerts)
 - `ConcertRow` — ligne concert retournee lors de l'insertion en base
 - `UserInfoRow` — ligne utilisateur pour l'endpoint `/admin/auth/me` (inclut `password_changed_at` pour calculer `mustChangePassword`)
 
