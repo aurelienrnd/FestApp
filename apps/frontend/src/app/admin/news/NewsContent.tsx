@@ -123,9 +123,16 @@ export default function NewsContent({
     onCloseAddModal();
   };
 
+  // Sur la page publique, masque les brouillons meme si l'API les retourne (admin connecte)
+  const publishedArticles = isAdminPath
+    ? articles
+    : articles.filter((a) => a.is_published);
+
   // Tri cote client — "Croissant" inverse l'ordre DESC retourne par l'API (plus ancien en premier)
   const visibleArticles =
-    activeFilter === "Croissant" ? [...articles].reverse() : articles;
+    activeFilter === "Croissant"
+      ? [...publishedArticles].reverse()
+      : publishedArticles;
 
   return (
     <div className="flex-1 flex justify-center">

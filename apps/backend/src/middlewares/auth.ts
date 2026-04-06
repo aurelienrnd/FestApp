@@ -54,7 +54,11 @@ function decodedToken(token: string) {
  * Peuple res.locals.userId, res.locals.userRole et res.locals.userDisplayName si le token est valide.
  * Appelle next() dans tous les cas — utilise pour les routes semi-publiques.
  */
-export async function optionalAuth(req: Request, res: Response, next: NextFunction) {
+export async function optionalAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const token = getTokenFromCookie(req);
     const { userId, sessionId } = decodedToken(token);
@@ -65,7 +69,17 @@ export async function optionalAuth(req: Request, res: Response, next: NextFuncti
       role: UserRole;
     }>("SELECT id, display_name, role FROM users WHERE id = $1", [userId]);
 
-    if (user[0]) {
+    if (!user[0]) {
+      return next();
+    }
+
+    // Verifie que la session existe et n'est pas revoquee (logout invalide la session en BD)
+    const sessions = await query<{ id: string; revoked_at: Date | null }>(
+      "SELECT id, revoked_at FROM sessions WHERE id = $1 AND user_id = $2",
+      [sessionId, userId],
+    );
+
+    if (sessions[0] && sessions[0].revoked_at === null) {
       res.locals.userId = user[0].id;
       res.locals.userRole = user[0].role;
       res.locals.userDisplayName = user[0].display_name;
