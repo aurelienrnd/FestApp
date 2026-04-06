@@ -97,7 +97,7 @@ Stocke le contenu éditorial du festival (actualités, annonces).
 
 **Index :** `created_at`, `is_published`
 
-**Données de développement :** Un article de démonstration est inséré et lié à `admin@example.com`.
+**Données de développement :** Deux articles sont insérés au démarrage et liés à `admin@example.com` : « Ouverture de la billetterie » (`is_published = TRUE`) et « Nouvelle tête d'affiche » (`is_published = FALSE`, brouillon).
 
 ---
 
