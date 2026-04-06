@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-  PORT: z.string().optional(),
+  PORT: z.string().optional(), // optional car en dev on peut se baser sur la valeur par defaut du port 3000, et en prod le port est fourni par la plateforme d'hebergement via une variable d'environnement
   DB_HOST: z.string(),
   DB_PORT: z.string(),
   DB_USER: z.string(),

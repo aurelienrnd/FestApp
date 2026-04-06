@@ -13,6 +13,7 @@ vi.mock("../../src/db", () => ({
   query: vi.fn(),
 }));
 const mockQuery = vi.mocked(query);
+
 type UserRow = { id: string; display_name: string };
 
 /** Creation d'une application Express pour les tests
