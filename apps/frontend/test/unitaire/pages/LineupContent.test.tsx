@@ -52,6 +52,8 @@ const mockArtist = {
   bio: "Une bio",
   url_media: "/uploads/artists/photo.webp",
   description_media: "Photo de Band A",
+  youtube_url: null,
+  spotify_url: null,
   stage: "Grande Scene",
   start_time: "2025-06-20T18:00:00.000Z",
   end_time: "2025-06-20T19:30:00.000Z",

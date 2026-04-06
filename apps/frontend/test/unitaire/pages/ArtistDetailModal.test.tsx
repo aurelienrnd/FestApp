@@ -35,6 +35,8 @@ const mockArtist = {
   bio: "Une bio de groupe.",
   url_media: "/uploads/artists/test.webp",
   description_media: "Photo promo",
+  youtube_url: null,
+  spotify_url: null,
   stage: "main-stage",
   start_time: "2026-05-22T18:00:00.000Z",
   end_time: "2026-05-22T19:30:00.000Z",
@@ -113,6 +115,52 @@ describe("ArtistDetailModal", () => {
       />,
     );
     expect(screen.getByText("Date non definie")).toBeInTheDocument();
+  });
+
+  it("n'affiche pas les liens YouTube et Spotify quand les URLs sont nulles", () => {
+    render(
+      <ArtistDetailModal
+        isOpen={true}
+        onClose={mockOnClose}
+        artist={mockArtist}
+      />,
+    );
+    expect(screen.queryByRole("link", { name: "YouTube" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Spotify" })).not.toBeInTheDocument();
+  });
+
+  it("affiche le lien YouTube quand youtube_url est defini", () => {
+    const artistWithYoutube = {
+      ...mockArtist,
+      youtube_url: "https://www.youtube.com/@RedHot",
+    };
+    render(
+      <ArtistDetailModal
+        isOpen={true}
+        onClose={mockOnClose}
+        artist={artistWithYoutube}
+      />,
+    );
+    const link = screen.getByRole("link", { name: "YouTube" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "https://www.youtube.com/@RedHot");
+  });
+
+  it("affiche le lien Spotify quand spotify_url est defini", () => {
+    const artistWithSpotify = {
+      ...mockArtist,
+      spotify_url: "https://open.spotify.com/artist/123",
+    };
+    render(
+      <ArtistDetailModal
+        isOpen={true}
+        onClose={mockOnClose}
+        artist={artistWithSpotify}
+      />,
+    );
+    const link = screen.getByRole("link", { name: "Spotify" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "https://open.spotify.com/artist/123");
   });
 
   it("appelle onClose au clic sur le bouton fermer", async () => {

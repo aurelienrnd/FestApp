@@ -70,7 +70,7 @@ function isStep3Invalid(
 }
 
 /** Affiche la modale d'ajout ou de modification d'un artiste en trois etapes.
- * Etape 1 : nom, genre, origine, bio. Etape 2 : description image, fichier image. Etape 3 : scene, heure de debut et de fin.
+![1775484137806](image/AddArtistModal/1775484137806.png) * Etape 1 : nom, genre, origine, bio, liens YouTube et Spotify (optionnels). Etape 2 : description image, fichier image. Etape 3 : scene, heure de debut et de fin.
  * Soumet les donnees en multipart/form-data a POST /admin/artists.
  * En mode edition (artistToEdit defini), pre-remplit les champs et affiche "Modifier" a la place de "Ajouter".
  * @param {AddArtistModalProps} props Proprietes de controle de la modale.
@@ -101,6 +101,8 @@ export default function AddArtistModal({
   const [genre, setGenre] = useState(artistToEdit?.genre ?? "");
   const [origin, setOrigin] = useState(artistToEdit?.origin ?? "");
   const [bio, setBio] = useState(artistToEdit?.bio ?? "");
+  const [youtubeUrl, setYoutubeUrl] = useState(artistToEdit?.youtube_url ?? "");
+  const [spotifyUrl, setSpotifyUrl] = useState(artistToEdit?.spotify_url ?? "");
 
   // Champs de l'etape 2
   const [descriptionMedia, setDescriptionMedia] = useState(
@@ -146,6 +148,8 @@ export default function AddArtistModal({
     setGenre("");
     setOrigin("");
     setBio("");
+    setYoutubeUrl("");
+    setSpotifyUrl("");
     setDescriptionMedia("");
     setStage("");
     setDate("");
@@ -188,6 +192,8 @@ export default function AddArtistModal({
     formData.append("bio", bio);
 
     formData.append("description_media", descriptionMedia);
+    if (youtubeUrl) formData.append("youtube_url", youtubeUrl);
+    if (spotifyUrl) formData.append("spotify_url", spotifyUrl);
     // en mode edition, l'image n'est ajoutee que si une nouvelle a ete selectionnee
     if (image !== null) formData.append("image", image);
     formData.append("stage", stage);
@@ -305,6 +311,36 @@ export default function AddArtistModal({
                 rows={4}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="artistYoutubeUrl" className="sr-only">
+                Lien YouTube
+              </label>
+              <input
+                id="artistYoutubeUrl"
+                name="youtube_url"
+                type="url"
+                placeholder="Lien YouTube (optionnel)"
+                className="input"
+                value={youtubeUrl}
+                onChange={(e) => setYoutubeUrl(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="artistSpotifyUrl" className="sr-only">
+                Lien Spotify
+              </label>
+              <input
+                id="artistSpotifyUrl"
+                name="spotify_url"
+                type="url"
+                placeholder="Lien Spotify (optionnel)"
+                className="input"
+                value={spotifyUrl}
+                onChange={(e) => setSpotifyUrl(e.target.value)}
               />
             </div>
 

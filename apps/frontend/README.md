@@ -271,7 +271,7 @@ Types TypeScript partagés entre plusieurs composants.
 
 | Fichier | Description |
 | --- | --- |
-| `index.ts` | Centralise les types métier réutilisables : `UserRole` (union des rôles valides), `UserListRow` (données utilisateur API), `ArtistListRow` (données artiste API avec `stage`, `start_time`, `end_time` nullables) |
+| `index.ts` | Centralise les types métier réutilisables : `UserRole` (union des rôles valides), `UserListRow` (données utilisateur API), `ArtistListRow` (données artiste API avec `youtube_url`, `spotify_url` nullables et `stage`, `start_time`, `end_time` nullables) |
 
 ---
 
@@ -319,7 +319,8 @@ Tests unitaires des pages et de leurs flux principaux.
 
 | Fichier | Description |
 | --- | --- |
-| `AddArtistModal.test.tsx` | Vérifie la modale d'ajout/modification artiste — navigation entre les 3 étapes, validation des champs, soumission réussie (POST et PATCH), mode édition pré-rempli et gestion des erreurs API |
+| `AddArtistModal.test.tsx` | Vérifie la modale d'ajout/modification artiste — navigation entre les 3 étapes, validation des champs obligatoires, champs YouTube/Spotify optionnels, soumission réussie (POST et PATCH), mode édition pré-rempli et gestion des erreurs API |
+| `ArtistDetailModal.test.tsx` | Vérifie la modale de détail artiste — affichage du nom, de la bio, de l'image, du format de date, des liens YouTube/Spotify conditionnels (absents si null, cliquables si définis) |
 | `DeleteArtistModal.test.tsx` | Vérifie la modale de suppression artiste — confirmation, succès, erreur API et fermeture après suppression |
 | `ChangePasswordModal.test.tsx` | Vérifie la modale de changement de mot de passe — validation des saisies, gestion des erreurs API et mode forcé (sans bouton de fermeture) |
 | `DashboardContent.test.tsx` | Vérifie le tableau de bord — ouverture automatique de la modale si `mustChangePassword` est vrai et affichage des informations utilisateur |

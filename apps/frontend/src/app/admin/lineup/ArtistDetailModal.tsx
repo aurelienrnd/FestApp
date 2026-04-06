@@ -91,8 +91,16 @@ export default function ArtistDetailModal({
           {/* Reseaux sociaux */}
           <div className="artist-detail-social">
             <FontAwesomeIcon icon={faInstagram} className="text-(--color-2)" />
-            <FontAwesomeIcon icon={faYoutube} className="text-(--color-2)" />
-            <FontAwesomeIcon icon={faSpotify} className="text-(--color-2)" />
+            {artist.youtube_url && (
+              <a href={artist.youtube_url} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                <FontAwesomeIcon icon={faYoutube} className="text-(--color-2)" />
+              </a>
+            )}
+            {artist.spotify_url && (
+              <a href={artist.spotify_url} target="_blank" rel="noopener noreferrer" aria-label="Spotify">
+                <FontAwesomeIcon icon={faSpotify} className="text-(--color-2)" />
+              </a>
+            )}
           </div>
         </div>
       )}
