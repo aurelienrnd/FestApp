@@ -93,6 +93,10 @@ apps/backend/
 │   │   │   │   ├── login.controller.ts
 │   │   │   │   ├── logout.controller.ts
 │   │   │   │   └── userInfo.controller.ts
+│   │   │   ├── articles/
+│   │   │   │   ├── create_article.controller.ts
+│   │   │   │   ├── delete_article.controller.ts
+│   │   │   │   └── update_article.controller.ts
 │   │   │   └── users/
 │   │   │       ├── create_user.controller.ts
 │   │   │       ├── delete_user.controller.ts
@@ -101,8 +105,10 @@ apps/backend/
 │   │   ├── contact/
 │   │   │   └── submit_contact.controller.ts
 │   │   └── public/
-│   │       └── lineup/
-│   │           └── list_lineup.controller.ts
+│   │       ├── lineup/
+│   │       │   └── list_lineup.controller.ts
+│   │       └── news/
+│   │           └── get_articles.controller.ts
 │   ├── middlewares/
 │   │   ├── asyncHandler.ts
 │   │   ├── auth.ts
@@ -117,11 +123,13 @@ apps/backend/
 │   │   ├── AppError.ts
 │   │   └── errorMessages.ts
 │   ├── routes/
+│   │   ├── admin.articles.routes.ts
 │   │   ├── admin.artists.routes.ts
 │   │   ├── admin.auth.routes.ts
 │   │   ├── admin.users.routes.ts
 │   │   ├── contact.routes.ts
-│   │   └── lineup.routes.ts
+│   │   ├── lineup.routes.ts
+│   │   └── news.routes.ts
 │   ├── schemas/
 │   │   └── schema.ts
 │   ├── services/
@@ -135,6 +143,10 @@ apps/backend/
 ├── test/
 │   ├── integration/
 │   │   ├── auth.test.ts
+│   │   ├── create_article.controller.test.ts
+│   │   ├── update_article.controller.test.ts
+│   │   ├── delete_article.controller.test.ts
+│   │   ├── get_articles.controller.test.ts
 │   │   ├── create_artist.controller.test.ts
 │   │   ├── delete_artist.controller.test.ts
 │   │   ├── update_artist.controller.test.ts
@@ -213,6 +225,7 @@ Centralise tous les types TypeScript partagés du backend :
 - `UserListRow` — ligne utilisateur pour les endpoints de liste/CRUD
 - `ArtistListRow` — ligne artiste pour l'endpoint de programmation (inclut `youtube_url`, `spotify_url` nullables, et `stage`, `start_time`, `end_time` nullables via LEFT JOIN concerts)
 - `ConcertRow` — ligne concert retournee lors de l'insertion en base
+- `ArticleRow` — ligne article pour les endpoints articles (inclut `author_name` nullable via LEFT JOIN users)
 - `UserInfoRow` — ligne utilisateur pour l'endpoint `/admin/auth/me` (inclut `password_changed_at` pour calculer `mustChangePassword`)
 
 ### `functions.ts`
@@ -235,6 +248,9 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 | `admin/auth/login.controller.ts` | POST `/admin/auth/login` | Vérifie les identifiants, crée une session, retourne un cookie JWT |
 | `admin/auth/logout.controller.ts` | POST `/admin/auth/logout` | Révoque la session en base |
 | `admin/auth/userInfo.controller.ts` | GET `/admin/auth/me` | Retourne les infos de l'utilisateur connecté, `mustChangePassword` et renouvelle le token |
+| `admin/articles/create_article.controller.ts` | POST `/admin/articles` | Cree un article avec upload image (sharp → WebP) et insere en base avec `author_name` via CTE |
+| `admin/articles/delete_article.controller.ts` | DELETE `/admin/articles/:id` | Supprime un article et son image du disque |
+| `admin/articles/update_article.controller.ts` | PATCH `/admin/articles/:id` | Modifie un article — remplace l'image (sharp → WebP) si une nouvelle est fournie |
 | `admin/artists/create_artist.controller.ts` | POST `/admin/artists` | Cree un artiste avec upload image (sharp → WebP) et insere le concert associe en transaction |
 | `admin/artists/delete_artist.controller.ts` | DELETE `/admin/artists/:id` | Supprime un artiste, son concert associe (CASCADE) et son image du disque |
 | `admin/artists/update_artist.controller.ts` | PATCH `/admin/artists/:id` | Modifie un artiste et son concert en transaction — remplace l'image (sharp → WebP) si une nouvelle est fournie |
@@ -243,6 +259,7 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 | `admin/users/update_user.controller.ts` | PATCH `/admin/users/:id` | Modifie les informations d'un utilisateur |
 | `admin/users/delete_user.controller.ts` | DELETE `/admin/users/:id` | Supprime définitivement un utilisateur |
 | `public/lineup/list_lineup.controller.ts` | GET `/public/lineup` | Liste tous les artistes avec leur concert associe (LEFT JOIN concerts) |
+| `public/news/get_articles.controller.ts` | GET `/public/news` | Liste les articles — tous si admin/news, publiés uniquement sinon (via `optionalAuth`) |
 | `contact/submit_contact.controller.ts` | POST `/contact/submit` | Transmet le message du formulaire de contact par email a l'organisation |
 
 ### `routes/`
@@ -253,11 +270,13 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 
 | Fichier | Endpoints actifs |
 | --- | --- |
+| `admin.articles.routes.ts` | POST `/admin/articles`, PATCH `/admin/articles/:id`, DELETE `/admin/articles/:id` |
 | `admin.artists.routes.ts` | POST `/admin/artists`, PATCH `/admin/artists/:id`, DELETE `/admin/artists/:id` |
 | `admin.auth.routes.ts` | POST `/admin/auth/login`, POST `/admin/auth/logout`, GET `/admin/auth/me`, PATCH `/admin/auth/password`, POST `/admin/auth/forgot-password` |
 | `admin.users.routes.ts` | GET `/admin/users`, POST `/admin/users`, PATCH `/admin/users/:id`, DELETE `/admin/users/:id` |
 | `contact.routes.ts` | POST `/contact/submit` |
 | `lineup.routes.ts` | GET `/public/lineup` |
+| `news.routes.ts` | GET `/public/news` |
 
 **Ordre des middlewares sur les routes protégées :**
 
@@ -272,7 +291,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 | Fichier | Description |
 | --- | --- |
 | `asyncHandler.ts` | Enveloppe un handler async et transfère automatiquement les erreurs vers `next(error)` |
-| `auth.ts` | Extrait et vérifie le JWT depuis le cookie — charge `userId`, `userRole` et `sessionId` dans `res.locals` |
+| `auth.ts` | Contient deux middlewares : `auth` (bloque si token absent/invalide) et `optionalAuth` (tente l'authentification, appelle `next()` dans tous les cas — peuple `res.locals` uniquement si token valide et session non révoquée) |
 | `sessionIsOpen.ts` | Vérifie en base que la session existe, n'est pas révoquée et n'est pas expirée — renouvelle le token |
 | `requireRole.ts` | Factory middleware — vérifie que `res.locals.userRole` est dans la liste des rôles autorisés, renvoie `403` sinon |
 | `hashPassword.ts` | Factory middleware — hashe le champ mot de passe spécifié dans `req.body` avec bcrypt avant de passer au handler suivant |
@@ -297,7 +316,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 
 ### `schemas/`
 
-- `schema.ts` : schémas Zod utilisés pour la validation des body (`createUserSchema`, `updateUserSchema`, `createArtistSchema`, etc.).
+- `schema.ts` : schémas Zod utilisés pour la validation des body (`createUserSchema`, `updateUserSchema`, `createArtistSchema`, `createArticleSchema`, etc.).
 
 ---
 
@@ -337,9 +356,13 @@ Vitest exécute les tests, Supertest simule les appels HTTP sur l'API Express.
 | `sessionIsOpen.test.ts` | Middleware `sessionIsOpen` |
 | `hashPassword.test.ts` | Middleware `hashPassword` |
 | `rateLimitLogin.test.ts` | Middleware `rateLimitLogin` |
-| `validateBody.test.ts` | Middleware `validateBody` (`createUserSchema`, `loginSchema`, `createArtistSchema`) |
+| `validateBody.test.ts` | Middleware `validateBody` (`createUserSchema`, `loginSchema`, `createArtistSchema`, `createArticleSchema`) |
 | `errorHandler.test.ts` | Middleware `errorHandler` et `notFoundHandler` |
 | `health.test.ts` | Route `/health` |
+| `create_article.controller.test.ts` | Contrôleur `createArticle` — upload image, insertion en base, rollback |
+| `update_article.controller.test.ts` | Contrôleur `updateArticle` — modification sans/avec image, UUID invalide, article introuvable |
+| `delete_article.controller.test.ts` | Contrôleur `deleteArticle` — suppression, UUID invalide, article introuvable |
+| `get_articles.controller.test.ts` | Contrôleur `getArticles` — liste tous (admin/news), publiés uniquement (visiteur), `optionalAuth` |
 | `create_artist.controller.test.ts` | Contrôleur `createArtist` — upload image, transaction SQL, rollback |
 | `delete_artist.controller.test.ts` | Contrôleur `deleteArtist` — suppression, UUID invalide, artiste introuvable, erreur DB |
 | `update_artist.controller.test.ts` | Contrôleur `updateArtist` — modification sans/avec image, UUID invalide, artiste introuvable, rollback transaction |
