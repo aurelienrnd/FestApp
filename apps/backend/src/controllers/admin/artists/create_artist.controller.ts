@@ -52,7 +52,16 @@ export async function createArtist(req: Request, res: Response) {
       `INSERT INTO artists (name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING id, name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url`,
-      [name, genre, origin, bio, url_media, description_media, youtube_url ?? null, spotify_url ?? null],
+      [
+        name,
+        genre,
+        origin,
+        bio,
+        url_media,
+        description_media,
+        youtube_url ?? null,
+        spotify_url ?? null,
+      ],
     );
 
     // si l'insertion a echoue, retourne une erreur 500

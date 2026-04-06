@@ -51,7 +51,14 @@ export async function createArticle(req: Request, res: Response) {
        SELECT i.*, u.display_name AS author_name
        FROM inserted i
        LEFT JOIN users u ON u.id = i.user_id`,
-      [title, content || null, isPublished, url_media, description_media, res.locals.userId],
+      [
+        title,
+        content || null,
+        isPublished,
+        url_media,
+        description_media,
+        res.locals.userId,
+      ],
     );
 
     const article = createdArticles[0];

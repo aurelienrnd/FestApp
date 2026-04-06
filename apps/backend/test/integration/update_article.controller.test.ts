@@ -33,7 +33,11 @@ const mockQuery = vi.mocked(query);
 function createApp() {
   const app = express();
   const upload = multer({ storage: multer.memoryStorage() });
-  app.patch("/articles/:id", upload.single("image"), asyncHandler(updateArticle));
+  app.patch(
+    "/articles/:id",
+    upload.single("image"),
+    asyncHandler(updateArticle),
+  );
   app.use(errorHandler);
   return app;
 }
@@ -79,11 +83,16 @@ describe("updateArticle controller (integration)", () => {
       .mockResolvedValueOnce([]); // COMMIT
 
     const app = createApp();
-    const res = await request(app).patch(`/articles/${ARTICLE_ID}`).field(validFields);
+    const res = await request(app)
+      .patch(`/articles/${ARTICLE_ID}`)
+      .field(validFields);
 
     expect(res.status).toBe(200);
     expect(res.body.message).toBe("Article modifie");
-    expect(res.body.article).toMatchObject({ id: ARTICLE_ID, author_name: "Admin" });
+    expect(res.body.article).toMatchObject({
+      id: ARTICLE_ID,
+      author_name: "Admin",
+    });
     expect(mockQuery).toHaveBeenCalledWith("COMMIT");
   });
 
@@ -100,7 +109,10 @@ describe("updateArticle controller (integration)", () => {
     const res = await request(app)
       .patch(`/articles/${ARTICLE_ID}`)
       .field(validFields)
-      .attach("image", Buffer.from("fake-image"), { filename: "photo.jpg", contentType: "image/jpeg" });
+      .attach("image", Buffer.from("fake-image"), {
+        filename: "photo.jpg",
+        contentType: "image/jpeg",
+      });
 
     expect(res.status).toBe(200);
     expect(res.body.article.url_media).toBe(newUrl);
@@ -108,7 +120,9 @@ describe("updateArticle controller (integration)", () => {
 
   it("should return 400 when article id is invalid", async () => {
     const app = createApp();
-    const res = await request(app).patch("/articles/not-a-uuid").field(validFields);
+    const res = await request(app)
+      .patch("/articles/not-a-uuid")
+      .field(validFields);
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe(ERRORS.VALIDATION_INVALID_BODY);
@@ -119,7 +133,9 @@ describe("updateArticle controller (integration)", () => {
     mockQuery.mockResolvedValueOnce([]);
 
     const app = createApp();
-    const res = await request(app).patch(`/articles/${ARTICLE_ID}`).field(validFields);
+    const res = await request(app)
+      .patch(`/articles/${ARTICLE_ID}`)
+      .field(validFields);
 
     expect(res.status).toBe(404);
     expect(res.body.error).toBe(ERRORS.ARTICLE_NOT_FOUND);
@@ -133,7 +149,9 @@ describe("updateArticle controller (integration)", () => {
       .mockResolvedValueOnce([]); // ROLLBACK
 
     const app = createApp();
-    const res = await request(app).patch(`/articles/${ARTICLE_ID}`).field(validFields);
+    const res = await request(app)
+      .patch(`/articles/${ARTICLE_ID}`)
+      .field(validFields);
 
     expect(res.status).toBe(500);
     expect(mockQuery).toHaveBeenCalledWith("ROLLBACK");
@@ -152,10 +170,15 @@ describe("updateArticle controller (integration)", () => {
     const res = await request(app)
       .patch(`/articles/${ARTICLE_ID}`)
       .field(validFields)
-      .attach("image", Buffer.from("fake-image"), { filename: "photo.jpg", contentType: "image/jpeg" });
+      .attach("image", Buffer.from("fake-image"), {
+        filename: "photo.jpg",
+        contentType: "image/jpeg",
+      });
 
     expect(res.status).toBe(500);
     expect(mockQuery).toHaveBeenCalledWith("ROLLBACK");
-    expect(vi.mocked(unlink)).toHaveBeenCalledWith(expect.stringContaining("new-uuid.webp"));
+    expect(vi.mocked(unlink)).toHaveBeenCalledWith(
+      expect.stringContaining("new-uuid.webp"),
+    );
   });
 });

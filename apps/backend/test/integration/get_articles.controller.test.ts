@@ -65,7 +65,9 @@ describe("getArticles controller (integration)", () => {
     expect(res.status).toBe(200);
     expect(res.body.articles).toHaveLength(1);
     expect(res.body.articles[0].is_published).toBe(true);
-    expect(mockQuery).toHaveBeenCalledWith(expect.stringContaining("WHERE a.is_published = TRUE"));
+    expect(mockQuery).toHaveBeenCalledWith(
+      expect.stringContaining("WHERE a.is_published = TRUE"),
+    );
   });
 
   it("should return all articles (including drafts) for admin user", async () => {
@@ -76,7 +78,9 @@ describe("getArticles controller (integration)", () => {
 
     expect(res.status).toBe(200);
     expect(res.body.articles).toHaveLength(2);
-    expect(mockQuery).not.toHaveBeenCalledWith(expect.stringContaining("WHERE a.is_published = TRUE"));
+    expect(mockQuery).not.toHaveBeenCalledWith(
+      expect.stringContaining("WHERE a.is_published = TRUE"),
+    );
   });
 
   it("should return all articles (including drafts) for news user", async () => {

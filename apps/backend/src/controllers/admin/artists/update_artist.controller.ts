@@ -78,7 +78,17 @@ export async function updateArtist(req: Request, res: Response) {
        SET name = $1, genre = $2, origin = $3, bio = $4, url_media = $5, description_media = $6, youtube_url = $7, spotify_url = $8
        WHERE id = $9
        RETURNING id, name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url`,
-      [name, genre, origin, bio, url_media, description_media, youtube_url ?? null, spotify_url ?? null, artistId],
+      [
+        name,
+        genre,
+        origin,
+        bio,
+        url_media,
+        description_media,
+        youtube_url ?? null,
+        spotify_url ?? null,
+        artistId,
+      ],
     );
 
     const artist = updatedArtists[0];
@@ -129,7 +139,8 @@ export async function updateArtist(req: Request, res: Response) {
   } catch (error) {
     // annule la transaction en cas d'erreur, supprime le nouveau fichier si deja ecrit, puis relance pour le middleware
     await query("ROLLBACK");
-    if (newFileWritten && newFilepath) await unlink(newFilepath).catch(() => undefined);
+    if (newFileWritten && newFilepath)
+      await unlink(newFilepath).catch(() => undefined);
     throw error;
   }
 }

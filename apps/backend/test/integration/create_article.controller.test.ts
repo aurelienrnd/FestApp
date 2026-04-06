@@ -75,11 +75,18 @@ describe("createArticle controller (integration)", () => {
     const res = await request(app)
       .post("/articles")
       .field(validFields)
-      .attach("image", fakeImage, { filename: "photo.jpg", contentType: "image/jpeg" });
+      .attach("image", fakeImage, {
+        filename: "photo.jpg",
+        contentType: "image/jpeg",
+      });
 
     expect(res.status).toBe(201);
     expect(res.body.message).toBe("Article cree");
-    expect(res.body.article).toMatchObject({ id: "article-uuid", title: "Ouverture de la billetterie", author_name: "Admin" });
+    expect(res.body.article).toMatchObject({
+      id: "article-uuid",
+      title: "Ouverture de la billetterie",
+      author_name: "Admin",
+    });
     expect(mockQuery).toHaveBeenCalledWith("COMMIT");
   });
 
@@ -101,7 +108,10 @@ describe("createArticle controller (integration)", () => {
     const res = await request(app)
       .post("/articles")
       .field(validFields)
-      .attach("image", fakeImage, { filename: "photo.jpg", contentType: "image/jpeg" });
+      .attach("image", fakeImage, {
+        filename: "photo.jpg",
+        contentType: "image/jpeg",
+      });
 
     expect(res.status).toBe(500);
     expect(mockQuery).toHaveBeenCalledWith("ROLLBACK");
@@ -118,10 +128,15 @@ describe("createArticle controller (integration)", () => {
     const res = await request(app)
       .post("/articles")
       .field(validFields)
-      .attach("image", fakeImage, { filename: "photo.jpg", contentType: "image/jpeg" });
+      .attach("image", fakeImage, {
+        filename: "photo.jpg",
+        contentType: "image/jpeg",
+      });
 
     expect(res.status).toBe(500);
     expect(mockQuery).toHaveBeenCalledWith("ROLLBACK");
-    expect(vi.mocked(unlink)).toHaveBeenCalledWith(expect.stringContaining("test-uuid.webp"));
+    expect(vi.mocked(unlink)).toHaveBeenCalledWith(
+      expect.stringContaining("test-uuid.webp"),
+    );
   });
 });

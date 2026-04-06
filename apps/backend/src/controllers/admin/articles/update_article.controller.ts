@@ -65,7 +65,14 @@ export async function updateArticle(req: Request, res: Response) {
        SET title = $1, content = $2, is_published = $3, url_media = $4, description_media = $5
        WHERE id = $6
        RETURNING *`,
-      [title, content || null, isPublished, url_media, description_media, articleId],
+      [
+        title,
+        content || null,
+        isPublished,
+        url_media,
+        description_media,
+        articleId,
+      ],
     );
 
     const updatedArticle = updatedArticles[0];
@@ -108,7 +115,8 @@ export async function updateArticle(req: Request, res: Response) {
   } catch (error) {
     // annule la transaction, supprime le nouveau fichier si deja ecrit, puis relance pour le middleware
     await query("ROLLBACK");
-    if (newFileWritten && newFilepath) await unlink(newFilepath).catch(() => undefined);
+    if (newFileWritten && newFilepath)
+      await unlink(newFilepath).catch(() => undefined);
     throw error;
   }
 }
