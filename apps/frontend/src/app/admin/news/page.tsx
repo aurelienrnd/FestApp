@@ -1,20 +1,58 @@
 "use client";
+
+import { useState } from "react";
 import SideBarTool from "../../../components/SideBarTool";
 import { filterNewsItems } from "../../../config/navigation";
 import AddButton from "../../../components/AddButton";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import NewsContent from "./NewsContent";
 import { useRoleGuard } from "../../../hooks/useRoleGuard";
 
-/** Page admin de gestion des articles. */
+/** Page admin de gestion des articles.
+ * Affiche les filtres et la liste des articles.
+ * Gere le filtre actif (tri) et le transmet a NewsContent.
+ * Ouvre une modale permettant d'ajouter un article.
+ * @children SideBarTool Affiche une navigation sticky sur desktop.
+ * @children AddButton Affiche la navigation des filtres sur mobile.
+ * @children NewsContent Affiche la liste des articles filtree.
+ */
 export default function Page() {
   useRoleGuard();
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+
+  const items = filterNewsItems.map((item) => ({
+    ...item,
+    active:
+      item.labelBtn === activeFilter ||
+      (item.labelBtn === "Toutes les news" && activeFilter === null),
+    onClick: () =>
+      setActiveFilter(item.labelBtn === "Toutes les news" ? null : (item.labelBtn ?? null)),
+  }));
+
   return (
     <section className="section-page">
       <div className="flex justify-center item-center gap-(--space-md)">
-        <AddButton items={filterNewsItems} className="mb-12" />
-        <h1 className="title1">Admin News</h1>
+        <AddButton items={items} />
+        <h1 className="title1">News</h1>
+        <button
+          type="button"
+          className="mb-(--margin-bottom-title)"
+          aria-label="Ajouter un article"
+          onClick={() => setIsOpen(true)}
+        >
+          <FontAwesomeIcon icon={faPlus} />
+        </button>
       </div>
-      <SideBarTool items={filterNewsItems}>
-        <p>exemple</p>
+
+      <SideBarTool items={items}>
+        <NewsContent
+          isAddModalOpen={isOpen}
+          onCloseAddModal={() => setIsOpen(false)}
+          activeFilter={activeFilter}
+        />
       </SideBarTool>
     </section>
   );
