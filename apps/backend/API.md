@@ -20,6 +20,7 @@
 | PATCH   | `/admin/users/:id`            | admin              | Modifier un utilisateur                                       |
 | DELETE  | `/admin/users/:id`            | admin              | Supprimer un utilisateur                                      |
 | POST    | `/contact/submit`             | Public             | Soumettre le formulaire de contact                            |
+| GET     | `/public/home`                | Public             | Données agrégées pour la page d'accueil (2 artistes + 2 articles) |
 | GET     | `/public/lineup`              | Public             | Liste des artistes de la programmation                        |
 | GET     | `/public/news`                | Public / Privilégié | Liste des articles (tous si admin/news, publiés sinon)        |
 | GET     | `/health`                     | Public             | Santé du serveur (diagnostic)                                 |
@@ -820,6 +821,52 @@ Reponses d'erreur:
 ---
 
 ## Public
+
+### GET `/public/home`
+
+Retourne les 2 artistes ayant la `start_time` la plus récente et les 2 derniers articles publiés. Les deux requêtes sont exécutées en parallèle via `Promise.all`.
+
+Authentification :
+
+- Aucune (route publique).
+
+Réponse en succès :
+
+- Statut : `200`
+- Corps :
+
+```json
+{
+  "artists": [
+    {
+      "id": "uuid",
+      "name": "Band A",
+      "url_media": "/uploads/artists/uuid.webp",
+      "description_media": "Photo promo",
+      "stage": "Grande Scene",
+      "start_time": "2025-06-21T20:00:00.000Z",
+      "end_time": "2025-06-21T21:30:00.000Z"
+    }
+  ],
+  "articles": [
+    {
+      "id": "uuid",
+      "title": "Ouverture de la billetterie",
+      "url_media": "/uploads/articles/uuid.webp",
+      "description_media": "Photo article",
+      "created_at": "2025-06-01T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+> `artists` est vide si aucun artiste n'a de concert associé (`start_time IS NOT NULL` filtre les artistes sans concert). `articles` est vide s'il n'y a aucun article publié.
+
+Réponses d'erreur :
+
+- `500` `{ "error": "Erreur interne du serveur" }`
+
+---
 
 Base path: `/public/lineup`
 

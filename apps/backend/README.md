@@ -105,6 +105,8 @@ apps/backend/
 │   │   ├── contact/
 │   │   │   └── submit_contact.controller.ts
 │   │   └── public/
+│   │       ├── home/
+│   │       │   └── get_home.controller.ts
 │   │       ├── lineup/
 │   │       │   └── list_lineup.controller.ts
 │   │       └── news/
@@ -128,6 +130,7 @@ apps/backend/
 │   │   ├── admin.auth.routes.ts
 │   │   ├── admin.users.routes.ts
 │   │   ├── contact.routes.ts
+│   │   ├── home.routes.ts
 │   │   ├── lineup.routes.ts
 │   │   └── news.routes.ts
 │   ├── schemas/
@@ -227,6 +230,8 @@ Centralise tous les types TypeScript partagés du backend :
 - `ConcertRow` — ligne concert retournee lors de l'insertion en base
 - `ArticleRow` — ligne article pour les endpoints articles (inclut `author_name` nullable via LEFT JOIN users)
 - `UserInfoRow` — ligne utilisateur pour l'endpoint `/admin/auth/me` (inclut `password_changed_at` pour calculer `mustChangePassword`)
+- `HomeArtistRow` — sous-ensemble de `ArtistListRow` retourné par l'endpoint home (id, name, stage, start_time, end_time, url_media, description_media)
+- `HomeArticleRow` — sous-ensemble de `ArticleRow` retourné par l'endpoint home (id, title, url_media, description_media, created_at)
 
 ### `functions.ts`
 
@@ -258,6 +263,7 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 | `admin/users/create_user.controller.ts` | POST `/admin/users` | Crée un utilisateur et envoie le mot de passe provisoire par email |
 | `admin/users/update_user.controller.ts` | PATCH `/admin/users/:id` | Modifie les informations d'un utilisateur |
 | `admin/users/delete_user.controller.ts` | DELETE `/admin/users/:id` | Supprime définitivement un utilisateur |
+| `public/home/get_home.controller.ts` | GET `/public/home` | Retourne les 2 artistes les plus récents et les 2 derniers articles publiés (Promise.all) |
 | `public/lineup/list_lineup.controller.ts` | GET `/public/lineup` | Liste tous les artistes avec leur concert associe (LEFT JOIN concerts) |
 | `public/news/get_articles.controller.ts` | GET `/public/news` | Liste les articles — tous si admin/news, publiés uniquement sinon (via `optionalAuth`) |
 | `contact/submit_contact.controller.ts` | POST `/contact/submit` | Transmet le message du formulaire de contact par email a l'organisation |
@@ -275,6 +281,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 | `admin.auth.routes.ts` | POST `/admin/auth/login`, POST `/admin/auth/logout`, GET `/admin/auth/me`, PATCH `/admin/auth/password`, POST `/admin/auth/forgot-password` |
 | `admin.users.routes.ts` | GET `/admin/users`, POST `/admin/users`, PATCH `/admin/users/:id`, DELETE `/admin/users/:id` |
 | `contact.routes.ts` | POST `/contact/submit` |
+| `home.routes.ts` | GET `/public/home` |
 | `lineup.routes.ts` | GET `/public/lineup` |
 | `news.routes.ts` | GET `/public/news` |
 
@@ -366,6 +373,7 @@ Vitest exécute les tests, Supertest simule les appels HTTP sur l'API Express.
 | `create_artist.controller.test.ts` | Contrôleur `createArtist` — upload image, transaction SQL, rollback |
 | `delete_artist.controller.test.ts` | Contrôleur `deleteArtist` — suppression, UUID invalide, artiste introuvable, erreur DB |
 | `update_artist.controller.test.ts` | Contrôleur `updateArtist` — modification sans/avec image, UUID invalide, artiste introuvable, rollback transaction |
+| `get_home.controller.test.ts` | Contrôleur `getHomeController` — artistes récents + articles publiés, tableaux vides, erreur DB |
 | `list_lineup.controller.test.ts` | Contrôleur `listLineup` — liste artistes avec concerts (LEFT JOIN) |
 | `login.controller.test.ts` | Contrôleur `login` |
 | `logout.controller.test.ts` | Contrôleur `logout` |
