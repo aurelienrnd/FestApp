@@ -23,6 +23,7 @@ Details :
 
 | Variable | Valeur | Usages |
 | --- | --- | --- |
+| `--home-hero-min-height` | `70vh` | `globals.css` (`.home-hero`) |
 | `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`), `components/Banner.tsx`, `components/Footer.tsx`, `app/login/page.tsx`, `app/admin/users/AddUserModal.tsx`, `app/admin/users/DelateUserModal.tsx`, `app/admin/users/UsersContent.tsx` |
 | `--color-2` | `#e4e4e7` | `globals.css` (`.mobil-menu`), `app/admin/lineup/ArtistDetailModal.tsx` (icônes réseaux sociaux) |
 | `--color-3` | `#0ea5e9` | `components/Footer.tsx` (separateur) |
@@ -116,6 +117,60 @@ Details :
 | `.card-user-content` | Contenu de la carte — flex wrap, space-between, responsive |
 | `.card-user-field` | Champ individuel — flex nowrap |
 | `.card-user-actions` | Zone d'actions — flex centré, gap, marges responsive |
+
+### Classes partagées (root `@layer components`) — Composant `SectionCta`
+
+| Classe | Description |
+| --- | --- |
+| `.home-section-link` | Conteneur du séparateur avec CTA — `flex items-center gap-(--space-md) w-full` |
+| `.home-section-link-line` | Ligne horizontale bleue de part et d'autre du bouton — `flex-1 h-0.5 bg-(--color-3)` |
+
+### `@layer home` — Page d'accueil
+
+| Classe | Description |
+| --- | --- |
+| `.home-hero` | Section hero — pleine hauteur min (`--home-hero-min-height`), centrée, fond noir, `overflow-hidden` |
+| `.home-hero-inner` | Contenu centré du hero — flex colonne, `gap-(--space-md)`, `py-(--space-xl)`, z-index 10 |
+| `.home-section` | Section générique de la home — pleine largeur, padding responsive, flex colonne centré, bordure supérieure |
+| `.home-section-title` | Titre de section — `text-4xl md:text-6xl`, uppercase, bold, `tracking-widest` |
+| `.home-section-divider` | Séparateur rouge sous le titre — `h-0.5 w-16 bg-(--color-1)` |
+| `.home-cta-row` | Conteneur du bouton CTA — flex centré, `mt-(--space-md)` |
+
+#### `@layer home-lineup` — Cartes artistes de la home
+
+| Classe | Description |
+| --- | --- |
+| `.home-artist-grid` | Grille 1 colonne mobile / 2 colonnes desktop, `max-w-4xl` |
+| `.home-artist-card` | Carte artiste horizontale — image à gauche, texte à droite, bordure, arrondie |
+| `.home-artist-img-wrapper` | Wrapper image — `relative w-40 flex-shrink-0 self-stretch` |
+| `.home-artist-info` | Bloc texte de la carte — flex colonne centré, `gap-(--space-sm) p-(--space-md)` |
+| `.home-artist-name` | Nom de l'artiste — `font-black uppercase text-xl leading-tight` |
+| `.home-artist-meta` | Méta-données (date, heure, scène) — `text-sm uppercase tracking-wide` |
+| `.home-artist-link` | Lien "VOIR PLUS" — `text-xs uppercase`, opacity 60 % → 100 % au hover |
+
+#### `@layer home-news` — Cartes articles de la home
+
+| Classe | Description |
+| --- | --- |
+| `.home-news-grid` | Grille 1 colonne mobile / 2 colonnes desktop, `max-w-4xl` |
+| `.home-news-card` | Carte article verticale — image en haut, texte en bas, bordure, arrondie |
+| `.home-news-img-wrapper` | Wrapper image — `relative h-40 w-full` |
+| `.home-news-info` | Bloc texte — flex colonne, `gap-(--space-xs) p-(--space-md)` |
+| `.home-news-title` | Titre de l'article — `font-black uppercase text-sm leading-tight` |
+
+#### `@layer home-info` — Section infos pratiques
+
+| Classe | Description |
+| --- | --- |
+| `.home-info-address` | Adresse du festival — `font-black uppercase` |
+| `.home-info-text` | Texte de présentation — `text-sm leading-relaxed` |
+
+#### `@layer home-partners` — Section partenaires
+
+| Classe | Description |
+| --- | --- |
+| `.home-partners-grid` | Grille 3 colonnes mobile / 5 colonnes desktop, `max-w-4xl` |
+| `.home-partner-logo` | Placeholder logo partenaire — `h-16`, fond `--color-bg-input`, texte centré |
 
 ### `@layer lineup` — Cartes de la programmation
 

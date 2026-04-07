@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 :root {
+  --home-hero-min-height: 70vh;
+}
+
+:root {
   --color-1: #cb3346;
   --color-2: #e4e4e7;
   --color-3: #0ea5e9;
@@ -207,6 +211,112 @@
 
     .card-lineup-actions {
       @apply flex justify-center items-center gap-(--space-sm) mb-(--space-sm) lg:m-(--space-sm);
+    }
+  }
+
+  .home-section-link {
+    @apply flex items-center gap-(--space-md) w-full;
+  }
+
+  .home-section-link-line {
+    @apply flex-1 h-0.5 bg-(--color-3);
+  }
+
+  @layer home {
+    .home-hero {
+      @apply relative flex items-center justify-center min-h-(--home-hero-min-height) overflow-hidden bg-black;
+    }
+
+    .home-hero-inner {
+      @apply relative z-10 flex flex-col items-center gap-(--space-md) py-(--space-xl);
+    }
+
+    .home-section {
+      @apply w-full py-(--space-lg) px-(--space-md) md:px-(--space-xl) flex flex-col items-center text-center border-t border-(--color-text-input);
+    }
+
+    .home-section-title {
+      @apply text-4xl md:text-6xl font-black uppercase mb-(--space-xs) tracking-widest;
+    }
+
+    .home-section-divider {
+      @apply h-0.5 w-16 bg-(--color-1) mb-(--space-lg);
+    }
+
+    .home-cta-row {
+      @apply flex justify-center mt-(--space-md);
+    }
+
+    @layer home-lineup {
+      .home-artist-grid {
+        @apply grid grid-cols-1 md:grid-cols-2 gap-(--space-md) w-full max-w-4xl;
+      }
+
+      .home-artist-card {
+        @apply flex flex-row overflow-hidden rounded-md border border-(--color-text-input);
+      }
+
+      .home-artist-img-wrapper {
+        @apply relative w-40 flex-shrink-0 self-stretch;
+      }
+
+      .home-artist-info {
+        @apply flex-1 flex flex-col items-center justify-center gap-(--space-sm) p-(--space-md) text-center;
+      }
+
+      .home-artist-name {
+        @apply font-black uppercase text-xl leading-tight;
+      }
+
+      .home-artist-meta {
+        @apply text-sm uppercase tracking-wide;
+      }
+
+      .home-artist-link {
+        @apply text-xs uppercase mt-auto self-end opacity-60 hover:opacity-100 transition-opacity;
+      }
+    }
+
+    @layer home-news {
+      .home-news-grid {
+        @apply grid grid-cols-1 md:grid-cols-2 gap-(--space-md) w-full max-w-4xl;
+      }
+
+      .home-news-card {
+        @apply flex flex-col overflow-hidden rounded-md border border-(--color-text-input);
+      }
+
+      .home-news-img-wrapper {
+        @apply relative h-40 w-full;
+      }
+
+      .home-news-info {
+        @apply flex flex-col gap-(--space-xs) p-(--space-md);
+      }
+
+      .home-news-title {
+        @apply font-black uppercase text-sm leading-tight;
+      }
+    }
+
+    @layer home-info {
+      .home-info-address {
+        @apply font-black uppercase;
+      }
+
+      .home-info-text {
+        @apply text-sm leading-relaxed;
+      }
+    }
+
+    @layer home-partners {
+      .home-partners-grid {
+        @apply grid grid-cols-3 md:grid-cols-5 gap-(--space-md) w-full max-w-4xl;
+      }
+
+      .home-partner-logo {
+        @apply h-16 flex items-center justify-center rounded-md bg-(--color-bg-input) text-xs text-(--color-text-input);
+      }
     }
   }
 
