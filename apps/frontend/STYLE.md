@@ -23,7 +23,8 @@ Details :
 
 | Variable | Valeur | Usages |
 | --- | --- | --- |
-| `--home-hero-min-height` | `70vh` | `globals.css` (`.home-hero`) |
+| `--header-height` | `106px` | `globals.css` (`.home-hero` margin-top négatif) |
+| `--home-hero-min-height` | `100dvh` | `globals.css` (`.home-hero`) |
 | `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`), `components/Banner.tsx`, `components/Footer.tsx`, `app/login/page.tsx`, `app/admin/users/AddUserModal.tsx`, `app/admin/users/DelateUserModal.tsx`, `app/admin/users/UsersContent.tsx` |
 | `--color-2` | `#e4e4e7` | `globals.css` (`.mobil-menu`), `app/admin/lineup/ArtistDetailModal.tsx` (icônes réseaux sociaux) |
 | `--color-3` | `#0ea5e9` | `components/Footer.tsx` (separateur) |
@@ -73,6 +74,7 @@ Details :
 | --- | --- |
 | `.title1` | Titre principal de page — centré, très grand, uppercase, bold |
 | `.title-modal` | Titre de modale — centré, grand, bold |
+| `header` (Banner) | Header sticky — `sticky top-0 z-50`, fond transparent sur `.home-hero`, fond `--color-bg` sinon (via `IntersectionObserver`), transition `duration-300` |
 | `.nav-list` | Liste de liens de navigation horizontale — flex, `gap-(--space-md)`, letter-spacing |
 | `.nav-vertical-list` | Liste de liens de navigation verticale — flex colonne, `gap-(--space-md)` |
 | `.nav-btn-active-modal` | Bouton actif en variante modale — fond `--color-1`, largeur étendue |
@@ -129,7 +131,7 @@ Details :
 
 | Classe | Description |
 | --- | --- |
-| `.home-hero` | Section hero — pleine hauteur min (`--home-hero-min-height`), centrée, fond noir, `overflow-hidden` |
+| `.home-hero` | Section hero — pleine hauteur écran (`--home-hero-min-height` = `100dvh`), `margin-top: calc(-1 * --header-height)` pour glisser sous le header sticky, fond noir, `overflow-hidden`, `bg-cover bg-center` |
 | `.home-hero-inner` | Contenu centré du hero — flex colonne, `gap-(--space-md)`, `py-(--space-xl)`, z-index 10 |
 | `.home-section` | Section générique de la home — pleine largeur, padding responsive, flex colonne centré, bordure supérieure |
 | `.home-section-title` | Titre de section — `text-4xl md:text-6xl`, uppercase, bold, `tracking-widest` |

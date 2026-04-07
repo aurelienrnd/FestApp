@@ -248,7 +248,7 @@ Composants UI réutilisables à travers l'application.
 | --- | --- |
 | `AdminUserProvider.tsx` | Context React qui expose les données de l'utilisateur admin connecté (`AdminUser`, `mustChangePassword`) — retourne `null` hors provider |
 | `AddButton.tsx` | Bouton d'ajout réutilisable (ex : ajouter un utilisateur) |
-| `Banner.tsx` | Bannière de navigation principale — filtre les liens admin par rôle via `filterNavByRole`, gère aussi le logout |
+| `Banner.tsx` | Bannière de navigation principale — sticky header, transparent sur `.home-hero` via `IntersectionObserver` (opaque sinon), filtre les liens admin par rôle via `filterNavByRole`, gère aussi le logout |
 | `ContactUs.tsx` | Formulaire de contact (modale) |
 | `Footer.tsx` | Pied de page avec liens réseaux sociaux et liens légaux |
 | `ForgotPassword.tsx` | Modale mot de passe oublié |

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "react-modal";
 import {
   navVisitorItems,
@@ -178,6 +178,7 @@ export function MobilNav({
  * Determine si l'affichage est en mode desktop ou mobile via matchMedia (min-width: 768px)
  * Ecoute les changements de taille d'ecran pour mettre a jour l'etat `isDesktop`
  * Affiche DesktopNav sur ecran large, sinon MobilNav
+ * Rend le header transparent quand la section `.home-hero` est visible via IntersectionObserver
  * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
  * @function getApiErrorMessage Définit un message à retourner à l'utilisateur selon le statut de l'erreur
  * @children DesktopNav Affiche le menu de navigation pour l'affichage desktop
@@ -193,6 +194,21 @@ export default function Banner() {
     ? filterNavByRole(navAdminItem, adminUser?.user.role ?? "")
     : navVisitorItems;
 
+  // Transparent quand .home-hero est visible, opaque sinon
+  const [isOverHero, setIsOverHero] = useState(false);
+
+  useEffect(() => {
+    const hero = document.querySelector(".home-hero");
+    if (!hero) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsOverHero(entry.isIntersecting),
+      { threshold: 0.1 },
+    );
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, [pathname]);
+
   // Envoie la requete de deconnexion puis redirige vers `/login`
   const handleLogout = async () => {
     const result = await apiRequest<ApiMessageResponse>("/admin/auth/logout", {
@@ -207,7 +223,9 @@ export default function Banner() {
   };
 
   return (
-    <header className="mx-auto flex w-full items-center justify-between px-(--space-md) py-2">
+    <header
+      className={`sticky top-0 z-50 mx-auto flex w-full items-center justify-between px-(--space-md) py-2 transition-colors duration-300 ${isOverHero ? "bg-transparent" : "bg-(--color-bg)"}`}
+    >
       <Image
         src={logo}
         alt="Logo Hellfest"

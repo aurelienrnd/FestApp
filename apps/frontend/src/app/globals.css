@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --home-hero-min-height: 70vh;
+  --header-height: 106px;
+  --home-hero-min-height: 100dvh;
 }
 
 :root {
@@ -224,7 +225,8 @@
 
   @layer home {
     .home-hero {
-      @apply relative flex items-center justify-center min-h-(--home-hero-min-height) overflow-hidden bg-black;
+      @apply relative flex items-center justify-center h-(--home-hero-min-height) overflow-hidden bg-black bg-cover bg-center;
+      margin-top: calc(-1 * var(--header-height));
     }
 
     .home-hero-inner {
