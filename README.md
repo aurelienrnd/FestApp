@@ -165,11 +165,15 @@ Ce dossier inclut :
 | Méthode | Route | Accès | Description |
 | --- | --- | --- | --- |
 | GET | `/public/lineup` | Public | Liste tous les artistes avec leur concert associé |
+| GET | `/public/news` | Public / Privilégié | Liste des articles (tous si admin/news, publiés sinon) |
 | POST | `/admin/auth/login` | Public | Connexion (rate limité) |
 | POST | `/admin/auth/logout` | Authentifié | Déconnexion |
 | GET | `/admin/auth/me` | Authentifié | Infos utilisateur connecté + renouvellement du token |
 | PATCH | `/admin/auth/password` | Authentifié | Modifier son mot de passe |
 | POST | `/admin/auth/forgot-password` | Public | Réinitialiser son mot de passe (rate limité) |
+| POST | `/admin/articles` | Authentifié (admin, news) | Créer un article avec upload image |
+| PATCH | `/admin/articles/:id` | Authentifié (admin, news) | Modifier un article (image optionnelle) |
+| DELETE | `/admin/articles/:id` | Authentifié (admin, news) | Supprimer un article et son image |
 | POST | `/admin/artists` | Authentifié (admin, lineup) | Créer un artiste avec upload image et concert associé |
 | PATCH | `/admin/artists/:id` | Authentifié (admin, lineup) | Modifier un artiste (image optionnelle) et son concert |
 | DELETE | `/admin/artists/:id` | Authentifié (admin, lineup) | Supprimer un artiste, son concert et son image |
@@ -198,7 +202,7 @@ Le modèle s'articule autour de plusieurs entités principales représentant les
 
 - La table `users` centralise les informations liées aux comptes utilisateurs (identité, authentification, rôles).
 - La table `sessions` est liée aux utilisateurs et permet de gérer la persistance des connexions et la sécurité des accès, notamment dans le cadre de l'authentification par JWT.
-- La table `articles` permet de stocker le contenu éditorial (actualités, annonces, informations liées à l'événement). Elle est reliée aux utilisateurs via `user_id` (nullable) — si un utilisateur est supprimé, `user_id` passe à `NULL` et l'article est conservé (auteur affiché comme "Auteur inconnu").
+- La table `articles` stocke le contenu éditorial (actualités, annonces, informations liées à l'événement). Elle est reliée aux utilisateurs via `user_id` (nullable) — si un utilisateur est supprimé, `user_id` passe à `NULL` et l'article est conservé (auteur affiché comme "Auteur inconnu"). Chaque article dispose d'un flag `is_published` pour distinguer brouillons et articles publiés.
 - La table `artists` représente les groupes ou artistes programmés pour le festival.
 - La table `concerts` décrit les événements musicaux et est associée aux artistes, ce qui permet de modéliser la programmation et la planification des prestations.
 
