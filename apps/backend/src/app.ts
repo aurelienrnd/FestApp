@@ -8,6 +8,7 @@ import adminArticles from "./routes/admin.articles.routes";
 import adminAuth from "./routes/admin.auth.routes";
 import adminUser from "./routes/admin.users.routes";
 import contact from "./routes/contact.routes";
+import publicHome from "./routes/home.routes";
 import publicLineup from "./routes/lineup.routes";
 import publicNews from "./routes/news.routes";
 import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
@@ -81,6 +82,7 @@ export function createApp() {
   app.use("/admin", adminAuth);
   app.use("/admin", adminUser);
   app.use("/contact", contact);
+  app.use("/public", publicHome);
   app.use("/public", publicLineup);
   app.use("/public", publicNews);
 
