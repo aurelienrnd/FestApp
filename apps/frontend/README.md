@@ -62,11 +62,18 @@ docker exec -it vindhellfest-frontend npm run test:run
 ```
 apps/frontend/
 ├── public/
-│   └── header_logo.png
+│   ├── header_logo.png
+│   ├── hero_bg.webp
+│   └── partners/
 ├── src/
 │   ├── app/
 │   │   ├── (public)/
 │   │   │   ├── layout.tsx
+│   │   │   ├── HomeHero.tsx
+│   │   │   ├── HomeProgrammation.tsx
+│   │   │   ├── HomeNews.tsx
+│   │   │   ├── HomeInfosPratiques.tsx
+│   │   │   ├── HomePartenaires.tsx
 │   │   │   ├── lineup/
 │   │   │   │   └── page.tsx
 │   │   │   ├── news/
@@ -115,6 +122,7 @@ apps/frontend/
 │   │   ├── ModalCloseButton.tsx
 │   │   ├── ModalSetup.tsx
 │   │   ├── Navigation.tsx
+│   │   ├── SectionCta.tsx
 │   │   └── SideBarTool.tsx
 │   ├── config/
 │   │   ├── festival.ts
@@ -140,6 +148,7 @@ apps/frontend/
 │       │   ├── Footer.test.tsx
 │       │   ├── ForgotPassword.test.tsx
 │       │   ├── MobilNav.test.tsx
+│       │   ├── SectionCta.test.tsx
 │       │   └── useRoleGuard.test.tsx
 │       ├── functions/
 │       │   ├── apiRequest.test.ts
@@ -153,6 +162,11 @@ apps/frontend/
 │           ├── DashboardContent.test.tsx
 │           ├── DeleteArticleModal.test.tsx
 │           ├── DeleteArtistModal.test.tsx
+│           ├── HomeHero.test.tsx
+│           ├── HomeInfosPratiques.test.tsx
+│           ├── HomeNews.test.tsx
+│           ├── HomePartenaires.test.tsx
+│           ├── HomeProgrammation.test.tsx
 │           ├── LineupContent.test.tsx
 │           ├── LoginPage.test.tsx
 │           ├── NewsContent.test.tsx
@@ -203,7 +217,7 @@ Le groupe de routes `(public)` est transparent pour les URLs (n'affecte pas les 
 
 | Dossier | Route | Description |
 | --- | --- | --- |
-| `(public)/page.tsx` | `/` | Page d'accueil |
+| `(public)/page.tsx` | `/` | Page d'accueil — composant serveur async avec ISR (`revalidate: 60`). Fetche `GET /public/home` via `API_URL_SERVER` et assemble les 5 sections : `HomeHero`, `HomeProgrammation`, `HomeNews`, `HomeInfosPratiques`, `HomePartenaires` |
 | `(public)/lineup/` | `/lineup` | Programmation du festival — liste les artistes depuis l'API publique |
 | `(public)/news/` | `/news` | Actualités du festival — liste les articles publiés depuis `GET /public/news` avec image, titre, auteur et date. Chaque carte ouvre `NewsDetailModal` |
 | `(public)/practical-info/` | `/practical-info` | Informations pratiques |
@@ -242,6 +256,7 @@ Composants UI réutilisables à travers l'application.
 | `ModalCloseButton.tsx` | Bouton de fermeture générique pour les modales |
 | `ModalSetup.tsx` | Initialise `Modal.setAppElement("#app-root")` une seule fois au niveau du layout racine |
 | `Navigation.tsx` | Barre de navigation — adapte les liens selon le contexte (visiteur / admin) et les filtres de page |
+| `SectionCta.tsx` | Séparateur CTA réutilisable — bouton "Voir plus" centré entre deux lignes horizontales, navigue vers le `href` passé en prop |
 | `SideBarTool.tsx` | Barre d'outils latérale de l'espace admin |
 
 ### `hooks/`
@@ -260,7 +275,7 @@ Centralise les constantes de configuration du frontend.
 
 | Fichier | Description |
 | --- | --- |
-| `festival.ts` | Source de vérité unique pour les dates du festival — exporte `FESTIVAL_DAYS: string[]` (tableau de dates ISO). Consommé par `DashboardContent`, `navigation.ts` et `AddArtistModal` |
+| `festival.ts` | Source de vérité unique pour les dates et le lieu du festival — exporte `FESTIVAL_DAYS: string[]` (tableau de dates ISO) et `FESTIVAL_LOCATION` (nom, adresse, ville). Consommé par `DashboardContent`, `navigation.ts`, `AddArtistModal` et `HomeInfosPratiques` |
 | `navigation.ts` | Définit les items de navigation : liens visiteur (`navVisitorItems`), liens admin (`navAdminItem`), items de dashboard (`navDashBordItems`), filtres lineup/news/users. `filterLineUpItems` est généré dynamiquement depuis `FESTIVAL_DAYS`. Expose `filterNavByRole` pour filtrer les liens selon le rôle de l'utilisateur |
 | `footer.ts` | Définit les liens du footer : liens légaux (`legalLinks`) et réseaux sociaux (`socialLinks`) |
 
@@ -279,7 +294,7 @@ Types TypeScript partagés entre plusieurs composants.
 
 | Fichier | Description |
 | --- | --- |
-| `index.ts` | Centralise les types métier réutilisables : `UserRole` (union des rôles valides), `UserListRow` (données utilisateur API), `ArtistListRow` (données artiste API avec `youtube_url`, `spotify_url` nullables et `stage`, `start_time`, `end_time` nullables), `ArticleRow` (données article API avec `author_name` nullable via JOIN users) |
+| `index.ts` | Centralise les types métier réutilisables : `UserRole` (union des rôles valides), `UserListRow` (données utilisateur API), `ArtistListRow` (données artiste API avec `youtube_url`, `spotify_url` nullables et `stage`, `start_time`, `end_time` nullables), `ArticleRow` (données article API avec `author_name` nullable via JOIN users), `HomeArtistRow` (sous-ensemble de `ArtistListRow` pour la home), `HomeArticleRow` (sous-ensemble de `ArticleRow` pour la home), `HomeData` (type agrégé retourné par `GET /public/home`) |
 
 ---
 
@@ -305,6 +320,7 @@ Tests unitaires des composants React réutilisables.
 
 | Fichier | Description |
 | --- | --- |
+| `SectionCta.test.tsx` | Vérifie le label par défaut, le label personnalisé et le href du lien |
 | `useNavPath.test.tsx` | Vérifie la détection de la route admin (`isAdminPath`) via le hook `useNavPath` |
 | `Banner.test.tsx` | Vérifie le rendu desktop/mobile et l'affichage conditionnel du bouton billetterie |
 | `ContactUs.test.tsx` | Vérifie le formulaire de contact — activation du bouton, succès, erreur 400 et fallback 500 |
@@ -336,6 +352,11 @@ Tests unitaires des pages et de leurs flux principaux.
 | `NewsDetailModal.test.tsx` | Vérifie la modale de détail article — affichage titre, contenu (absent si null), auteur (fallback "Auteur inconnu"), date formatée en français, image, bouton fermer |
 | `ChangePasswordModal.test.tsx` | Vérifie la modale de changement de mot de passe — validation des saisies, gestion des erreurs API et mode forcé (sans bouton de fermeture) |
 | `DashboardContent.test.tsx` | Vérifie le tableau de bord — ouverture automatique de la modale si `mustChangePassword` est vrai et affichage des informations utilisateur |
+| `HomeHero.test.tsx` | Vérifie le logo (alt) et le lien vers `/lineup` |
+| `HomeInfosPratiques.test.tsx` | Vérifie l'affichage du nom, adresse, ville et le lien vers `/practical-info` |
+| `HomeNews.test.tsx` | Vérifie l'affichage des titres d'articles et le retour null si tableau vide |
+| `HomePartenaires.test.tsx` | Vérifie le nombre de logos, la présence d'un alt non vide et le lien vers `/practical-info` |
+| `HomeProgrammation.test.tsx` | Vérifie l'affichage des noms d'artistes, scènes, dates formatées et le retour null si tableau vide |
 | `LineupContent.test.tsx` | Vérifie la liste des artistes — chargement, affichage avec données concert, fallbacks null (scène/date non définies), liste vide, erreur API, suppression et modification d'un artiste |
 | `LoginPage.test.tsx` | Vérifie le formulaire de connexion — gestion des erreurs (401, 429, 500) et redirection en cas de succès |
 | `UsersContent.test.tsx` | Vérifie le CRUD utilisateurs — chargement de la liste, ajout, modification, suppression, gestion des erreurs et redirection vers `/login` si l'utilisateur connecté se supprime lui-même |
