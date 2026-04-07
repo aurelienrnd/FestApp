@@ -85,3 +85,21 @@ export type UserInfoRow = {
   role: UserRole;
   password_changed_at: Date | null;
 };
+
+/** Type representant les donnees artiste retournees par l'endpoint home. */
+export type HomeArtistRow = Pick<
+  ArtistListRow,
+  | "id"
+  | "name"
+  | "stage"
+  | "start_time"
+  | "end_time"
+  | "url_media"
+  | "description_media"
+>;
+
+/** Type representant les donnees article retournees par l'endpoint home. */
+export type HomeArticleRow = Pick<
+  ArticleRow,
+  "id" | "title" | "url_media" | "description_media" | "created_at"
+>;
