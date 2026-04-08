@@ -123,7 +123,7 @@ Représente les groupes ou artistes programmés au festival.
 
 > `url_media` stocke un chemin local vers une image WebP générée par sharp lors de l'upload. Les données de développement utilisent encore des URLs externes — elles seront remplacées lors du premier ajout via le back-office.
 
-> **Choix de conception :** Les liens YouTube et Spotify sont stockés en colonnes directes sur `artists`, et le nom de scène (`stage`) est un attribut texte plutôt qu'une entité à part entière. Ces deux choix reposent sur le même principe : les plateformes de diffusion et les scènes du festival sont des valeurs fixes et simples pour ce projet — elles n'ont pas d'attributs propres qui justifieraient des tables dédiées. Une table `artist_links` et une table `stages` seraient possibles en Merise strict, mais elles auraient ajouté des jointures supplémentaires sans bénéfice réel à ce stade. Si le projet évolue (ajout d'une 3ème plateforme, attributs propres aux scènes), ces structures séparées seraient le bon choix.
+> **Choix de conception :** `youtube_url` et `spotify_url` sont deux colonnes directes sur `artists` plutôt qu'une table séparée. Ce choix est justifié car il y a exactement deux plateformes connues à l'avance. Si d'autres plateformes s'ajoutaient, une table `artist_links` deviendrait préférable.
 
 **Données de développement :** Red Hot Chili Peppers et Foo Fighters sont insérés au démarrage, avec leurs liens YouTube et Spotify officiels.
 
