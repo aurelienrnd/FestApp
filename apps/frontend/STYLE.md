@@ -23,8 +23,9 @@ Details :
 
 | Variable | Valeur | Usages |
 | --- | --- | --- |
-| `--header-height` | `106px` | `globals.css` (`.home-hero` margin-top négatif) |
+| `--header-height` | `106px` | `globals.css` (`.home-hero` margin-top négatif), `HomeHero.tsx` (inner div `mt-(--header-height)`) |
 | `--home-hero-min-height` | `100dvh` | `globals.css` (`.home-hero`) |
+| `--hero-logo-width` | `400px` | `globals.css` (`.home-hero-logo`) |
 | `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`), `components/Banner.tsx`, `components/Footer.tsx`, `app/login/page.tsx`, `app/admin/users/AddUserModal.tsx`, `app/admin/users/DelateUserModal.tsx`, `app/admin/users/UsersContent.tsx` |
 | `--color-2` | `#e4e4e7` | `globals.css` (`.mobil-menu`), `app/admin/lineup/ArtistDetailModal.tsx` (icônes réseaux sociaux) |
 | `--color-3` | `#0ea5e9` | `components/Footer.tsx` (separateur) |
@@ -131,9 +132,9 @@ Details :
 
 | Classe | Description |
 | --- | --- |
-| `.home-hero` | Section hero — pleine hauteur écran (`--home-hero-min-height` = `100dvh`), `margin-top: calc(-1 * --header-height)` pour glisser sous le header sticky, fond noir, `overflow-hidden`, `bg-cover bg-center` |
-| `.home-hero-inner` | Contenu du hero — largeur 75% (`w-3/4`) centré (`mx-auto`), flex colonne en mobile, flex row avec `justify-between` en desktop (`md:`), sans padding, z-index 10 |
-| `.home-hero-btn` | Modificateur du bouton billetterie dans le hero — `text-4xl`, `px-(--space-md)`, `py-(--space-sm)`, `rounded-full`. Déclaré directement dans `@layer components` après `.btn-cta` pour éviter la priorité inférieure des sous-layers. |
+| `.home-hero` | Section hero — `h-(--home-hero-min-height)`, `bg-cover bg-center`, `margin-top: calc(-1 * --header-height)` pour glisser sous le header sticky |
+| `.home-hero-logo` | Logo du hero — largeur fixe via `--hero-logo-width` (400px), hauteur auto. ⚠️ `py-(--margin-bottom-title)` actuellement appliqué en inline sur le composant, à déplacer ici. |
+| `.home-hero-btn` | Modificateur du bouton billetterie dans le hero — `text-4xl`, `rounded-xl`. Déclaré dans `@layer components` après `.btn-cta`. |
 | `.home-section` | Section générique de la home — pleine largeur, padding responsive, flex colonne centré, bordure supérieure |
 | `.home-section-title` | Titre de section — `text-4xl md:text-6xl`, uppercase, bold, `tracking-widest` |
 | `.home-section-divider` | Séparateur rouge sous le titre — `h-0.5 w-16 bg-(--color-1)` |

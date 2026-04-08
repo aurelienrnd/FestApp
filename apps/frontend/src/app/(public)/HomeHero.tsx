@@ -10,8 +10,13 @@ export default function HomeHero() {
       className="home-hero"
       style={{ backgroundImage: "url('/hero_bg.webp')" }}
     >
-      <div className="home-hero-inner">
-        <Image src={logo} alt="Logo Vindhellfest" priority className="w-1/4" />
+      <div className="w-full h-2/3 border border-white flex flex-col items-center justify-start mt-(--header-height)">
+        <Image
+          src={logo}
+          alt="Logo Vindhellfest"
+          priority
+          className="home-hero-logo py-(--margin-bottom-title)"
+        />
         <a
           href="https://www.google.com/search?q=tiket+master&rlz=1C1ONGR_frFR1184FR1184&oq=tiket+master&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDM1ODJqMGo3qAIIsAIB&sourceid=chrome&ie=UTF-8"
           className="btn-cta home-hero-btn"
