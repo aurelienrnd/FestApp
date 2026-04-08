@@ -132,7 +132,8 @@ Details :
 | Classe | Description |
 | --- | --- |
 | `.home-hero` | Section hero — pleine hauteur écran (`--home-hero-min-height` = `100dvh`), `margin-top: calc(-1 * --header-height)` pour glisser sous le header sticky, fond noir, `overflow-hidden`, `bg-cover bg-center` |
-| `.home-hero-inner` | Contenu centré du hero — flex colonne, `gap-(--space-md)`, `py-(--space-xl)`, z-index 10 |
+| `.home-hero-inner` | Contenu du hero — largeur 75% (`w-3/4`) centré (`mx-auto`), flex colonne en mobile, flex row avec `justify-between` en desktop (`md:`), sans padding, z-index 10 |
+| `.home-hero-btn` | Modificateur du bouton billetterie dans le hero — `text-4xl`, `px-(--space-md)`, `py-(--space-sm)`, `rounded-full`. Déclaré directement dans `@layer components` après `.btn-cta` pour éviter la priorité inférieure des sous-layers. |
 | `.home-section` | Section générique de la home — pleine largeur, padding responsive, flex colonne centré, bordure supérieure |
 | `.home-section-title` | Titre de section — `text-4xl md:text-6xl`, uppercase, bold, `tracking-widest` |
 | `.home-section-divider` | Séparateur rouge sous le titre — `h-0.5 w-16 bg-(--color-1)` |

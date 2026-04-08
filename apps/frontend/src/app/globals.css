@@ -62,10 +62,14 @@
   }
 
   .btn-cta {
-    @apply text-white inline-flex rounded bg-(--color-1) px-3 py-2 text-(--color-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration) disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center rounded bg-(--color-1) px-3 py-2 text-(--color-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration) disabled:cursor-not-allowed disabled:opacity-60;
   }
   .btn-cta:hover {
     @apply scale-(--anim-btn-scale);
+  }
+
+  .home-hero-btn {
+    @apply text-4xl px-(--space-md) py-(--space-sm) rounded-2xl;
   }
 
   .btn-type-2 {
@@ -230,7 +234,7 @@
     }
 
     .home-hero-inner {
-      @apply relative z-10 flex flex-col items-center gap-(--space-md) py-(--space-xl);
+      @apply relative z-10 flex w-3/4 mx-auto flex-col items-center md:flex-row md:justify-between;
     }
 
     .home-section {
