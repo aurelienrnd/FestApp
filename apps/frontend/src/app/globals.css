@@ -70,7 +70,7 @@
   }
 
   .home-hero-btn {
-    @apply text-4xl rounded-xl px-(--space-lg) py-(--space-md);
+    @apply text-lg rounded-xl px-(--space-md) py-(--space-md);
   }
 
   .btn-type-2 {
@@ -229,11 +229,6 @@
   }
 
   @layer home {
-    .home-hero-logo {
-      width: var(--hero-logo-width);
-      height: auto;
-    }
-
     .home-hero {
       @apply h-(--home-hero-min-height) bg-cover bg-center;
       margin-top: calc(-1 * var(--header-height));
