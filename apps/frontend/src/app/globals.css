@@ -3,7 +3,6 @@
 :root {
   --header-height: 106px;
   --home-hero-min-height: 100dvh;
-  --hero-logo-width: 400px;
 }
 
 :root {
@@ -67,10 +66,6 @@
   }
   .btn-cta:hover {
     @apply scale-(--anim-btn-scale);
-  }
-
-  .home-hero-btn {
-    @apply text-lg rounded-xl px-(--space-md) py-(--space-md);
   }
 
   .btn-type-2 {
@@ -232,6 +227,10 @@
     .home-hero {
       @apply h-(--home-hero-min-height) bg-cover bg-center;
       margin-top: calc(-1 * var(--header-height));
+    }
+
+    .home-hero-badge {
+      @apply bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-(--space-md);
     }
 
     .home-section {
