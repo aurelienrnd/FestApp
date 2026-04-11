@@ -1,5 +1,5 @@
 import Image from "next/image";
-import logo from "../../../public/header_logo.png";
+import logo from "../../../public/hero_logo.webp";
 
 /** Affiche la section hero de la page d'accueil — logo centré, bouton billetterie et lien vers la programmation.
  * Composant serveur — pas de données dynamiques.
