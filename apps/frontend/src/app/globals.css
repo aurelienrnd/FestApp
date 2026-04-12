@@ -112,6 +112,9 @@
   .admin-content-wrapper {
     @apply flex-1 flex justify-center;
   }
+  .filter-row {
+    @apply flex justify-center items-center gap-6;
+  }
   .section-page {
     @apply w-full h-full py-10 md:py-10 px-6 md:px-0 flex flex-col flex-1 text-base;
   }
