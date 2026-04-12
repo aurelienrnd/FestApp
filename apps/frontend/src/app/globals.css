@@ -62,7 +62,7 @@
   }
 
   .btn-cta {
-    @apply inline-flex items-center rounded bg-(--color-1) px-3 py-2 text-(--color-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration) disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center rounded bg-(--color-1) px-3 py-2 text-(--color-2) transition-(--anim-btn-transition) duration-(--anim-btn-duration) disabled:cursor-not-allowed disabled:opacity-60;
   }
   .btn-cta:hover {
     @apply scale-(--anim-btn-scale);
