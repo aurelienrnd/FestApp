@@ -47,13 +47,13 @@ export default function ArtistDetailModal({
       isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel="Detail artiste"
-      className="modal-artist-detail"
+      className="modal-detail"
       overlayClassName="modal-overlay"
     >
       {artist && (
-        <div className="artist-detail-layout">
+        <div className="detail-layout">
           {/* Image pleine largeur avec bouton fermer */}
-          <div className="artist-detail-img-wrapper">
+          <div className="detail-img-wrapper">
             <Image
               src={artist.url_media}
               alt={artist.description_media}
@@ -62,7 +62,7 @@ export default function ArtistDetailModal({
             />
             <button
               type="button"
-              className="artist-detail-close-btn"
+              className="detail-close-btn"
               onClick={onClose}
               aria-label="Fermer la modal"
             >
@@ -71,17 +71,17 @@ export default function ArtistDetailModal({
           </div>
 
           {/* Nom sur fond rouge */}
-          <div className="artist-detail-name-block">
-            <h2 className="artist-detail-name">{artist.name}</h2>
+          <div className="detail-name-block">
+            <h2 className="detail-name">{artist.name}</h2>
           </div>
 
           {/* Biographie */}
-          <div className="artist-detail-bio">
+          <div className="detail-bio">
             <p>{artist.bio}</p>
           </div>
 
           {/* Date du concert */}
-          <div className="artist-detail-date-block">
+          <div className="detail-date-block">
             {artist.start_time
               ? formatConcertDateTime(artist.start_time)
               : "Date non definie"}

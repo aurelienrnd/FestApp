@@ -40,13 +40,13 @@ export default function NewsDetailModal({
       isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel="Detail article"
-      className="modal-artist-detail"
+      className="modal-detail"
       overlayClassName="modal-overlay"
     >
       {article && (
-        <div className="artist-detail-layout">
+        <div className="detail-layout">
           {/* Image pleine largeur avec bouton fermer */}
-          <div className="artist-detail-img-wrapper">
+          <div className="detail-img-wrapper">
             <Image
               src={article.url_media}
               alt={article.description_media}
@@ -55,7 +55,7 @@ export default function NewsDetailModal({
             />
             <button
               type="button"
-              className="artist-detail-close-btn"
+              className="detail-close-btn"
               onClick={onClose}
               aria-label="Fermer la modal"
             >
@@ -64,19 +64,19 @@ export default function NewsDetailModal({
           </div>
 
           {/* Titre sur fond rouge */}
-          <div className="artist-detail-name-block">
-            <h2 className="artist-detail-name">{article.title}</h2>
+          <div className="detail-name-block">
+            <h2 className="detail-name">{article.title}</h2>
           </div>
 
           {/* Contenu (optionnel) */}
           {article.content && (
-            <div className="artist-detail-bio">
+            <div className="detail-bio">
               <p>{article.content}</p>
             </div>
           )}
 
           {/* Auteur et date */}
-          <div className="artist-detail-date-block">
+          <div className="detail-date-block">
             <p>{article.author_name ?? "Auteur inconnu"}</p>
             <p>{formatArticleDate(article.created_at)}</p>
           </div>
