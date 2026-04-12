@@ -10,7 +10,7 @@ export default function HomeHero() {
       className="home-hero"
       style={{ backgroundImage: "url('/hero_bg.webp')" }}
     >
-      <div className="mt-(--header-height) h-3/4 flex flex-col items-center gap-(--space-lg) relative">
+      <div className="mt-(--header-height) h-3/4 flex flex-col items-center gap-10 relative">
         <Image
           src={logo}
           alt="Logo Vindhellfest"
@@ -33,7 +33,7 @@ export default function HomeHero() {
           <div className="w-1/2 flex flex-col justify-around items-end">
             <a
               href="https://www.google.com/search?q=tiket+master&rlz=1C1ONGR_frFR1184FR1184&oq=tiket+master&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDM1ODJqMGo3qAIIsAIB&sourceid=chrome&ie=UTF-8"
-              className="btn-cta p-(--space-md) justify-center items-center self-center lg:text-2xl"
+              className="btn-cta p-6 justify-center items-center self-center lg:text-2xl"
               target="_blank"
               rel="noopener noreferrer"
             >

@@ -235,7 +235,7 @@ export default function Banner() {
 
   return (
     <header
-      className={`sticky top-0 z-50 mx-auto flex w-full items-center justify-between px-(--space-md) py-2 transition-colors duration-300 ${isOverHero ? "bg-transparent" : "bg-(--color-bg)"}`}
+      className={`sticky top-0 z-50 mx-auto flex w-full items-center justify-between px-6 py-2 transition-colors duration-300 ${isOverHero ? "bg-transparent" : "bg-(--color-bg)"}`}
     >
       <Image
         src={logo}

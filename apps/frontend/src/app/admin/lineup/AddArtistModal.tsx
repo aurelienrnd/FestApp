@@ -251,7 +251,7 @@ export default function AddArtistModal({
       <ModalCloseButton onClose={handleClose} />
       <h2 className="title-modal">Artiste</h2>
 
-      <div className="m-(--space-md)">
+      <div className="m-6">
         {step === 1 ? (
           <div key="step-1" className="form-modal">
             <div>
@@ -419,7 +419,7 @@ export default function AddArtistModal({
             <div className="submit-modal-area">
               <button
                 type="button"
-                className="btn-type-2 rounded-md border border-(--color-text-input) p-(--space-xs)"
+                className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
                 onClick={() => setStep(1)}
               >
                 Retour
@@ -506,7 +506,7 @@ export default function AddArtistModal({
             <div className="submit-modal-area">
               <button
                 type="button"
-                className="btn-type-2 rounded-md border border-(--color-text-input) p-(--space-xs)"
+                className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
                 onClick={() => setStep(2)}
               >
                 Retour

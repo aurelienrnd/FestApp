@@ -22,7 +22,7 @@ export default function SideBarTool({
   const { pathname, isAdminPath } = useNavPath();
 
   return (
-    <div className="flex flex-1 gap-(--space-md) pr-0 md:pr-(--space-md)">
+    <div className="flex flex-1 gap-6 pr-0 md:pr-6">
       <div className="hidden md:flex sticky items-center">
         <Navigation
           items={items}

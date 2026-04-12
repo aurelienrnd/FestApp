@@ -36,12 +36,12 @@ export default function Page() {
 
   return (
     <section className="section-page">
-      <div className="flex justify-center item-center gap-(--space-md)">
+      <div className="flex justify-center item-center gap-6">
         <AddButton items={items} />
         <h1 className="title1">Programation</h1>
         <button
           type="button"
-          className="mb-(--margin-bottom-title)"
+          className="mb-(--ctx-title-mb)"
           aria-label="Ouvrir les filtres"
           onClick={() => setIsOpen(true)}
         >

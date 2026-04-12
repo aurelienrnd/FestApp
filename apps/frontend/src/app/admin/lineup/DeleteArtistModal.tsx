@@ -92,7 +92,7 @@ export default function DeleteArtistModal({
       <ModalCloseButton onClose={handleClose} />
       <h2 className="title-modal">Suppression artiste</h2>
 
-      <div className="m-(--space-md)">
+      <div className="m-6">
         {isDeleted ? (
           <div className="form-modal">
             <p className="text-center">L&apos;artiste a ete supprime.</p>

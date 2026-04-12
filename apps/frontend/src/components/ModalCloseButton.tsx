@@ -20,7 +20,7 @@ export default function ModalCloseButton({
     return (
       <button
         type="button"
-        className="absolute top-(--space-sm) right-(--space-sm) z-10 text-black cursor-pointer"
+        className="absolute top-3 right-3 z-10 text-black cursor-pointer"
         onClick={onClose}
         aria-label="Fermer la modal"
       >
@@ -30,7 +30,7 @@ export default function ModalCloseButton({
   }
 
   return (
-    <div className="flex w-full justify-end pr-(--space-md)">
+    <div className="flex w-full justify-end pr-6">
       <button type="button" onClick={onClose} aria-label="Fermer la modal">
         <FontAwesomeIcon icon={faX} />
       </button>

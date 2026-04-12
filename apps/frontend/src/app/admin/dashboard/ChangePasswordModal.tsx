@@ -100,9 +100,9 @@ export default function ChangePasswordModal({
       {!forced && <ModalCloseButton onClose={handleClose} />}
       <h2 className="title-modal">Mot de passe</h2>
 
-      <div className="m-(--space-md)">
+      <div className="m-6">
         {success ? (
-          <div className="flex flex-col items-center gap-(--space-sm)">
+          <div className="flex flex-col items-center gap-3">
             <p className="text-center text-(--color-1)">
               Votre mot de passe a ete modifie avec succes.
             </p>

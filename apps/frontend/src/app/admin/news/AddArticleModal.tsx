@@ -174,7 +174,7 @@ export default function AddArticleModal({
       <ModalCloseButton onClose={handleClose} />
       <h2 className="title-modal">Article</h2>
 
-      <div className="m-(--space-md)">
+      <div className="m-6">
         {step === 1 ? (
           <div key="step-1" className="form-modal">
             <div>
@@ -207,7 +207,7 @@ export default function AddArticleModal({
               />
             </div>
 
-            <div className="flex items-center gap-(--space-xs)">
+            <div className="flex items-center gap-2">
               <input
                 id="articleIsPublished"
                 name="is_published"
@@ -293,7 +293,7 @@ export default function AddArticleModal({
             <div className="submit-modal-area">
               <button
                 type="button"
-                className="btn-type-2 rounded-md border border-(--color-text-input) p-(--space-xs)"
+                className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
                 onClick={() => setStep(1)}
               >
                 Retour

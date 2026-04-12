@@ -28,7 +28,7 @@ export default function AddButton({
     <>
       <button
         type="button"
-        className="mb-(--margin-bottom-title) md:hidden"
+        className="mb-(--ctx-title-mb) md:hidden"
         aria-label="Ouvrir les filtres"
         onClick={() => setIsFiltersModalOpen(true)}
       >

@@ -49,14 +49,14 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="m-(--space-md)">
+    <div className="m-6">
       {success ? (
-        <p className="mt-(--spacing-paragraph) text-center">
+        <p className="mt-(--ctx-paragraph-gap) text-center">
           Un nouveau mot de passe vous a ete envoye par email.
         </p>
       ) : (
         <>
-          <p className="mt-(--spacing-paragraph) text-center">
+          <p className="mt-(--ctx-paragraph-gap) text-center">
             Nous vous enverrons un nouveau mot de passe sur votre boite mail
           </p>
 

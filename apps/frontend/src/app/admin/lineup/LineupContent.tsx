@@ -142,7 +142,7 @@ export default function LineupContent({
             <p>Aucun artiste.</p>
           </div>
         ) : (
-          <ul className="flex w-full flex-col items-center gap-(--space-md)">
+          <ul className="flex w-full flex-col items-center gap-6">
             {visibleArtists.map((artist, index) => (
               <li key={artist.id} className="card-row">
                 <div className="card-media-img-wrapper">
@@ -196,14 +196,14 @@ export default function LineupContent({
                     <>
                       <button
                         type="button"
-                        className="btn-type-2 rounded-md border border-(--color-text-input) p-(--space-xs)"
+                        className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
                         onClick={() => openEditModal(artist)}
                       >
                         Modifier
                       </button>
                       <button
                         type="button"
-                        className="btn-type-2 rounded-md border border-(--color-text-input) p-(--space-xs)"
+                        className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
                         onClick={() => openDeleteModal(artist)}
                       >
                         Supprimer

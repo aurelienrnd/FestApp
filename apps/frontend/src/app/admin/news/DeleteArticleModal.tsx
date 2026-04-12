@@ -86,7 +86,7 @@ export default function DeleteArticleModal({
       <ModalCloseButton onClose={handleClose} />
       <h2 className="title-modal">Suppression article</h2>
 
-      <div className="m-(--space-md)">
+      <div className="m-6">
         {isDeleted ? (
           <div className="form-modal">
             <p className="text-center">L&apos;article a ete supprime.</p>

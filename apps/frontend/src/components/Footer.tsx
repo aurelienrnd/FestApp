@@ -17,7 +17,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="w-full bg-(--color-bg) flex flex-col gap-(--space-md) px-(--space-md) py-(--space-lg) min-md:flex-row min-md:items-center min-md:justify-between">
+      <footer className="w-full bg-(--color-bg) flex flex-col gap-6 px-6 py-10 min-md:flex-row min-md:items-center min-md:justify-between">
         <nav>
           <ul className="nav-list justify-center ">
             {legalLinks.map((item) => (
@@ -39,7 +39,7 @@ export default function Footer() {
           aria-hidden="true"
         />
 
-        <ul className="flex items-center justify-center gap-(--space-md)">
+        <ul className="flex items-center justify-center gap-6">
           {socialLinks.map((item) => (
             <li key={item.label}>
               <a

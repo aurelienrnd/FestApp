@@ -146,7 +146,7 @@ export default function NewsContent({
             <p>Aucun article.</p>
           </div>
         ) : (
-          <ul className="flex w-full flex-col items-center gap-(--space-md)">
+          <ul className="flex w-full flex-col items-center gap-6">
             {visibleArticles.map((article, index) => (
               <li key={article.id} className="card-row">
                 <div className="card-media-img-wrapper">
@@ -161,10 +161,10 @@ export default function NewsContent({
                 </div>
 
                 <div className="card-lineup-content">
-                  <div className="flex items-center gap-(--space-xs)">
+                  <div className="flex items-center gap-2">
                     <span>{article.title}</span>
                     {isAdminPath && !article.is_published && (
-                      <span className="text-xs px-(--space-xs) py-1 rounded border border-(--color-1) text-(--color-1)">
+                      <span className="text-xs px-2 py-1 rounded border border-(--color-1) text-(--color-1)">
                         Brouillon
                       </span>
                     )}
@@ -193,14 +193,14 @@ export default function NewsContent({
                     <>
                       <button
                         type="button"
-                        className="btn-type-2 rounded-md border border-(--color-text-input) p-(--space-xs)"
+                        className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
                         onClick={() => openEditModal(article)}
                       >
                         Modifier
                       </button>
                       <button
                         type="button"
-                        className="btn-type-2 rounded-md border border-(--color-text-input) p-(--space-xs)"
+                        className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
                         onClick={() => openDeleteModal(article)}
                       >
                         Supprimer

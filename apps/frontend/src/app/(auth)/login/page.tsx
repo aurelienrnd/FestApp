@@ -73,7 +73,7 @@ export default function Page() {
       <h1 className="title1">Connexion</h1>
 
       <form
-        className="w-full max-w-lg space-y-(--spacing-form)"
+        className="w-full max-w-lg space-y-(--ctx-form-gap)"
         onSubmit={handleSubmit}
       >
         <div>
@@ -121,7 +121,7 @@ export default function Page() {
 
       <button
         type="button"
-        className="mt-(--spacing-form) btn-type-2"
+        className="mt-(--ctx-form-gap) btn-type-2"
         onClick={() => setIsForgotPasswordModalOpen(true)}
       >
         Mot de passe oublie
