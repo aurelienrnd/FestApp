@@ -2,15 +2,14 @@
 
 Ce document decrit l'etat reel du style dans `apps/frontend`.
 
-## 1. Fichier central
+## 1. Fichiers de style
 
-Le style global est centralise dans :
-- `apps/frontend/src/app/globals.css`
+| Fichier | Rôle |
+| --- | --- |
+| `apps/frontend/src/app/tokens.css` | Variables CSS uniquement — un seul `:root`, 7 sections commentées |
+| `apps/frontend/src/app/globals.css` | `@import "tailwindcss"` + `@import "./tokens.css"` + thèmes + `@layer components` |
 
-Il contient :
-- les variables CSS (`:root`)
-- les themes (`:root[data-theme="..."]`)
-- les classes composants reutilisables (`@layer components`)
+`globals.css` n'a plus aucun bloc `:root` — toutes les variables sont dans `tokens.css`.
 
 Details :
 - `--font-display` est reference dans `apps/frontend/src/app/layout.tsx:7` et provient de Next Font (Bebas Neue avec subsets latin + latin-ext).
@@ -19,45 +18,48 @@ Details :
 
 ## 2. Tokens declares et usages
 
-### Couleurs
+### Dimensions layout
 
 | Variable | Valeur | Usages |
 | --- | --- | --- |
-| `--header-height` | `106px` | `globals.css` (`.home-hero` margin-top négatif), `HomeHero.tsx` (inner div `mt-(--header-height)`) |
+| `--header-height` | `106px` | `globals.css` (`.home-hero` margin-top négatif), `HomeHero.tsx` (`mt-(--header-height)`) |
 | `--home-hero-min-height` | `100dvh` | `globals.css` (`.home-hero`) |
-| `--hero-logo-width` | `400px` | `globals.css` (`.home-hero-logo`) |
-| `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`), `components/Banner.tsx`, `components/Footer.tsx`, `app/login/page.tsx`, `app/admin/users/AddUserModal.tsx`, `app/admin/users/DelateUserModal.tsx`, `app/admin/users/UsersContent.tsx` |
-| `--color-2` | `#e4e4e7` | `globals.css` (`.mobil-menu`), `app/admin/lineup/ArtistDetailModal.tsx` (icônes réseaux sociaux) |
-| `--color-3` | `#0ea5e9` | `components/Footer.tsx` (separateur) |
-| `--color-text-visitor` | `#ffffff` | `globals.css` (theme visitor) |
-| `--color-bg-visitor` | `black` | `globals.css` (theme visitor) |
-| `--color-bg-admin` | `#ffffff` | `globals.css` (theme admin) |
-| `--color-text-admin` | `black` | `globals.css` (theme admin) |
-| `--color-bg-input` | `#e4e4e7` | `globals.css` (`.input`, `.text-area`) |
-| `--color-text-input` | `#47474f` | `globals.css` (`.mobil-menu`, `.input`, `.text-area`, `.card-row`), `globals.css` (`.text-festival-date` via composant), `app/admin/users/UsersContent.tsx` |
-| `--color-text` | thème actif | `globals.css` (`.btn-cta`, `.mobil-menu`), `app/layout.tsx` |
-| `--color-bg` | thème actif | `globals.css` (`.card-dashboard-avatar`), `app/layout.tsx`, `components/Footer.tsx` |
 
-### Animation
+### Couleurs marque
 
 | Variable | Valeur | Usages |
 | --- | --- | --- |
-| `--anim-btn-transition` | `"transform"` | `globals.css` (`.btn-cta`, `.mobil-menu`), `components/Footer.tsx` |
-| `--anim-btn-duration` | `200ms` | `globals.css` (`.btn-cta`, `.mobil-menu`), `components/Footer.tsx` |
-| `--anim-btn-scale` | `1.1` | `globals.css` (`.btn-cta:hover`, `.mobil-menu:hover`), `components/Footer.tsx` |
+| `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`, `.home-section-divider`, `.nav-btn-active-*`, `.artist-detail-name-block`), composants divers |
+| `--color-2` | `#e4e4e7` | `globals.css` (`.mobil-menu`, `.input`, `.text-area`, `.upload-zone`, `.home-partner-logo`), `ArtistDetailModal.tsx` |
+| `--color-3` | `#0ea5e9` | `globals.css` (`.home-section-link-line`), `Footer.tsx` |
 
-### Espacement
+### Couleurs UI
 
 | Variable | Valeur | Usages |
 | --- | --- | --- |
-| `--space-xs` | `0.5rem` | `globals.css` (`.input`, `.text-area`), `app/admin/users/UsersContent.tsx` |
-| `--space-sm` | `0.75rem` | `globals.css` (`.input`, `.text-area`, `.nav-btn-*`, `.card-row`, `.card-dashboard-*`, `.card-users-*`, `.card-user-*`, `.card-lineup-*`) |
-| `--space-md` | `1.5rem` | `globals.css` (`.nav-list`, `.nav-vertical-list`, `.section-page`, `.card-dashboard-actions`, `.card-user-actions`), `components/Banner.tsx`, `components/Footer.tsx`, `components/ContactUs.tsx`, `components/ForgotPassword.tsx`, `components/LegalMention.tsx`, `components/ModalCloseButton.tsx`, `components/SideBarTool.tsx`, `app/lineup/page.tsx`, `app/news/page.tsx`, `app/admin/lineup/LineupContent.tsx`, `app/admin/users/page.tsx`, `app/admin/users/AddUserModal.tsx`, `app/admin/users/UsersContent.tsx`, `app/admin/dashboard/DashboardContent.tsx` |
-| `--space-lg` | `2.5rem` | `globals.css` (`.section-page`), `components/Footer.tsx` |
-| `--space-xl` | `5rem` | `app/admin/dashboard/DashboardContent.tsx` |
-| `--spacing-paragraph` | `1rem` | `components/ContactUs.tsx`, `components/ForgotPassword.tsx`, `components/LegalMention.tsx` |
-| `--spacing-form` | `2rem` | `app/login/page.tsx` |
-| `--margin-bottom-title` | `3rem` | `globals.css` (`.title1`, `.card-dashboard-avatar`), `components/AddButton.tsx`, `app/admin/users/page.tsx` |
+| `--color-text-input` | `#47474f` | `globals.css` (`.mobil-menu`, `.input`, `.text-area`, `.card-row`, `.upload-btn`, `.upload-zone`), composants divers |
+| `--color-overlay` | `rgba(156, 163, 175, 0.3)` | `globals.css` (`.modal-overlay`) |
+
+### Couleurs thème
+
+| Variable | Valeur | Usages |
+| --- | --- | --- |
+| `--color-text-visitor` | `#ffffff` | `globals.css` (thème visitor) |
+| `--color-bg-visitor` | `black` | `globals.css` (thème visitor) |
+| `--color-bg-admin` | `#ffffff` | `globals.css` (thème admin) |
+| `--color-text-admin` | `black` | `globals.css` (thème admin) |
+| `--color-text` | thème actif | `globals.css` (`.mobil-menu`), `layout.tsx` |
+| `--color-bg` | thème actif | `globals.css` (`.card-dashboard-avatar`), `layout.tsx`, `Footer.tsx` |
+
+### Espacement contextuel
+
+| Variable | Valeur | Usages |
+| --- | --- | --- |
+| `--ctx-paragraph-gap` | `1rem` | `ContactUs.tsx`, `ForgotPassword.tsx`, `LegalMention.tsx` |
+| `--ctx-form-gap` | `2rem` | `login/page.tsx` |
+| `--ctx-title-mb` | `3rem` | `globals.css` (`.title1`), `AddButton.tsx`, `admin/*/page.tsx` |
+
+> Pour tout autre espacement, utiliser l'echelle Tailwind directement (`p-4`, `gap-6`, `mt-8`...).
 
 ### Typographie
 
@@ -65,132 +67,175 @@ Details :
 | --- | --- | --- |
 | `--font-family-input` | `Arial, sans-serif` | `globals.css` (`.input`, `.text-area`) |
 
+### Animation
+
+| Variable | Valeur | Usages |
+| --- | --- | --- |
+| `--anim-btn-transition` | `transform` | `globals.css` (`.btn-cta`, `.mobil-menu`) |
+| `--anim-btn-duration` | `200ms` | `globals.css` (`.btn-cta`, `.mobil-menu`) |
+| `--anim-btn-scale` | `1.1` | `globals.css` (`.btn-cta:hover`, `.mobil-menu:hover`) |
+
 ---
 
 ## 3. Classes reutilisables (@layer components)
 
-### Classes de base
+### Boutons
 
 | Classe | Description |
 | --- | --- |
-| `.title1` | Titre principal de page — centré, très grand, uppercase, bold |
-| `.title-modal` | Titre de modale — centré, grand, bold |
-| `header` (Banner) | Header sticky — `sticky top-0 z-50`, fond transparent sur `.home-hero`, fond `--color-bg` sinon (via `IntersectionObserver`), transition `duration-300` |
-| `.nav-list` | Liste de liens de navigation horizontale — flex, `gap-(--space-md)`, letter-spacing |
-| `.nav-vertical-list` | Liste de liens de navigation verticale — flex colonne, `gap-(--space-md)` |
-| `.nav-btn-active-modal` | Bouton actif en variante modale — fond `--color-1`, largeur étendue |
-| `.nav-btn-inactive-modal` | Bouton inactif en variante modale — fond noir, hover couleur principale |
-| `.nav-btn-active-sidebar` | Bouton actif en variante sidebar — fond `--color-1`, largeur étendue |
-| `.nav-btn-inactive-admin` | Bouton inactif sidebar (contexte admin) — fond noir, texte blanc |
-| `.nav-btn-inactive-public` | Bouton inactif sidebar (contexte public) — fond blanc, texte noir |
 | `.btn-cta` | Bouton call-to-action — fond `--color-1`, texte blanc, scale au hover |
 | `.btn-type-2` | Bouton secondaire — hover opacity |
+| `.social-btn` | Bouton icône réseau social — carré `h-9 w-9`, centré, arrondi, texte blanc |
+
+### Navigation
+
+| Classe | Description |
+| --- | --- |
+| `.nav-list` | Liste de liens horizontale — flex, `gap-6`, letter-spacing |
+| `.nav-vertical-list` | Liste de liens verticale — flex colonne, `gap-6` |
 | `.mobil-menu` | Bouton menu mobile — fond `--color-2`, scale au hover |
-| `.modal-overlay` | Fond semi-transparent de modale — fixed, centré |
-| `.modal` | Conteneur de modale — arrondi, fond clair |
-| `.form-modal` | Formulaire dans une modale — space-y |
-| `.input` | Champ texte — bordure, fond `--color-bg-input`, police Arial |
-| `.text-area` | Zone de texte redimensionnable — hauteur fixe, même style que `.input` |
+| `.nav-btn-active-modal` | Bouton actif variante modale — fond `--color-1`, largeur étendue |
+| `.nav-btn-inactive-modal` | Bouton inactif variante modale — fond noir, hover couleur principale |
+| `.nav-btn-active-sidebar` | Bouton actif variante sidebar — fond `--color-1`, largeur étendue |
+| `.nav-btn-inactive-admin` | Bouton inactif sidebar admin — fond noir, texte blanc |
+| `.nav-btn-inactive-public` | Bouton inactif sidebar public — fond blanc, texte noir |
+
+### Formulaires
+
+| Classe | Description |
+| --- | --- |
+| `.form-modal` | Formulaire dans une modale — `space-y-4` |
+| `.input` | Champ texte — bordure, fond `--color-2`, police Arial |
+| `.text-area` | Zone de texte — hauteur fixe, même style que `.input` |
 | `.submit-modal-area` | Zone du bouton de soumission — flex centré |
-| `.upload-zone` | Zone d'upload d'image — flex colonne centré, fond `--color-bg-input`, arrondi |
+| `.upload-zone` | Zone d'upload — flex colonne centré, fond `--color-2`, arrondi |
 | `.upload-btn` | Bouton d'upload — pill, bordure `--color-text-input`, hover opacity |
-| `.text-festival-date` | Texte de date du festival — taille responsive (`text-base` → `text-2xl`), centré sur desktop |
-| `.footer-separator` | Séparateur horizontal du footer — `h-0.5`, largeur responsive |
-| `.social-btn` | Bouton icône réseau social — carré `h-9 w-9`, centré, arrondi |
-| `.section-page` | Conteneur de section de page — padding vertical/horizontal responsive |
-| `.side-bar` | Texte de la sidebar admin — taille responsive |
-| `.card-row` | Carte en ligne — bordure, flex colonne sur mobile, ligne sur desktop |
 
-### `@layer dashboard` — Cartes du dashboard admin
+### Modales
 
 | Classe | Description |
 | --- | --- |
-| `.card-dashboard-media-center` | Zone média de la carte dashboard — centrée avec marges |
-| `.card-dashboard-avatar` | Avatar circulaire — taille fixe (`--margin-bottom-title`), bordure, fond `--color-bg` |
-| `.card-dashboard-content` | Contenu principal de la carte — flex, justify-around, responsive |
-| `.card-dashboard-field` | Champ individuel dans la carte — flex, justify-around |
-| `.card-dashboard-actions` | Zone d'actions — flex colonne sur mobile, ligne sur desktop |
+| `.modal-close-btn` | Bouton de fermeture en absolu — `top-3 right-3 z-10`, texte noir |
+| `.modal-overlay` | Fond semi-transparent — fixed, centré, `bg-(--color-overlay)` |
+| `.modal` | Conteneur de modale — arrondi, `bg-white text-black` |
 
-### `@layer users` — Cartes de la page utilisateurs
+### Cartes
 
 | Classe | Description |
 | --- | --- |
-| `.card-users-media-center` | Zone média de la carte utilisateur — centrée avec marges |
+| `.card-row` | Carte en ligne — bordure, flex colonne mobile / ligne desktop |
+
+#### `@layer dashboard` — Cartes du dashboard admin
+
+| Classe | Description |
+| --- | --- |
+| `.card-dashboard-media-center` | Zone média — centrée avec marges |
+| `.card-dashboard-avatar` | Avatar circulaire — `h-12 w-12`, bordure, fond `--color-bg` |
+| `.card-dashboard-content` | Contenu principal — flex, justify-around, responsive |
+| `.card-dashboard-field` | Champ individuel — flex, justify-around |
+| `.card-dashboard-actions` | Zone d'actions — flex colonne mobile / ligne desktop |
+
+#### `@layer users` — Cartes utilisateurs
+
+| Classe | Description |
+| --- | --- |
+| `.card-users-media-center` | Zone média — centrée avec marges |
 | `.card-user-name` | Nom de l'utilisateur — flex centré |
-| `.card-user-content` | Contenu de la carte — flex wrap, space-between, responsive |
+| `.card-user-content` | Contenu — flex wrap, space-between, responsive |
 | `.card-user-field` | Champ individuel — flex nowrap |
 | `.card-user-actions` | Zone d'actions — flex centré, gap, marges responsive |
 
-### Classes partagées (root `@layer components`) — Composant `SectionCta`
+#### `@layer lineup` — Cartes programmation
 
 | Classe | Description |
 | --- | --- |
-| `.home-section-link` | Conteneur du séparateur avec CTA — `flex items-center gap-(--space-md) w-full` |
-| `.home-section-link-line` | Ligne horizontale bleue de part et d'autre du bouton — `flex-1 h-0.5 bg-(--color-3)` |
+| `.card-media-img-wrapper` | Conteneur image — pleine largeur mobile, `w-48 self-stretch` desktop |
+| `.card-media-img` | Image — `object-cover`, arrondie haut mobile / gauche desktop |
+| `.card-lineup-content` | Contenu de la carte — flex colonne/ligne, space-between |
+| `.card-lineup-actions` | Zone d'actions — flex centré, marges responsive |
 
-### `@layer home` — Page d'accueil
+### Pages
 
 | Classe | Description |
 | --- | --- |
-| `.home-hero` | Section hero — `h-(--home-hero-min-height)`, `bg-cover bg-center`, `margin-top: calc(-1 * --header-height)` pour glisser sous le header sticky |
-| `.home-hero-logo` | Logo du hero — largeur fixe via `--hero-logo-width` (400px), hauteur auto. ⚠️ `py-(--margin-bottom-title)` actuellement appliqué en inline sur le composant, à déplacer ici. |
-| `.home-hero-btn` | Modificateur du bouton billetterie dans le hero — `text-4xl`, `rounded-xl`. Déclaré dans `@layer components` après `.btn-cta`. |
-| `.home-section` | Section générique de la home — pleine largeur, padding responsive, flex colonne centré, bordure supérieure |
+| `.title1` | Titre principal — centré, très grand, uppercase, bold, `mb-(--ctx-title-mb)` |
+| `.title-modal` | Titre de modale — centré, grand, bold |
+| `.text-festival-date` | Date du festival — taille responsive (`text-base` → `text-2xl`), centré desktop |
+| `.footer-separator` | Séparateur horizontal du footer — `h-0.5`, largeur responsive |
+| `.section-page` | Conteneur de section — padding vertical/horizontal responsive |
+| `.side-bar` | Texte de la sidebar admin — taille responsive |
+| `.home-section-link` | Conteneur du séparateur avec CTA — flex, `gap-6`, pleine largeur |
+| `.home-section-link-line` | Ligne horizontale bleue — `flex-1 h-0.5 bg-(--color-3)` |
+
+#### `@layer home` — Page d'accueil
+
+| Classe | Description |
+| --- | --- |
+| `.home-hero` | Section hero — `h-(--home-hero-min-height)`, `bg-cover bg-center`, `margin-top: calc(-1 * --header-height)` |
+| `.home-hero-badge` | Badge de date dans le hero — `bg-white text-black`, centré |
+| `.home-section` | Section générique — pleine largeur, padding responsive, flex colonne centré, bordure supérieure |
 | `.home-section-title` | Titre de section — `text-4xl md:text-6xl`, uppercase, bold, `tracking-widest` |
 | `.home-section-divider` | Séparateur rouge sous le titre — `h-0.5 w-16 bg-(--color-1)` |
-| `.home-cta-row` | Conteneur du bouton CTA — flex centré, `mt-(--space-md)` |
+| `.home-cta-row` | Conteneur du bouton CTA — flex centré, `mt-6` |
 
-#### `@layer home-lineup` — Cartes artistes de la home
+#### `@layer home-lineup` — Cartes artistes
 
 | Classe | Description |
 | --- | --- |
-| `.home-artist-grid` | Grille 1 colonne mobile / 2 colonnes desktop, `max-w-4xl` |
+| `.home-artist-grid` | Grille 1 col mobile / 2 col desktop, `max-w-4xl` |
 | `.home-artist-card` | Carte artiste horizontale — image à gauche, texte à droite, bordure, arrondie |
 | `.home-artist-img-wrapper` | Wrapper image — `relative w-40 flex-shrink-0 self-stretch` |
-| `.home-artist-info` | Bloc texte de la carte — flex colonne centré, `gap-(--space-sm) p-(--space-md)` |
+| `.home-artist-info` | Bloc texte — flex colonne centré, `gap-3 p-6` |
 | `.home-artist-name` | Nom de l'artiste — `font-black uppercase text-xl leading-tight` |
-| `.home-artist-meta` | Méta-données (date, heure, scène) — `text-sm uppercase tracking-wide` |
+| `.home-artist-meta` | Méta-données — `text-sm uppercase tracking-wide` |
 | `.home-artist-link` | Lien "VOIR PLUS" — `text-xs uppercase`, opacity 60 % → 100 % au hover |
 
-#### `@layer home-news` — Cartes articles de la home
+#### `@layer home-news` — Cartes articles
 
 | Classe | Description |
 | --- | --- |
-| `.home-news-grid` | Grille 1 colonne mobile / 2 colonnes desktop, `max-w-4xl` |
+| `.home-news-grid` | Grille 1 col mobile / 2 col desktop, `max-w-4xl` |
 | `.home-news-card` | Carte article verticale — image en haut, texte en bas, bordure, arrondie |
 | `.home-news-img-wrapper` | Wrapper image — `relative h-40 w-full` |
-| `.home-news-info` | Bloc texte — flex colonne, `gap-(--space-xs) p-(--space-md)` |
+| `.home-news-info` | Bloc texte — flex colonne, `gap-2 p-6` |
 | `.home-news-title` | Titre de l'article — `font-black uppercase text-sm leading-tight` |
 
-#### `@layer home-info` — Section infos pratiques
+#### `@layer home-info` — Infos pratiques
 
 | Classe | Description |
 | --- | --- |
 | `.home-info-address` | Adresse du festival — `font-black uppercase` |
 | `.home-info-text` | Texte de présentation — `text-sm leading-relaxed` |
 
-#### `@layer home-partners` — Section partenaires
+#### `@layer home-partners` — Partenaires
 
 | Classe | Description |
 | --- | --- |
-| `.home-partners-grid` | Grille 3 colonnes mobile / 5 colonnes desktop, `max-w-4xl` |
-| `.home-partner-logo` | Placeholder logo partenaire — `h-16`, fond `--color-bg-input`, texte centré |
+| `.home-partners-grid` | Grille 3 col mobile / 5 col desktop, `max-w-4xl` |
+| `.home-partner-logo` | Placeholder logo — `h-16`, fond `--color-2`, texte centré |
 
-### `@layer lineup` — Cartes de la programmation
+#### `@layer artist-detail` — Modale détail artiste
 
 | Classe | Description |
 | --- | --- |
-| `.card-media-img-wrapper` | Conteneur de l'image artiste — `relative`, pleine largeur et hauteur fixe (`h-48`) sur mobile, `w-48` et hauteur auto (`self-stretch`) sur desktop, `flex-shrink-0` |
-| `.card-media-img` | Image de l'artiste — `object-cover`, arrondie en haut sur mobile, à gauche sur desktop |
-| `.card-lineup-content` | Contenu de la carte lineup — flex colonne/ligne, space-between |
-| `.card-lineup-actions` | Zone d'actions — flex centré, marges responsive |
+| `.modal-artist-detail` | Conteneur de la modale — `w-[90vw]`, `bg-white`, arrondi, overflow hidden |
+| `.artist-detail-layout` | Layout interne — flex colonne, relative |
+| `.artist-detail-img-wrapper` | Wrapper image — `relative w-full h-80` |
+| `.artist-detail-close-btn` | Bouton fermeture — absolu `top-3 right-3 z-10`, texte noir |
+| `.artist-detail-name-block` | Bloc nom — fond `--color-1`, décalé à gauche |
+| `.artist-detail-name` | Nom de l'artiste — texte blanc, bold, uppercase, `text-2xl` |
+| `.artist-detail-bio` | Biographie — `bg-white text-black`, scrollable, `max-h-48` |
+| `.artist-detail-date-block` | Bloc date — `bg-black text-white`, bold, uppercase, décalé à droite |
+| `.artist-detail-social` | Icônes réseaux sociaux — `bg-black`, flex centré, `text-2xl` |
 
 ---
 
 ## 4. Conventions
 
-- Utiliser uniquement les tokens de `globals.css` — pas de valeurs brutes Tailwind (`gap-6`, `p-4`, etc.).
-- Echelle d'espacement : `--space-xs` → `--space-xl` pour les valeurs generiques, tokens contextuels (`--spacing-paragraph`, `--spacing-form`, `--margin-bottom-title`) pour les cas specifiques.
+- Couleurs : uniquement via tokens `--color-*` — jamais de valeurs brutes dans les `.tsx`.
+  - Exception : `bg-transparent` pour la transparence structurelle.
+  - `bg-white` / `text-black` autorisés uniquement à l'intérieur d'une classe composant dans `globals.css`.
+- Espacement : echelle Tailwind standard directement (`p-4`, `gap-6`, `mt-8`...). Tokens `--ctx-*` uniquement pour les valeurs avec une signification semantique metier.
 - Syntaxe Tailwind variable : `gap-(--token)`, `px-(--token)`, `bg-(--token)`.
-- Creer un token semantique seulement quand une valeur est reutilisee dans plusieurs contextes.
-- Toute nouvelle classe composant va dans `globals.css` sous `@layer components`, pas dans un objet JS.
+- Toute nouvelle classe composant va dans `globals.css` sous `@layer components` — jamais en objet JS ou inline statique.
+- Un token est cree uniquement si la valeur est reutilisee dans 2+ endroits avec le meme sens metier.
