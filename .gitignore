@@ -12,6 +12,9 @@
 # Instructions Claude (non versionnées)
 CLAUDE.md
 
+# Worktrees temporaires créés par Claude Code
+.claude/
+
 POSSIBLE_IMPROVEMENTS.md
 
 # Règles de style locales (non versionnées)
