@@ -51,7 +51,7 @@ export default async function AdminLayout({
   // Fournit les donnees utilisateur a toutes les pages enfants de la zone admin via le contexte
   return (
     <AdminUserProvider value={me}>
-      <div data-theme="admin" id="app-root" className="flex min-h-screen flex-col bg-(--color-bg) text-(--color-text)">
+      <div data-theme="admin" id="app-root" className="app-root">
         <Banner />
         <main className="flex flex-1 flex-col">{children}</main>
         <Footer />

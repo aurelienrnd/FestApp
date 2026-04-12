@@ -10,7 +10,7 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div data-theme="visitor" id="app-root" className="flex min-h-screen flex-col bg-(--color-bg) text-(--color-text)">
+    <div data-theme="visitor" id="app-root" className="app-root">
       <Banner />
       <main className="flex flex-1 flex-col">{children}</main>
       <Footer />

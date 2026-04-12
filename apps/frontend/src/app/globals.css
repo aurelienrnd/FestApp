@@ -102,6 +102,11 @@
     @apply flex justify-center items-center gap-3 mb-3 lg:m-3;
   }
 
+  /* === LAYOUT === */
+  .app-root {
+    @apply flex min-h-screen flex-col bg-(--color-bg) text-(--color-text);
+  }
+
   /* === PAGES === */
   .title1 {
     @apply text-center text-4xl md:text-8xl font-black uppercase mb-(--ctx-title-mb);
