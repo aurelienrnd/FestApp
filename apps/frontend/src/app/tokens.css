@@ -5,6 +5,8 @@
   */
   --header-height: 106px;
   --home-hero-min-height: 100dvh;
+  --home-hero-min-height-floor: 600px;
+  --app-min-width: 320px;
 
   /* === COULEURS MARQUE ===
      Palette de la marque — couleurs fixes indépendantes du thème.

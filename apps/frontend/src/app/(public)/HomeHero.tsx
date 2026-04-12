@@ -25,32 +25,32 @@ export default function HomeHero() {
   return (
     <section
       id="home-hero"
-      className="h-(--home-hero-min-height) bg-cover bg-center"
+      className="h-(--home-hero-min-height) min-h-(--home-hero-min-height-floor) bg-cover bg-center"
       style={{
         backgroundImage: "url('/hero_bg.webp')",
         marginTop: "calc(-1 * var(--header-height))",
       }}
     >
-      <div className="mt-(--header-height) h-3/4 flex flex-col items-center gap-10 relative">
+      <div className="mt-(--header-height) h-3/4 flex flex-col items-center gap-4 lg:gap-10 relative">
         <Image
           src={logo}
           alt="Logo Vindhellfest"
           priority
-          className="w-[250px] h-auto lg:absolute lg:w-[35%]"
+          className="w-[180px] sm:w-[250px] h-auto lg:absolute lg:w-[35%]"
         />
 
         <div className="w-full h-full flex justify-between lg:pt-40">
           <div className="w-1/2 flex flex-col justify-between">
-            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[40%] lg:w-[20%]">
+            <span className="bg-white text-black text-sm sm:text-lg lg:text-2xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[40%] lg:w-[20%]">
               DU
             </span>
-            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[80%] lg:w-[50%]">
+            <span className="bg-white text-black text-sm sm:text-lg lg:text-2xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[80%] lg:w-[50%]">
               {firstDay}
             </span>
-            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[40%] lg:w-[20%]">
+            <span className="bg-white text-black text-sm sm:text-lg lg:text-2xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[40%] lg:w-[20%]">
               AU
             </span>
-            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[80%] lg:w-[50%]">
+            <span className="bg-white text-black text-sm sm:text-lg lg:text-2xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[80%] lg:w-[50%]">
               {lastDay}
             </span>
           </div>
@@ -58,13 +58,13 @@ export default function HomeHero() {
           <div className="w-1/2 flex flex-col justify-around items-end">
             <a
               href="https://www.google.com/search?q=tiket+master&rlz=1C1ONGR_frFR1184FR1184&oq=tiket+master&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDM1ODJqMGo3qAIIsAIB&sourceid=chrome&ie=UTF-8"
-              className="btn-cta p-6 justify-center items-center self-center lg:text-2xl"
+              className="btn-cta p-3 sm:p-6 justify-center items-center self-center lg:text-2xl"
               target="_blank"
               rel="noopener noreferrer"
             >
               Billetterie
             </a>
-            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[50%]">
+            <span className="bg-white text-black text-sm sm:text-lg lg:text-2xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[50%]">
               VINDELLE
             </span>
           </div>

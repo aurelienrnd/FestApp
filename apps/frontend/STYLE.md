@@ -21,10 +21,12 @@ Details :
 
 ### Dimensions layout
 
-| Variable                   | Valeur     | Usages                                                            |
-| -------------------------- | ---------- | ----------------------------------------------------------------- |
-| `--header-height`        | `106px`  | `HomeHero.tsx` (`marginTop` inline, `mt-(--header-height)`) |
-| `--home-hero-min-height` | `100dvh` | `HomeHero.tsx` (`h-(--home-hero-min-height)`)                 |
+| Variable                         | Valeur     | Usages                                                                          |
+| -------------------------------- | ---------- | ------------------------------------------------------------------------------- |
+| `--header-height`              | `106px`  | `HomeHero.tsx` (`marginTop` inline, `mt-(--header-height)`)               |
+| `--home-hero-min-height`       | `100dvh` | `HomeHero.tsx` (`h-(--home-hero-min-height)`)                             |
+| `--home-hero-min-height-floor` | `600px`  | `HomeHero.tsx` (`min-h-(--home-hero-min-height-floor)`) — plancher paysage |
+| `--app-min-width`              | `320px`  | `globals.css` (`.app-root`) — largeur minimale de l'application            |
 
 ### Couleurs marque
 
@@ -82,9 +84,9 @@ Details :
 
 ### Layout
 
-| Classe        | Description                                                              |
-| ------------- | ------------------------------------------------------------------------ |
-| `.app-root` | Racine de l'application —`flex min-h-screen flex-col`, thème bg/text |
+| Classe        | Description                                                                                                   |
+| ------------- | ------------------------------------------------------------------------------------------------------------- |
+| `.app-root` | Racine de l'application — `flex min-h-screen flex-col`, thème bg/text, `min-w-(--app-min-width)` |
 
 ### Boutons
 

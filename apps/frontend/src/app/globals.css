@@ -107,7 +107,7 @@
 
   /* === LAYOUT === */
   .app-root {
-    @apply flex min-h-screen flex-col bg-(--color-bg) text-(--color-text);
+    @apply flex min-h-screen flex-col bg-(--color-bg) text-(--color-text) min-w-(--app-min-width);
   }
 
   /* === PAGES === */
