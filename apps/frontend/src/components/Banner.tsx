@@ -185,28 +185,38 @@ export function MobilNav({
  * @children MobilNav Affiche le menu de navigation pour l'affichage mobile
  */
 export default function Banner() {
+  // Permet de naviguer vers une page apres une action (ex: deconnexion)
+
   const router = useRouter();
   // Fournit l'etat UI puis choisit automatiquement la navigation admin ou visiteur.
   const { pathname, isAdminPath } = useNavPath();
   const isDesktop = useIsDesktop();
   const adminUser = useAdminUser();
+
+  // Filtre les items de navigation selon le role de l'utilisateur admin ou affiche les items visiteurs
   const items = isAdminPath
     ? filterNavByRole(navAdminItem, adminUser?.user.role ?? "")
     : navVisitorItems;
 
-  // Transparent quand .home-hero est visible, opaque sinon
-  // Initialisé à true sur "/" pour éviter le flash noir au chargement
+  // Detecte si la section .home-hero est visible pour rendre le header transparent
   const [isOverHero, setIsOverHero] = useState(pathname === "/");
 
+  // Utilise IntersectionObserver pour detecter la section .home-hero et mettre a jour l'etat isOverHero
   useEffect(() => {
+    // Si on change de page, on verifie si la section .home-hero est visible pour mettre a jour l'etat isOverHero
     const hero = document.querySelector(".home-hero");
     if (!hero) return;
 
+    // Observe la section .home-hero et met a jour l'etat isOverHero selon sa visibilité
     const observer = new IntersectionObserver(
       ([entry]) => setIsOverHero(entry.isIntersecting),
       { threshold: 0.1 },
     );
+
+    // Commence a observer la section .home-hero
     observer.observe(hero);
+
+    // Nettoie l'observer quand le composant est detruit ou quand on change de page
     return () => observer.disconnect();
   }, [pathname]);
 
