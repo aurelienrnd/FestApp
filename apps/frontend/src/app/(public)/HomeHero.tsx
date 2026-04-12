@@ -7,8 +7,9 @@ import logo from "../../../public/hero_logo.webp";
 export default function HomeHero() {
   return (
     <section
-      className="home-hero"
-      style={{ backgroundImage: "url('/hero_bg.webp')" }}
+      id="home-hero"
+      className="h-(--home-hero-min-height) bg-cover bg-center"
+      style={{ backgroundImage: "url('/hero_bg.webp')", marginTop: "calc(-1 * var(--header-height))" }}
     >
       <div className="mt-(--header-height) h-3/4 flex flex-col items-center gap-10 relative">
         <Image

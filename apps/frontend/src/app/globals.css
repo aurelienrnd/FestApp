@@ -13,27 +13,22 @@
 
 @layer components {
   /* === BOUTONS === */
-
   .btn-cta {
     @apply inline-flex items-center rounded bg-(--color-1) px-3 py-2 text-white transition-(--anim-btn-transition) duration-(--anim-btn-duration) disabled:cursor-not-allowed disabled:opacity-60;
   }
   .btn-cta:hover {
     @apply scale-(--anim-btn-scale);
   }
-
   .btn-type-2 {
     @apply transition-opacity hover:opacity-70;
   }
 
-
   /* === NAVIGATION === */
-
   .nav-list {
     @apply flex items-center gap-6 tracking-wide;
   }
 
   /* === FORMULAIRES === */
-
   .form-modal {
     @apply mt-4 space-y-4;
   }
@@ -44,7 +39,6 @@
   .submit-modal-area {
     @apply flex justify-center gap-3 pt-1;
   }
-
   .upload-zone {
     @apply flex w-full flex-col items-center gap-3 rounded-lg bg-(--color-2) p-6;
   }
@@ -53,11 +47,6 @@
   }
 
   /* === MODALES === */
-
-  .modal-close-btn {
-    @apply absolute top-3 right-3 z-10 text-black cursor-pointer;
-  }
-
   .modal-overlay {
     @apply fixed inset-0 flex items-center justify-center pt-20 bg-(--color-overlay);
   }
@@ -66,33 +55,23 @@
   }
 
   /* === CARTES === */
-
   .card-row {
     @apply w-full max-w-md lg:max-w-none rounded-md border border-(--color-text-input) flex flex-col lg:flex-row gap-3;
   }
-
-
-
-  @layer lineup {
-    .card-media-img-wrapper {
-      @apply relative w-full h-48 lg:w-48 lg:h-28 lg:self-stretch flex-shrink-0;
-    }
-
-    .card-media-img {
-      @apply rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none object-cover;
-    }
-
-    .card-lineup-content {
-      @apply flex flex-1 flex-col lg:flex-row items-center lg:justify-between gap-3;
-    }
-
-    .card-lineup-actions {
-      @apply flex justify-center items-center gap-3 mb-3 lg:m-3;
-    }
+  .card-media-img-wrapper {
+    @apply relative w-full h-48 lg:w-48 lg:h-28 lg:self-stretch flex-shrink-0;
+  }
+  .card-media-img {
+    @apply rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none object-cover;
+  }
+  .card-lineup-content {
+    @apply flex flex-1 flex-col lg:flex-row items-center lg:justify-between gap-3;
+  }
+  .card-lineup-actions {
+    @apply flex justify-center items-center gap-3 mb-3 lg:m-3;
   }
 
   /* === PAGES === */
-
   .title1 {
     @apply text-center text-4xl md:text-8xl font-black uppercase mb-(--ctx-title-mb);
   }
@@ -100,71 +79,51 @@
     @apply text-center text-4xl font-black;
   }
 
-
-
   .section-page {
     @apply w-full h-full py-10 md:py-10 px-6 md:px-0 flex flex-col flex-1 text-base;
   }
 
-
-
-
-  @layer home {
-    .home-hero {
-      @apply h-(--home-hero-min-height) bg-cover bg-center;
-      margin-top: calc(-1 * var(--header-height));
-    }
-
-    .home-section {
-      @apply w-full py-10 px-6 md:px-20 flex flex-col items-center text-center border-t border-(--color-text-input);
-    }
-
-    .home-section-title {
-      @apply text-4xl md:text-6xl font-black uppercase mb-2 tracking-widest;
-    }
-
-    .home-section-divider {
-      @apply h-0.5 w-16 bg-(--color-1) mb-10;
-    }
-
-
-
-
-
+  .home-section {
+    @apply w-full py-10 px-6 md:px-20 flex flex-col items-center text-center border-t border-(--color-text-input);
   }
 
-  @layer artist-detail {
-    .modal-artist-detail {
-      @apply w-[90vw] max-w-sm lg:max-w-3xl rounded-2xl overflow-hidden flex flex-col outline-none bg-white;
-    }
+  .home-section-title {
+    @apply text-4xl md:text-6xl font-black uppercase mb-2 tracking-widest;
+  }
 
-    .artist-detail-layout {
-      @apply relative flex flex-col;
-    }
+  .home-section-divider {
+    @apply h-0.5 w-16 bg-(--color-1) mb-10;
+  }
 
-    .artist-detail-img-wrapper {
-      @apply relative w-full h-80;
-    }
+  .modal-artist-detail {
+    @apply w-[90vw] max-w-sm lg:max-w-3xl rounded-2xl overflow-hidden flex flex-col outline-none bg-white;
+  }
 
-    .artist-detail-close-btn {
-      @apply absolute top-3 right-3 z-10 text-black cursor-pointer;
-    }
+  .artist-detail-layout {
+    @apply relative flex flex-col;
+  }
 
-    .artist-detail-name-block {
-      @apply bg-(--color-1) px-6 py-3 ml-10 mb-3 mt-3;
-    }
+  .artist-detail-img-wrapper {
+    @apply relative w-full h-80;
+  }
 
-    .artist-detail-name {
-      @apply text-white font-bold uppercase text-2xl;
-    }
+  .artist-detail-close-btn {
+    @apply absolute top-3 right-3 z-10 text-black cursor-pointer;
+  }
 
-    .artist-detail-bio {
-      @apply bg-white px-6 py-3 text-black uppercase text-xs overflow-y-auto max-h-48;
-    }
+  .artist-detail-name-block {
+    @apply bg-(--color-1) px-6 py-3 ml-10 mb-3 mt-3;
+  }
 
-    .artist-detail-date-block {
-      @apply bg-black text-white font-bold uppercase text-center px-6 py-6 tracking-wide text-xl mr-10 mb-3 mt-3;
-    }
+  .artist-detail-name {
+    @apply text-white font-bold uppercase text-2xl;
+  }
 
+  .artist-detail-bio {
+    @apply bg-white px-6 py-3 text-black uppercase text-xs overflow-y-auto max-h-48;
+  }
+
+  .artist-detail-date-block {
+    @apply bg-black text-white font-bold uppercase text-center px-6 py-6 tracking-wide text-xl mr-10 mb-3 mt-3;
   }
 }

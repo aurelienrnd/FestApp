@@ -204,7 +204,7 @@ export default function Banner() {
   // Utilise IntersectionObserver pour detecter la section .home-hero et mettre a jour l'etat isOverHero
   useEffect(() => {
     // Si on change de page, on verifie si la section .home-hero est visible pour mettre a jour l'etat isOverHero
-    const hero = document.querySelector(".home-hero");
+    const hero = document.querySelector("#home-hero");
     if (!hero) return;
 
     // Observe la section .home-hero et met a jour l'etat isOverHero selon sa visibilité
