@@ -178,7 +178,7 @@ export function MobilNav({
  * Determine si l'affichage est en mode desktop ou mobile via matchMedia (min-width: 768px)
  * Ecoute les changements de taille d'ecran pour mettre a jour l'etat `isDesktop`
  * Affiche DesktopNav sur ecran large, sinon MobilNav
- * Rend le header transparent quand la section `.home-hero` est visible via IntersectionObserver
+ * Rend le header transparent sur la page d'accueil tant que l'utilisateur n'a pas scrolle
  * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
  * @function getApiErrorMessage Définit un message à retourner à l'utilisateur selon le statut de l'erreur
  * @children DesktopNav Affiche le menu de navigation pour l'affichage desktop
@@ -198,26 +198,24 @@ export default function Banner() {
     ? filterNavByRole(navAdminItem, adminUser?.user.role ?? "")
     : navVisitorItems;
 
-  // Detecte si la section .home-hero est visible pour rendre le header transparent
-  const [isOverHero, setIsOverHero] = useState(pathname === "/");
+  // Rend le header transparent uniquement sur la home et quand l'utilisateur n'a pas encore scrolle
+  const [isOverHero, setIsOverHero] = useState(pathname === "/" && window.scrollY === 0);
 
-  // Utilise IntersectionObserver pour detecter la section .home-hero et mettre a jour l'etat isOverHero
+  // Ecoute le scroll pour rendre le header opaque des le premier pixel de defilement
   useEffect(() => {
-    // Si on change de page, on verifie si la section .home-hero est visible pour mettre a jour l'etat isOverHero
-    const hero = document.querySelector("#home-hero");
-    if (!hero) return;
+    const isHome = pathname === "/";
+    if (!isHome) {
+      setIsOverHero(false);
+      return;
+    }
 
-    // Observe la section .home-hero et met a jour l'etat isOverHero selon sa visibilité
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsOverHero(entry.isIntersecting),
-      { threshold: 0.1 },
-    );
+    const handleScroll = () => setIsOverHero(window.scrollY === 0);
 
-    // Commence a observer la section .home-hero
-    observer.observe(hero);
+    // Initialise l'etat au chargement de la page
+    setIsOverHero(window.scrollY === 0);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
-    // Nettoie l'observer quand le composant est detruit ou quand on change de page
-    return () => observer.disconnect();
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
 
   // Envoie la requete de deconnexion puis redirige vers `/login`
