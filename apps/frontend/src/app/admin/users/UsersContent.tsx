@@ -162,7 +162,7 @@ export default function UsersContent({
         ) : error ? (
           <p className="error-message">{error}</p>
         ) : filteredUsers.length === 0 ? (
-          <div className="flex h-full justify-center items-center">
+          <div className="content-centered">
             <p>Aucun utilisateur.</p>
           </div>
         ) : (

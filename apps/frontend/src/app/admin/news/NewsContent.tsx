@@ -142,7 +142,7 @@ export default function NewsContent({
         ) : error ? (
           <p className="error-message">{error}</p>
         ) : visibleArticles.length === 0 ? (
-          <div className="flex h-full justify-center items-center">
+          <div className="content-centered">
             <p>Aucun article.</p>
           </div>
         ) : (

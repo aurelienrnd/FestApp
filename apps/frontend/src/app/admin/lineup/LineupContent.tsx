@@ -138,7 +138,7 @@ export default function LineupContent({
         ) : error ? (
           <p className="error-message">{error}</p>
         ) : visibleArtists.length === 0 ? (
-          <div className="flex h-full justify-center items-center">
+          <div className="content-centered">
             <p>Aucun artiste.</p>
           </div>
         ) : (

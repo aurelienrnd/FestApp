@@ -117,6 +117,9 @@
   .admin-content-wrapper {
     @apply flex-1 flex justify-center;
   }
+  .content-centered {
+    @apply flex h-full justify-center items-center;
+  }
   .filter-row {
     @apply flex justify-center items-center gap-6;
   }
