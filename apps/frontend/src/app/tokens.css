@@ -1,0 +1,55 @@
+:root {
+  /* === DIMENSIONS LAYOUT ===
+     Dimensions structurelles liées au layout de la page.
+     Utilisées pour des calculs CSS (margin-top négatif, height fixe...).
+  */
+  --header-height: 106px;
+  --home-hero-min-height: 100dvh;
+
+  /* === COULEURS MARQUE ===
+     Palette de la marque — couleurs fixes indépendantes du thème.
+     Nommées par numéro sans sémantique métier.
+  */
+  --color-1: #cb3346;
+  --color-2: #e4e4e7;
+  --color-3: #0ea5e9;
+
+  /* === COULEURS UI ===
+     Couleurs fonctionnelles de l'interface — inputs, overlay.
+  */
+  --color-text-input: #47474f;
+  --color-overlay: rgba(156, 163, 175, 0.3);
+
+  /* === COULEURS THÈME ===
+     Couleurs statiques par thème (admin / visitor).
+     --color-text et --color-bg sont les seules variables dynamiques —
+     elles sont redéfinies dans [data-theme="..."] dans globals.css.
+  */
+  --color-text-visitor: #ffffff;
+  --color-bg-visitor: black;
+  --color-bg-admin: #ffffff;
+  --color-text-admin: black;
+
+  /* === ESPACEMENT CONTEXTUEL ===
+     Tokens uniquement pour les valeurs d'espacement ayant une signification
+     sémantique forte dans le contexte du projet (nom métier).
+     Préfixe --ctx-*. Pour tout le reste, utiliser l'échelle Tailwind directement.
+  */
+  --ctx-paragraph-gap: 1rem;
+  --ctx-form-gap: 2rem;
+  --ctx-title-mb: 3rem;
+
+  /* === TYPOGRAPHIE ===
+     Familles de polices uniquement.
+     Les tailles de texte sont des classes Tailwind brutes — non tokenisées.
+  */
+  --font-family-input: Arial, sans-serif;
+
+  /* === ANIMATION ===
+     Propriétés de transition et d'animation réutilisables.
+     Toutes les transitions de boutons passent par ces tokens.
+  */
+  --anim-btn-transition: transform;
+  --anim-btn-duration: 200ms;
+  --anim-btn-scale: 1.1;
+}
