@@ -43,7 +43,7 @@ export default function Page() {
   return (
     <>
       <section className="section-page">
-        <div className="flex justify-center item-center gap-6">
+        <div className="filter-row">
           <AddButton items={userFilterItems} />
           <h1 className="title1">UTILISATEURS</h1>
           <button

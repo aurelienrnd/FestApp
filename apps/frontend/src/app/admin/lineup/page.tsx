@@ -36,7 +36,7 @@ export default function Page() {
 
   return (
     <section className="section-page">
-      <div className="flex justify-center item-center gap-6">
+      <div className="filter-row">
         <AddButton items={items} />
         <h1 className="title1">Programation</h1>
         <button
