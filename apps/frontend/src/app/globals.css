@@ -57,7 +57,7 @@
 
   /* === MODALES === */
   .modal-overlay {
-    @apply fixed inset-0 flex items-center justify-center pt-20 bg-(--color-overlay);
+    @apply fixed inset-0 z-50 flex items-center justify-center pt-20 bg-(--color-overlay);
   }
   .modal {
     @apply w-4xl rounded-2xl bg-white text-black outline-none py-3;
