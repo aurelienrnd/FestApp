@@ -1,15 +1,35 @@
 import Image from "next/image";
 import logo from "../../../public/hero_logo.webp";
+import { FESTIVAL_DAYS } from "../../config/festival";
 
-/** Affiche la section hero de la page d'accueil — logo centré, bouton billetterie et lien vers la programmation.
- * Composant serveur — pas de données dynamiques.
+/** Formate une date ISO en "SAMEDI 23 AOÛT" en français majuscule.
+ * @param {string} isoDate - Date au format ISO (YYYY-MM-DD)
+ */
+function formatFestivalDate(isoDate: string): string {
+  return new Date(isoDate)
+    .toLocaleDateString("fr-FR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    })
+    .toUpperCase();
+}
+
+/** Affiche la section hero de la page d'accueil — logo centré, dates du festival, bouton billetterie et lieu.
+ * Composant serveur — dates dérivées de FESTIVAL_DAYS.
  */
 export default function HomeHero() {
+  // Les dates du festival sont dérivées dynamiquement depuis FESTIVAL_DAYS, source de vérité unique pour les dates.
+  const firstDay = formatFestivalDate(FESTIVAL_DAYS[0]);
+  const lastDay = formatFestivalDate(FESTIVAL_DAYS[FESTIVAL_DAYS.length - 1]);
   return (
     <section
       id="home-hero"
       className="h-(--home-hero-min-height) bg-cover bg-center"
-      style={{ backgroundImage: "url('/hero_bg.webp')", marginTop: "calc(-1 * var(--header-height))" }}
+      style={{
+        backgroundImage: "url('/hero_bg.webp')",
+        marginTop: "calc(-1 * var(--header-height))",
+      }}
     >
       <div className="mt-(--header-height) h-3/4 flex flex-col items-center gap-10 relative">
         <Image
@@ -21,13 +41,17 @@ export default function HomeHero() {
 
         <div className="w-full h-full flex justify-between lg:pt-40">
           <div className="w-1/2 flex flex-col justify-between">
-            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[40%] lg:w-[20%]">DU</span>
-            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[80%] lg:w-[50%]">
-              SAMEDI 23 AOUT
+            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[40%] lg:w-[20%]">
+              DU
             </span>
-            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[40%] lg:w-[20%]">AU</span>
             <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[80%] lg:w-[50%]">
-              DIMANCHE 24 AOUT
+              {firstDay}
+            </span>
+            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[40%] lg:w-[20%]">
+              AU
+            </span>
+            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[80%] lg:w-[50%]">
+              {lastDay}
             </span>
           </div>
 
@@ -40,7 +64,9 @@ export default function HomeHero() {
             >
               Billetterie
             </a>
-            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[50%]">VINDELLE</span>
+            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[50%]">
+              VINDELLE
+            </span>
           </div>
         </div>
       </div>

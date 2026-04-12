@@ -199,7 +199,7 @@ export default function Banner() {
     : navVisitorItems;
 
   // Rend le header transparent uniquement sur la home et quand l'utilisateur n'a pas encore scrolle
-  const [isOverHero, setIsOverHero] = useState(pathname === "/" && window.scrollY === 0);
+  const [isOverHero, setIsOverHero] = useState(pathname === "/");
 
   // Ecoute le scroll pour rendre le header opaque des le premier pixel de defilement
   useEffect(() => {
@@ -238,8 +238,8 @@ export default function Banner() {
       <Image
         src={logo}
         alt="Logo Hellfest"
-        width={90}
-        height={90}
+        width={logo.width}
+        height={logo.height}
         priority
         style={{ height: "90px", width: "auto" }}
       />
