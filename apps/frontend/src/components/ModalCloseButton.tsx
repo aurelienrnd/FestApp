@@ -20,7 +20,7 @@ export default function ModalCloseButton({
     return (
       <button
         type="button"
-        className="absolute top-3 right-3 z-10 text-black cursor-pointer"
+        className="modal-close-btn"
         onClick={onClose}
         aria-label="Fermer la modal"
       >
