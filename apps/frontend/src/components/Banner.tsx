@@ -232,7 +232,7 @@ export default function Banner() {
         width={90}
         height={90}
         priority
-        style={{ width: "auto", height: "auto" }}
+        style={{ height: "90px", width: "auto" }}
       />
       {isDesktop ? (
         <DesktopNav
