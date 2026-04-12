@@ -196,14 +196,14 @@ export default function LineupContent({
                     <>
                       <button
                         type="button"
-                        className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
+                        className="btn-action"
                         onClick={() => openEditModal(artist)}
                       >
                         Modifier
                       </button>
                       <button
                         type="button"
-                        className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
+                        className="btn-action"
                         onClick={() => openDeleteModal(artist)}
                       >
                         Supprimer

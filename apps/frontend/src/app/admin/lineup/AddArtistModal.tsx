@@ -419,7 +419,7 @@ export default function AddArtistModal({
             <div className="submit-modal-area">
               <button
                 type="button"
-                className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
+                className="btn-action"
                 onClick={() => setStep(1)}
               >
                 Retour
@@ -506,7 +506,7 @@ export default function AddArtistModal({
             <div className="submit-modal-area">
               <button
                 type="button"
-                className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
+                className="btn-action"
                 onClick={() => setStep(2)}
               >
                 Retour

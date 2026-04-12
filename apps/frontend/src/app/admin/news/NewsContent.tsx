@@ -193,14 +193,14 @@ export default function NewsContent({
                     <>
                       <button
                         type="button"
-                        className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
+                        className="btn-action"
                         onClick={() => openEditModal(article)}
                       >
                         Modifier
                       </button>
                       <button
                         type="button"
-                        className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
+                        className="btn-action"
                         onClick={() => openDeleteModal(article)}
                       >
                         Supprimer

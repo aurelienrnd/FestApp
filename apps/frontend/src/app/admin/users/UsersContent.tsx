@@ -202,14 +202,14 @@ export default function UsersContent({
                 <div className="flex justify-center gap-6 mb-3 lg:m-3">
                   <button
                     type="button"
-                    className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
+                    className="btn-action"
                     onClick={() => openEditModal(user)}
                   >
                     Modifier
                   </button>
                   <button
                     type="button"
-                    className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
+                    className="btn-action"
                     onClick={() => openDeleteModal(user)}
                   >
                     Supprimer

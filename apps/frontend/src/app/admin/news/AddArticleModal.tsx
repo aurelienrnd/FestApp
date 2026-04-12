@@ -293,7 +293,7 @@ export default function AddArticleModal({
             <div className="submit-modal-area">
               <button
                 type="button"
-                className="btn-type-2 rounded-md border border-(--color-text-input) p-2"
+                className="btn-action"
                 onClick={() => setStep(1)}
               >
                 Retour
