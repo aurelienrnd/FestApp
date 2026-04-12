@@ -103,7 +103,7 @@ export default function ChangePasswordModal({
       <div className="m-6">
         {success ? (
           <div className="flex flex-col items-center gap-3">
-            <p className="text-center text-(--color-1)">
+            <p className="error-message">
               Votre mot de passe a ete modifie avec succes.
             </p>
             {forced && (
@@ -173,7 +173,7 @@ export default function ChangePasswordModal({
             </div>
 
             {error ? (
-              <p className="text-center text-(--color-1)">{error}</p>
+              <p className="error-message">{error}</p>
             ) : null}
           </form>
         )}

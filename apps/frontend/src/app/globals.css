@@ -36,6 +36,9 @@
     @apply w-full rounded-md border border-(--color-text-input) bg-(--color-2) px-3 py-2 text-sm placeholder:text-(--color-text-input);
     font-family: var(--font-family-input);
   }
+  .error-message {
+    @apply text-center text-(--color-1);
+  }
   .submit-modal-area {
     @apply flex justify-center gap-3 pt-1;
   }

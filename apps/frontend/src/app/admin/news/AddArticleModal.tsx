@@ -308,7 +308,7 @@ export default function AddArticleModal({
             </div>
 
             {error ? (
-              <p className="text-center text-(--color-1)">{error}</p>
+              <p className="error-message">{error}</p>
             ) : null}
           </form>
         )}

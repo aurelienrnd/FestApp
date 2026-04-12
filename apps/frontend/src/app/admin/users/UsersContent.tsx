@@ -160,7 +160,7 @@ export default function UsersContent({
         {isLoading ? (
           <p className="text-center">Chargement...</p>
         ) : error ? (
-          <p className="text-center text-(--color-1)">{error}</p>
+          <p className="error-message">{error}</p>
         ) : filteredUsers.length === 0 ? (
           <div className="flex h-full justify-center items-center">
             <p>Aucun utilisateur.</p>

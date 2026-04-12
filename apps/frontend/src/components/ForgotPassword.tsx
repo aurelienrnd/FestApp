@@ -88,7 +88,7 @@ export default function ForgotPassword() {
             </div>
 
             {error ? (
-              <p className="text-center text-(--color-1)">{error}</p>
+              <p className="error-message">{error}</p>
             ) : null}
           </form>
         </>

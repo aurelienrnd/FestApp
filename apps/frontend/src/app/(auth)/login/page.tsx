@@ -110,7 +110,7 @@ export default function Page() {
 
         <div className="flex flex-col items-center gap-2 pt-2">
           {error ? (
-            <p className="text-center text-(--color-1)">{error}</p>
+            <p className="error-message">{error}</p>
           ) : null}
 
           <button type="submit" className="btn-cta" disabled={isFormInvalid || isLoading}>

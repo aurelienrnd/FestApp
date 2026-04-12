@@ -114,7 +114,7 @@ export default function DeleteArticleModal({
               </button>
             </div>
             {submitError ? (
-              <p className="text-center text-(--color-1)">{submitError}</p>
+              <p className="error-message">{submitError}</p>
             ) : null}
           </div>
         )}

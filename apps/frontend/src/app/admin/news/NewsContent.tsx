@@ -140,7 +140,7 @@ export default function NewsContent({
         {isLoading ? (
           <p className="text-center">Chargement...</p>
         ) : error ? (
-          <p className="text-center text-(--color-1)">{error}</p>
+          <p className="error-message">{error}</p>
         ) : visibleArticles.length === 0 ? (
           <div className="flex h-full justify-center items-center">
             <p>Aucun article.</p>
