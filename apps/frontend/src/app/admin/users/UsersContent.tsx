@@ -169,16 +169,16 @@ export default function UsersContent({
           <ul className="flex flex-col items-center gap-6">
             {filteredUsers.map((user) => (
               <li key={user.id} className="card-row">
-                <div className="card-users-media-center">
-                  <span className="card-user-name">
+                <div className="flex items-center justify-center m-3 mb-0 lg:mb-3">
+                  <span className="flex items-center justify-center">
                     {user.display_name ?? "Utilisateur"}
                   </span>
                 </div>
 
-                <div className="card-user-content">
+                <div className="flex-1 flex flex-wrap flex-col lg:flex-row items-center gap-3 justify-between">
                   <span className="whitespace-nowrap">{user.email}</span>
 
-                  <div className="card-user-field">
+                  <div className="flex flex-nowrap">
                     <span className="whitespace-nowrap">Cree le&nbsp;</span>
                     <span className="whitespace-nowrap">
                       {formatDateFr(user.created_at)}
@@ -187,7 +187,7 @@ export default function UsersContent({
 
                   <span className="whitespace-nowrap">{user.role}</span>
 
-                  <div className="card-user-field">
+                  <div className="flex flex-nowrap">
                     <span className="whitespace-nowrap">
                       Mot de passe&nbsp;
                     </span>
@@ -199,7 +199,7 @@ export default function UsersContent({
                   </div>
                 </div>
 
-                <div className="card-user-actions">
+                <div className="flex justify-center gap-6 mb-3 lg:m-3">
                   <button
                     type="button"
                     className="btn-type-2 rounded-md border border-(--color-text-input) p-2"

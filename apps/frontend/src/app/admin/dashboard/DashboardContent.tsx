@@ -31,26 +31,26 @@ export default function DashboardContent() {
     <div className="flex-1 flex flex-col justify-center items-center gap-20">
       <div className="w-full max-w-5xl flex flex-col justify-center items-center gap-6">
         <div className="card-row">
-          <div className="card-dashboard-media-center">
-            <div className="card-dashboard-avatar">
+          <div className="flex items-center justify-center m-3 mb-0 lg:mb-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border border-(--color-text-input) bg-(--color-bg)">
               {(user.display_name ?? "U").slice(0, 1)}
             </div>
           </div>
 
-          <div className="card-dashboard-content">
-            <div className="card-dashboard-field">
+          <div className="w-full flex flex-col lg:flex-row justify-around items-center mb-3 lg:mb-0">
+            <div className="flex justify-around">
               <span>Name: {user.display_name}</span>
             </div>
 
-            <div className="card-dashboard-field">
+            <div className="flex justify-around">
               <span>Email: {user.email}</span>
             </div>
 
-            <div className="card-dashboard-field">
+            <div className="flex justify-around">
               <span>Type: {user.role}</span>
             </div>
 
-            <div className="card-dashboard-actions">
+            <div className="flex flex-col lg:flex-row gap-x-6 items-center">
               <span>Password:</span>
               <button
                 type="button"
@@ -64,7 +64,7 @@ export default function DashboardContent() {
         </div>
       </div>
 
-      <p className="text-festival-date text-(--color-text-input)">
+      <p className="text-base md:text-lg lg:text-2xl lg:text-center text-(--color-text-input)">
         Prochain evenement : du{" "}
         {new Date(FESTIVAL_DAYS[0]).toLocaleDateString("fr-FR", {
           day: "numeric",

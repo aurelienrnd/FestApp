@@ -35,7 +35,7 @@ export default function Footer() {
         </nav>
 
         <div
-          className="footer-separator bg-(--color-3)"
+          className="h-0.5 w-40 md:w-80 mx-auto bg-(--color-3)"
           aria-hidden="true"
         />
 
@@ -47,7 +47,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={item.label}
-                className="social-btn bg-(--color-1) text-white transition-(--anim-btn-transition) duration-(--anim-btn-duration) hover:scale-(--anim-btn-scale)"
+                className="inline-flex h-9 w-9 items-center justify-center rounded text-xs text-white bg-(--color-1) transition-(--anim-btn-transition) duration-(--anim-btn-duration) hover:scale-(--anim-btn-scale)"
               >
                 <FontAwesomeIcon icon={item.icon} />
               </a>

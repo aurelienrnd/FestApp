@@ -33,17 +33,21 @@ export default function Navigation({
   // Renvoie la classe CSS du bouton selon la variante, l’état actif et le contexte admin/public
   const itemClass = (isActive: boolean) => {
     if (variant === "modal") {
-      return isActive ? "nav-btn-active-modal" : "nav-btn-inactive-modal";
+      return isActive
+        ? "bg-(--color-1) w-70 p-3"
+        : "bg-black text-white w-40 p-3 hover:bg-(--color-1) hover:w-70 hover:text-black";
     }
 
-    if (isActive) return "nav-btn-active-sidebar";
+    if (isActive) return "bg-(--color-1) w-80 p-2";
 
-    return isAdminPath ? "nav-btn-inactive-admin" : "nav-btn-inactive-public";
+    return isAdminPath
+      ? "bg-black text-white w-60 p-3 hover:bg-(--color-1) hover:w-80 hover:text-white"
+      : "bg-white text-black w-60 p-3 hover:bg-(--color-1) hover:w-80 hover:text-black";
   };
 
   return (
-    <nav className="side-bar">
-      <ul className="nav-vertical-list">
+    <nav className="text-lg md:text-2xl lg:text-4xl">
+      <ul className="flex flex-col gap-6">
         {items.map((item, index) => {
           const isActive = pathname === item.path || Boolean(item.active);
 

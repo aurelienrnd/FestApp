@@ -88,7 +88,7 @@ export default function ArtistDetailModal({
           </div>
 
           {/* Reseaux sociaux */}
-          <div className="artist-detail-social">
+          <div className="flex justify-center gap-10 bg-black p-6 text-2xl">
             {artist.youtube_url && (
               <a href={artist.youtube_url} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
                 <FontAwesomeIcon icon={faYoutube} className="text-(--color-2)" />

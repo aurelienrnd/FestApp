@@ -19,9 +19,9 @@ export default function HomePartenaires() {
       <h2 className="home-section-title">Partenaires</h2>
       <div className="home-section-divider" />
 
-      <div className="home-partners-grid">
+      <div className="grid grid-cols-3 md:grid-cols-5 gap-6 w-full max-w-4xl">
         {PARTNERS.map((partner) => (
-          <div key={partner.name} className="home-partner-logo">
+          <div key={partner.name} className="h-16 flex items-center justify-center rounded-md bg-(--color-2) text-xs text-(--color-text-input)">
             <Image
               src={partner.logo}
               alt={partner.name}

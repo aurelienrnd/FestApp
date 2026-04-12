@@ -20,12 +20,12 @@ export default function HomeHero() {
 
         <div className="w-full h-full flex justify-between lg:pt-40">
           <div className="w-1/2 flex flex-col justify-between">
-            <span className="home-hero-badge w-[40%] lg:w-[20%]">DU</span>
-            <span className="home-hero-badge w-[80%] lg:w-[50%]">
+            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[40%] lg:w-[20%]">DU</span>
+            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[80%] lg:w-[50%]">
               SAMEDI 23 AOUT
             </span>
-            <span className="home-hero-badge w-[40%] lg:w-[20%]">AU</span>
-            <span className="home-hero-badge w-[80%] lg:w-[50%]">
+            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[40%] lg:w-[20%]">AU</span>
+            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[80%] lg:w-[50%]">
               DIMANCHE 24 AOUT
             </span>
           </div>
@@ -39,7 +39,7 @@ export default function HomeHero() {
             >
               Billetterie
             </a>
-            <span className="home-hero-badge w-[50%]">VINDELLE</span>
+            <span className="bg-white text-black text-lg lg:text-2xl flex justify-center items-center py-6 w-[50%]">VINDELLE</span>
           </div>
         </div>
       </div>

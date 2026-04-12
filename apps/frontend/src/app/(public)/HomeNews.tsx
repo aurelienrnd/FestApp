@@ -14,10 +14,10 @@ export default function HomeNews({ articles }: { articles: HomeArticleRow[] }) {
       <h2 className="home-section-title">News</h2>
       <div className="home-section-divider" />
 
-      <div className="home-news-grid">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
         {articles.map((article) => (
-          <div key={article.id} className="home-news-card">
-            <div className="home-news-img-wrapper">
+          <div key={article.id} className="flex flex-col overflow-hidden rounded-md border border-(--color-text-input)">
+            <div className="relative h-40 w-full">
               <Image
                 src={article.url_media}
                 alt={article.description_media}
@@ -26,8 +26,8 @@ export default function HomeNews({ articles }: { articles: HomeArticleRow[] }) {
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
             </div>
-            <div className="home-news-info">
-              <span className="home-news-title">{article.title}</span>
+            <div className="flex flex-col gap-2 p-6">
+              <span className="font-black uppercase text-sm leading-tight">{article.title}</span>
             </div>
           </div>
         ))}

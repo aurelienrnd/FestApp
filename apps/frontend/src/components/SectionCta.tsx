@@ -12,12 +12,12 @@ export default function SectionCta({
   label?: string;
 }) {
   return (
-    <div className="home-section-link home-cta-row">
-      <span className="home-section-link-line" />
+    <div className="flex items-center justify-center gap-6 w-full mt-6">
+      <span className="flex-1 h-0.5 bg-(--color-3)" />
       <Link href={href} className="btn-cta uppercase">
         {label}
       </Link>
-      <span className="home-section-link-line" />
+      <span className="flex-1 h-0.5 bg-(--color-3)" />
     </div>
   );
 }

@@ -19,7 +19,7 @@ export default function HomeProgrammation({
       <h2 className="home-section-title">Programmation</h2>
       <div className="home-section-divider" />
 
-      <div className="home-artist-grid">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
         {artists.map((artist) => {
           const startDate = artist.start_time
             ? new Date(artist.start_time)
@@ -39,8 +39,8 @@ export default function HomeProgrammation({
             : null;
 
           return (
-            <div key={artist.id} className="home-artist-card">
-              <div className="home-artist-img-wrapper">
+            <div key={artist.id} className="flex flex-row overflow-hidden rounded-md border border-(--color-text-input)">
+              <div className="relative w-40 flex-shrink-0 self-stretch">
                 <Image
                   src={artist.url_media}
                   alt={artist.description_media}
@@ -49,18 +49,18 @@ export default function HomeProgrammation({
                   sizes="160px"
                 />
               </div>
-              <div className="home-artist-info">
-                <span className="home-artist-name">{artist.name}</span>
+              <div className="flex-1 flex flex-col items-center justify-center gap-3 p-6 text-center">
+                <span className="font-black uppercase text-xl leading-tight">{artist.name}</span>
                 {formattedDate && (
-                  <span className="home-artist-meta">{formattedDate}</span>
+                  <span className="text-sm uppercase tracking-wide">{formattedDate}</span>
                 )}
                 {formattedTime && (
-                  <span className="home-artist-meta">{formattedTime}</span>
+                  <span className="text-sm uppercase tracking-wide">{formattedTime}</span>
                 )}
                 {artist.stage && (
-                  <span className="home-artist-meta">{artist.stage}</span>
+                  <span className="text-sm uppercase tracking-wide">{artist.stage}</span>
                 )}
-                <Link href="/lineup" className="home-artist-link">
+                <Link href="/lineup" className="text-xs uppercase mt-auto self-end opacity-60 hover:opacity-100 transition-opacity">
                   VOIR PLUS
                 </Link>
               </div>

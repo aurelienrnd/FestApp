@@ -119,7 +119,7 @@ export default function ContactUs() {
               id="contactMessage"
               name="message"
               placeholder="Tapez votre texte ici"
-              className="text-area"
+              className="h-56 w-full resize-none rounded-md border border-(--color-text-input) bg-(--color-2) px-3 py-2 text-sm placeholder:text-(--color-text-input) md:h-44 font-(--font-family-input)"
               value={message}
               onChange={(event) => setMessage(event.target.value)}
             />
