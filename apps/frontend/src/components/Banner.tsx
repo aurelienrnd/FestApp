@@ -195,7 +195,8 @@ export default function Banner() {
     : navVisitorItems;
 
   // Transparent quand .home-hero est visible, opaque sinon
-  const [isOverHero, setIsOverHero] = useState(false);
+  // Initialisé à true sur "/" pour éviter le flash noir au chargement
+  const [isOverHero, setIsOverHero] = useState(pathname === "/");
 
   useEffect(() => {
     const hero = document.querySelector(".home-hero");
