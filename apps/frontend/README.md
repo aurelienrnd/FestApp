@@ -35,6 +35,7 @@ docker exec -it vindhellfest-frontend npm run test:run
 - `@fortawesome/react-fontawesome` : Composants Font Awesome pour React.
 - `@fortawesome/fontawesome-svg-core` : Cœur Font Awesome.
 - `@fortawesome/free-solid-svg-icons` : Pack d'icônes solid Font Awesome.
+- `@fortawesome/free-regular-svg-icons` : Pack d'icônes regular Font Awesome.
 - `@fortawesome/free-brands-svg-icons` : Pack d'icônes de marques (YouTube, Spotify…).
 
 **DevDependencies**
@@ -150,6 +151,7 @@ apps/frontend/
 │       │   ├── ForgotPassword.test.tsx
 │       │   ├── MobilNav.test.tsx
 │       │   ├── SectionCta.test.tsx
+│       │   ├── useNavPath.test.tsx
 │       │   └── useRoleGuard.test.tsx
 │       ├── functions/
 │       │   ├── apiRequest.test.ts
@@ -329,6 +331,8 @@ Tests unitaires des composants React réutilisables.
 | `Footer.test.tsx` | Vérifie l'ouverture/fermeture des modales mentions légales et contact |
 | `ForgotPassword.test.tsx` | Vérifie le formulaire mot de passe oublié — désactivation du bouton, succès, erreur 404 et fallback 500 |
 | `MobilNav.test.tsx` | Vérifie l'ouverture/fermeture de la navigation mobile |
+| `useNavPath.test.tsx` | Vérifie la détection de la route admin (`isAdminPath`) via le hook `useNavPath` |
+| `useRoleGuard.test.tsx` | Vérifie la redirection vers `/admin/dashboard` si le rôle de l'utilisateur ne lui permet pas d'accéder à la route courante |
 
 ### `unitaire/functions/`
 
