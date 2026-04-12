@@ -23,7 +23,7 @@
     @apply transition-opacity hover:opacity-70;
   }
   .btn-action {
-    @apply btn-type-2 rounded-md border border-(--color-text-input) p-2;
+    @apply transition-opacity hover:opacity-70 rounded-md border border-(--color-text-input) p-2;
   }
 
   /* === NAVIGATION === */
