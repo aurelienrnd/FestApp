@@ -155,7 +155,7 @@ export default function UsersContent({
   });
 
   return (
-    <div className="flex-1 flex justify-center ">
+    <div className="admin-content-wrapper">
       <div className="w-full max-w-5xl">
         {isLoading ? (
           <p className="text-center">Chargement...</p>
