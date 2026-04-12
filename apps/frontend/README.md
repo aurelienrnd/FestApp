@@ -109,6 +109,7 @@ apps/frontend/
 │   │   │       ├── AddUserModal.tsx
 │   │   │       └── DelateUserModal.tsx
 │   │   ├── globals.css
+│   │   ├── tokens.css
 │   │   ├── icon.png
 │   │   └── layout.tsx
 │   ├── components/
@@ -206,7 +207,8 @@ Le frontend bénéficie de 5 stages car il possède plus de dépendances, ce qui
 
 ### `app/`
 
-- **`globals.css`** : Déclare les variables CSS globales, les thèmes `admin`/`visitor` et les classes utilitaires Tailwind partagées (cards, layouts…).
+- **`tokens.css`** : Variables CSS uniquement — un seul `:root` structuré en 7 sections (dimensions, couleurs, espacement contextuel, typographie, animation). Importé par `globals.css`.
+- **`globals.css`** : Importe `tailwindcss` et `tokens.css`, déclare les thèmes `admin`/`visitor` et les classes composants Tailwind partagées dans `@layer components` (boutons, formulaires, modales, cartes, layout, pages).
 - **`layout.tsx`** : Layout racine Next.js — charge la police Google, définit les métadonnées SEO. Ne contient pas de Banner/Footer (délégués aux layouts de section). Inclut un `<div id="app-root">` wrapper à l'intérieur du `<body>` pour permettre à `react-modal` d'appliquer `aria-hidden` correctement sans masquer l'intégralité de l'arbre d'accessibilité.
 
 L'application est divisée en trois zones distinctes avec chacune leur layout :
@@ -248,7 +250,7 @@ Composants UI réutilisables à travers l'application.
 | --- | --- |
 | `AdminUserProvider.tsx` | Context React qui expose les données de l'utilisateur admin connecté (`AdminUser`, `mustChangePassword`) — retourne `null` hors provider |
 | `AddButton.tsx` | Bouton d'ajout réutilisable (ex : ajouter un utilisateur) |
-| `Banner.tsx` | Bannière de navigation principale — sticky header, transparent sur `.home-hero` via `IntersectionObserver` (opaque sinon), filtre les liens admin par rôle via `filterNavByRole`, gère aussi le logout |
+| `Banner.tsx` | Bannière de navigation principale — sticky header, transparent sur la page d'accueil tant que l'utilisateur n'a pas scrollé (opaque dès le premier pixel de défilement via scroll listener), filtre les liens admin par rôle via `filterNavByRole`, gère aussi le logout |
 | `ContactUs.tsx` | Formulaire de contact (modale) |
 | `Footer.tsx` | Pied de page avec liens réseaux sociaux et liens légaux |
 | `ForgotPassword.tsx` | Modale mot de passe oublié |
