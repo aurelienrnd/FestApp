@@ -65,7 +65,7 @@ export default function ContactUs() {
         </p>
       ) : (
         <form className="form-modal" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="form-grid">
             <div>
               <label htmlFor="contactName" className="sr-only">
                 Nom Prenom

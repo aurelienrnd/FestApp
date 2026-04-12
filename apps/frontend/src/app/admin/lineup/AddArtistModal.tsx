@@ -254,34 +254,36 @@ export default function AddArtistModal({
       <div className="m-6">
         {step === 1 ? (
           <div key="step-1" className="form-modal">
-            <div>
-              <label htmlFor="artistName" className="sr-only">
-                Nom de l&apos;artiste
-              </label>
-              <input
-                id="artistName"
-                name="name"
-                type="text"
-                placeholder="Nom de l'artiste"
-                className="input"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
+            <div className="form-grid">
+              <div>
+                <label htmlFor="artistName" className="sr-only">
+                  Nom de l&apos;artiste
+                </label>
+                <input
+                  id="artistName"
+                  name="name"
+                  type="text"
+                  placeholder="Nom de l'artiste"
+                  className="input"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
 
-            <div>
-              <label htmlFor="artistGenre" className="sr-only">
-                Genre musical
-              </label>
-              <input
-                id="artistGenre"
-                name="genre"
-                type="text"
-                placeholder="Genre musical"
-                className="input"
-                value={genre}
-                onChange={(e) => setGenre(e.target.value)}
-              />
+              <div>
+                <label htmlFor="artistGenre" className="sr-only">
+                  Genre musical
+                </label>
+                <input
+                  id="artistGenre"
+                  name="genre"
+                  type="text"
+                  placeholder="Genre musical"
+                  className="input"
+                  value={genre}
+                  onChange={(e) => setGenre(e.target.value)}
+                />
+              </div>
             </div>
 
             <div>
@@ -314,34 +316,36 @@ export default function AddArtistModal({
               />
             </div>
 
-            <div>
-              <label htmlFor="artistYoutubeUrl" className="sr-only">
-                Lien YouTube
-              </label>
-              <input
-                id="artistYoutubeUrl"
-                name="youtube_url"
-                type="url"
-                placeholder="Lien YouTube (optionnel)"
-                className="input"
-                value={youtubeUrl}
-                onChange={(e) => setYoutubeUrl(e.target.value)}
-              />
-            </div>
+            <div className="form-grid">
+              <div>
+                <label htmlFor="artistYoutubeUrl" className="sr-only">
+                  Lien YouTube
+                </label>
+                <input
+                  id="artistYoutubeUrl"
+                  name="youtube_url"
+                  type="url"
+                  placeholder="Lien YouTube (optionnel)"
+                  className="input"
+                  value={youtubeUrl}
+                  onChange={(e) => setYoutubeUrl(e.target.value)}
+                />
+              </div>
 
-            <div>
-              <label htmlFor="artistSpotifyUrl" className="sr-only">
-                Lien Spotify
-              </label>
-              <input
-                id="artistSpotifyUrl"
-                name="spotify_url"
-                type="url"
-                placeholder="Lien Spotify (optionnel)"
-                className="input"
-                value={spotifyUrl}
-                onChange={(e) => setSpotifyUrl(e.target.value)}
-              />
+              <div>
+                <label htmlFor="artistSpotifyUrl" className="sr-only">
+                  Lien Spotify
+                </label>
+                <input
+                  id="artistSpotifyUrl"
+                  name="spotify_url"
+                  type="url"
+                  placeholder="Lien Spotify (optionnel)"
+                  className="input"
+                  value={spotifyUrl}
+                  onChange={(e) => setSpotifyUrl(e.target.value)}
+                />
+              </div>
             </div>
 
             <div className="submit-modal-area">
@@ -436,71 +440,75 @@ export default function AddArtistModal({
           </div>
         ) : (
           <form key="step-3" className="form-modal" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="artistStage" className="sr-only">
-                Scène
-              </label>
-              <input
-                id="artistStage"
-                name="stage"
-                type="text"
-                placeholder="Nom de la scène"
-                className="input"
-                value={stage}
-                onChange={(e) => setStage(e.target.value)}
-              />
+            <div className="form-grid">
+              <div>
+                <label htmlFor="artistStage" className="sr-only">
+                  Scène
+                </label>
+                <input
+                  id="artistStage"
+                  name="stage"
+                  type="text"
+                  placeholder="Nom de la scène"
+                  className="input"
+                  value={stage}
+                  onChange={(e) => setStage(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="artistDate" className="sr-only">
+                  Date du concert
+                </label>
+                <select
+                  id="artistDate"
+                  name="date"
+                  className="input"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                >
+                  <option value="">-- Choisir un jour --</option>
+                  {FESTIVAL_DAYS.map((d) => (
+                    <option key={d} value={d}>
+                      {new Date(d).toLocaleDateString("fr-FR", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            <div>
-              <label htmlFor="artistDate" className="sr-only">
-                Date du concert
-              </label>
-              <select
-                id="artistDate"
-                name="date"
-                className="input"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              >
-                <option value="">-- Choisir un jour --</option>
-                {FESTIVAL_DAYS.map((d) => (
-                  <option key={d} value={d}>
-                    {new Date(d).toLocaleDateString("fr-FR", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <div className="form-grid">
+              <div>
+                <label htmlFor="artistStartTime" className="sr-only">
+                  Heure de début
+                </label>
+                <input
+                  id="artistStartTime"
+                  name="start_time"
+                  type="time"
+                  className="input"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                />
+              </div>
 
-            <div>
-              <label htmlFor="artistStartTime" className="sr-only">
-                Heure de début
-              </label>
-              <input
-                id="artistStartTime"
-                name="start_time"
-                type="time"
-                className="input"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="artistEndTime" className="sr-only">
-                Heure de fin
-              </label>
-              <input
-                id="artistEndTime"
-                name="end_time"
-                type="time"
-                className="input"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-              />
+              <div>
+                <label htmlFor="artistEndTime" className="sr-only">
+                  Heure de fin
+                </label>
+                <input
+                  id="artistEndTime"
+                  name="end_time"
+                  type="time"
+                  className="input"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                />
+              </div>
             </div>
 
             <div className="submit-modal-area">

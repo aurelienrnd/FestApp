@@ -42,6 +42,9 @@
   .error-message {
     @apply text-center text-(--color-1);
   }
+  .form-grid {
+    @apply grid grid-cols-1 gap-6 md:grid-cols-2;
+  }
   .submit-modal-area {
     @apply flex justify-center gap-3 pt-1;
   }

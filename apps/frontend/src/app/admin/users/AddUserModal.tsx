@@ -149,7 +149,7 @@ export default function AddUserModal({
 
       <div className="m-6">
         <form className="form-modal" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="form-grid">
             <div>
               <label htmlFor="userFirstName" className="sr-only">
                 Prenom
@@ -185,7 +185,7 @@ export default function AddUserModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="form-grid">
             <div>
               <label htmlFor="userEmail" className="sr-only">
                 Email
