@@ -137,4 +137,10 @@
   .home-section-title {
     @apply text-4xl md:text-6xl font-black uppercase mb-2 tracking-widest;
   }
+  .home-section-full {
+    @apply min-h-[calc(100dvh-var(--header-height))] justify-center;
+  }
+  .home-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl;
+  }
 }

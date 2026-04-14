@@ -15,10 +15,10 @@ export default function HomeProgrammation({
   if (artists.length === 0) return null;
 
   return (
-    <section className="home-section">
+    <section className="home-section home-section-full">
       <h2 className="home-section-title">Programmation</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+      <div className="home-grid">
         {artists.map((artist) => {
           const startDate = artist.start_time
             ? new Date(artist.start_time)

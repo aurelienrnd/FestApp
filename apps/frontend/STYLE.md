@@ -23,7 +23,7 @@ Details :
 
 | Variable                         | Valeur     | Usages                                                                          |
 | -------------------------------- | ---------- | ------------------------------------------------------------------------------- |
-| `--header-height`              | `106px`  | `HomeHero.tsx` (`marginTop` inline, `mt-(--header-height)`)               |
+| `--header-height`              | `106px`  | `HomeHero.tsx` (`marginTop` inline, `mt-(--header-height)`), `globals.css` (`.home-section-full`) |
 | `--home-hero-min-height`       | `100dvh` | `HomeHero.tsx` (`h-(--home-hero-min-height)`)                             |
 | `--home-hero-min-height-floor` | `600px`  | `HomeHero.tsx` (`min-h-(--home-hero-min-height-floor)`) — plancher paysage |
 | `--app-min-width`              | `320px`  | `globals.css` (`.app-root`) — largeur minimale de l'application            |
@@ -32,7 +32,7 @@ Details :
 
 | Variable      | Valeur      | Usages                                                                                                                   |
 | ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`, `.home-section-divider`, `.detail-name-block`, `.error-message`), composants divers |
+| `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`, `.detail-name-block`, `.error-message`), composants divers |
 | `--color-2` | `#e4e4e7` | `globals.css` (`.input`, `.upload-zone`), `Banner.tsx`                                                           |
 | `--color-3` | `#0ea5e9` | `SectionCta.tsx`, `Footer.tsx`                                                                                       |
 
@@ -150,8 +150,9 @@ Details :
 | `.content-centered`      | Contenu centré pleine hauteur —`flex h-full justify-center items-center`                              |
 | `.filter-row`            | Barre de filtres — flex centré,`gap-6`                                                                |
 | `.home-section`          | Section home générique — pleine largeur, padding responsive, flex colonne centré, bordure supérieure |
+| `.home-section-full`     | Modificateur — section pleine hauteur d'écran hors header (`calc(100dvh - --header-height)`), contenu centré verticalement |
 | `.home-section-title`    | Titre de section home —`text-4xl md:text-6xl`, uppercase, bold, `tracking-widest`                    |
-| `.home-section-divider`  | Séparateur rouge sous le titre —`h-0.5 w-16 bg-(--color-1)`                                           |
+| `.home-grid`             | Grille 2 colonnes responsive — `grid-cols-1 md:grid-cols-2`, `gap-6`, `max-w-4xl` — sections Programmation et News |
 
 ---
 
