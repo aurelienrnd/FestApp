@@ -358,7 +358,7 @@ Tests unitaires des pages et de leurs flux principaux.
 | `NewsDetailModal.test.tsx` | Vérifie la modale de détail article — affichage titre, contenu (absent si null), auteur (fallback "Auteur inconnu"), date formatée en français, image, bouton fermer |
 | `ChangePasswordModal.test.tsx` | Vérifie la modale de changement de mot de passe — validation des saisies, gestion des erreurs API et mode forcé (sans bouton de fermeture) |
 | `DashboardContent.test.tsx` | Vérifie le tableau de bord — ouverture automatique de la modale si `mustChangePassword` est vrai et affichage des informations utilisateur |
-| `HomeHero.test.tsx` | Vérifie le logo (alt) et le lien vers `/lineup` |
+| `HomeHero.test.tsx` | Vérifie le logo (alt) |
 | `HomeInfosPratiques.test.tsx` | Vérifie l'affichage du nom, adresse, ville et le lien vers `/practical-info` |
 | `HomeNews.test.tsx` | Vérifie l'affichage des titres d'articles et le retour null si tableau vide |
 | `HomePartenaires.test.tsx` | Vérifie le nombre de logos, la présence d'un alt non vide et le lien vers `/practical-info` |

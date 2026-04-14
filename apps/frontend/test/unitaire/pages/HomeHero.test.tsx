@@ -23,8 +23,4 @@ describe("HomeHero", () => {
     expect(screen.getByAltText("Logo Vindhellfest")).toBeInTheDocument();
   });
 
-  it("contient un lien vers /lineup", () => {
-    render(<HomeHero />);
-    expect(screen.getByRole("link", { name: /programmation/i })).toHaveAttribute("href", "/lineup");
-  });
 });

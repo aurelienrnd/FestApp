@@ -3,8 +3,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import HomePartenaires from "../../../src/app/(public)/HomePartenaires";
 
 vi.mock("next/image", () => ({
-  // eslint-disable-next-line @next/next/no-img-element
   default: ({ src, alt }: { src: string; alt: string }) => (
+    // eslint-disable-next-line @next/next/no-img-element
     <img src={src} alt={alt} />
   ),
 }));

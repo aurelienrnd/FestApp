@@ -199,24 +199,26 @@ export default function Banner() {
     : navVisitorItems;
 
   // Rend le header transparent uniquement sur la home et quand l'utilisateur n'a pas encore scrolle
-  const [isOverHero, setIsOverHero] = useState(pathname === "/");
+  const isHome = pathname === "/";
+  const [scrollAtTop, setScrollAtTop] = useState(true);
 
   // Ecoute le scroll pour rendre le header opaque des le premier pixel de defilement
   useEffect(() => {
-    const isHome = pathname === "/";
-    if (!isHome) {
-      setIsOverHero(false);
-      return;
-    }
+    if (!isHome) return;
 
-    const handleScroll = () => setIsOverHero(window.scrollY === 0);
+    const handleScroll = () => setScrollAtTop(window.scrollY === 0);
 
     // Initialise l'etat au chargement de la page
-    setIsOverHero(window.scrollY === 0);
+    setScrollAtTop(window.scrollY === 0);
     window.addEventListener("scroll", handleScroll, { passive: true });
 
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [pathname]);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      setScrollAtTop(true);
+    };
+  }, [isHome]);
+
+  const isOverHero = isHome && scrollAtTop;
 
   // Envoie la requete de deconnexion puis redirige vers `/login`
   const handleLogout = async () => {
