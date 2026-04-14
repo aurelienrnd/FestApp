@@ -6,7 +6,6 @@ export default function HomeInfosPratiques() {
   return (
     <section className="home-section">
       <h2 className="home-section-title">Infos Pratiques</h2>
-      <div className="home-section-divider" />
 
       <p className="font-black uppercase">{FESTIVAL_LOCATION.name}</p>
       <p className="font-black uppercase">{FESTIVAL_LOCATION.address}</p>

@@ -137,7 +137,4 @@
   .home-section-title {
     @apply text-4xl md:text-6xl font-black uppercase mb-2 tracking-widest;
   }
-  .home-section-divider {
-    @apply h-0.5 w-16 bg-(--color-1) mb-10;
-  }
 }

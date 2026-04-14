@@ -17,7 +17,6 @@ export default function HomePartenaires() {
   return (
     <section className="home-section">
       <h2 className="home-section-title">Partenaires</h2>
-      <div className="home-section-divider" />
 
       <div className="grid grid-cols-3 md:grid-cols-5 gap-6 w-full max-w-4xl">
         {PARTNERS.map((partner) => (

@@ -12,7 +12,6 @@ export default function HomeNews({ articles }: { articles: HomeArticleRow[] }) {
   return (
     <section className="home-section">
       <h2 className="home-section-title">News</h2>
-      <div className="home-section-divider" />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
         {articles.map((article) => (
