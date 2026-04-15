@@ -200,7 +200,10 @@ export default function Banner() {
 
   // Rend le header transparent uniquement sur la home et quand l'utilisateur n'a pas encore scrolle
   const isHome = pathname === "/";
-  const [scrollAtTop, setScrollAtTop] = useState(true);
+  const [scrollAtTop, setScrollAtTop] = useState<boolean>(() => {
+    if (typeof window === "undefined") return true;
+    return window.scrollY === 0;
+  });
 
   // Ecoute le scroll pour rendre le header opaque des le premier pixel de defilement
   useEffect(() => {
@@ -208,8 +211,6 @@ export default function Banner() {
 
     const handleScroll = () => setScrollAtTop(window.scrollY === 0);
 
-    // Initialise l'etat au chargement de la page
-    setScrollAtTop(window.scrollY === 0);
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
