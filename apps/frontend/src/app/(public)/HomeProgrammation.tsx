@@ -17,7 +17,7 @@ export default function HomeProgrammation({
     <section className="home-section home-section-full">
       <h2 className="home-section-title">Programmation</h2>
 
-      <div className="home-grid">
+      <div className="h-full w-full home-grid">
         {artists.map((artist) => {
           // Convertit le timestamp ISO de la BDD en objet Date, ou null si absent
           const startDate = artist.start_time
@@ -44,15 +44,15 @@ export default function HomeProgrammation({
           return (
             <div
               key={artist.id}
-              className="flex flex-row overflow-hidden rounded-md border border-(--color-text-input) w-full h-full"
+              className="flex flex-row md:flex-col overflow-hidden rounded-md border border-(--color-text-input) w-full h-full"
             >
-              <div className="relative w-40 flex-shrink-0 self-stretch">
+              <div className="relative w-[50%] md:w-full h-full md:h-72 flex-shrink-0">
                 <Image
                   src={artist.url_media}
                   alt={artist.description_media}
                   fill
                   className="object-cover"
-                  sizes="160px"
+                  sizes="(min-width: 768px) 50vw, 160px"
                 />
               </div>
               <div className="flex-1 flex flex-col items-center justify-center gap-3 p-6 text-center">
