@@ -20,9 +20,12 @@ export default function HomeProgrammation({
 
       <div className="home-grid">
         {artists.map((artist) => {
+          // Convertit le timestamp ISO de la BDD en objet Date, ou null si absent
           const startDate = artist.start_time
             ? new Date(artist.start_time)
             : null;
+
+          // Formate la date en "samedi 23 août" — null si pas de date
           const formattedDate = startDate
             ? startDate.toLocaleDateString("fr-FR", {
                 weekday: "long",
@@ -30,6 +33,8 @@ export default function HomeProgrammation({
                 month: "long",
               })
             : null;
+
+          // Formate l'heure en "20:00" — null si pas de date
           const formattedTime = startDate
             ? startDate.toLocaleTimeString("fr-FR", {
                 hour: "2-digit",
@@ -38,7 +43,10 @@ export default function HomeProgrammation({
             : null;
 
           return (
-            <div key={artist.id} className="flex flex-row overflow-hidden rounded-md border border-(--color-text-input)">
+            <div
+              key={artist.id}
+              className="flex flex-row overflow-hidden rounded-md border border-(--color-text-input) w-full h-full"
+            >
               <div className="relative w-40 flex-shrink-0 self-stretch">
                 <Image
                   src={artist.url_media}
@@ -49,19 +57,24 @@ export default function HomeProgrammation({
                 />
               </div>
               <div className="flex-1 flex flex-col items-center justify-center gap-3 p-6 text-center">
-                <span className="font-black uppercase text-xl leading-tight">{artist.name}</span>
+                <span className="font-black uppercase text-xl leading-tight">
+                  {artist.name}
+                </span>
                 {formattedDate && (
-                  <span className="text-sm uppercase tracking-wide">{formattedDate}</span>
+                  <span className="text-sm uppercase tracking-wide">
+                    {formattedDate}
+                  </span>
                 )}
                 {formattedTime && (
-                  <span className="text-sm uppercase tracking-wide">{formattedTime}</span>
+                  <span className="text-sm uppercase tracking-wide">
+                    {formattedTime}
+                  </span>
                 )}
                 {artist.stage && (
-                  <span className="text-sm uppercase tracking-wide">{artist.stage}</span>
+                  <span className="text-sm uppercase tracking-wide">
+                    {artist.stage}
+                  </span>
                 )}
-                <Link href="/lineup" className="text-xs uppercase mt-auto self-end opacity-60 hover:opacity-100 transition-opacity">
-                  VOIR PLUS
-                </Link>
               </div>
             </div>
           );
