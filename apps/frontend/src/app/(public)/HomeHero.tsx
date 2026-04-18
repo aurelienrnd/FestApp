@@ -41,16 +41,16 @@ export default function HomeHero() {
 
         <div className="w-full h-full flex justify-between lg:pt-40">
           <div className="w-1/2 flex flex-col justify-between">
-            <span className="bg-white text-black text-sm sm:text-lg lg:text-2xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[40%] lg:w-[20%]">
+            <span className="hero-date-label w-[40%] lg:w-[20%]">
               DU
             </span>
-            <span className="bg-white text-black text-sm sm:text-lg lg:text-2xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[80%] lg:w-[50%]">
+            <span className="hero-date-label w-[80%] lg:w-[50%]">
               {firstDay}
             </span>
-            <span className="bg-white text-black text-sm sm:text-lg lg:text-2xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[40%] lg:w-[20%]">
+            <span className="hero-date-label w-[40%] lg:w-[20%]">
               AU
             </span>
-            <span className="bg-white text-black text-sm sm:text-lg lg:text-2xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[80%] lg:w-[50%]">
+            <span className="hero-date-label w-[80%] lg:w-[50%]">
               {lastDay}
             </span>
           </div>
@@ -64,7 +64,7 @@ export default function HomeHero() {
             >
               Billetterie
             </a>
-            <span className="bg-white text-black text-sm sm:text-lg lg:text-2xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[50%]">
+            <span className="hero-date-label w-[50%]">
               VINDELLE
             </span>
           </div>
