@@ -140,7 +140,10 @@
   .home-section-full {
     @apply min-h-[calc(100dvh-var(--header-height))] justify-between;
   }
-  .home-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 gap-6 w-full;
+  .home-cards {
+    @apply flex flex-wrap justify-center gap-6 w-full;
+  }
+  .home-cards-item {
+    @apply w-full md:w-[calc(50%-0.75rem)];
   }
 }
