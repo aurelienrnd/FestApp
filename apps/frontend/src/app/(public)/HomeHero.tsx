@@ -25,13 +25,9 @@ export default function HomeHero() {
   return (
     <section
       id="home-hero"
-      className="h-(--home-hero-min-height) min-h-(--home-hero-min-height-floor) bg-cover bg-center"
-      style={{
-        backgroundImage: "url('/hero_bg.webp')",
-        marginTop: "calc(-1 * var(--header-height))",
-      }}
+      className="-mt-(--header-height) h-(--home-hero-min-height) min-h-(--home-hero-min-height-floor) bg-[url('/hero_bg.webp')] bg-cover bg-center"
     >
-      <div className="mt-(--header-height) h-3/4 flex flex-col items-center gap-4 lg:gap-10 relative">
+      <div className="mt-(--header-height) h-3/4 flex flex-col items-center gap-4 relative lg:gap-10">
         <Image
           src={logo}
           alt="Logo Vindhellfest"
@@ -41,16 +37,16 @@ export default function HomeHero() {
 
         <div className="w-full h-full flex justify-between lg:pt-40">
           <div className="w-1/2 flex flex-col justify-between">
-            <span className="hero-date-label w-[40%] lg:w-[20%]">
+            <span className="hero-date-label w-[40%] h-[15%] lg:w-[20%]">
               DU
             </span>
-            <span className="hero-date-label w-[80%] lg:w-[50%]">
+            <span className="hero-date-label w-[80%] h-[15%] lg:w-[50%]">
               {firstDay}
             </span>
-            <span className="hero-date-label w-[40%] lg:w-[20%]">
+            <span className="hero-date-label w-[40%] h-[15%] lg:w-[20%]">
               AU
             </span>
-            <span className="hero-date-label w-[80%] lg:w-[50%]">
+            <span className="hero-date-label w-[80%] h-[15%] lg:w-[50%]">
               {lastDay}
             </span>
           </div>
@@ -58,15 +54,13 @@ export default function HomeHero() {
           <div className="w-1/2 flex flex-col justify-around items-end">
             <a
               href="https://www.google.com/search?q=tiket+master&rlz=1C1ONGR_frFR1184FR1184&oq=tiket+master&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDM1ODJqMGo3qAIIsAIB&sourceid=chrome&ie=UTF-8"
-              className="btn-cta p-3 sm:p-6 justify-center items-center self-center lg:text-2xl"
+              className="btn-cta p-3 sm:p-6 justify-center items-center self-center sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl"
               target="_blank"
               rel="noopener noreferrer"
             >
               Billetterie
             </a>
-            <span className="hero-date-label w-[50%]">
-              VINDELLE
-            </span>
+            <span className="hero-date-label h-[15%] w-[50%]">VINDELLE</span>
           </div>
         </div>
       </div>

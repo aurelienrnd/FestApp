@@ -155,6 +155,6 @@
 
   /* === Home HERO === */
   .hero-date-label {
-    @apply bg-white text-black text-sm sm:text-lg lg:text-2xl flex justify-center items-center py-2 sm:py-4 lg:py-6;
+    @apply bg-white text-black sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl flex justify-center items-center py-2 sm:py-4 lg:py-6;
   }
 }
