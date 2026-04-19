@@ -141,7 +141,7 @@
     @apply md:min-h-[calc(100dvh-var(--header-height))] justify-between;
   }
   .home-cards {
-    @apply flex flex-col md:flex-row justify-center gap-6 w-full;
+    @apply flex flex-col md:flex-row justify-center gap-6 w-full flex-1 my-8;
   }
   .home-card {
     @apply flex-1 md:max-w-[50%] flex flex-col overflow-hidden rounded-md border border-(--color-text-input);

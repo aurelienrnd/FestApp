@@ -86,7 +86,7 @@ Details :
 
 | Classe        | Description                                                                                                   |
 | ------------- | ------------------------------------------------------------------------------------------------------------- |
-| `.app-root` | Racine de l'application — `flex min-h-screen flex-col`, thème bg/text, `min-w-(--app-min-width)` |
+| `.app-root` | Racine de l'application — `flex min-h-dvh flex-col`, thème bg/text, `min-w-(--app-min-width)` |
 
 ### Boutons
 
@@ -150,9 +150,13 @@ Details :
 | `.content-centered`      | Contenu centré pleine hauteur —`flex h-full justify-center items-center`                              |
 | `.filter-row`            | Barre de filtres — flex centré,`gap-6`                                                                |
 | `.home-section`          | Section home générique — pleine largeur, padding responsive, flex colonne centré, bordure supérieure |
-| `.home-section-full`     | Modificateur — section pleine hauteur d'écran hors header (`calc(100dvh - --header-height)`), contenu centré verticalement |
-| `.home-section-title`    | Titre de section home —`text-4xl md:text-6xl`, uppercase, bold, `tracking-widest`                    |
-| `.home-grid`             | Grille 2 colonnes responsive — `grid-cols-1 md:grid-cols-2`, `gap-6`, `max-w-4xl` — sections Programmation et News |
+| `.home-section-full`     | Modificateur — section pleine hauteur d'écran hors header (`md:min-h-[calc(100dvh-var(--header-height))]`), justify-between — desktop uniquement |
+| `.home-section-title`    | Titre de section home — `text-4xl md:text-6xl`, uppercase, bold, `tracking-widest` |
+| `.home-cards`            | Conteneur des cartes home — flex colonne mobile / ligne desktop, centré, `gap-6`, `flex-1 my-8` |
+| `.home-card`             | Carte home — `flex-1`, `md:max-w-[50%]`, flex colonne, bordure `--color-text-input`, arrondi |
+| `.home-card-img`         | Image d'une carte home — relative, pleine largeur, `flex-1 min-h-36` pour remplir l'espace disponible |
+| `.home-card-content`     | Contenu texte d'une carte home — `flex-shrink-0`, flex colonne centré, `gap-3 p-6` |
+| `.hero-date-label`       | Bandeau de date dans le hero — `bg-white text-black`, taille responsive `sm` → `xl` |
 
 ---
 
