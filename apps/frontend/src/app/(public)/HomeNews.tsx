@@ -13,7 +13,7 @@ export default function HomeNews({ articles }: { articles: HomeArticleRow[] }) {
     <section className="home-section home-section-full">
       <h2 className="home-section-title">News</h2>
 
-      <div className="home-cards">
+      <div className="home-cards flex-1 my-8">
         {articles.map((article) => (
           <div
             key={article.id}
