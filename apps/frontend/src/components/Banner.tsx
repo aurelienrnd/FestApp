@@ -145,7 +145,7 @@ export function MobilNav({
   return (
     <nav>
       <ul className="nav-list">
-        <li className="border border-(--color-text-input) inline-flex rounded bg-(--color-2) px-2 py-1 text-(--color-text) transition-(--anim-btn-transition) duration-(--anim-btn-duration) hover:scale-(--anim-btn-scale)">
+        <li className="inline-flex rounded bg-(--color-1) px-2 py-1 text-white transition-(--anim-btn-transition) duration-(--anim-btn-duration) hover:scale-(--anim-btn-scale)">
           <button type="button" onClick={() => setIsMenuModalOpen(true)}>
             <FontAwesomeIcon icon={faBars} />
           </button>
