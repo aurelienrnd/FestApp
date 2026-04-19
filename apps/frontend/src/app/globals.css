@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./tokens.css";
+@import "./animations.css";
 
 [data-theme="admin"] {
   --color-text: var(--color-text-admin);
@@ -132,7 +133,7 @@
 
   /* === Home PAGES === */
   .home-section {
-    @apply w-full py-10 px-6 md:px-20 flex flex-col items-center text-center border-t border-(--color-text-input);
+    @apply w-full py-10 px-6 md:px-20 flex flex-col items-center text-center;
   }
   .home-section-title {
     @apply text-4xl md:text-6xl font-black uppercase mb-2 tracking-widest;
@@ -156,5 +157,18 @@
   /* === Home HERO === */
   .hero-date-label {
     @apply bg-white text-black sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl flex justify-center items-center py-2 sm:py-4 lg:py-6;
+  }
+
+  /* === MARQUEE === */
+  .marquee-wrapper {
+    @apply overflow-hidden w-full flex flex-col gap-10;
+  }
+  .marquee-track {
+    @apply flex w-max gap-6;
+    animation: marquee-left 80s linear infinite;
+  }
+  .marquee-track-reverse {
+    @apply flex w-max gap-6;
+    animation: marquee-right 80s linear infinite;
   }
 }

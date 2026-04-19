@@ -13,9 +13,10 @@ export default function HomeInfosPratiques() {
           <p className="font-black uppercase">{FESTIVAL_LOCATION.address}</p>
           <p className="font-black uppercase">{FESTIVAL_LOCATION.city}</p>
           <p className="text-sm leading-relaxed">
-            Situé au cœur de la Charente, le Vindhellfest prend place dans un cadre
-            intimiste et convivial. Parking gratuit sur place, restauration et buvette
-            disponibles tout au long de l&apos;événement.
+            Situé au cœur de la Charente, le Vindhellfest prend place dans un
+            cadre intimiste et convivial. Parking gratuit sur place,
+            restauration et buvette disponibles tout au long de
+            l&apos;événement.
           </p>
         </div>
 
