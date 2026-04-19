@@ -16,7 +16,12 @@ import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
 /** Cree et configure l'application Express — CORS, routes API, handlers d'erreur. */
 export function createApp() {
   const app = express();
-  const frontendOrigin = process.env.FRONTEND_ORIGIN || "http://localhost:3000";
+  //NOTE: en production, FRONTEND_ORIGIN doit contenir une seule origine HTTPS (ex: https://vindhellfest.fr). Supprimer les origines locales.
+  const allowedOrigins = (
+    process.env.FRONTEND_ORIGIN || "http://localhost:3000"
+  )
+    .split(",")
+    .map((o) => o.trim());
 
   // En production, l'app est derriere un proxy trust proxy permet a express-rate-limit de lire la vraie IP client.
   if (process.env.NODE_ENV === "production") {
@@ -29,7 +34,7 @@ export function createApp() {
   app.use((req, res, next) => {
     const requestOrigin = req.headers.origin;
 
-    if (requestOrigin && requestOrigin === frontendOrigin) {
+    if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
       res.header("Access-Control-Allow-Origin", requestOrigin); // Autorise cette origine a acceder a l'API.
       res.header("Vary", "Origin"); // Indique aux caches que la reponse depend de l'en-tete Origin.
       res.header("Access-Control-Allow-Credentials", "true"); // Autorise l'envoi des credentials (cookies, auth headers) cote navigateur.
