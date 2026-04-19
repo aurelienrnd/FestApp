@@ -65,6 +65,7 @@ apps/frontend/
 ├── public/
 │   ├── header_logo.png
 │   ├── hero_bg.webp
+│   ├── hero_logo.webp
 │   └── partners/
 ├── src/
 │   ├── app/
@@ -111,6 +112,7 @@ apps/frontend/
 │   │   │       └── DelateUserModal.tsx
 │   │   ├── globals.css
 │   │   ├── tokens.css
+│   │   ├── animations.css
 │   │   ├── icon.png
 │   │   └── layout.tsx
 │   ├── components/
@@ -210,7 +212,8 @@ Le frontend bénéficie de 5 stages car il possède plus de dépendances, ce qui
 ### `app/`
 
 - **`tokens.css`** : Variables CSS uniquement — un seul `:root` structuré en 7 sections (dimensions, couleurs, espacement contextuel, typographie, animation). Importé par `globals.css`.
-- **`globals.css`** : Importe `tailwindcss` et `tokens.css`, déclare les thèmes `admin`/`visitor` et les classes composants Tailwind partagées dans `@layer components` (boutons, formulaires, modales, cartes, layout, pages).
+- **`animations.css`** : Keyframes uniquement — définit `marquee-left` (défilement vers la gauche) et `marquee-right` (défilement vers la droite), utilisées par les classes `.marquee-track` et `.marquee-track-reverse` de `globals.css`.
+- **`globals.css`** : Importe `tailwindcss`, `tokens.css` et `animations.css`, déclare les thèmes `admin`/`visitor` et les classes composants Tailwind partagées dans `@layer components` (boutons, formulaires, modales, cartes, layout, pages, marquee).
 - **`layout.tsx`** : Layout racine Next.js — charge la police Google, définit les métadonnées SEO. Ne contient pas de Banner/Footer (délégués aux layouts de section). Inclut un `<div id="app-root">` wrapper à l'intérieur du `<body>` pour permettre à `react-modal` d'appliquer `aria-hidden` correctement sans masquer l'intégralité de l'arbre d'accessibilité.
 
 L'application est divisée en trois zones distinctes avec chacune leur layout :
@@ -331,7 +334,6 @@ Tests unitaires des composants React réutilisables.
 | `Footer.test.tsx` | Vérifie l'ouverture/fermeture des modales mentions légales et contact |
 | `ForgotPassword.test.tsx` | Vérifie le formulaire mot de passe oublié — désactivation du bouton, succès, erreur 404 et fallback 500 |
 | `MobilNav.test.tsx` | Vérifie l'ouverture/fermeture de la navigation mobile |
-| `useNavPath.test.tsx` | Vérifie la détection de la route admin (`isAdminPath`) via le hook `useNavPath` |
 | `useRoleGuard.test.tsx` | Vérifie la redirection vers `/admin/dashboard` si le rôle de l'utilisateur ne lui permet pas d'accéder à la route courante |
 
 ### `unitaire/functions/`

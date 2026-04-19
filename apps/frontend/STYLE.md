@@ -4,10 +4,11 @@ Ce document decrit l'etat reel du style dans `apps/frontend`.
 
 ## 1. Fichiers de style
 
-| Fichier                               | Rôle                                                                                    |
-| ------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `apps/frontend/src/app/tokens.css`  | Variables CSS uniquement — un seul `:root`, 7 sections commentées                    |
-| `apps/frontend/src/app/globals.css` | `@import "tailwindcss"` + `@import "./tokens.css"` + thèmes + `@layer components` |
+| Fichier                                   | Rôle                                                                                                                      |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `apps/frontend/src/app/tokens.css`      | Variables CSS uniquement — un seul `:root`, 7 sections commentées                                                      |
+| `apps/frontend/src/app/animations.css` | Keyframes uniquement — `marquee-left` et `marquee-right` utilisées par `.marquee-track` et `.marquee-track-reverse`  |
+| `apps/frontend/src/app/globals.css`    | `@import "tailwindcss"` + `@import "./tokens.css"` + `@import "./animations.css"` + thèmes + `@layer components` |
 
 `globals.css` n'a plus aucun bloc `:root` — toutes les variables sont dans `tokens.css`.
 
@@ -77,6 +78,13 @@ Details :
 | `--anim-btn-transition` | `transform` | `globals.css` (`.btn-cta`), `Banner.tsx`, `Footer.tsx`       |
 | `--anim-btn-duration`   | `200ms`     | `globals.css` (`.btn-cta`), `Banner.tsx`, `Footer.tsx`       |
 | `--anim-btn-scale`      | `1.1`       | `globals.css` (`.btn-cta:hover`), `Banner.tsx`, `Footer.tsx` |
+
+### Keyframes (`animations.css`)
+
+| Nom               | Comportement                                                   | Utilisé par           |
+| ----------------- | -------------------------------------------------------------- | --------------------- |
+| `marquee-left`  | `translateX(0)` → `translateX(-50%)` — défilement continu vers la gauche  | `.marquee-track` (80s linear infinite) |
+| `marquee-right` | `translateX(-50%)` → `translateX(0)` — défilement continu vers la droite  | `.marquee-track-reverse` (80s linear infinite) |
 
 ---
 
@@ -157,6 +165,14 @@ Details :
 | `.home-card-img`         | Image d'une carte home — relative, pleine largeur, `flex-1 min-h-36` pour remplir l'espace disponible |
 | `.home-card-content`     | Contenu texte d'une carte home — `flex-shrink-0`, flex colonne centré, `gap-3 p-6` |
 | `.hero-date-label`       | Bandeau de date dans le hero — `bg-white text-black`, taille responsive `sm` → `xl` |
+
+### Marquee
+
+| Classe                    | Description                                                                                          |
+| ------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `.marquee-wrapper`      | Conteneur du carrousel — `overflow-hidden`, pleine largeur, flex colonne, `gap-10`                |
+| `.marquee-track`        | Piste défilant vers la gauche — `animation: marquee-left 80s linear infinite`                    |
+| `.marquee-track-reverse`| Piste défilant vers la droite — `animation: marquee-right 80s linear infinite`                   |
 
 ---
 

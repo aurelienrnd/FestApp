@@ -52,6 +52,8 @@ docker exec -it vindhellfest-backend npm test
 - `dotenv` : Charge les variables d'environnement depuis les fichiers `.env`.
 - `express-rate-limit` : Middleware de limitation du nombre de requêtes par IP.
 - `zod` : Validation et typage des données entrantes.
+- `multer` : Middleware de gestion des uploads de fichiers (multipart/form-data).
+- `sharp` : Traitement et conversion des images uploadées en WebP.
 
 **DevDependencies**
 
@@ -64,6 +66,7 @@ docker exec -it vindhellfest-backend npm test
 - `vitest` : Runner de tests et vérification des assertions.
 - `supertest` : Simule des appels HTTP sur l'API Express dans les tests.
 - `@types/bcrypt` : Définitions TypeScript pour bcrypt.
+- `@types/multer` : Définitions TypeScript pour multer.
 - `@types/cookie` : Définitions TypeScript pour cookie.
 - `@types/express` : Définitions TypeScript pour express.
 - `@types/jsonwebtoken` : Définitions TypeScript pour jsonwebtoken.
@@ -153,10 +156,12 @@ apps/backend/
 │   │   ├── create_artist.controller.test.ts
 │   │   ├── delete_artist.controller.test.ts
 │   │   ├── update_artist.controller.test.ts
+│   │   ├── change_password.controller.test.ts
 │   │   ├── create_user.controller.test.ts
 │   │   ├── delete_user.controller.test.ts
 │   │   ├── errorHandler.test.ts
 │   │   ├── forgot_password.controller.test.ts
+│   │   ├── get_home.controller.test.ts
 │   │   ├── hashPassword.test.ts
 │   │   ├── health.test.ts
 │   │   ├── list_lineup.controller.test.ts
@@ -164,9 +169,11 @@ apps/backend/
 │   │   ├── login.controller.test.ts
 │   │   ├── logout.controller.test.ts
 │   │   ├── rateLimitLogin.test.ts
+│   │   ├── requireRole.test.ts
 │   │   ├── sessionIsOpen.test.ts
 │   │   ├── submit_contact.controller.test.ts
 │   │   ├── update_user.controller.test.ts
+│   │   ├── userInfo.controller.test.ts
 │   │   └── validateBody.test.ts
 │   └── unitaire/
 │       ├── asyncHandler.test.ts
@@ -363,6 +370,7 @@ Vitest exécute les tests, Supertest simule les appels HTTP sur l'API Express.
 | `sessionIsOpen.test.ts` | Middleware `sessionIsOpen` |
 | `hashPassword.test.ts` | Middleware `hashPassword` |
 | `rateLimitLogin.test.ts` | Middleware `rateLimitLogin` |
+| `requireRole.test.ts` | Middleware `requireRole` |
 | `validateBody.test.ts` | Middleware `validateBody` (`createUserSchema`, `loginSchema`, `createArtistSchema`, `createArticleSchema`) |
 | `errorHandler.test.ts` | Middleware `errorHandler` et `notFoundHandler` |
 | `health.test.ts` | Route `/health` |
@@ -377,6 +385,8 @@ Vitest exécute les tests, Supertest simule les appels HTTP sur l'API Express.
 | `list_lineup.controller.test.ts` | Contrôleur `listLineup` — liste artistes avec concerts (LEFT JOIN) |
 | `login.controller.test.ts` | Contrôleur `login` |
 | `logout.controller.test.ts` | Contrôleur `logout` |
+| `change_password.controller.test.ts` | Contrôleur `changePassword` — vérification ancien mot de passe, mise à jour hash et `password_changed_at` |
+| `userInfo.controller.test.ts` | Contrôleur `userInfo` — infos utilisateur connecté, `mustChangePassword` et renouvellement du token |
 | `list_users.controller.test.ts` | Contrôleur `listUsers` |
 | `create_user.controller.test.ts` | Contrôleur `createUser` |
 | `forgot_password.controller.test.ts` | Contrôleur `forgotPassword` |
