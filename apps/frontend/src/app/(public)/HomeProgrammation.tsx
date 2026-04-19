@@ -17,7 +17,7 @@ export default function HomeProgrammation({
     <section className="home-section home-section-full">
       <h2 className="home-section-title">Programmation</h2>
 
-      <div className="h-full w-full home-cards">
+      <div className="home-cards flex-1 my-8">
         {artists.map((artist) => {
           // Convertit le timestamp ISO de la BDD en objet Date, ou null si absent
           const startDate = artist.start_time
