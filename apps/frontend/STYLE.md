@@ -7,7 +7,7 @@ Ce document decrit l'etat reel du style dans `apps/frontend`.
 | Fichier                                   | Rôle                                                                                                                      |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `apps/frontend/src/app/tokens.css`      | Variables CSS uniquement — un seul `:root`, 7 sections commentées                                                      |
-| `apps/frontend/src/app/animations.css` | Keyframes uniquement — `marquee-left` et `marquee-right` utilisées par `.marquee-track` et `.marquee-track-reverse`  |
+| `apps/frontend/src/app/animations.css` | Keyframes uniquement — `marquee-left`, `marquee-right`, `slide-in-left`, `slide-in-right`, `blur-in`, `scale-in`  |
 | `apps/frontend/src/app/globals.css`    | `@import "tailwindcss"` + `@import "./tokens.css"` + `@import "./animations.css"` + thèmes + `@layer components` |
 
 `globals.css` n'a plus aucun bloc `:root` — toutes les variables sont dans `tokens.css`.
@@ -75,9 +75,11 @@ Details :
 
 | Variable                  | Valeur        | Usages                                                               |
 | ------------------------- | ------------- | -------------------------------------------------------------------- |
-| `--anim-btn-transition` | `transform` | `globals.css` (`.btn-cta`), `Banner.tsx`, `Footer.tsx`       |
-| `--anim-btn-duration`   | `200ms`     | `globals.css` (`.btn-cta`), `Banner.tsx`, `Footer.tsx`       |
-| `--anim-btn-scale`      | `1.1`       | `globals.css` (`.btn-cta:hover`), `Banner.tsx`, `Footer.tsx` |
+| `--anim-btn-transition`  | `transform`                    | `globals.css` (`.btn-cta`), `Banner.tsx`, `Footer.tsx`       |
+| `--anim-btn-duration`    | `200ms`                        | `globals.css` (`.btn-cta`), `Banner.tsx`, `Footer.tsx`       |
+| `--anim-btn-scale`       | `1.1`                          | `globals.css` (`.btn-cta:hover`), `Banner.tsx`, `Footer.tsx` |
+| `--anim-hero-duration`   | `0.9s`                         | `globals.css` (`.hero-slide-left`, `.hero-slide-right`, `.hero-blur-in`, `.hero-scale-in`) |
+| `--anim-hero-easing`     | `cubic-bezier(0.16, 1, 0.3, 1)` | `globals.css` (`.hero-slide-left`, `.hero-slide-right`, `.hero-blur-in`, `.hero-scale-in`) |
 
 ---
 
