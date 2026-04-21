@@ -24,7 +24,7 @@ Details :
 
 | Variable                         | Valeur     | Usages                                                                          |
 | -------------------------------- | ---------- | ------------------------------------------------------------------------------- |
-| `--header-height`              | `106px`  | `HomeHero.tsx` (`marginTop` inline, `mt-(--header-height)`), `globals.css` (`.home-section-full`) |
+| `--header-height`              | `106px`  | `HomeHero.tsx` (`marginTop` inline, `mt-(--header-height)`), `HomeNews.tsx` (calc inline) |
 | `--home-hero-min-height`       | `100dvh` | `HomeHero.tsx` (`h-(--home-hero-min-height)`)                             |
 | `--home-hero-min-height-floor` | `600px`  | `HomeHero.tsx` (`min-h-(--home-hero-min-height-floor)`) — plancher paysage |
 | `--app-min-width`              | `320px`  | `globals.css` (`.app-root`) — largeur minimale de l'application            |
@@ -35,7 +35,7 @@ Details :
 | ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`, `.detail-name-block`, `.error-message`), composants divers |
 | `--color-2` | `#e4e4e7` | `globals.css` (`.input`, `.upload-zone`), `Banner.tsx`                                                           |
-| `--color-3` | `#0ea5e9` | `SectionCta.tsx`, `Footer.tsx`                                                                                       |
+| `--color-3` | `#0ea5e9` | `LoadingLine.tsx` (inline), `SectionCta.tsx` (inline), `Footer.tsx`                                             |
 
 ### Couleurs UI
 
@@ -78,8 +78,8 @@ Details :
 | `--anim-btn-transition`  | `transform`                    | `globals.css` (`.btn-cta`), `Banner.tsx`, `Footer.tsx`       |
 | `--anim-btn-duration`    | `200ms`                        | `globals.css` (`.btn-cta`), `Banner.tsx`, `Footer.tsx`       |
 | `--anim-btn-scale`       | `1.1`                          | `globals.css` (`.btn-cta:hover`), `Banner.tsx`, `Footer.tsx` |
-| `--anim-hero-duration`   | `0.9s`                         | `globals.css` (`.hero-slide-left`, `.hero-slide-right`, `.hero-blur-in`, `.hero-scale-in`) |
-| `--anim-hero-easing`     | `cubic-bezier(0.16, 1, 0.3, 1)` | `globals.css` (`.hero-slide-left`, `.hero-slide-right`, `.hero-blur-in`, `.hero-scale-in`) |
+| `--anim-hero-duration`   | `0.9s`                         | `globals.css` (`.hero-slide-left`), `HomeHero.tsx` (inline style) |
+| `--anim-hero-easing`     | `cubic-bezier(0.16, 1, 0.3, 1)` | `globals.css` (`.hero-slide-left`), `HomeHero.tsx` (inline style) |
 
 ---
 
@@ -153,13 +153,19 @@ Details :
 | `.content-centered`      | Contenu centré pleine hauteur —`flex h-full justify-center items-center`                              |
 | `.filter-row`            | Barre de filtres — flex centré,`gap-6`                                                                |
 | `.home-section`          | Section home générique — pleine largeur, padding responsive, flex colonne centré, bordure supérieure |
-| `.home-section-full`     | Modificateur — section pleine hauteur d'écran hors header (`md:min-h-[calc(100dvh-var(--header-height))]`), justify-between — desktop uniquement |
 | `.home-section-title`    | Titre de section home — `text-4xl md:text-6xl`, uppercase, bold, `tracking-widest` |
 | `.home-cards`            | Conteneur des cartes home — flex colonne mobile / ligne desktop, centré, `gap-6`, `flex-1 my-8` |
 | `.home-card`             | Carte home — `flex-1`, `md:max-w-[50%]`, flex colonne, bordure `--color-text-input`, arrondi |
 | `.home-card-img`         | Image d'une carte home — relative, pleine largeur, `flex-1 min-h-36` pour remplir l'espace disponible |
 | `.home-card-content`     | Contenu texte d'une carte home — `flex-shrink-0`, flex colonne centré, `gap-3 p-6` |
-| `.hero-date-label`       | Bandeau de date dans le hero — `bg-white text-black`, taille responsive `sm` → `xl` |
+
+### Hero animations
+
+| Classe              | Description                                                                            |
+| ------------------- | -------------------------------------------------------------------------------------- |
+| `.hero-slide-left` | Entrée depuis la gauche — `slide-in-left` via `--anim-hero-duration/easing`, `both` |
+
+> Les autres animations hero (`slide-in-right`, `blur-in`, `scale-in`) et `hero-date-label` sont inlinées dans `HomeHero.tsx` via `style={{ animation: '...' }}` — usage unique dans ce composant. Les délais (`animationDelay`) sont aussi appliqués en inline style pour créer l'effet de cascade.
 
 ---
 
@@ -167,12 +173,18 @@ Details :
 
 ### Keyframes
 
-| Nom               | De                   | Vers                  | Utilisation                                               |
-| ----------------- | -------------------- | --------------------- | --------------------------------------------------------- |
-| `marquee-left`  | `translateX(0)`    | `translateX(-50%)`  | `.marquee-track` — défilement continu vers la gauche  |
-| `marquee-right` | `translateX(-50%)` | `translateX(0)`     | `.marquee-track-reverse` — défilement vers la droite  |
+| Nom               | De                       | Vers                  | Utilisation                                                                     |
+| ----------------- | ------------------------ | --------------------- | ------------------------------------------------------------------------------- |
+| `marquee-left`  | `translateX(0)`        | `translateX(-50%)`  | `HomePartenaires.tsx` (inline) — défilement vers la gauche                   |
+| `marquee-right` | `translateX(-50%)`     | `translateX(0)`     | `HomePartenaires.tsx` (inline) — défilement vers la droite                   |
+| `line-reload`   | `scaleX(0)`            | `scaleX(1)`         | `SectionCta.tsx` (inline via `group-has`) — animation hover des lignes CTA  |
+| `line-expand`   | `scaleX(0→1→0)`      | —                   | `LoadingLine.tsx` (inline) — pulsation de la ligne de chargement             |
+| `slide-in-left` | `translateX(-110vw)`  | `translateX(0)`     | `.hero-slide-left` (globals.css) — entrée depuis la gauche                   |
+| `slide-in-right`| `translateX(110vw)`   | `translateX(0)`     | `HomeHero.tsx` (inline) — entrée depuis la droite                            |
+| `blur-in`       | `blur(20px) opacity 0` | `blur(0) opacity 1` | `HomeHero.tsx` (inline) — apparition avec flou                               |
+| `scale-in`      | `scale(0.8) opacity 0` | `scale(1) opacity 1`| `HomeHero.tsx` (inline) — apparition avec zoom                               |
 
-> Les deux keyframes fonctionnent sur un `track` dont le contenu est dupliqué (largeur totale = 2× le contenu visible). Le défilement de 50% crée une boucle seamless.
+> Les keyframes marquee fonctionnent sur un `track` dont le contenu est dupliqué (largeur totale = 2× le contenu visible). Le défilement de 50% crée une boucle seamless.
 
 
 ---

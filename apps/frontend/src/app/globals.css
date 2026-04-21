@@ -92,6 +92,10 @@
   /* === CARTES === */
   .card-row {
     @apply w-full max-w-md lg:max-w-none rounded-md border border-(--color-text-input) flex flex-col lg:flex-row gap-3;
+    transition: transform 0.3s ease;
+  }
+  .card-row:hover {
+    transform: scale(1.02);
   }
   .card-media-img-wrapper {
     @apply relative w-full h-48 lg:w-48 lg:h-28 lg:self-stretch flex-shrink-0;
@@ -138,9 +142,6 @@
   .home-section-title {
     @apply text-4xl md:text-6xl font-black uppercase mb-2 tracking-widest;
   }
-  .home-section-full {
-    @apply md:min-h-[calc(100dvh-var(--header-height))] justify-between;
-  }
   .home-cards {
     @apply flex flex-col md:flex-row justify-center gap-6 w-full flex-1 my-8;
   }
@@ -148,41 +149,21 @@
     @apply flex-1 md:max-w-[50%] flex flex-col overflow-hidden rounded-md border border-(--color-text-input);
   }
   .home-card-img {
-    @apply relative w-full flex-1 min-h-36;
+    @apply relative w-full flex-1 min-h-36 overflow-hidden;
+  }
+  .home-card-img img {
+    transition: transform 0.4s ease;
+  }
+  .home-card:hover .home-card-img img {
+    transform: scale(1.05);
   }
   .home-card-content {
     @apply flex-shrink-0 flex flex-col items-center justify-center gap-3 p-6 text-center;
-  }
-
-  /* === Home HERO === */
-  .hero-date-label {
-    @apply bg-white text-black sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl flex justify-center items-center py-2 sm:py-4 lg:py-6;
   }
 
   /* === HERO === */
   .hero-slide-left {
     animation: slide-in-left var(--anim-hero-duration) var(--anim-hero-easing) both;
   }
-  .hero-slide-right {
-    animation: slide-in-right var(--anim-hero-duration) var(--anim-hero-easing) both;
-  }
-  .hero-blur-in {
-    animation: blur-in var(--anim-hero-duration) var(--anim-hero-easing) both;
-  }
-  .hero-scale-in {
-    animation: scale-in var(--anim-hero-duration) var(--anim-hero-easing) both;
-  }
 
-  /* === MARQUEE === */
-  .marquee-wrapper {
-    @apply overflow-hidden w-full flex flex-col gap-10;
-  }
-  .marquee-track {
-    @apply flex w-max gap-6;
-    animation: marquee-left 80s linear infinite;
-  }
-  .marquee-track-reverse {
-    @apply flex w-max gap-6;
-    animation: marquee-right 80s linear infinite;
-  }
 }

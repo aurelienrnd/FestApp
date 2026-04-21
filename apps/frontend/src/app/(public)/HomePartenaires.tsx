@@ -47,13 +47,13 @@ export default function HomePartenaires() {
     <section className="home-section">
       <h2 className="home-section-title">Partenaires</h2>
 
-      <div className="marquee-wrapper mt-8">
-        <div className="marquee-track">
+      <div className="overflow-hidden w-full flex flex-col gap-10 mt-8">
+        <div className="flex w-max gap-6" style={{ animation: "marquee-left 80s linear infinite" }}>
           {[...PARTNERS, ...PARTNERS].map((partner, i) => (
             <PartnerLogo key={i} name={partner.name} logo={partner.logo} />
           ))}
         </div>
-        <div className="marquee-track-reverse">
+        <div className="flex w-max gap-6" style={{ animation: "marquee-right 80s linear infinite" }}>
           {[...PARTNERS, ...PARTNERS].map((partner, i) => (
             <PartnerLogo key={i} name={partner.name} logo={partner.logo} aria-hidden={i >= PARTNERS.length} />
           ))}

@@ -35,14 +35,14 @@ export default function Navigation({
     if (variant === "modal") {
       return isActive
         ? "bg-(--color-1) w-70 p-3"
-        : "bg-black text-white w-40 p-3 hover:bg-(--color-1) hover:w-70 hover:text-black";
+        : "bg-black text-white hover:bg-(--color-1) hover:text-black w-40 p-3 hover:w-70";
     }
 
     if (isActive) return "bg-(--color-1) w-80 p-2";
 
     return isAdminPath
-      ? "bg-black text-white w-60 p-3 hover:bg-(--color-1) hover:w-80 hover:text-white"
-      : "bg-white text-black w-60 p-3 hover:bg-(--color-1) hover:w-80 hover:text-black";
+      ? "bg-black text-white hover:bg-(--color-1) hover:text-white w-60 p-3 hover:w-80"
+      : "bg-white text-black hover:bg-(--color-1) hover:text-black w-60 p-3 hover:w-80";
   };
 
   return (
@@ -50,12 +50,17 @@ export default function Navigation({
       <ul className="flex flex-col gap-6">
         {items.map((item, index) => {
           const isActive = pathname === item.path || Boolean(item.active);
+          const slideStyle = variant === "sidebar"
+            ? { animationDelay: `${index * 0.15}s` }
+            : undefined;
+          const slideClass = variant === "sidebar" ? "hero-slide-left" : "";
 
           if (item.labelBtn) {
             return (
               <li
                 key={`${item.labelBtn}-${index}`}
-                className={itemClass(isActive)}
+                className={`${itemClass(isActive)} ${slideClass}`}
+                style={slideStyle}
               >
                 <button
                   type="button"
@@ -76,7 +81,8 @@ export default function Navigation({
             return (
               <li
                 key={`${item.label}-${index}`}
-                className={itemClass(isActive)}
+                className={`${itemClass(isActive)} ${slideClass}`}
+                style={slideStyle}
               >
                 <Link
                   href={item.path}

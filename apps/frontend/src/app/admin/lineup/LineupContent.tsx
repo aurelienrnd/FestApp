@@ -9,6 +9,7 @@ import DeleteArtistModal from "./DeleteArtistModal";
 import ArtistDetailModal from "./ArtistDetailModal";
 import { useNavPath } from "../../../hooks/useNavPath";
 import type { ArtistListRow } from "../../../types";
+import LoadingLine from "../../../components/LoadingLine";
 
 type ListArtistsResponse = { artists: ArtistListRow[] };
 
@@ -134,7 +135,7 @@ export default function LineupContent({
     <div className="admin-content-wrapper">
       <div className="w-full max-w-5xl">
         {isLoading ? (
-          <p className="text-center">Chargement...</p>
+          <LoadingLine />
         ) : error ? (
           <p className="error-message">{error}</p>
         ) : visibleArtists.length === 0 ? (

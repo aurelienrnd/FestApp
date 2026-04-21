@@ -6,6 +6,7 @@ import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import { useNavPath } from "../../../hooks/useNavPath";
 import type { ArticleRow } from "../../../types";
+import LoadingLine from "../../../components/LoadingLine";
 import AddArticleModal from "./AddArticleModal";
 import DeleteArticleModal from "./DeleteArticleModal";
 import NewsDetailModal from "./NewsDetailModal";
@@ -138,7 +139,7 @@ export default function NewsContent({
     <div className="admin-content-wrapper">
       <div className="w-full max-w-5xl">
         {isLoading ? (
-          <p className="text-center">Chargement...</p>
+          <LoadingLine />
         ) : error ? (
           <p className="error-message">{error}</p>
         ) : visibleArticles.length === 0 ? (

@@ -10,7 +10,7 @@ export default function HomeNews({ articles }: { articles: HomeArticleRow[] }) {
   if (articles.length === 0) return null;
 
   return (
-    <section className="home-section home-section-full">
+    <section className="home-section md:min-h-[calc(100dvh-var(--header-height))] justify-between">
       <h2 className="home-section-title">News</h2>
 
       <div className="home-cards">

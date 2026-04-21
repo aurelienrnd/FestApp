@@ -8,6 +8,7 @@ import { useAdminUser } from "../../../components/AdminUserProvider";
 import AddUserModal from "./AddUserModal";
 import DelateUserModal from "./DelateUserModal";
 import type { UserListRow } from "../../../types";
+import LoadingLine from "../../../components/LoadingLine";
 
 type ListUsersResponse = { users: UserListRow[] };
 
@@ -158,7 +159,7 @@ export default function UsersContent({
     <div className="admin-content-wrapper">
       <div className="w-full max-w-5xl">
         {isLoading ? (
-          <p className="text-center">Chargement...</p>
+          <LoadingLine />
         ) : error ? (
           <p className="error-message">{error}</p>
         ) : filteredUsers.length === 0 ? (
