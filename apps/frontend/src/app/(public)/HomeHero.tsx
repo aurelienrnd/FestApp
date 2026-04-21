@@ -25,28 +25,29 @@ export default function HomeHero() {
   return (
     <section
       id="home-hero"
-      className="-mt-(--header-height) h-(--home-hero-min-height) min-h-(--home-hero-min-height-floor) bg-[url('/hero_bg.webp')] bg-cover bg-center"
+      className="-mt-(--header-height) h-(--home-hero-min-height) min-h-(--home-hero-min-height-floor) bg-[url('/hero_bg.webp')] bg-cover bg-center overflow-x-hidden"
     >
       <div className="mt-(--header-height) h-3/4 flex flex-col items-center gap-4 relative lg:gap-10">
         <Image
           src={logo}
           alt="Logo Vindhellfest"
           priority
-          className="w-[180px] sm:w-[250px] h-auto lg:absolute lg:w-[35%]"
+          className="hero-blur-in w-[180px] sm:w-[250px] h-auto lg:absolute lg:w-[35%]"
+          style={{ animationDelay: "0.2s", animationDuration: "2.5s" }}
         />
 
         <div className="w-full h-full flex justify-between lg:pt-40">
           <div className="w-1/2 flex flex-col justify-between">
-            <span className="hero-date-label w-[40%] h-[15%] lg:w-[20%]">
+            <span className="hero-date-label hero-slide-left w-[40%] h-[15%] lg:w-[20%]" style={{ animationDelay: "0.6s" }}>
               DU
             </span>
-            <span className="hero-date-label w-[80%] h-[15%] lg:w-[50%]">
+            <span className="hero-date-label hero-slide-left w-[80%] h-[15%] lg:w-[50%]" style={{ animationDelay: "0.8s" }}>
               {firstDay}
             </span>
-            <span className="hero-date-label w-[40%] h-[15%] lg:w-[20%]">
+            <span className="hero-date-label hero-slide-left w-[40%] h-[15%] lg:w-[20%]" style={{ animationDelay: "1.0s" }}>
               AU
             </span>
-            <span className="hero-date-label w-[80%] h-[15%] lg:w-[50%]">
+            <span className="hero-date-label hero-slide-left w-[80%] h-[15%] lg:w-[50%]" style={{ animationDelay: "1.2s" }}>
               {lastDay}
             </span>
           </div>
@@ -54,13 +55,14 @@ export default function HomeHero() {
           <div className="w-1/2 flex flex-col justify-around items-end">
             <a
               href="https://www.google.com/search?q=tiket+master&rlz=1C1ONGR_frFR1184FR1184&oq=tiket+master&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDM1ODJqMGo3qAIIsAIB&sourceid=chrome&ie=UTF-8"
-              className="btn-cta p-3 sm:p-6 justify-center items-center self-center sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl"
+              className="hero-scale-in btn-cta p-3 sm:p-6 justify-center items-center self-center sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl"
+              style={{ animationDelay: "1.6s" }}
               target="_blank"
               rel="noopener noreferrer"
             >
               Billetterie
             </a>
-            <span className="hero-date-label h-[15%] w-[50%]">VINDELLE</span>
+            <span className="hero-date-label hero-slide-right h-[15%] w-[50%]" style={{ animationDelay: "1.4s" }}>VINDELLE</span>
           </div>
         </div>
       </div>

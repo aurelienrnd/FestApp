@@ -159,6 +159,20 @@
     @apply bg-white text-black sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl flex justify-center items-center py-2 sm:py-4 lg:py-6;
   }
 
+  /* === HERO === */
+  .hero-slide-left {
+    animation: slide-in-left var(--anim-hero-duration) var(--anim-hero-easing) both;
+  }
+  .hero-slide-right {
+    animation: slide-in-right var(--anim-hero-duration) var(--anim-hero-easing) both;
+  }
+  .hero-blur-in {
+    animation: blur-in var(--anim-hero-duration) var(--anim-hero-easing) both;
+  }
+  .hero-scale-in {
+    animation: scale-in var(--anim-hero-duration) var(--anim-hero-easing) both;
+  }
+
   /* === MARQUEE === */
   .marquee-wrapper {
     @apply overflow-hidden w-full flex flex-col gap-10;

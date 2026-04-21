@@ -8,3 +8,24 @@
   from { transform: translateX(-50%); }
   to   { transform: translateX(0); }
 }
+
+/* === HERO === */
+@keyframes slide-in-left {
+  from { transform: translateX(-110vw); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(110vw); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes blur-in {
+  from { filter: blur(20px); opacity: 0; }
+  to   { filter: blur(0);    opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { transform: scale(0.8); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}

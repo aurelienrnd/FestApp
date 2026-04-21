@@ -54,4 +54,6 @@
   --anim-btn-transition: transform;
   --anim-btn-duration: 200ms;
   --anim-btn-scale: 1.1;
+  --anim-hero-duration: 0.9s;
+  --anim-hero-easing: cubic-bezier(0.16, 1, 0.3, 1);
 }

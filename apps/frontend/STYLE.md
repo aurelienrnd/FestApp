@@ -79,13 +79,6 @@ Details :
 | `--anim-btn-duration`   | `200ms`     | `globals.css` (`.btn-cta`), `Banner.tsx`, `Footer.tsx`       |
 | `--anim-btn-scale`      | `1.1`       | `globals.css` (`.btn-cta:hover`), `Banner.tsx`, `Footer.tsx` |
 
-### Keyframes (`animations.css`)
-
-| Nom               | Comportement                                                   | Utilisé par           |
-| ----------------- | -------------------------------------------------------------- | --------------------- |
-| `marquee-left`  | `translateX(0)` → `translateX(-50%)` — défilement continu vers la gauche  | `.marquee-track` (80s linear infinite) |
-| `marquee-right` | `translateX(-50%)` → `translateX(0)` — défilement continu vers la droite  | `.marquee-track-reverse` (80s linear infinite) |
-
 ---
 
 ## 3. Classes reutilisables (@layer components)
@@ -166,17 +159,23 @@ Details :
 | `.home-card-content`     | Contenu texte d'une carte home — `flex-shrink-0`, flex colonne centré, `gap-3 p-6` |
 | `.hero-date-label`       | Bandeau de date dans le hero — `bg-white text-black`, taille responsive `sm` → `xl` |
 
-### Marquee
+---
 
-| Classe                    | Description                                                                                          |
-| ------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `.marquee-wrapper`      | Conteneur du carrousel — `overflow-hidden`, pleine largeur, flex colonne, `gap-10`                |
-| `.marquee-track`        | Piste défilant vers la gauche — `animation: marquee-left 80s linear infinite`                    |
-| `.marquee-track-reverse`| Piste défilant vers la droite — `animation: marquee-right 80s linear infinite`                   |
+## 4. Animations
+
+### Keyframes
+
+| Nom               | De                   | Vers                  | Utilisation                                               |
+| ----------------- | -------------------- | --------------------- | --------------------------------------------------------- |
+| `marquee-left`  | `translateX(0)`    | `translateX(-50%)`  | `.marquee-track` — défilement continu vers la gauche  |
+| `marquee-right` | `translateX(-50%)` | `translateX(0)`     | `.marquee-track-reverse` — défilement vers la droite  |
+
+> Les deux keyframes fonctionnent sur un `track` dont le contenu est dupliqué (largeur totale = 2× le contenu visible). Le défilement de 50% crée une boucle seamless.
+
 
 ---
 
-## 4. Conventions
+## 5. Conventions
 
 - Couleurs : uniquement via tokens `--color-*` — jamais de valeurs brutes dans les `.tsx`.
   - Exception : `bg-transparent` pour la transparence structurelle.
@@ -187,3 +186,6 @@ Details :
 - Pas de `@layer` imbriqués dans `@layer components` — les sections sont organisées par commentaires `/* === NOM === */`.
 - Un token est cree uniquement si la valeur est reutilisee dans 2+ endroits avec le meme sens metier.
 - Les classes à usage unique (un seul fichier `.tsx`) sont inlinées directement dans le composant.
+- Toute valeur d'animation réutilisée dans 2+ endroits devient un token `--anim-*` dans `tokens.css`.
+- Les `@keyframes` vont exclusivement dans `animations.css` — jamais dans `globals.css` ni dans un composant.
+- Les paramètres de durée/easing spécifiques à un seul composant (ex : `80s` pour le marquee) sont inlinés directement dans la classe `@layer components`.
