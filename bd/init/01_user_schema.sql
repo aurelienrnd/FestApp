@@ -20,13 +20,3 @@ CREATE TABLE users (
   password_changed_at TIMESTAMPTZ NULL,                 -- Date/heure du dernier changement de mot de passe
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()         -- Date de creation
 );
-
--- //NOTE : Utiliser uniquement en phase de developpement.
-INSERT INTO users (email, password_hash, display_name, role, password_changed_at)
-VALUES (
-  'admin@example.com',
-  '$2b$10$3Br0yYg6p5EclXJaHT/mpO0qq6A5niWuCpT8hM2FXlkl2YjOx.A7.', -- Hash bcrypt du mot de passe 'MyPassword'
-  'Admin',
-  'admin',
-  NOW()
-);

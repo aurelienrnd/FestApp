@@ -30,22 +30,3 @@ CREATE TABLE concerts (
 -- Indexes pour optimiser les requetes courantes
 CREATE INDEX idx_concerts_stage_start ON concerts(stage, start_time);
 CREATE INDEX idx_concerts_start_time ON concerts(start_time);
-
--- //NOTE : Utiliser uniquement en phase de developpement.
-INSERT INTO concerts (artist_id, stage, start_time, end_time)
-SELECT
-  id,
-  'main-stage',
-  now() + interval '1 day',
-  now() + interval '1 day 1 hour'
-FROM artists
-WHERE name = 'Red Hot Chili Peppers';
-
-INSERT INTO concerts (artist_id, stage, start_time, end_time)
-SELECT
-  id,
-  'second-stage',
-  now() + interval '1 day',
-  now() + interval '1 day 1 hour'
-FROM artists
-WHERE name = 'Foo Fighters';
