@@ -17,7 +17,11 @@ bd/
 │   ├── 02_sessions_schema.sql
 │   ├── 03_article_schema.sql
 │   ├── 04_artist_schema.sql
-│   └── 05_concert_schema.sql
+│   ├── 05_concert_schema.sql
+│   ├── 06_seed_users.sql
+│   ├── 07_seed_articles.sql
+│   ├── 08_seed_artists.sql
+│   └── 09_seed_concerts.sql
 └── README.md
 ```
 
@@ -25,9 +29,9 @@ bd/
 
 ## `init/` — Scripts d'initialisation
 
-Le dossier `init/` regroupe l'ensemble des scripts SQL exécutés automatiquement par Docker au démarrage du conteneur PostgreSQL. Ils créent les tables et insèrent des données de développement.
+Le dossier `init/` regroupe l'ensemble des scripts SQL exécutés automatiquement par Docker au démarrage du conteneur PostgreSQL. Les fichiers `01` à `05` créent les tables. Les fichiers `06` à `09` insèrent les données de développement (fixtures).
 
-> Chaque fichier commence par un `DROP TABLE IF EXISTS ... CASCADE` pour permettre de relancer le conteneur proprement lors des évolutions du schéma. **À ne pas utiliser en production.**
+> Les fichiers `01` à `05` commencent par un `DROP TABLE IF EXISTS ... CASCADE` pour permettre de relancer le conteneur proprement lors des évolutions du schéma. **À ne pas utiliser en production.**
 
 ---
 
@@ -46,8 +50,6 @@ Stocke les comptes des utilisateurs administrateurs de l'application.
 | `role`                | `user_role` (ENUM) | NOT NULL                  | Rôle de l'utilisateur (`admin`, `lineup`, `news`) |
 | `password_changed_at` | `TIMESTAMPTZ`      | NULL                      | Date du dernier changement de mot de passe        |
 | `created_at`          | `TIMESTAMPTZ`      | NOT NULL, DEFAULT `NOW()` | Date de création du compte                        |
-
-**Données de développement :** Un utilisateur `admin@example.com` avec le mot de passe `MyPassword` est inséré au démarrage.
 
 > **Choix de conception :** Le rôle utilisateur est une valeur parmi un ensemble fermé et connu à l'avance. Un type `ENUM` PostgreSQL (`user_role`) garantit la contrainte directement en base — toute valeur invalide est rejetée même en contournant l'API. Une table `ROLE` séparée aurait été possible en Merise strict mais aurait ajouté une jointure inutile.
 
@@ -97,8 +99,6 @@ Stocke le contenu éditorial du festival (actualités, annonces).
 
 **Index :** `created_at`, `is_published`
 
-**Données de développement :** Deux articles sont insérés au démarrage et liés à `admin@example.com` : « Ouverture de la billetterie » (`is_published = TRUE`) et « Nouvelle tête d'affiche » (`is_published = FALSE`, brouillon).
-
 ---
 
 ### `04_artist_schema.sql` — Table `artists`
@@ -121,11 +121,9 @@ Représente les groupes ou artistes programmés au festival.
 
 **Index :** `genre`, `name`
 
-> `url_media` stocke un chemin local vers une image WebP générée par sharp lors de l'upload. Les données de développement utilisent encore des URLs externes — elles seront remplacées lors du premier ajout via le back-office.
+> `url_media` stocke un chemin local vers une image WebP générée par sharp lors de l'upload (ex : `/uploads/artists/<uuid>.webp`).
 
 > **Choix de conception :** `youtube_url` et `spotify_url` sont deux colonnes directes sur `artists` plutôt qu'une table séparée. Ce choix est justifié car il y a exactement deux plateformes connues à l'avance. Si d'autres plateformes s'ajoutaient, une table `artist_links` deviendrait préférable.
-
-**Données de développement :** Red Hot Chili Peppers et Foo Fighters sont insérés au démarrage, avec leurs liens YouTube et Spotify officiels.
 
 ---
 
@@ -153,6 +151,79 @@ Décrit les événements musicaux et modélise la programmation du festival.
 
 **Index :** `(stage, start_time)`, `start_time`
 
-**Données de développement :** Un concert de Red Hot Chili Peppers sur `main-stage` et un concert de Foo Fighters sur `second-stage` sont planifiés le lendemain du démarrage.
-
 > **Choix de conception :** Dans une modélisation Merise stricte, `stage` pourrait être une entité à part entière. Ce choix a été fait de le garder comme attribut texte car les scènes du festival sont des libellés fixes et simples — elles n'ont pas d'attributs propres qui justifieraient une table dédiée. Ce choix évite une complexité inutile tout en respectant la 3FN.
+
+---
+
+## Fixtures de développement
+
+Les fichiers `06` à `09` sont exécutés après la création des tables. Ils insèrent un jeu de données cohérent et suffisant pour tester toutes les fonctionnalités de l'application. Tous les mots de passe sont `MyPassword`.
+
+---
+
+### `06_seed_users.sql` — Comptes de développement
+
+Insère 3 utilisateurs couvrant chacun des rôles disponibles.
+
+| Email                  | Display name     | Rôle     |
+| ---------------------- | ---------------- | -------- |
+| `admin@example.com`    | Admin            | `admin`  |
+| `lineup@example.com`   | Lineup Manager   | `lineup` |
+| `news@example.com`     | News Editor      | `news`   |
+
+---
+
+### `07_seed_articles.sql` — Articles de développement
+
+Insère 10 articles liés à `admin@example.com`, avec des dates relatives (`NOW() - INTERVAL '...'`) couvrant jusqu'à 365 jours en arrière.
+
+| Titre                                          | Statut     |
+| ---------------------------------------------- | ---------- |
+| Ouverture de la billetterie                    | Publié     |
+| Nouvelle tête d'affiche                        | Brouillon  |
+| Le programme complet est dévoilé               | Publié     |
+| Infos pratiques : accès et stationnement       | Publié     |
+| Oasis de retour : une exclusivité Vindhellfest | Publié     |
+| Les coulisses du festival                      | Publié     |
+| Restauration : les meilleurs stands            | Brouillon  |
+| Retour sur la première édition                 | Publié     |
+| Développement durable : nos engagements        | Publié     |
+| Concours : gagnez vos pass VIP                 | Brouillon  |
+
+---
+
+### `08_seed_artists.sql` — Artistes de développement
+
+Insère 10 artistes rock avec biographies complètes, chemins d'images locaux et liens YouTube/Spotify officiels.
+
+| Nom                     | Genre          | Origine                   |
+| ----------------------- | -------------- | ------------------------- |
+| Red Hot Chili Peppers   | Rock           | États-Unis, Los Angeles   |
+| Foo Fighters            | Rock           | États-Unis, Seattle       |
+| Oasis                   | Britpop        | Royaume-Uni, Manchester   |
+| AC/DC                   | Hard rock      | Australie, Sydney         |
+| Guns N' Roses           | Hard rock      | États-Unis, Los Angeles   |
+| Pearl Jam               | Grunge         | États-Unis, Seattle       |
+| Muse                    | Rock alternatif| Royaume-Uni, Teignmouth   |
+| Arctic Monkeys          | Indie rock     | Royaume-Uni, Sheffield    |
+| Queens of the Stone Age | Hard rock      | États-Unis, Palm Desert   |
+| The Strokes             | Indie rock     | États-Unis, New York      |
+
+---
+
+### `09_seed_concerts.sql` — Concerts de développement
+
+Insère 10 concerts planifiés sur 2 jours (`NOW() + 1 day` et `NOW() + 2 days`), répartis équitablement sur 2 scènes. Chaque créneau dure 1 heure. Les `artist_id` sont résolus par `SELECT id FROM artists WHERE name = '...'`.
+
+| Artiste                 | Scène          | Créneau           |
+| ----------------------- | -------------- | ----------------- |
+| Red Hot Chili Peppers   | `main-stage`   | J+1, heure 0      |
+| Foo Fighters            | `second-stage` | J+1, heure 0      |
+| Oasis                   | `main-stage`   | J+1, heure +1     |
+| Guns N' Roses           | `second-stage` | J+1, heure +1     |
+| AC/DC                   | `main-stage`   | J+1, heure +2     |
+| Pearl Jam               | `second-stage` | J+1, heure +2     |
+| Muse                    | `main-stage`   | J+2, heure 0      |
+| Queens of the Stone Age | `second-stage` | J+2, heure 0      |
+| Arctic Monkeys          | `main-stage`   | J+2, heure +1     |
+| The Strokes             | `second-stage` | J+2, heure +1     |

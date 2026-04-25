@@ -235,14 +235,27 @@ Centralise tous les types TypeScript partagés du backend :
 - `UserListRow` — ligne utilisateur pour les endpoints de liste/CRUD
 - `ArtistListRow` — ligne artiste pour l'endpoint de programmation (inclut `youtube_url`, `spotify_url` nullables, et `stage`, `start_time`, `end_time` nullables via LEFT JOIN concerts)
 - `ConcertRow` — ligne concert retournee lors de l'insertion en base
-- `ArticleRow` — ligne article pour les endpoints articles (inclut `author_name` nullable via LEFT JOIN users)
+- `ArticleRow` — ligne article pour les endpoints articles (inclut `user_id` nullable et `author_name` nullable via LEFT JOIN users)
 - `UserInfoRow` — ligne utilisateur pour l'endpoint `/admin/auth/me` (inclut `password_changed_at` pour calculer `mustChangePassword`)
 - `HomeArtistRow` — sous-ensemble de `ArtistListRow` retourné par l'endpoint home (id, name, stage, start_time, end_time, url_media, description_media)
 - `HomeArticleRow` — sous-ensemble de `ArticleRow` retourné par l'endpoint home (id, title, url_media, description_media, created_at)
 
 ### `functions.ts`
 
-Centralise les fonctions utilitaires réutilisables (génération de token JWT, parsing de durée, etc.).
+Centralise les fonctions utilitaires réutilisables partagées entre middlewares et contrôleurs :
+
+| Fonction | Description |
+| --- | --- |
+| `getEnv(name)` | Lit une variable d'environnement, lève une erreur si absente |
+| `envToStringValue(name)` | Convertit une variable env en `StringValue` (format `ms`) |
+| `userExists(user)` | Lève `401` si l'utilisateur est `undefined` |
+| `passwordIsValid(password, hash)` | Compare un mot de passe en clair avec son hash bcrypt, lève `401` si invalide |
+| `initToken(userId, secret, expiresIn, sessionId)` | Crée et signe un JWT avec `userId` et `sessionId` |
+| `serializeCookie(name, secure, sameSite, token, time)` | Sérialise un cookie httpOnly à partir des variables d'environnement |
+| `sessionExists(session)` | Lève `401` si la session est `undefined` |
+| `sessionRevoked(session)` | Lève `401` si la session est révoquée ou expirée |
+| `requireUserId(reqUserId)` | Extrait et valide l'`userId` depuis la requête, lève `401` si absent |
+| `requireSessionId(reqSessionId)` | Extrait et valide le `sessionId` depuis la requête, lève `401` si absent |
 
 ### `controllers/`
 
@@ -330,7 +343,17 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 
 ### `schemas/`
 
-- `schema.ts` : schémas Zod utilisés pour la validation des body (`createUserSchema`, `updateUserSchema`, `createArtistSchema`, `createArticleSchema`, etc.).
+- `schema.ts` : schémas Zod utilisés pour la validation des body. Chaque schéma sert à la fois à la création et à la modification (pas de schéma `update*` séparé) :
+
+| Schéma | Utilisé par |
+| --- | --- |
+| `createUserSchema` | POST et PATCH `/admin/users` |
+| `changePasswordSchema` | PATCH `/admin/auth/password` |
+| `loginSchema` | POST `/admin/auth/login` |
+| `forgotPasswordSchema` | POST `/admin/auth/forgot-password` |
+| `contactSchema` | POST `/contact/submit` |
+| `createArticleSchema` | POST et PATCH `/admin/articles` |
+| `createArtistSchema` | POST et PATCH `/admin/artists` |
 
 ---
 
@@ -371,7 +394,7 @@ Vitest exécute les tests, Supertest simule les appels HTTP sur l'API Express.
 | `hashPassword.test.ts` | Middleware `hashPassword` |
 | `rateLimitLogin.test.ts` | Middleware `rateLimitLogin` |
 | `requireRole.test.ts` | Middleware `requireRole` |
-| `validateBody.test.ts` | Middleware `validateBody` (`createUserSchema`, `loginSchema`, `createArtistSchema`, `createArticleSchema`) |
+| `validateBody.test.ts` | Middleware `validateBody` (`createUserSchema`, `loginSchema`, `createArtistSchema`) |
 | `errorHandler.test.ts` | Middleware `errorHandler` et `notFoundHandler` |
 | `health.test.ts` | Route `/health` |
 | `create_article.controller.test.ts` | Contrôleur `createArticle` — upload image, insertion en base, rollback |

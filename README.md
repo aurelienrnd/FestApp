@@ -10,7 +10,7 @@ Il s'appuie sur une architecture frontend / backend / base de données orchestr�
 | Couche               | Technologie                                      |
 | -------------------- | ------------------------------------------------ |
 | **Frontend**         | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| **Backend**          | Express.js 5, TypeScript, Node.js                |
+| **Backend**          | Express.js 5, TypeScript, Node.js 20             |
 | **Base de données**  | PostgreSQL 16 (Alpine)                           |
 | **Authentification** | JWT, bcrypt, cookies httpOnly                    |
 | **Validation**       | Zod                                              |

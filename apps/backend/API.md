@@ -36,6 +36,8 @@ Base path: `/admin/auth`
 
 Connecte un administrateur et pose un cookie httpOnly contenant le token d'acces.
 
+Middlewares: `rateLimitLogin`, `validateBody`
+
 Corps de requete:
 
 ```json
@@ -603,9 +605,7 @@ Reponses d'erreur:
 
 Creer un artiste avec une image uploadée.
 
-Authentification:
-
-- Cookie d'authentification valide requis.
+Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "lineup")`, `upload.single("image")`, `validateBody`
 
 Corps de requete:
 
@@ -906,8 +906,6 @@ Reponse en succes:
 
 > `stage`, `start_time` et `end_time` sont `null` si aucun concert n'est encore associe a l'artiste (LEFT JOIN).
 
-````
-
 Reponses d'erreur:
 
 - `500` `{ "error": "Erreur serveur" }`
@@ -933,6 +931,28 @@ Réponse en succès :
   "message": "Backend is running"
 }
 ````
+
+### GET `/debug/db`
+
+Vérifie la connexion à la base de données. **Disponible uniquement hors production** (`NODE_ENV !== "production"`) — retourne `404` via `notFoundHandler` en production.
+
+Authentification : aucune.
+
+Réponse en succès :
+
+- Statut : `200`
+- Corps :
+
+```json
+{
+  "db": "ok",
+  "now": "2026-04-25T10:00:00.000Z"
+}
+```
+
+Réponse en erreur :
+
+- `500` `{ "error": "Impossible de joindre la base de donnees" }`
 
 ---
 

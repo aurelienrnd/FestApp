@@ -7,7 +7,7 @@ Ce document decrit l'etat reel du style dans `apps/frontend`.
 | Fichier                                   | Rôle                                                                                                                      |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `apps/frontend/src/app/tokens.css`      | Variables CSS uniquement — un seul `:root`, 7 sections commentées                                                      |
-| `apps/frontend/src/app/animations.css` | Keyframes uniquement — `marquee-left`, `marquee-right`, `slide-in-left`, `slide-in-right`, `blur-in`, `scale-in`  |
+| `apps/frontend/src/app/animations.css` | Keyframes uniquement — `marquee-left`, `marquee-right`, `line-reload`, `line-expand`, `slide-in-left`, `slide-in-right`, `blur-in`, `scale-in` |
 | `apps/frontend/src/app/globals.css`    | `@import "tailwindcss"` + `@import "./tokens.css"` + `@import "./animations.css"` + thèmes + `@layer components` |
 
 `globals.css` n'a plus aucun bloc `:root` — toutes les variables sont dans `tokens.css`.
@@ -24,7 +24,7 @@ Details :
 
 | Variable                         | Valeur     | Usages                                                                          |
 | -------------------------------- | ---------- | ------------------------------------------------------------------------------- |
-| `--header-height`              | `106px`  | `HomeHero.tsx` (`marginTop` inline, `mt-(--header-height)`), `HomeNews.tsx` (calc inline) |
+| `--header-height`              | `106px`  | `HomeHero.tsx` (`-mt-(--header-height)` section, `mt-(--header-height)` div interne), `HomeNews.tsx` et `HomeProgrammation.tsx` (calc inline `min-h`) |
 | `--home-hero-min-height`       | `100dvh` | `HomeHero.tsx` (`h-(--home-hero-min-height)`)                             |
 | `--home-hero-min-height-floor` | `600px`  | `HomeHero.tsx` (`min-h-(--home-hero-min-height-floor)`) — plancher paysage |
 | `--app-min-width`              | `320px`  | `globals.css` (`.app-root`) — largeur minimale de l'application            |
@@ -34,14 +34,14 @@ Details :
 | Variable      | Valeur      | Usages                                                                                                                   |
 | ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`, `.detail-name-block`, `.error-message`), composants divers |
-| `--color-2` | `#e4e4e7` | `globals.css` (`.input`, `.upload-zone`), `Banner.tsx`                                                           |
+| `--color-2` | `#e4e4e7` | `globals.css` (`.input`, `.upload-zone`), `ArtistDetailModal.tsx` (inline icônes YouTube/Spotify) |
 | `--color-3` | `#0ea5e9` | `LoadingLine.tsx` (inline), `SectionCta.tsx` (inline), `Footer.tsx`                                             |
 
 ### Couleurs UI
 
 | Variable               | Valeur                       | Usages                                                                                                                                |
 | ---------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `--color-text-input` | `#47474f`                  | `globals.css` (`.input`, `.card-row`, `.upload-btn`, `.upload-zone`, `.btn-action`, `.home-section`), composants divers |
+| `--color-text-input` | `#47474f`                  | `globals.css` (`.input`, `.card-row`, `.upload-btn`, `.btn-action`, `.home-card`), `DashboardContent.tsx` (inline), `Banner.tsx` (inline nav hover) |
 | `--color-overlay`    | `rgba(156, 163, 175, 0.3)` | `globals.css` (`.modal-overlay`)                                                                                                  |
 
 ### Couleurs thème
@@ -52,8 +52,8 @@ Details :
 | `--color-bg-visitor`   | `black`    | `globals.css` (thème visitor)                |
 | `--color-bg-admin`     | `#ffffff`  | `globals.css` (thème admin)                  |
 | `--color-text-admin`   | `black`    | `globals.css` (thème admin)                  |
-| `--color-text`         | thème actif | `globals.css` (`.app-root`), `layout.tsx` |
-| `--color-bg`           | thème actif | `globals.css` (`.app-root`), `Footer.tsx` |
+| `--color-text`         | thème actif | `globals.css` (`.app-root`), `layout.tsx` (body) |
+| `--color-bg`           | thème actif | `globals.css` (`.app-root`), `layout.tsx` (body), `Banner.tsx` (header bg conditionnel), `Footer.tsx`, `DashboardContent.tsx` (inline avatar) |
 
 ### Espacement contextuel
 
@@ -89,7 +89,7 @@ Details :
 
 | Classe        | Description                                                                                                   |
 | ------------- | ------------------------------------------------------------------------------------------------------------- |
-| `.app-root` | Racine de l'application — `flex min-h-dvh flex-col`, thème bg/text, `min-w-(--app-min-width)` |
+| `.app-root` | Racine de l'application — `flex min-h-screen flex-col`, thème bg/text, `min-w-(--app-min-width)` |
 
 ### Boutons
 
@@ -109,7 +109,7 @@ Details :
 
 | Classe                 | Description                                                            |
 | ---------------------- | ---------------------------------------------------------------------- |
-| `.form-modal`        | Formulaire dans une modale —`space-y-4`                             |
+| `.form-modal`        | Formulaire dans une modale — `mt-4 space-y-4`                       |
 | `.input`             | Champ texte — bordure, fond `--color-2`, police Arial               |
 | `.submit-modal-area` | Zone du bouton de soumission — flex centré                           |
 | `.upload-zone`       | Zone d'upload — flex colonne centré, fond `--color-2`, arrondi     |
@@ -136,7 +136,7 @@ Details :
 
 | Classe                      | Description                                                            |
 | --------------------------- | ---------------------------------------------------------------------- |
-| `.card-row`               | Carte en ligne — bordure, flex colonne mobile / ligne desktop         |
+| `.card-row`               | Carte en ligne — bordure `--color-text-input`, flex colonne mobile / ligne desktop, hover scale `1.02` (`transition: transform 0.3s ease`) |
 | `.card-media-img-wrapper` | Conteneur image — pleine largeur mobile,`w-48 self-stretch` desktop |
 | `.card-media-img`         | Image —`object-cover`, arrondie haut mobile / gauche desktop        |
 | `.card-lineup-content`    | Contenu de la carte — flex colonne/ligne, space-between               |
@@ -152,18 +152,18 @@ Details :
 | `.admin-content-wrapper` | Wrapper contenu admin —`flex-1 flex justify-center`                                                    |
 | `.content-centered`      | Contenu centré pleine hauteur —`flex h-full justify-center items-center`                              |
 | `.filter-row`            | Barre de filtres — flex centré,`gap-6`                                                                |
-| `.home-section`          | Section home générique — pleine largeur, padding responsive, flex colonne centré, bordure supérieure |
+| `.home-section`          | Section home générique — pleine largeur, padding responsive, flex colonne centré                      |
 | `.home-section-title`    | Titre de section home — `text-4xl md:text-6xl`, uppercase, bold, `tracking-widest` |
 | `.home-cards`            | Conteneur des cartes home — flex colonne mobile / ligne desktop, centré, `gap-6`, `flex-1 my-8` |
-| `.home-card`             | Carte home — `flex-1`, `md:max-w-[50%]`, flex colonne, bordure `--color-text-input`, arrondi |
-| `.home-card-img`         | Image d'une carte home — relative, pleine largeur, `flex-1 min-h-36` pour remplir l'espace disponible |
+| `.home-card`             | Carte home — `flex-1`, `md:max-w-[50%]`, flex colonne, `overflow-hidden`, bordure `--color-text-input`, arrondi |
+| `.home-card-img`         | Image d'une carte home — relative, pleine largeur, `flex-1 min-h-36 overflow-hidden` — hover zoom `scale(1.05)` sur l'`<img>` interne (`transition: transform 0.4s ease`) |
 | `.home-card-content`     | Contenu texte d'une carte home — `flex-shrink-0`, flex colonne centré, `gap-3 p-6` |
 
 ### Hero animations
 
 | Classe              | Description                                                                            |
 | ------------------- | -------------------------------------------------------------------------------------- |
-| `.hero-slide-left` | Entrée depuis la gauche — `slide-in-left` via `--anim-hero-duration/easing`, `both` |
+| `.hero-slide-left` | Entrée depuis la gauche — `slide-in-left` via `--anim-hero-duration/easing`, `both` — utilisé dans `HomeHero.tsx` (bandeaux dates) et `Navigation.tsx` (items sidebar avec délai cascadé) |
 
 > Les autres animations hero (`slide-in-right`, `blur-in`, `scale-in`) et `hero-date-label` sont inlinées dans `HomeHero.tsx` via `style={{ animation: '...' }}` — usage unique dans ce composant. Les délais (`animationDelay`) sont aussi appliqués en inline style pour créer l'effet de cascade.
 

@@ -123,6 +123,7 @@ apps/frontend/
 │   │   ├── Footer.tsx
 │   │   ├── ForgotPassword.tsx
 │   │   ├── LegalMention.tsx
+│   │   ├── LoadingLine.tsx
 │   │   ├── ModalCloseButton.tsx
 │   │   ├── ModalSetup.tsx
 │   │   ├── Navigation.tsx
@@ -212,7 +213,7 @@ Le frontend bénéficie de 5 stages car il possède plus de dépendances, ce qui
 ### `app/`
 
 - **`tokens.css`** : Variables CSS uniquement — un seul `:root` structuré en 7 sections (dimensions, couleurs, espacement contextuel, typographie, animation). Importé par `globals.css`.
-- **`animations.css`** : Keyframes uniquement — définit `marquee-left` (défilement vers la gauche) et `marquee-right` (défilement vers la droite), utilisées par les classes `.marquee-track` et `.marquee-track-reverse` de `globals.css`.
+- **`animations.css`** : Keyframes uniquement — définit 8 keyframes : `marquee-left`/`marquee-right` (défilement partenaires), `line-reload` (animation hover SectionCta), `line-expand` (pulsation LoadingLine), `slide-in-left`/`slide-in-right`/`blur-in`/`scale-in` (animations hero et sidebar). Jamais référencé dans `globals.css` directement — consommé via `.hero-slide-left` ou inline style dans les composants.
 - **`globals.css`** : Importe `tailwindcss`, `tokens.css` et `animations.css`, déclare les thèmes `admin`/`visitor` et les classes composants Tailwind partagées dans `@layer components` (boutons, formulaires, modales, cartes, layout, pages, marquee).
 - **`layout.tsx`** : Layout racine Next.js — charge la police Google, définit les métadonnées SEO. Ne contient pas de Banner/Footer (délégués aux layouts de section). Inclut un `<div id="app-root">` wrapper à l'intérieur du `<body>` pour permettre à `react-modal` d'appliquer `aria-hidden` correctement sans masquer l'intégralité de l'arbre d'accessibilité.
 
@@ -254,17 +255,18 @@ Composants UI réutilisables à travers l'application.
 | Fichier | Description |
 | --- | --- |
 | `AdminUserProvider.tsx` | Context React qui expose les données de l'utilisateur admin connecté (`AdminUser`, `mustChangePassword`) — retourne `null` hors provider |
-| `AddButton.tsx` | Bouton d'ajout réutilisable (ex : ajouter un utilisateur) |
+| `AddButton.tsx` | Bouton hamburger visible uniquement sur mobile — ouvre une modale `Navigation` pour afficher les filtres de la page (lineup ou news). Utilisé dans `(public)/lineup/page.tsx` et `(public)/news/page.tsx` |
 | `Banner.tsx` | Bannière de navigation principale — sticky header, transparent sur la page d'accueil tant que l'utilisateur n'a pas scrollé (opaque dès le premier pixel de défilement via scroll listener), filtre les liens admin par rôle via `filterNavByRole`, gère aussi le logout |
 | `ContactUs.tsx` | Formulaire de contact (modale) |
 | `Footer.tsx` | Pied de page avec liens réseaux sociaux et liens légaux |
 | `ForgotPassword.tsx` | Modale mot de passe oublié |
 | `LegalMention.tsx` | Modale mentions légales |
+| `LoadingLine.tsx` | Indicateur de chargement — texte "Chargement" centré avec une ligne bleue (`--color-3`) animée en pulsation via `line-expand`. Utilisé dans `LineupContent` et `NewsContent` |
 | `ModalCloseButton.tsx` | Bouton de fermeture générique pour les modales |
 | `ModalSetup.tsx` | Initialise `Modal.setAppElement("#app-root")` une seule fois au niveau du layout racine |
 | `Navigation.tsx` | Barre de navigation — adapte les liens selon le contexte (visiteur / admin) et les filtres de page |
 | `SectionCta.tsx` | Séparateur CTA réutilisable — bouton "Voir plus" centré entre deux lignes horizontales, navigue vers le `href` passé en prop |
-| `SideBarTool.tsx` | Barre d'outils latérale de l'espace admin |
+| `SideBarTool.tsx` | Layout avec navigation sticky sur desktop et contenu principal à droite — sur mobile, n'affiche que les enfants. Utilisé dans les pages publiques lineup et news, et les pages admin correspondantes |
 
 ### `hooks/`
 
@@ -396,7 +398,7 @@ La gestion des erreurs est centralisée autour de deux helpers :
 ### Utilisation dans l'UI
 
 - `src/app/(auth)/login/page.tsx` : affiche le message d'erreur formaté.
-- `src/components/Banner.tsx` : journalise l'erreur formatée en cas d'échec du logout, puis redirige vers `/login` en cas de succès.
+- `src/components/Banner.tsx` : ignore silencieusement l'erreur en cas d'échec du logout, puis redirige vers `/login` en cas de succès.
 - `src/app/admin/layout.tsx` : vérifie la session via `/admin/auth/me` et redirige vers `/login` en cas d'échec.
 
 ---
