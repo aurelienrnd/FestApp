@@ -16,7 +16,6 @@ import logo from "../../public/header_logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { useNavPath } from "../hooks/useNavPath";
-import { useIsDesktop } from "../hooks/useIsDesktop";
 import ModalCloseButton from "./ModalCloseButton";
 import Navigation from "./Navigation";
 import { apiRequest, type ApiMessageResponse } from "../functions/apiRequest";
@@ -190,7 +189,6 @@ export default function Banner() {
   const router = useRouter();
   // Fournit l'etat UI puis choisit automatiquement la navigation admin ou visiteur.
   const { pathname, isAdminPath } = useNavPath();
-  const isDesktop = useIsDesktop();
   const adminUser = useAdminUser();
 
   // Filtre les items de navigation selon le role de l'utilisateur admin ou affiche les items visiteurs
@@ -244,21 +242,22 @@ export default function Banner() {
         priority
         style={{ height: "90px", width: "auto" }}
       />
-      {isDesktop ? (
+      <div className="hidden md:block">
         <DesktopNav
           items={items}
           pathname={pathname}
           isAdminPath={isAdminPath}
           onLogout={handleLogout}
         />
-      ) : (
+      </div>
+      <div className="md:hidden">
         <MobilNav
           items={items}
           pathname={pathname}
           isAdminPath={isAdminPath}
           onLogout={handleLogout}
         />
-      )}
+      </div>
     </header>
   );
 }

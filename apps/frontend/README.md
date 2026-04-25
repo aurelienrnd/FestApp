@@ -134,7 +134,6 @@ apps/frontend/
 │   │   ├── footer.ts
 │   │   └── navigation.ts
 │   ├── hooks/
-│   │   ├── useIsDesktop.ts
 │   │   ├── useNavPath.ts
 │   │   └── useRoleGuard.ts
 │   ├── functions/
@@ -274,7 +273,6 @@ Hooks React réutilisables découplés des composants.
 
 | Fichier | Description |
 | --- | --- |
-| `useIsDesktop.ts` | Détecte si l'écran est en mode desktop (≥ 768px) via `matchMedia` — consommé par `Banner` pour choisir entre `DesktopNav` et `MobilNav` |
 | `useNavPath.ts` | Expose `pathname` et `isAdminPath` dérivés de `usePathname()` — consommé par `Banner`, `SideBarTool` et `AddButton` |
 | `useRoleGuard.ts` | Redirige vers `/admin/dashboard` si le rôle de l'utilisateur ne lui permet pas d'accéder à la route courante — compare le rôle via `useAdminUser()` et la route via `useNavPath()` avec les restrictions définies dans `navAdminItem` |
 
