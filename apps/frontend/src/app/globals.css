@@ -139,6 +139,9 @@
   .home-section {
     @apply w-full py-10 px-6 md:px-20 flex flex-col items-center text-center;
   }
+  .home-section-vh {
+    @apply justify-between md:h-[min(calc(100dvh-var(--header-height)),1100px)];
+  }
   .home-section-title {
     @apply text-4xl md:text-6xl font-black uppercase mb-2 tracking-widest;
   }
@@ -163,7 +166,7 @@
 
   /* === HERO === */
   .hero-slide-left {
-    animation: slide-in-left var(--anim-hero-duration) var(--anim-hero-easing) both;
+    animation: slide-in-left var(--anim-hero-duration) var(--anim-hero-easing)
+      both;
   }
-
 }

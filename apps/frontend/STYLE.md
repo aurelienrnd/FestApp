@@ -24,7 +24,7 @@ Details :
 
 | Variable                         | Valeur     | Usages                                                                          |
 | -------------------------------- | ---------- | ------------------------------------------------------------------------------- |
-| `--header-height`              | `106px`  | `HomeHero.tsx` (`-mt-(--header-height)` section, `mt-(--header-height)` div interne), `HomeNews.tsx` et `HomeProgrammation.tsx` (calc inline `min-h`) |
+| `--header-height`              | `106px`  | `HomeHero.tsx` (`-mt-(--header-height)` section, `mt-(--header-height)` div interne), `globals.css` (`.home-section-vh` calc) |
 | `--home-hero-min-height`       | `100dvh` | `HomeHero.tsx` (`h-(--home-hero-min-height)`)                             |
 | `--home-hero-min-height-floor` | `600px`  | `HomeHero.tsx` (`min-h-(--home-hero-min-height-floor)`) — plancher paysage |
 | `--app-min-width`              | `320px`  | `globals.css` (`.app-root`) — largeur minimale de l'application            |
@@ -153,6 +153,7 @@ Details :
 | `.content-centered`      | Contenu centré pleine hauteur —`flex h-full justify-center items-center`                              |
 | `.filter-row`            | Barre de filtres — flex centré,`gap-6`                                                                |
 | `.home-section`          | Section home générique — pleine largeur, padding responsive, flex colonne centré                      |
+| `.home-section-vh`       | Modificateur de hauteur pour les sections home — `justify-between`, hauteur plafonnée à `min(100dvh - header, 1100px)` en md+ — utilisé dans `HomeNews.tsx` et `HomeProgrammation.tsx` |
 | `.home-section-title`    | Titre de section home — `text-4xl md:text-6xl`, uppercase, bold, `tracking-widest` |
 | `.home-cards`            | Conteneur des cartes home — flex colonne mobile / ligne desktop, centré, `gap-6`, `flex-1 my-8` |
 | `.home-card`             | Carte home — `flex-1`, `md:max-w-[50%]`, flex colonne, `overflow-hidden`, bordure `--color-text-input`, arrondi |

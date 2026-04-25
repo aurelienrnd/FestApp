@@ -10,15 +10,12 @@ export default function HomeNews({ articles }: { articles: HomeArticleRow[] }) {
   if (articles.length === 0) return null;
 
   return (
-    <section className="home-section md:min-h-[calc(100dvh-var(--header-height))] justify-between">
+    <section className="home-section home-section-vh">
       <h2 className="home-section-title">News</h2>
 
       <div className="home-cards">
         {articles.map((article) => (
-          <div
-            key={article.id}
-            className="home-card"
-          >
+          <div key={article.id} className="home-card">
             <div className="home-card-img">
               <Image
                 src={article.url_media}

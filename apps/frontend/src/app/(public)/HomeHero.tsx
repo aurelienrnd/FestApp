@@ -25,7 +25,7 @@ export default function HomeHero() {
   return (
     <section
       id="home-hero"
-      className="-mt-(--header-height) h-(--home-hero-min-height) min-h-(--home-hero-min-height-floor) bg-[url('/hero_bg.webp')] bg-cover bg-center overflow-x-hidden"
+      className="-mt-(--header-height) h-(--home-hero-min-height) min-h-(--home-hero-min-height-floor) bg-[url('/hero_bg.webp')] bg-cover bg-center overflow-x-hidden max-h-[1900px]"
     >
       <div className="mt-(--header-height) h-3/4 flex flex-col items-center gap-4 relative lg:gap-10">
         <Image
@@ -33,21 +33,38 @@ export default function HomeHero() {
           alt="Logo Vindhellfest"
           priority
           className="w-[180px] sm:w-[250px] h-auto lg:absolute lg:w-[35%]"
-          style={{ animation: "blur-in var(--anim-hero-duration) var(--anim-hero-easing) both", animationDelay: "0.2s", animationDuration: "2.5s" }}
+          style={{
+            animation:
+              "blur-in var(--anim-hero-duration) var(--anim-hero-easing) both",
+            animationDelay: "0.2s",
+            animationDuration: "2.5s",
+          }}
         />
 
         <div className="w-full h-full flex justify-between lg:pt-40">
           <div className="w-1/2 flex flex-col justify-between">
-            <span className="hero-slide-left bg-white text-black sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[40%] h-[15%] lg:w-[20%]" style={{ animationDelay: "0.6s" }}>
+            <span
+              className="hero-slide-left bg-white text-black sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[40%] h-[15%] lg:w-[20%]"
+              style={{ animationDelay: "0.6s" }}
+            >
               DU
             </span>
-            <span className="hero-slide-left bg-white text-black sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[80%] h-[15%] lg:w-[50%]" style={{ animationDelay: "0.8s" }}>
+            <span
+              className="hero-slide-left bg-white text-black sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[80%] h-[15%] lg:w-[50%]"
+              style={{ animationDelay: "0.8s" }}
+            >
               {firstDay}
             </span>
-            <span className="hero-slide-left bg-white text-black sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[40%] h-[15%] lg:w-[20%]" style={{ animationDelay: "1.0s" }}>
+            <span
+              className="hero-slide-left bg-white text-black sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[40%] h-[15%] lg:w-[20%]"
+              style={{ animationDelay: "1.0s" }}
+            >
               AU
             </span>
-            <span className="hero-slide-left bg-white text-black sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[80%] h-[15%] lg:w-[50%]" style={{ animationDelay: "1.2s" }}>
+            <span
+              className="hero-slide-left bg-white text-black sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl flex justify-center items-center py-2 sm:py-4 lg:py-6 w-[80%] h-[15%] lg:w-[50%]"
+              style={{ animationDelay: "1.2s" }}
+            >
               {lastDay}
             </span>
           </div>
@@ -56,7 +73,11 @@ export default function HomeHero() {
             <a
               href="https://www.google.com/search?q=tiket+master&rlz=1C1ONGR_frFR1184FR1184&oq=tiket+master&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDM1ODJqMGo3qAIIsAIB&sourceid=chrome&ie=UTF-8"
               className="btn-cta p-3 sm:p-6 justify-center items-center self-center sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl"
-              style={{ animation: "scale-in var(--anim-hero-duration) var(--anim-hero-easing) both", animationDelay: "1.6s" }}
+              style={{
+                animation:
+                  "scale-in var(--anim-hero-duration) var(--anim-hero-easing) both",
+                animationDelay: "1.6s",
+              }}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -64,8 +85,14 @@ export default function HomeHero() {
             </a>
             <span
               className="bg-white text-black sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl flex justify-center items-center py-2 sm:py-4 lg:py-6 h-[15%] w-[50%]"
-              style={{ animation: "slide-in-right var(--anim-hero-duration) var(--anim-hero-easing) both", animationDelay: "1.4s" }}
-            >VINDELLE</span>
+              style={{
+                animation:
+                  "slide-in-right var(--anim-hero-duration) var(--anim-hero-easing) both",
+                animationDelay: "1.4s",
+              }}
+            >
+              VINDELLE
+            </span>
           </div>
         </div>
       </div>

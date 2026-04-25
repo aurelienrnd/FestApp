@@ -14,7 +14,7 @@ export default function HomeProgrammation({
   if (artists.length === 0) return null;
 
   return (
-    <section className="home-section md:min-h-[calc(100dvh-var(--header-height))] justify-between">
+    <section className="home-section home-section-vh">
       <h2 className="home-section-title">Programmation</h2>
 
       <div className="home-cards">
@@ -42,10 +42,7 @@ export default function HomeProgrammation({
             : null;
 
           return (
-            <div
-              key={artist.id}
-              className="home-card"
-            >
+            <div key={artist.id} className="home-card">
               <div className="home-card-img">
                 <Image
                   src={artist.url_media}
