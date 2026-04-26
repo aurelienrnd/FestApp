@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faSliders } from "@fortawesome/free-solid-svg-icons";
 import type { NavItem } from "../config/navigation";
 import { useNavPath } from "../hooks/useNavPath";
 import ModalCloseButton from "./ModalCloseButton";
@@ -32,7 +32,7 @@ export default function AddButton({
         aria-label="Ouvrir les filtres"
         onClick={() => setIsFiltersModalOpen(true)}
       >
-        <FontAwesomeIcon icon={faPlus} />
+        <FontAwesomeIcon icon={faSliders} />
       </button>
 
       <Modal
