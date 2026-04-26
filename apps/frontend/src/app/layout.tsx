@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Bebas_Neue } from "next/font/google";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
 import "./globals.css";
 import ModalSetup from "../components/ModalSetup";
+
+config.autoAddCss = false;
 
 // Police Google
 const bebasNeue = Bebas_Neue({

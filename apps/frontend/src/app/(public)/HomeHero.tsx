@@ -28,10 +28,7 @@ export default function HomeHero() {
       className="-mt-(--header-height) h-(--home-hero-min-height) min-h-(--home-hero-min-height-floor) bg-[url('/hero_bg.webp')] bg-cover bg-center overflow-x-hidden max-h-[1900px]"
     >
       <div className="mt-(--header-height) h-3/4 flex flex-col items-center gap-4 relative lg:gap-10">
-        <Image
-          src={logo}
-          alt="Logo Vindhellfest"
-          priority
+        <h1
           className="w-[180px] sm:w-[250px] h-auto lg:absolute lg:w-[35%]"
           style={{
             animation:
@@ -39,7 +36,14 @@ export default function HomeHero() {
             animationDelay: "0.2s",
             animationDuration: "2.5s",
           }}
-        />
+        >
+          <Image
+            src={logo}
+            alt="Vind'Hell Fest"
+            priority
+            className="w-full h-auto"
+          />
+        </h1>
 
         <div className="w-full h-full flex justify-between lg:pt-40">
           <div className="w-1/2 flex flex-col justify-between">
