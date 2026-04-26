@@ -39,8 +39,7 @@ export default function HomeInfosPratiques() {
         <div className="home-card overflow-hidden p-0 min-h-80 md:max-w-[60%]">
           <iframe
             src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d5570.61407394697!2d0.120396!3d45.724937!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47fe2f2dc27ba211%3A0x778504b1bfd88bfe!2sSalle%20des%20Fins%20Bois!5e0!3m2!1sfr!2sfr!4v1777205427993!5m2!1sfr!2sfr"
-            width="100%"
-            height="100%"
+            className="block w-full h-80 md:flex-1"
             style={{ border: 0 }}
             allowFullScreen
             loading="lazy"
