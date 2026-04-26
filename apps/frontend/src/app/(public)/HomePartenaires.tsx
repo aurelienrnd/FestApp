@@ -45,7 +45,7 @@ const PARTNERS_ROW_2 = [
 function PartnerLogo({ name, logo }: { name: string; logo: string }) {
   return (
     <div className="relative h-16 w-28 flex-shrink-0">
-      <Image src={logo} alt={name} fill className="object-contain" />
+      <Image src={logo} alt={name} fill sizes="112px" className="object-contain" />
     </div>
   );
 }

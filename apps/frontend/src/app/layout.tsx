@@ -9,7 +9,7 @@ config.autoAddCss = false;
 
 // Police Google
 const bebasNeue = Bebas_Neue({
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin"],
   weight: "400",
   display: "swap",
   variable: "--font-display",
