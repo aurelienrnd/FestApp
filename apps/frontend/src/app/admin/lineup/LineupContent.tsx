@@ -126,10 +126,19 @@ export default function LineupContent({
     onCloseAddModal();
   };
 
-  // Filtre les artistes selon la date selectionnee — null affiche tous les artistes
-  const visibleArtists = activeFilter
-    ? artists.filter((a) => a.start_time?.startsWith(activeFilter))
-    : artists;
+  // Convertit un timestamp ISO en minutes depuis minuit (heure seule), -1 si absent
+  const toMinutes = (iso: string | null | undefined) => {
+    if (!iso) return -1;
+    const d = new Date(iso);
+    return d.getHours() * 60 + d.getMinutes();
+  };
+
+  // Filtre par date selectionnee puis trie par heure decroissante (plus tardif en haut)
+  const visibleArtists = (
+    activeFilter
+      ? artists.filter((a) => a.start_time?.startsWith(activeFilter))
+      : artists
+  ).sort((a, b) => toMinutes(b.start_time) - toMinutes(a.start_time));
 
   return (
     <div className="admin-content-wrapper">
