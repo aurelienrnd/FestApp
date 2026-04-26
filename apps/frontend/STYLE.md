@@ -123,8 +123,8 @@ Details :
 | ----------------------- | ---------------------------------------------------------------------------------- |
 | `.modal-overlay`      | Fond semi-transparent — fixed,`z-50`, centré, `bg-(--color-overlay)`         |
 | `.modal`              | Conteneur de modale standard — arrondi, `bg-white text-black`, `max-h-[95vh]` scroll interne ; plein écran (`w-screen h-screen`) via `@media (max-height: 650px)` déclaré hors `@layer` |
-| `.modal-detail`       | Conteneur de modale détail —`w-[90vw]`, `bg-white`, arrondi, overflow hidden |
-| `.detail-layout`      | Layout interne — flex colonne, relative                                           |
+| `.modal-detail`       | Conteneur de modale détail —`w-[90vw]`, `bg-white`, arrondi, overflow hidden, `max-h-[95dvh]` |
+| `.detail-layout`      | Layout interne — flex colonne, relative, `overflow-y-auto` (scroll interne si contenu dépasse `modal-detail`) |
 | `.detail-img-wrapper` | Wrapper image —`relative w-full h-80`                                           |
 | `.detail-close-btn`   | Bouton fermeture — absolu `top-3 right-3 z-10`, texte noir                      |
 | `.detail-name-block`  | Bloc nom — fond `--color-1`, décalé à gauche                                 |
