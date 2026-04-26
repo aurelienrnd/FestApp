@@ -4,32 +4,38 @@ import Image from "next/image";
  * Ajouter les logos dans `public/partners/` au format WebP.
  */
 const PARTNERS_ROW_1 = [
-  { name: "Capture-decran-2025-06-13-161300", logo: "/partners/partenaire-1.webp" },
+  { name: "SAS Boisseau", logo: "/partners/partenaire-1.webp" },
   { name: "Charente Audition", logo: "/partners/partenaire-2.webp" },
   { name: "Colas", logo: "/partners/partenaire-3.webp" },
   { name: "HelloAsso", logo: "/partners/partenaire-4.webp" },
-  { name: "Partenaire 5", logo: "/partners/partenaire-5.webp" },
-  { name: "Partenaire 6", logo: "/partners/partenaire-6.webp" },
-  { name: "Partenaire 7", logo: "/partners/partenaire-7.webp" },
-  { name: "Partenaire 8", logo: "/partners/partenaire-8.webp" },
-  { name: "Partenaire 9", logo: "/partners/partenaire-9.webp" },
-  { name: "Partenaire 10", logo: "/partners/partenaire-10.webp" },
-  { name: "Partenaire 11", logo: "/partners/partenaire-11.webp" },
-  { name: "Partenaire 12", logo: "/partners/partenaire-12.webp" },
+  { name: "Le Grand Angoulême", logo: "/partners/partenaire-5.webp" },
+  { name: "As de Carreau", logo: "/partners/partenaire-6.webp" },
+  { name: "Soatec", logo: "/partners/partenaire-7.webp" },
+  { name: "Laforesterie", logo: "/partners/partenaire-8.webp" },
+  { name: "Andrieux Charcuterie", logo: "/partners/partenaire-9.webp" },
+  { name: "La Cervoiserie", logo: "/partners/partenaire-10.webp" },
+  {
+    name: "Thévenet Music Gond-Pontouvre",
+    logo: "/partners/partenaire-11.webp",
+  },
+  { name: "Sardelec", logo: "/partners/partenaire-12.webp" },
 ];
 
 const PARTNERS_ROW_2 = [
-  { name: "Partenaire 13", logo: "/partners/partenaire-13.webp" },
-  { name: "Partenaire 14", logo: "/partners/partenaire-14.webp" },
-  { name: "Partenaire 15", logo: "/partners/partenaire-15.webp" },
-  { name: "Partenaire 16", logo: "/partners/partenaire-16.webp" },
-  { name: "Partenaire 17", logo: "/partners/partenaire-17.webp" },
-  { name: "Partenaire 18", logo: "/partners/partenaire-18.webp" },
-  { name: "Partenaire 19", logo: "/partners/partenaire-19.webp" },
-  { name: "Partenaire 20", logo: "/partners/partenaire-20.webp" },
-  { name: "Logo Vindelle", logo: "/partners/partenaire-21.webp" },
+  { name: "Croizard Auto-Ecole", logo: "/partners/partenaire-13.webp" },
+  { name: "Pierre Aubarbier Élagueur", logo: "/partners/partenaire-14.webp" },
+  { name: "L’association PEPS", logo: "/partners/partenaire-15.webp" },
+  { name: "Airlum", logo: "/partners/partenaire-16.webp" },
+  { name: "WifiLab3D", logo: "/partners/partenaire-17.webp" },
+  { name: "Idhem", logo: "/partners/partenaire-18.webp" },
+  {
+    name: "Le département de la Charente",
+    logo: "/partners/partenaire-19.webp",
+  },
+  { name: "France Metal", logo: "/partners/partenaire-20.webp" },
+  { name: "Vindelle", logo: "/partners/partenaire-21.webp" },
   { name: "Nicolas Cloture", logo: "/partners/partenaire-22.webp" },
-  { name: "SMIP", logo: "/partners/partenaire-23.webp" },
+  { name: "ASCI—SMIP", logo: "/partners/partenaire-23.webp" },
 ];
 
 /** Affiche un logo partenaire.
@@ -51,12 +57,18 @@ export default function HomePartenaires() {
       <h2 className="home-section-title">Partenaires</h2>
 
       <div className="overflow-hidden w-full flex flex-col gap-10 mt-8">
-        <div className="flex w-max gap-6" style={{ animation: "marquee-left 60s linear infinite" }}>
+        <div
+          className="flex w-max gap-6"
+          style={{ animation: "marquee-left 60s linear infinite" }}
+        >
           {[...PARTNERS_ROW_1, ...PARTNERS_ROW_1].map((partner, i) => (
             <PartnerLogo key={i} name={partner.name} logo={partner.logo} />
           ))}
         </div>
-        <div className="flex w-max gap-6" style={{ animation: "marquee-right 80s linear infinite" }}>
+        <div
+          className="flex w-max gap-6"
+          style={{ animation: "marquee-right 80s linear infinite" }}
+        >
           {[...PARTNERS_ROW_2, ...PARTNERS_ROW_2].map((partner, i) => (
             <PartnerLogo key={i} name={partner.name} logo={partner.logo} />
           ))}
