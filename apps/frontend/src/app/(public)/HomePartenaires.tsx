@@ -3,7 +3,7 @@ import Image from "next/image";
 /** Liste statique des partenaires du festival.
  * Ajouter les logos dans `public/partners/` au format WebP.
  */
-const PARTNERS = [
+const PARTNERS_ROW_1 = [
   { name: "Capture-decran-2025-06-13-161300", logo: "/partners/partenaire-1.webp" },
   { name: "Charente Audition", logo: "/partners/partenaire-2.webp" },
   { name: "Colas", logo: "/partners/partenaire-3.webp" },
@@ -16,6 +16,9 @@ const PARTNERS = [
   { name: "Partenaire 10", logo: "/partners/partenaire-10.webp" },
   { name: "Partenaire 11", logo: "/partners/partenaire-11.webp" },
   { name: "Partenaire 12", logo: "/partners/partenaire-12.webp" },
+];
+
+const PARTNERS_ROW_2 = [
   { name: "Partenaire 13", logo: "/partners/partenaire-13.webp" },
   { name: "Partenaire 14", logo: "/partners/partenaire-14.webp" },
   { name: "Partenaire 15", logo: "/partners/partenaire-15.webp" },
@@ -35,8 +38,8 @@ const PARTNERS = [
  */
 function PartnerLogo({ name, logo }: { name: string; logo: string }) {
   return (
-    <div className="h-16 w-28 flex-shrink-0 flex items-center justify-center">
-      <Image src={logo} alt={name} width={80} height={40} className="object-contain" />
+    <div className="relative h-16 w-28 flex-shrink-0">
+      <Image src={logo} alt={name} fill className="object-contain" />
     </div>
   );
 }
@@ -48,14 +51,14 @@ export default function HomePartenaires() {
       <h2 className="home-section-title">Partenaires</h2>
 
       <div className="overflow-hidden w-full flex flex-col gap-10 mt-8">
-        <div className="flex w-max gap-6" style={{ animation: "marquee-left 80s linear infinite" }}>
-          {[...PARTNERS, ...PARTNERS].map((partner, i) => (
+        <div className="flex w-max gap-6" style={{ animation: "marquee-left 60s linear infinite" }}>
+          {[...PARTNERS_ROW_1, ...PARTNERS_ROW_1].map((partner, i) => (
             <PartnerLogo key={i} name={partner.name} logo={partner.logo} />
           ))}
         </div>
         <div className="flex w-max gap-6" style={{ animation: "marquee-right 80s linear infinite" }}>
-          {[...PARTNERS, ...PARTNERS].map((partner, i) => (
-            <PartnerLogo key={i} name={partner.name} logo={partner.logo} aria-hidden={i >= PARTNERS.length} />
+          {[...PARTNERS_ROW_2, ...PARTNERS_ROW_2].map((partner, i) => (
+            <PartnerLogo key={i} name={partner.name} logo={partner.logo} />
           ))}
         </div>
       </div>
