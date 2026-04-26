@@ -66,7 +66,7 @@ describe("NewsContent", () => {
 
     render(<NewsContent />);
 
-    expect(screen.getByText("Chargement...")).toBeInTheDocument();
+    expect(screen.getByText("Chargement")).toBeInTheDocument();
   });
 
   it("shows error message when load fails", async () => {

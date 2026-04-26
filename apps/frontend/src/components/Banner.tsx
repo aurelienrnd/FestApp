@@ -204,7 +204,6 @@ export default function Banner() {
   useEffect(() => {
     if (!isHome) return;
 
-    setScrollAtTop(window.scrollY === 0);
     const handleScroll = () => setScrollAtTop(window.scrollY === 0);
 
     window.addEventListener("scroll", handleScroll, { passive: true });

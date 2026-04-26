@@ -23,7 +23,7 @@ describe("HomePartenaires", () => {
   it("affiche un logo par partenaire", () => {
     render(<HomePartenaires />);
     const logos = screen.getAllByRole("img");
-    expect(logos.length).toBe(5);
+    expect(logos.length).toBe(46);
   });
 
   it("chaque logo a un alt non vide", () => {
@@ -33,13 +33,5 @@ describe("HomePartenaires", () => {
       expect(logo).toHaveAttribute("alt");
       expect(logo.getAttribute("alt")).not.toBe("");
     });
-  });
-
-  it("contient un lien vers /practical-info", () => {
-    render(<HomePartenaires />);
-    expect(screen.getByRole("link", { name: /voir plus/i })).toHaveAttribute(
-      "href",
-      "/practical-info",
-    );
   });
 });

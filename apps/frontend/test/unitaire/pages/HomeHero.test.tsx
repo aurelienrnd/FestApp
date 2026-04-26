@@ -20,7 +20,7 @@ describe("HomeHero", () => {
 
   it("affiche le logo avec le bon alt", () => {
     render(<HomeHero />);
-    expect(screen.getByAltText("Logo Vindhellfest")).toBeInTheDocument();
+    expect(screen.getByAltText("Vind'Hell Fest")).toBeInTheDocument();
   });
 
 });

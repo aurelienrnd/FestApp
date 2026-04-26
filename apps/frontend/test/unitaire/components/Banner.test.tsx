@@ -95,7 +95,7 @@ describe("Banner", () => {
     render(<Banner />);
 
     expect(screen.getByText("Accueil")).toBeInTheDocument();
-    expect(screen.getByText("Billetterie")).toBeInTheDocument();
+    expect(screen.getAllByText("Billetterie")).toHaveLength(2);
   });
 
   it("renders mobile navigation when isDesktop is false", () => {

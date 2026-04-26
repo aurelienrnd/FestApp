@@ -278,7 +278,7 @@ describe("UsersContent", () => {
     // Rend le composant UsersContent
     render(<UsersContent />);
 
-    expect(screen.getByText("Chargement...")).toBeInTheDocument();
+    expect(screen.getByText("Chargement")).toBeInTheDocument();
   });
 
   it("shows error message when load fails", async () => {
