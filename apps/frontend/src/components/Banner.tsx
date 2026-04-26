@@ -145,8 +145,8 @@ export function MobilNav({
     <nav>
       <ul className="nav-list">
         <li className="inline-flex rounded bg-(--color-1) px-2 py-1 text-white transition-(--anim-btn-transition) duration-(--anim-btn-duration) hover:scale-(--anim-btn-scale)">
-          <button type="button" onClick={() => setIsMenuModalOpen(true)}>
-            <FontAwesomeIcon icon={faBars} />
+          <button type="button" onClick={() => setIsMenuModalOpen(true)} aria-label="Ouvrir le menu">
+            <FontAwesomeIcon icon={faBars} aria-hidden="true" />
           </button>
         </li>
         {isAdminPath ? null : <BtnTicket />}

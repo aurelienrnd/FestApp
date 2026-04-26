@@ -49,7 +49,7 @@ export default function Footer() {
                 aria-label={item.label}
                 className="inline-flex h-9 w-9 items-center justify-center rounded text-xs text-white bg-(--color-1) transition-(--anim-btn-transition) duration-(--anim-btn-duration) hover:scale-(--anim-btn-scale)"
               >
-                <FontAwesomeIcon icon={item.icon} />
+                <FontAwesomeIcon icon={item.icon} aria-hidden={true} />
               </a>
             </li>
           ))}
