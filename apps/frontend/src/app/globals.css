@@ -86,7 +86,7 @@
     @apply bg-white px-6 py-3 text-black uppercase text-xs overflow-y-auto max-h-48;
   }
   .detail-date-block {
-    @apply bg-black text-white font-bold uppercase text-center px-6 py-6 tracking-wide text-xl mr-10 mb-3 mt-3;
+    @apply bg-black text-white font-bold uppercase flex justify-around items-center px-6 py-6 tracking-wide text-xl mr-10 mb-3 mt-3;
   }
 
   /* === CARTES === */
