@@ -58,10 +58,10 @@
 
   /* === MODALES === */
   .modal-overlay {
-    @apply fixed inset-0 z-50 flex items-center justify-center pt-20 bg-(--color-overlay);
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-(--color-overlay);
   }
   .modal {
-    @apply w-4xl rounded-2xl bg-white text-black outline-none py-3;
+    @apply w-4xl max-w-[95vw] rounded-2xl bg-white text-black outline-none py-3 max-h-[95vh] overflow-y-auto;
   }
   /* === MODALES artiste news === */
   .modal-detail {
@@ -168,5 +168,11 @@
   .hero-slide-left {
     animation: slide-in-left var(--anim-hero-duration) var(--anim-hero-easing)
       both;
+  }
+}
+
+@media (max-height: 650px) {
+  .modal {
+    @apply rounded-none w-screen h-screen max-h-screen;
   }
 }

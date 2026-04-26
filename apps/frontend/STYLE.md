@@ -14,7 +14,7 @@ Ce document decrit l'etat reel du style dans `apps/frontend`.
 
 Details :
 
-- `--font-display` est reference dans `apps/frontend/src/app/layout.tsx:7` et provient de Next Font (Bebas Neue avec subsets latin + latin-ext).
+- `--font-display` est reference dans `apps/frontend/src/app/layout.tsx:7` et provient de Next Font (Bebas Neue avec subset latin).
 
 ---
 
@@ -122,7 +122,7 @@ Details :
 | Classe                  | Description                                                                        |
 | ----------------------- | ---------------------------------------------------------------------------------- |
 | `.modal-overlay`      | Fond semi-transparent — fixed,`z-50`, centré, `bg-(--color-overlay)`         |
-| `.modal`              | Conteneur de modale standard — arrondi,`bg-white text-black`                    |
+| `.modal`              | Conteneur de modale standard — arrondi, `bg-white text-black`, `max-h-[95vh]` scroll interne ; plein écran (`w-screen h-screen`) via `@media (max-height: 650px)` déclaré hors `@layer` |
 | `.modal-detail`       | Conteneur de modale détail —`w-[90vw]`, `bg-white`, arrondi, overflow hidden |
 | `.detail-layout`      | Layout interne — flex colonne, relative                                           |
 | `.detail-img-wrapper` | Wrapper image —`relative w-full h-80`                                           |
