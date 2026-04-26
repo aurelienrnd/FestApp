@@ -19,7 +19,7 @@ export default function HomeInfosPratiques() {
           <div className="w-full h-1 bg-(--color-1) rounded-t-md" />
           <div className="flex flex-col gap-4 p-6">
             <div>
-              <p className="text-xl font-black uppercase">{FESTIVAL_LOCATION.name}</p>
+              <h3 className="text-xl font-black uppercase">{FESTIVAL_LOCATION.name}</h3>
               <p className="text-sm opacity-70 uppercase mt-1">{FESTIVAL_LOCATION.address}</p>
               <p className="text-sm opacity-70 uppercase">{FESTIVAL_LOCATION.city}</p>
             </div>
