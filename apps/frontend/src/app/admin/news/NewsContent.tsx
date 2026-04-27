@@ -186,15 +186,13 @@ export default function NewsContent({
                 </div>
 
                 <div className="card-lineup-actions">
-                  {!isAdminPath && (
-                    <button
-                      type="button"
-                      className="btn-cta"
-                      onClick={() => setArticleToView(article)}
-                    >
-                      Voir plus
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    className="btn-cta"
+                    onClick={() => setArticleToView(article)}
+                  >
+                    Voir plus
+                  </button>
                   {isAdminPath && (
                     <>
                       <button
