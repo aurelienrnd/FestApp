@@ -16,9 +16,27 @@ CREATE TABLE artists (
   url_media VARCHAR(255) NOT NULL,                      -- URL/chemin du media associe
   description_media VARCHAR(255) NOT NULL,              -- Texte alternatif / description courte
   youtube_url VARCHAR(255),                             -- Lien YouTube (optionnel)
-  spotify_url VARCHAR(255)                              -- Lien Spotify (optionnel)
+  spotify_url VARCHAR(255),                             -- Lien Spotify (optionnel)
+  is_featured BOOLEAN NOT NULL DEFAULT FALSE            -- Mis en avant sur la page d'accueil (max 2)
 );
 
 -- Indexes pour optimiser les requetes courantes
 CREATE INDEX idx_artists_genre ON artists(genre);
 CREATE INDEX idx_artists_name ON artists(name);
+
+-- Trigger : limite a 2 le nombre d'artistes mis en avant simultanement
+CREATE OR REPLACE FUNCTION check_featured_limit()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.is_featured = TRUE THEN -- Si l'artiste est mis en avant
+    IF (SELECT COUNT(*) FROM artists WHERE is_featured = TRUE AND id != NEW.id) >= 2 THEN -- Verifie le nombre d'artistes deja mis en avant (exclut l'artiste en cours de modification)
+      RAISE EXCEPTION 'featured_limit_reached'; -- Lève une exception si la limite est atteinte
+    END IF;
+  END IF;
+  RETURN NEW; -- Retourne la ligne modifiée pour l'insertion ou la mise à jour
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_check_featured_limit -- Nom du trigger
+BEFORE INSERT OR UPDATE ON artists
+FOR EACH ROW EXECUTE FUNCTION check_featured_limit();

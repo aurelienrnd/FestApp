@@ -118,12 +118,21 @@ Représente les groupes ou artistes programmés au festival.
 | `description_media` | `VARCHAR(255)` | NOT NULL                     | Texte alternatif du média                                              |
 | `youtube_url`       | `VARCHAR(255)` | NULL                         | Lien vers la chaîne YouTube officielle de l'artiste (optionnel)        |
 | `spotify_url`       | `VARCHAR(255)` | NULL                         | Lien vers la page Spotify officielle de l'artiste (optionnel)          |
+| `is_featured`       | `BOOLEAN`      | NOT NULL, DEFAULT `FALSE`    | Mis en avant sur la page d'accueil — maximum 2 artistes simultanément  |
 
 **Index :** `genre`, `name`
 
 > `url_media` stocke un chemin local vers une image WebP générée par sharp lors de l'upload (ex : `/uploads/artists/<uuid>.webp`).
 
 > **Choix de conception :** `youtube_url` et `spotify_url` sont deux colonnes directes sur `artists` plutôt qu'une table séparée. Ce choix est justifié car il y a exactement deux plateformes connues à l'avance. Si d'autres plateformes s'ajoutaient, une table `artist_links` deviendrait préférable.
+
+**Trigger : `trg_check_featured_limit`**
+
+Un trigger `BEFORE INSERT OR UPDATE` appelle la fonction `check_featured_limit()` avant chaque écriture sur la table. Il opère en mode `FOR EACH ROW` — ce qui donne accès à `NEW`, la ligne en cours d'écriture — contrairement à `FOR EACH STATEMENT` où `NEW` n'existe pas.
+
+La logique est la suivante : si `NEW.is_featured = TRUE`, on compte les artistes déjà à `TRUE` en excluant l'artiste en cours (`id != NEW.id`, pour ne pas se compter soi-même lors d'un `UPDATE`). Si ce count atteint 2, la fonction lève `RAISE EXCEPTION 'featured_limit_reached'`, ce qui annule immédiatement l'opération. Le backend intercepte cette exception PostgreSQL et renvoie une erreur métier au frontend.
+
+Le trigger est déclaré `BEFORE` (et non `AFTER`) pour que l'exception empêche l'écriture avant qu'elle n'ait lieu.
 
 ---
 
