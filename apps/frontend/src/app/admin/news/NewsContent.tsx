@@ -162,16 +162,21 @@ export default function NewsContent({
                 </div>
 
                 <div className="card-lineup-content">
-                  <div className="flex items-center gap-2">
-                    <span>{article.title}</span>
-                    {isAdminPath && !article.is_published && (
-                      <span className="text-xs px-2 py-1 rounded border border-(--color-1) text-(--color-1)">
-                        Brouillon
-                      </span>
-                    )}
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="card-primary">{article.title}</span>
+                      {isAdminPath && !article.is_published && (
+                        <span className="text-xs px-2 py-1 rounded border border-(--color-1) text-(--color-1)">
+                          Brouillon
+                        </span>
+                      )}
+                    </div>
+                    <span className="card-secondary">
+                      {article.author_name ?? "Auteur inconnu"}
+                    </span>
                   </div>
-                  <span>{article.author_name ?? "Auteur inconnu"}</span>
-                  <span>
+
+                  <span className="card-secondary">
                     {new Date(article.created_at).toLocaleDateString("fr-FR", {
                       day: "numeric",
                       month: "long",

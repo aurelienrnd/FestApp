@@ -136,13 +136,15 @@ Details :
 
 | Classe                      | Description                                                            |
 | --------------------------- | ---------------------------------------------------------------------- |
+| `.card-primary`           | Texte principal d'une carte — `font-black uppercase tracking-wide` — taille inlinée selon contexte (`text-xl` users, `text-4xl` dashboard, non précisée lineup/news) |
+| `.card-secondary`         | Texte secondaire d'une carte — `text-sm text-(--color-text)/60` — s'adapte au thème (admin blanc/visiteur noir) |
 | `.card-profile`           | Conteneur carte profil — bordure `--color-text-input`, arrondi, flex colonne mobile / ligne desktop — padding et gap inlinés (`p-6 gap-6` users, `p-8 gap-8` dashboard) |
 | `.card-profile-avatar`    | Avatar lettre — cercle `--color-1`, fond `--color-bg`, centré, bold uppercase — taille inlinée (`w-14 h-14 text-2xl` users, `w-24 h-24 text-4xl` dashboard) |
 | `.card-profile-badge`     | Badge rôle — pill `--color-1`, texte blanc, `text-sm` bold uppercase — padding inliné (`px-3 py-1` users, `px-4 py-1.5` dashboard) |
 | `.card-row`               | Carte en ligne — bordure `--color-text-input`, flex colonne mobile / ligne desktop, hover scale `1.02` (`transition: transform 0.3s ease`) |
 | `.card-media-img-wrapper` | Conteneur image — pleine largeur mobile,`w-48 self-stretch` desktop |
 | `.card-media-img`         | Image —`object-cover`, arrondie haut mobile / gauche desktop        |
-| `.card-lineup-content`    | Contenu de la carte — flex colonne/ligne, space-between               |
+| `.card-lineup-content`    | Contenu de la carte — flex colonne mobile / ligne desktop, `justify-between`, `items-start lg:items-center`, `py-3 px-4` |
 | `.card-lineup-actions`    | Zone d'actions — flex centré, marges responsive                      |
 
 ### Pages

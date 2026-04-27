@@ -181,7 +181,7 @@ export default function UsersContent({
                 {/* Infos */}
                 <div className="flex-1 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 w-full text-center sm:text-left">
                   <div className="flex flex-col gap-2">
-                    <p className="text-xl font-black uppercase tracking-wide">
+                    <p className="card-primary text-xl">
                       {user.display_name ?? "Utilisateur"}
                     </p>
                     <div className="flex items-center gap-3 justify-center sm:justify-start">

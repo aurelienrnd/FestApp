@@ -167,31 +167,31 @@ export default function LineupContent({
                 </div>
 
                 <div className="card-lineup-content">
-                  <span>{artist.name}</span>
-                  <span>{artist.stage ?? "Scene non definie"}</span>
-                  <span>
-                    {artist.start_time
-                      ? new Date(artist.start_time).toLocaleDateString(
-                          "fr-FR",
-                          {
-                            weekday: "long",
-                            day: "numeric",
-                            month: "long",
-                          },
-                        )
-                      : "Date non definie"}
-                  </span>
-                  <span>
-                    {artist.start_time
-                      ? new Date(artist.start_time).toLocaleTimeString(
-                          "fr-FR",
-                          {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          },
-                        )
-                      : ""}
-                  </span>
+                  <div className="flex flex-col gap-1">
+                    <span className="card-primary">{artist.name}</span>
+                    <span className="card-secondary uppercase">
+                      {artist.stage ?? "Scène non définie"}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col gap-1 card-secondary">
+                    <span>
+                      {artist.start_time
+                        ? new Date(artist.start_time).toLocaleDateString(
+                            "fr-FR",
+                            { weekday: "long", day: "numeric", month: "long" },
+                          )
+                        : "Date non définie"}
+                    </span>
+                    <span>
+                      {artist.start_time
+                        ? new Date(artist.start_time).toLocaleTimeString(
+                            "fr-FR",
+                            { hour: "2-digit", minute: "2-digit" },
+                          )
+                        : ""}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="card-lineup-actions">

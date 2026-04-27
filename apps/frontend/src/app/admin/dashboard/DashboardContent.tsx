@@ -91,7 +91,7 @@ export default function DashboardContent() {
         {/* Infos — distribue sur toute la largeur */}
         <div className="flex-1 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 w-full text-center sm:text-left">
           <div className="flex flex-col gap-2">
-            <p className="text-4xl font-black uppercase tracking-wide">
+            <p className="card-primary text-4xl">
               {user.display_name}
             </p>
             <div className="flex items-center gap-3 justify-center sm:justify-start">
