@@ -82,9 +82,9 @@ export default function DashboardContent() {
   return (
     <div className="flex-1 flex flex-col gap-8 w-full max-w-5xl mx-auto">
       {/* Carte profil */}
-      <div className="border border-(--color-text-input) rounded-md p-8 flex flex-col sm:flex-row gap-8 items-center">
+      <div className="card-profile p-8 gap-8">
         {/* Avatar */}
-        <div className="w-24 h-24 shrink-0 rounded-full border-2 border-(--color-1) bg-(--color-bg) flex items-center justify-center text-4xl font-black uppercase">
+        <div className="card-profile-avatar w-24 h-24 text-4xl">
           {(user.display_name ?? "U").slice(0, 1)}
         </div>
 
@@ -95,7 +95,7 @@ export default function DashboardContent() {
               {user.display_name}
             </p>
             <div className="flex items-center gap-3 justify-center sm:justify-start">
-              <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold uppercase bg-(--color-1) text-white tracking-wide">
+              <span className="card-profile-badge px-4 py-1.5">
                 {user.role}
               </span>
               <p className="text-sm text-(--color-text-input)">{user.email}</p>

@@ -33,7 +33,7 @@ Details :
 
 | Variable      | Valeur      | Usages                                                                                                                   |
 | ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`, `.detail-name-block`, `.error-message`), `HomeInfosPratiques.tsx` (inline barre colorée `bg`, icônes SVG `text`), composants divers |
+| `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`, `.detail-name-block`, `.error-message`, `.card-profile-avatar`, `.card-profile-badge`), `HomeInfosPratiques.tsx` (inline barre colorée `bg`, icônes SVG `text`), composants divers |
 | `--color-2` | `#e4e4e7` | `globals.css` (`.input`, `.upload-zone`), `ArtistDetailModal.tsx` (inline icônes YouTube/Spotify) |
 | `--color-3` | `#0ea5e9` | `LoadingLine.tsx` (inline), `SectionCta.tsx` (inline), `Footer.tsx`                                             |
 
@@ -41,7 +41,7 @@ Details :
 
 | Variable               | Valeur                       | Usages                                                                                                                                |
 | ---------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `--color-text-input` | `#47474f`                  | `globals.css` (`.input`, `.card-row`, `.upload-btn`, `.btn-action`, `.home-card`), `DashboardContent.tsx` (inline), `Banner.tsx` (inline nav hover) |
+| `--color-text-input` | `#47474f`                  | `globals.css` (`.input`, `.card-row`, `.card-profile`, `.upload-btn`, `.btn-action`, `.home-card`), `DashboardContent.tsx` (inline), `Banner.tsx` (inline nav hover) |
 | `--color-overlay`    | `rgba(156, 163, 175, 0.3)` | `globals.css` (`.modal-overlay`)                                                                                                  |
 
 ### Couleurs thème
@@ -53,7 +53,7 @@ Details :
 | `--color-bg-admin`     | `#ffffff`  | `globals.css` (thème admin)                  |
 | `--color-text-admin`   | `black`    | `globals.css` (thème admin)                  |
 | `--color-text`         | thème actif | `globals.css` (`.app-root`), `layout.tsx` (body) |
-| `--color-bg`           | thème actif | `globals.css` (`.app-root`), `layout.tsx` (body), `Banner.tsx` (header bg conditionnel), `Footer.tsx`, `DashboardContent.tsx` (inline avatar) |
+| `--color-bg`           | thème actif | `globals.css` (`.app-root`, `.card-profile-avatar`), `layout.tsx` (body), `Banner.tsx` (header bg conditionnel), `Footer.tsx` |
 
 ### Espacement contextuel
 
@@ -136,6 +136,9 @@ Details :
 
 | Classe                      | Description                                                            |
 | --------------------------- | ---------------------------------------------------------------------- |
+| `.card-profile`           | Conteneur carte profil — bordure `--color-text-input`, arrondi, flex colonne mobile / ligne desktop — padding et gap inlinés (`p-6 gap-6` users, `p-8 gap-8` dashboard) |
+| `.card-profile-avatar`    | Avatar lettre — cercle `--color-1`, fond `--color-bg`, centré, bold uppercase — taille inlinée (`w-14 h-14 text-2xl` users, `w-24 h-24 text-4xl` dashboard) |
+| `.card-profile-badge`     | Badge rôle — pill `--color-1`, texte blanc, `text-sm` bold uppercase — padding inliné (`px-3 py-1` users, `px-4 py-1.5` dashboard) |
 | `.card-row`               | Carte en ligne — bordure `--color-text-input`, flex colonne mobile / ligne desktop, hover scale `1.02` (`transition: transform 0.3s ease`) |
 | `.card-media-img-wrapper` | Conteneur image — pleine largeur mobile,`w-48 self-stretch` desktop |
 | `.card-media-img`         | Image —`object-cover`, arrondie haut mobile / gauche desktop        |

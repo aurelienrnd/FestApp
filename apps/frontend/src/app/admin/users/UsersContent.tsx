@@ -167,54 +167,59 @@ export default function UsersContent({
             <p>Aucun utilisateur.</p>
           </div>
         ) : (
-          <ul className="flex flex-col items-center gap-6">
+          <ul className="flex flex-col gap-4 w-full">
             {filteredUsers.map((user) => (
-              <li key={user.id} className="card-row">
-                <div className="flex items-center justify-center m-3 mb-0 lg:mb-3">
-                  <span className="flex items-center justify-center">
-                    {user.display_name ?? "Utilisateur"}
-                  </span>
+              <li
+                key={user.id}
+                className="card-profile p-6 gap-6"
+              >
+                {/* Avatar */}
+                <div className="card-profile-avatar w-14 h-14 text-2xl">
+                  {(user.display_name ?? "U").slice(0, 1)}
                 </div>
 
-                <div className="flex-1 flex flex-wrap flex-col lg:flex-row items-center gap-3 justify-between">
-                  <span className="whitespace-nowrap">{user.email}</span>
-
-                  <div className="flex flex-nowrap">
-                    <span className="whitespace-nowrap">Cree le&nbsp;</span>
-                    <span className="whitespace-nowrap">
-                      {formatDateFr(user.created_at)}
-                    </span>
+                {/* Infos */}
+                <div className="flex-1 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 w-full text-center sm:text-left">
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xl font-black uppercase tracking-wide">
+                      {user.display_name ?? "Utilisateur"}
+                    </p>
+                    <div className="flex items-center gap-3 justify-center sm:justify-start">
+                      <span className="card-profile-badge px-3 py-1">
+                        {user.role}
+                      </span>
+                      <p className="text-sm text-(--color-text-input)">
+                        {user.email}
+                      </p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-4 text-xs uppercase text-(--color-text-input)">
+                      <span>Créé le {formatDateFr(user.created_at)}</span>
+                      <span>
+                        Mot de passe{" "}
+                        {user.password_changed_at
+                          ? `modifié le ${formatDateFr(user.password_changed_at)}`
+                          : "provisoire"}
+                      </span>
+                    </div>
                   </div>
 
-                  <span className="whitespace-nowrap">{user.role}</span>
-
-                  <div className="flex flex-nowrap">
-                    <span className="whitespace-nowrap">
-                      Mot de passe&nbsp;
-                    </span>
-                    <span className="whitespace-nowrap">
-                      {user.password_changed_at
-                        ? `Modifie le ${formatDateFr(user.password_changed_at)}`
-                        : "Provisoire"}
-                    </span>
+                  {/* Actions */}
+                  <div className="flex gap-3 shrink-0">
+                    <button
+                      type="button"
+                      className="btn-action"
+                      onClick={() => openEditModal(user)}
+                    >
+                      Modifier
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-action"
+                      onClick={() => openDeleteModal(user)}
+                    >
+                      Supprimer
+                    </button>
                   </div>
-                </div>
-
-                <div className="flex justify-center gap-6 mb-3 lg:m-3">
-                  <button
-                    type="button"
-                    className="btn-action"
-                    onClick={() => openEditModal(user)}
-                  >
-                    Modifier
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-action"
-                    onClick={() => openDeleteModal(user)}
-                  >
-                    Supprimer
-                  </button>
                 </div>
               </li>
             ))}

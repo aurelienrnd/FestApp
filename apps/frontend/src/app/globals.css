@@ -90,6 +90,15 @@
   }
 
   /* === CARTES === */
+  .card-profile {
+    @apply border border-(--color-text-input) rounded-md flex flex-col sm:flex-row items-center;
+  }
+  .card-profile-avatar {
+    @apply shrink-0 rounded-full border-2 border-(--color-1) bg-(--color-bg) flex items-center justify-center font-black uppercase;
+  }
+  .card-profile-badge {
+    @apply inline-flex items-center rounded-full text-sm font-bold uppercase bg-(--color-1) text-white tracking-wide;
+  }
   .card-row {
     @apply w-full max-w-md lg:max-w-none rounded-md border border-(--color-text-input) flex flex-col lg:flex-row gap-3;
     transition: transform 0.3s ease;
