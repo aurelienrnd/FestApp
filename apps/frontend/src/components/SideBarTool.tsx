@@ -23,7 +23,7 @@ export default function SideBarTool({
 
   return (
     <div className="flex flex-1 gap-6 pr-0 md:pr-6">
-      <div className="hidden md:flex flex-col sticky top-(--header-height) h-[calc(100dvh-var(--header-height))] justify-center">
+      <div className="hidden md:flex flex-col sticky top-(--header-height) self-start py-10">
         <Navigation
           items={items}
           pathname={pathname}

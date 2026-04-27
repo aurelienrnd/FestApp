@@ -24,7 +24,7 @@ Details :
 
 | Variable                         | Valeur     | Usages                                                                          |
 | -------------------------------- | ---------- | ------------------------------------------------------------------------------- |
-| `--header-height`              | `106px`  | `HomeHero.tsx` (`-mt-(--header-height)` section, `mt-(--header-height)` div interne), `globals.css` (`.home-section-vh` calc) |
+| `--header-height`              | `106px`  | `HomeHero.tsx` (`-mt-(--header-height)` section, `mt-(--header-height)` div interne), `globals.css` (`.home-section-vh` calc), `SideBarTool.tsx` (`top-(--header-height)` sidebar sticky) |
 | `--home-hero-min-height`       | `100dvh` | `HomeHero.tsx` (`h-(--home-hero-min-height)`)                             |
 | `--home-hero-min-height-floor` | `600px`  | `HomeHero.tsx` (`min-h-(--home-hero-min-height-floor)`) — plancher paysage |
 | `--app-min-width`              | `320px`  | `globals.css` (`.app-root`) — largeur minimale de l'application            |
