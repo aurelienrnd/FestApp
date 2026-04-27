@@ -70,8 +70,8 @@ function isStep3Invalid(
 }
 
 /** Affiche la modale d'ajout ou de modification d'un artiste en trois etapes.
-![1775484137806](image/AddArtistModal/1775484137806.png) * Etape 1 : nom, genre, origine, bio, liens YouTube et Spotify (optionnels). Etape 2 : description image, fichier image. Etape 3 : scene, heure de debut et de fin.
- * Soumet les donnees en multipart/form-data a POST /admin/artists.
+ * Etape 1 : nom, genre, origine, bio, liens YouTube et Spotify (optionnels). Etape 2 : description image, fichier image. Etape 3 : scene, heure de debut et de fin, case "Publier sur la page d'accueil".
+ * Soumet les donnees en multipart/form-data a POST /admin/artists ou PATCH /admin/artists/:id.
  * En mode edition (artistToEdit defini), pre-remplit les champs et affiche "Modifier" a la place de "Ajouter".
  * @param {AddArtistModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
@@ -103,6 +103,9 @@ export default function AddArtistModal({
   const [bio, setBio] = useState(artistToEdit?.bio ?? "");
   const [youtubeUrl, setYoutubeUrl] = useState(artistToEdit?.youtube_url ?? "");
   const [spotifyUrl, setSpotifyUrl] = useState(artistToEdit?.spotify_url ?? "");
+  const [isFeatured, setIsFeatured] = useState(
+    artistToEdit?.is_featured ?? false,
+  );
 
   // Champs de l'etape 2
   const [descriptionMedia, setDescriptionMedia] = useState(
@@ -155,6 +158,7 @@ export default function AddArtistModal({
     setDate("");
     setStartTime("");
     setEndTime("");
+    setIsFeatured(false);
     setImage(null);
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(null);
@@ -215,6 +219,7 @@ export default function AddArtistModal({
       "end_time",
       new Date(`${endDate}T${endTime}`).toISOString(),
     );
+    formData.append("is_featured", String(isFeatured));
 
     // En mode edition, appel PATCH sur l'artiste existant, sinon POST pour creer
     const endpoint = isEditMode
@@ -509,6 +514,19 @@ export default function AddArtistModal({
                   onChange={(e) => setEndTime(e.target.value)}
                 />
               </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                id="artistIsFeatured"
+                name="is_featured"
+                type="checkbox"
+                checked={isFeatured}
+                onChange={(e) => setIsFeatured(e.target.checked)}
+              />
+              <label htmlFor="artistIsFeatured">
+                Publier sur la page d&apos;accueil
+              </label>
             </div>
 
             <div className="submit-modal-area">

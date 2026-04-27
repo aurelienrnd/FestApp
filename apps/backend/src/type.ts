@@ -53,6 +53,7 @@ export type ArtistListRow = {
   stage: string | null;
   start_time: string | null;
   end_time: string | null;
+  is_featured: boolean;
 };
 
 /** Type representant une ligne concert retournee par la base de donnees. */

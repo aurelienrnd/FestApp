@@ -52,7 +52,10 @@ export async function updateArtist(req: Request, res: Response) {
     stage,
     start_time,
     end_time,
+    is_featured: is_featured_raw,
   } = req.body;
+
+  const is_featured = is_featured_raw === "true";
 
   // determine l'url_media finale : nouvelle image ou conservation de l'existante
   let url_media = existingArtist.url_media;
@@ -75,9 +78,9 @@ export async function updateArtist(req: Request, res: Response) {
     // met a jour l'artiste en base de donnees
     const updatedArtists = await query<ArtistListRow>(
       `UPDATE artists
-       SET name = $1, genre = $2, origin = $3, bio = $4, url_media = $5, description_media = $6, youtube_url = $7, spotify_url = $8
-       WHERE id = $9
-       RETURNING id, name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url`,
+       SET name = $1, genre = $2, origin = $3, bio = $4, url_media = $5, description_media = $6, youtube_url = $7, spotify_url = $8, is_featured = $9
+       WHERE id = $10
+       RETURNING id, name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url, is_featured`,
       [
         name,
         genre,
@@ -87,6 +90,7 @@ export async function updateArtist(req: Request, res: Response) {
         description_media,
         youtube_url ?? null,
         spotify_url ?? null,
+        is_featured,
         artistId,
       ],
     );
@@ -141,6 +145,9 @@ export async function updateArtist(req: Request, res: Response) {
     await query("ROLLBACK");
     if (newFileWritten && newFilepath)
       await unlink(newFilepath).catch(() => undefined);
+    if (error instanceof Error && error.message === "featured_limit_reached") {
+      throw new AppError(ERRORS.ARTIST_FEATURED_LIMIT, 409);
+    }
     throw error;
   }
 }

@@ -20,7 +20,7 @@
 | PATCH   | `/admin/users/:id`            | admin              | Modifier un utilisateur                                       |
 | DELETE  | `/admin/users/:id`            | admin              | Supprimer un utilisateur                                      |
 | POST    | `/contact/submit`             | Public             | Soumettre le formulaire de contact                            |
-| GET     | `/public/home`                | Public             | Données agrégées pour la page d'accueil (2 artistes + 2 articles) |
+| GET     | `/public/home`                | Public             | Données agrégées pour la page d'accueil (artistes mis en avant + 2 articles) |
 | GET     | `/public/lineup`              | Public             | Liste des artistes de la programmation                        |
 | GET     | `/public/news`                | Public / Privilégié | Liste des articles (tous si admin/news, publiés sinon)        |
 | GET     | `/health`                     | Public             | Santé du serveur (diagnostic)                                 |
@@ -624,9 +624,10 @@ image=<fichier image>
 stage=Grande Scene
 start_time=2025-06-20T18:00:00.000Z
 end_time=2025-06-20T19:30:00.000Z
+is_featured=true
 ```
 
-> `youtube_url` et `spotify_url` sont optionnels. `start_time` et `end_time` doivent etre au format ISO 8601 (`YYYY-MM-DDTHH:mm:ss.sssZ`). L'artiste et son concert sont inseres en base dans une seule transaction SQL.
+> `youtube_url` et `spotify_url` sont optionnels. `is_featured` est une string `"true"` ou `"false"` (multipart ne supporte pas les booleens) — defaut `false` si absent. `start_time` et `end_time` doivent etre au format ISO 8601 (`YYYY-MM-DDTHH:mm:ss.sssZ`). L'artiste et son concert sont inseres en base dans une seule transaction SQL.
 
 Reponse en succes:
 
@@ -646,6 +647,7 @@ Reponse en succes:
     "description_media": "Photo promo du groupe",
     "youtube_url": "https://www.youtube.com/@RedHotChiliPeppers",
     "spotify_url": "https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5",
+    "is_featured": true,
     "stage": "Grande Scene",
     "start_time": "2026-05-22T21:00:00.000Z",
     "end_time": "2026-05-22T22:30:00.000Z"
@@ -660,6 +662,7 @@ Reponses d'erreur:
 - `400` `{ "error": "Type de fichier non autorise (jpeg, png ou webp uniquement)" }`
 - `401` `{ "error": "Cookie d'authentification manquant" }`
 - `403` `{ "error": "Acces refuse" }`
+- `409` `{ "error": "Deux artistes sont déjà mis en avant sur la page d'accueil." }`
 
 ### PATCH `/admin/artists/:id`
 
@@ -692,9 +695,10 @@ image=<fichier image>
 stage=Grande Scene
 start_time=2025-06-20T18:00:00.000Z
 end_time=2025-06-20T19:30:00.000Z
+is_featured=true
 ```
 
-> `youtube_url` et `spotify_url` sont optionnels. `start_time` et `end_time` doivent etre au format ISO 8601 (`YYYY-MM-DDTHH:mm:ss.sssZ`). La mise a jour de l'artiste et de son concert se fait dans une seule transaction SQL. Si une nouvelle image est fournie, l'ancienne est supprimee du disque.
+> `youtube_url` et `spotify_url` sont optionnels. `is_featured` est une string `"true"` ou `"false"` (multipart ne supporte pas les booleens) — defaut `false` si absent. `start_time` et `end_time` doivent etre au format ISO 8601 (`YYYY-MM-DDTHH:mm:ss.sssZ`). La mise a jour de l'artiste et de son concert se fait dans une seule transaction SQL. Si une nouvelle image est fournie, l'ancienne est supprimee du disque.
 
 Reponse en succes:
 
@@ -714,6 +718,7 @@ Reponse en succes:
     "description_media": "Photo promo du groupe",
     "youtube_url": "https://www.youtube.com/@RedHotChiliPeppers",
     "spotify_url": "https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5",
+    "is_featured": true,
     "stage": "Grande Scene",
     "start_time": "2025-06-20T18:00:00.000Z",
     "end_time": "2025-06-20T19:30:00.000Z"
@@ -735,6 +740,7 @@ Reponses d'erreur:
 - `401` `{ "error": "Session manquante" }`
 - `403` `{ "error": "Acces refuse" }`
 - `404` `{ "error": "Artiste introuvable" }`
+- `409` `{ "error": "Deux artistes sont déjà mis en avant sur la page d'accueil." }`
 
 ---
 
@@ -824,7 +830,7 @@ Reponses d'erreur:
 
 ### GET `/public/home`
 
-Retourne les 2 artistes ayant la `start_time` la plus récente et les 2 derniers articles publiés. Les deux requêtes sont exécutées en parallèle via `Promise.all`.
+Retourne les artistes avec `is_featured = TRUE` et les 2 derniers articles publiés. Les deux requêtes sont exécutées en parallèle via `Promise.all`.
 
 Authentification :
 
@@ -860,7 +866,7 @@ Réponse en succès :
 }
 ```
 
-> `artists` est vide si aucun artiste n'a de concert associé (`start_time IS NOT NULL` filtre les artistes sans concert). `articles` est vide s'il n'y a aucun article publié.
+> `artists` contient uniquement les artistes dont `is_featured = TRUE` — au maximum 2 (limite appliquée par trigger en base). `articles` est vide s'il n'y a aucun article publié.
 
 Réponses d'erreur :
 

@@ -26,4 +26,5 @@ export const ERRORS = {
     "Type de fichier non autorise (jpeg, png ou webp uniquement)",
   ARTICLE_NOT_FOUND: "Article introuvable",
   ARTICLE_FILE_REQUIRED: "Image requise",
+  ARTIST_FEATURED_LIMIT: "Deux artistes sont déjà mis en avant sur la page d'accueil.",
 } as const;

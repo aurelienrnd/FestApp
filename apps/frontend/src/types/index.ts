@@ -34,6 +34,7 @@ export type ArtistListRow = {
   description_media: string;
   youtube_url: string | null;
   spotify_url: string | null;
+  is_featured: boolean;
   stage: string | null;
   start_time: string | null;
   end_time: string | null;

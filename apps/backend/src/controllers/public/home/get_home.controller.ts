@@ -11,9 +11,7 @@ export async function getHomeController(_req: Request, res: Response) {
               c.stage, c.start_time, c.end_time
        FROM artists a
        LEFT JOIN concerts c ON c.artist_id = a.id
-       WHERE c.start_time IS NOT NULL
-       ORDER BY c.start_time DESC
-       LIMIT 2`,
+       WHERE a.is_featured = TRUE`,
     ),
     query<HomeArticleRow>(
       `SELECT id, title, url_media, description_media, created_at

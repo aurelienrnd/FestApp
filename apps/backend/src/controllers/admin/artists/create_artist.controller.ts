@@ -32,7 +32,10 @@ export async function createArtist(req: Request, res: Response) {
     stage,
     start_time,
     end_time,
+    is_featured: is_featured_raw,
   } = req.body;
+
+  const is_featured = is_featured_raw === "true";
 
   // genere un nom de fichier unique pour l'image, construit le chemin de destination et l'URL d'acces
   const uuid = randomUUID();
@@ -49,9 +52,9 @@ export async function createArtist(req: Request, res: Response) {
   try {
     // insere l'artiste en base de donnees et retourne les donnees de l'artiste cree
     const createdArtists = await query<ArtistListRow>(
-      `INSERT INTO artists (name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING id, name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url`,
+      `INSERT INTO artists (name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url, is_featured)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING id, name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url, is_featured`,
       [
         name,
         genre,
@@ -61,6 +64,7 @@ export async function createArtist(req: Request, res: Response) {
         description_media,
         youtube_url ?? null,
         spotify_url ?? null,
+        is_featured,
       ],
     );
 
@@ -105,6 +109,9 @@ export async function createArtist(req: Request, res: Response) {
     // annule la transaction en cas d'erreur, supprime le fichier si deja ecrit, puis relance pour le middleware
     await query("ROLLBACK");
     if (fileWritten) await unlink(filepath).catch(() => undefined);
+    if (error instanceof Error && error.message === "featured_limit_reached") {
+      throw new AppError(ERRORS.ARTIST_FEATURED_LIMIT, 409);
+    }
     throw error;
   }
 }

@@ -62,4 +62,5 @@ export const createArtistSchema = z.object({
   stage: z.string().min(1).trim(),
   start_time: z.iso.datetime(),
   end_time: z.iso.datetime(),
+  is_featured: z.enum(["true", "false"]).optional(),
 });
