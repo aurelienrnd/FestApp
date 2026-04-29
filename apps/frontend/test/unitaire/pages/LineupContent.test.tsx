@@ -126,8 +126,8 @@ describe("LineupContent", () => {
 
     render(<LineupContent />);
 
-    expect(await screen.findByText("Scene non definie")).toBeInTheDocument();
-    expect(screen.getByText("Date non definie")).toBeInTheDocument();
+    expect(await screen.findByText("Scène non définie")).toBeInTheDocument();
+    expect(screen.getByText("Date non définie")).toBeInTheDocument();
   });
 
   it("deletes an artist and removes it from the list", async () => {

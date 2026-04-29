@@ -77,8 +77,8 @@ describe("DashboardContent", () => {
       </AdminUserProvider>,
     );
 
-    expect(screen.getByText("Name: Admin")).toBeInTheDocument();
-    expect(screen.getByText("Email: admin@test.fr")).toBeInTheDocument();
-    expect(screen.getByText("Type: admin")).toBeInTheDocument();
+    expect(screen.getByText("Admin")).toBeInTheDocument();
+    expect(screen.getByText("admin@test.fr")).toBeInTheDocument();
+    expect(screen.getByText("admin")).toBeInTheDocument();
   });
 });
