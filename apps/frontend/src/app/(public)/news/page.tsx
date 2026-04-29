@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import SideBarTool from "../../../components/SideBarTool";
-import { filterNewsItems } from "../../../config/navigation";
+import { filterNewsItems } from "../../../config/ui";
 import AddButton from "../../../components/AddButton";
 import NewsContent from "../../admin/news/NewsContent";
 

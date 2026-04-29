@@ -131,8 +131,7 @@ apps/frontend/
 │   │   └── SideBarTool.tsx
 │   ├── config/
 │   │   ├── festival.ts
-│   │   ├── footer.ts
-│   │   └── navigation.ts
+│   │   └── ui.ts
 │   ├── hooks/
 │   │   ├── useNavPath.ts
 │   │   └── useRoleGuard.ts
@@ -282,9 +281,8 @@ Centralise les constantes de configuration du frontend.
 
 | Fichier | Description |
 | --- | --- |
-| `festival.ts` | Source de vérité unique pour les dates et le lieu du festival — exporte `FESTIVAL_DAYS: string[]` (tableau de dates ISO) et `FESTIVAL_LOCATION` (nom, adresse, ville). Consommé par `DashboardContent`, `navigation.ts`, `AddArtistModal` et `HomeInfosPratiques` |
-| `navigation.ts` | Définit les items de navigation : liens visiteur (`navVisitorItems`), liens admin (`navAdminItem`), items de dashboard (`navDashBordItems`), filtres lineup/news/users. `filterLineUpItems` est généré dynamiquement depuis `FESTIVAL_DAYS`. Expose `filterNavByRole` pour filtrer les liens selon le rôle de l'utilisateur |
-| `footer.ts` | Définit les liens du footer : liens légaux (`legalLinks`) et réseaux sociaux (`socialLinks`) |
+| `festival.ts` | Source de vérité unique pour les données du festival — exporte `FESTIVAL_DAYS`, `FESTIVAL_LOCATION` et `TICKETING_URL`. Consommé par `DashboardContent`, `ui.ts`, `AddArtistModal`, `HomeInfosPratiques`, `Banner` et `HomeHero` |
+| `ui.ts` | Définit les items de navigation et de filtrage — liens visiteur (`navVisitorItems`), liens admin (`navAdminItem`, `navAdminQuickLinks`), filtres lineup/news/users, rôles utilisateurs (`USER_ROLES`). Expose `filterNavByRole` pour filtrer les liens selon le rôle de l'utilisateur |
 
 ### `functions/`
 

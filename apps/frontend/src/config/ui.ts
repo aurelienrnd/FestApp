@@ -6,6 +6,7 @@ export type NavItem = {
   active?: boolean;
   value?: string;
   role?: string;
+  desc?: string;
   onClick?: () => void;
 };
 
@@ -24,23 +25,17 @@ export const navAdminItem: NavItem[] = [
     path: "/admin/dashboard",
     role: "admin, lineup, news",
   },
-  { label: "Programation", path: "/admin/lineup", role: "admin, lineup" },
-  { label: "Articles", path: "/admin/news", role: "admin, news" },
-  { label: "Utilisateurs", path: "/admin/users", role: "admin" },
+  { label: "Programation", path: "/admin/lineup", role: "admin, lineup", desc: "Gérer la programmation artistique" },
+  { label: "Articles", path: "/admin/news", role: "admin, news", desc: "Gérer les articles et actualités" },
+  { label: "Utilisateurs", path: "/admin/users", role: "admin", desc: "Gérer les comptes utilisateurs" },
   { labelBtn: "Logout", active: false },
 ];
 
-/** Liens affiches dans la navigation de la page Dashboard. */
-export const navDashBordItems: NavItem[] = [
-  {
-    label: "Dashboard",
-    path: "/admin/dashboard",
-    role: "admin, lineup, news",
-  },
-  { label: "Programation", path: "/admin/lineup", role: "admin, lineup" },
-  { label: "Articles", path: "/admin/news", role: "admin, news" },
-  { label: "Utilisateurs", path: "/admin/users", role: "admin" },
-];
+
+/** Items de navigation admin sans Dashboard ni Logout — utilisés pour les raccourcis du dashboard. */
+export const navAdminQuickLinks = navAdminItem.filter(
+  (item) => item.path && item.path !== "/admin/dashboard",
+);
 
 /** Filtre les items de navigation selon le role de l'utilisateur connecte.
  * Les items sans champ `role` sont toujours inclus (ex : Logout).
@@ -77,10 +72,15 @@ export const filterNewsItems: NavItem[] = [
   { labelBtn: "Decroissant", active: false },
 ];
 
+/** Roles utilisateurs disponibles — source de vérité unique. */
+export const USER_ROLES = [
+  { value: "admin", label: "Admin" },
+  { value: "lineup", label: "Line up" },
+  { value: "news", label: "News" },
+] as const;
+
 /** Filtres affiches dans la navigation de la admin/Users. */
 export const filterUsersItems: NavItem[] = [
   { labelBtn: "Tout", active: true, value: "all" },
-  { labelBtn: "Admin", active: false, value: "admin" },
-  { labelBtn: "Line Up", active: false, value: "lineup" },
-  { labelBtn: "News", active: false, value: "news" },
+  ...USER_ROLES.map((r) => ({ labelBtn: r.label, active: false, value: r.value })),
 ];

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import SideBarTool from "../../../components/SideBarTool";
-import { filterNewsItems } from "../../../config/navigation";
+import { filterNewsItems } from "../../../config/ui";
 import AddButton from "../../../components/AddButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";

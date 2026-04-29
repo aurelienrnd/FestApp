@@ -1,7 +1,7 @@
 "use client";
 
 import SideBarTool from "../../../components/SideBarTool";
-import { filterUsersItems } from "../../../config/navigation";
+import { filterUsersItems } from "../../../config/ui";
 import AddButton from "../../../components/AddButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";

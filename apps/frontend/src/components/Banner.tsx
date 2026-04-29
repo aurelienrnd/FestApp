@@ -10,7 +10,8 @@ import {
   navAdminItem,
   filterNavByRole,
   type NavItem,
-} from "../config/navigation";
+} from "../config/ui";
+import { TICKETING_URL } from "../config/festival";
 import { useAdminUser } from "./AdminUserProvider";
 import logo from "../../public/header_logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -29,7 +30,7 @@ function BtnTicket() {
   return (
     <li>
       <a
-        href="https://www.google.com/search?q=tiket+master&rlz=1C1ONGR_frFR1184FR1184&oq=tiket+master&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDM1ODJqMGo3qAIIsAIB&sourceid=chrome&ie=UTF-8"
+        href={TICKETING_URL}
         className="btn-cta"
         target="_blank"
         rel="noopener noreferrer"

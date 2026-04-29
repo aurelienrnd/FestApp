@@ -1,6 +1,6 @@
 import Image from "next/image";
 import logo from "../../../public/hero_logo.webp";
-import { FESTIVAL_DAYS } from "../../config/festival";
+import { FESTIVAL_DAYS, TICKETING_URL } from "../../config/festival";
 
 /** Formate une date ISO en "SAMEDI 23 AOÛT" en français majuscule.
  * @param {string} isoDate - Date au format ISO (YYYY-MM-DD)
@@ -75,7 +75,7 @@ export default function HomeHero() {
 
           <div className="w-1/2 flex flex-col justify-around items-end">
             <a
-              href="https://www.google.com/search?q=tiket+master&rlz=1C1ONGR_frFR1184FR1184&oq=tiket+master&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDM1ODJqMGo3qAIIsAIB&sourceid=chrome&ie=UTF-8"
+              href={TICKETING_URL}
               className="btn-cta p-3 sm:p-6 justify-center items-center self-center sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl"
               style={{
                 animation:

@@ -5,34 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAdminUser } from "../../../components/AdminUserProvider";
 import { FESTIVAL_DAYS, FESTIVAL_LOCATION } from "../../../config/festival";
-import type { UserRole } from "../../../types";
+import { navAdminQuickLinks, filterNavByRole } from "../../../config/ui";
 import ChangePasswordModal from "./ChangePasswordModal";
-
-const QUICK_LINKS: {
-  label: string;
-  path: string;
-  roles: UserRole[];
-  desc: string;
-}[] = [
-  {
-    label: "Programmation",
-    path: "/admin/lineup",
-    roles: ["admin", "lineup"],
-    desc: "Gérer la programmation artistique",
-  },
-  {
-    label: "Articles",
-    path: "/admin/news",
-    roles: ["admin", "news"],
-    desc: "Gérer les articles et actualités",
-  },
-  {
-    label: "Utilisateurs",
-    path: "/admin/users",
-    roles: ["admin"],
-    desc: "Gérer les comptes utilisateurs",
-  },
-];
 
 /** Formate une date ISO en français long. */
 function formatDateFr(dateStr: string): string {
@@ -75,9 +49,7 @@ export default function DashboardContent() {
   };
 
   const daysLeft = getDaysUntil(FESTIVAL_DAYS[0]);
-  const accessibleLinks = QUICK_LINKS.filter((link) =>
-    link.roles.includes(user.role as UserRole),
-  );
+  const accessibleLinks = filterNavByRole(navAdminQuickLinks, user.role);
 
   return (
     <div className="flex-1 flex flex-col gap-8 w-full max-w-5xl mx-auto">
@@ -162,7 +134,7 @@ export default function DashboardContent() {
               {accessibleLinks.map((link) => (
                 <Link
                   key={link.path}
-                  href={link.path}
+                  href={link.path!}
                   className="border border-(--color-text-input) rounded-md p-4 flex flex-col gap-1 transition-opacity hover:opacity-70"
                 >
                   <span className="font-black uppercase tracking-wide">

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import SideBarTool from "../../../components/SideBarTool";
-import { filterLineUpItems } from "../../../config/navigation";
+import { filterLineUpItems } from "../../../config/ui";
 import AddButton from "../../../components/AddButton";
 import LineupContent from "../../admin/lineup/LineupContent";
 

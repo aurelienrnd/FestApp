@@ -4,7 +4,7 @@ import { useState } from "react";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSliders } from "@fortawesome/free-solid-svg-icons";
-import type { NavItem } from "../config/navigation";
+import type { NavItem } from "../config/ui";
 import { useNavPath } from "../hooks/useNavPath";
 import ModalCloseButton from "./ModalCloseButton";
 import Navigation from "./Navigation";

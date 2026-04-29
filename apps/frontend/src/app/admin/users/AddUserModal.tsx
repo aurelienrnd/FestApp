@@ -6,6 +6,7 @@ import ModalCloseButton from "../../../components/ModalCloseButton";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import type { UserListRow } from "../../../types";
+import { USER_ROLES } from "../../../config/ui";
 
 type AddUserModalProps = {
   isOpen: boolean;
@@ -219,9 +220,9 @@ export default function AddUserModal({
                   Role
                 </option>
 
-                <option value="admin">Admin</option>
-                <option value="lineup">Line up</option>
-                <option value="news">News</option>
+                {USER_ROLES.map((r) => (
+                  <option key={r.value} value={r.value}>{r.label}</option>
+                ))}
               </select>
             </div>
           </div>

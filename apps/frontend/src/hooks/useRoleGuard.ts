@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminUser } from "../components/AdminUserProvider";
 import { useNavPath } from "./useNavPath";
-import { navAdminItem } from "../config/navigation";
+import { navAdminItem } from "../config/ui";
 
 /** Redirige vers /admin/dashboard si le rôle de l'utilisateur ne lui permet pas d'accéder à la route courante.
  * Doit être appelé uniquement dans les enfants de AdminUserProvider.

@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useNavPath } from "../hooks/useNavPath";
 import Navigation from "./Navigation";
-import type { NavItem } from "../config/navigation";
+import type { NavItem } from "../config/ui";
 
 /** Affiche une zone de contenu avec une navigation sticky sur desktop.
  * Sur mobile, affiche uniquement le contenu enfant.
