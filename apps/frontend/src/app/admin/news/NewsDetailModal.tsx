@@ -51,6 +51,7 @@ export default function NewsDetailModal({
               src={article.url_media}
               alt={article.description_media}
               fill
+              sizes="(min-width: 1024px) 768px, 90vw"
               className="object-cover"
             />
             <button

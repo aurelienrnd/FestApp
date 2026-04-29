@@ -58,6 +58,7 @@ export default function ArtistDetailModal({
               src={artist.url_media}
               alt={artist.description_media}
               fill
+              sizes="(min-width: 1024px) 768px, 90vw"
               className="object-cover"
             />
             <button

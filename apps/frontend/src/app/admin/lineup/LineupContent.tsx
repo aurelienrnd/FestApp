@@ -172,7 +172,6 @@ export default function LineupContent({
                     <span className="card-secondary uppercase">
                       {artist.stage ?? "Scène non définie"}
                     </span>
-                    ![1777485954285](image/LineupContent/1777485954285.png)![1777485956167](image/LineupContent/1777485956167.png)![1777485967479](image/LineupContent/1777485967479.png){" "}
                     {isAdminPath && artist.is_featured && (
                       <span className="inline-flex items-center rounded-full bg-(--color-1) px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-white">
                         Page d&apos;accueil

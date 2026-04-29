@@ -383,13 +383,15 @@ export default function AddArtistModal({
 
             <div className="upload-zone">
               {previewUrl ? (
-                <Image
-                  src={previewUrl}
-                  alt="Previsualisation"
-                  width={320}
-                  height={200}
-                  className="card-media-img"
-                />
+                <div className="relative w-full h-40 rounded-lg overflow-hidden">
+                  <Image
+                    src={previewUrl}
+                    alt="Previsualisation"
+                    fill
+                    sizes="320px"
+                    className="object-cover"
+                  />
+                </div>
               ) : (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
