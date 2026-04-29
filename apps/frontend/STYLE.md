@@ -33,7 +33,7 @@ Details :
 
 | Variable      | Valeur      | Usages                                                                                                                   |
 | ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`, `.detail-name-block`, `.error-message`, `.card-profile-avatar`, `.card-profile-badge`), `HomeInfosPratiques.tsx` (inline barre colorée `bg`, icônes SVG `text`), composants divers |
+| `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`, `.detail-name-block`, `.error-message`, `.card-profile-avatar`, `.card-profile-badge`), `HomeInfosPratiques.tsx` (inline barre colorée `bg`, icônes SVG `text`), `LineupContent.tsx` (inline badge "Page d'accueil" admin-only), composants divers |
 | `--color-2` | `#e4e4e7` | `globals.css` (`.input`, `.upload-zone`), `ArtistDetailModal.tsx` (inline icônes YouTube/Spotify) |
 | `--color-3` | `#0ea5e9` | `LoadingLine.tsx` (inline), `SectionCta.tsx` (inline), `Footer.tsx`                                             |
 
