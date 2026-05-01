@@ -2,32 +2,204 @@
 
 ## Résumé des endpoints
 
-| Méthode | Route                         | Accès              | Description                                                   |
-| ------- | ----------------------------- | ------------------ | ------------------------------------------------------------- |
-| POST    | `/admin/articles`             | admin, news        | Créer un article (multipart/form-data)                        |
-| PATCH   | `/admin/articles/:id`         | admin, news        | Modifier un article (multipart/form-data)                     |
-| DELETE  | `/admin/articles/:id`         | admin, news        | Supprimer un article et son fichier image                     |
-| POST    | `/admin/artists`              | admin, lineup      | Créer un artiste (multipart/form-data)                        |
-| PATCH   | `/admin/artists/:id`          | admin, lineup      | Modifier un artiste (multipart/form-data)                     |
-| DELETE  | `/admin/artists/:id`          | admin, lineup      | Supprimer un artiste et son concert associé                   |
-| POST    | `/admin/auth/login`           | Public             | Connexion administrateur                                      |
-| POST    | `/admin/auth/logout`          | Authentifié        | Déconnexion                                                   |
-| GET     | `/admin/auth/me`              | Authentifié        | Informations utilisateur + renouvellement token               |
-| PATCH   | `/admin/auth/password`        | Authentifié        | Modifier le mot de passe de l'utilisateur connecte            |
-| POST    | `/admin/auth/forgot-password` | Public             | Reinitialiser le mot de passe et envoyer un nouveau par email |
-| GET     | `/admin/users`                | admin              | Liste des utilisateurs                                        |
-| POST    | `/admin/users`                | admin              | Créer un utilisateur                                          |
-| PATCH   | `/admin/users/:id`            | admin              | Modifier un utilisateur                                       |
-| DELETE  | `/admin/users/:id`            | admin              | Supprimer un utilisateur                                      |
-| POST    | `/contact/submit`             | Public             | Soumettre le formulaire de contact                            |
-| GET     | `/public/home`                | Public             | Données agrégées pour la page d'accueil (artistes mis en avant + 2 articles) |
-| GET     | `/public/lineup`              | Public             | Liste des artistes de la programmation                        |
-| GET     | `/public/news`                | Public / Privilégié | Liste des articles (tous si admin/news, publiés sinon)        |
-| GET     | `/public/news/:id`            | Public / Privilégié | Détail d'un article (brouillons accessibles si admin/news)    |
-| GET     | `/health`                     | Public             | Santé du serveur (diagnostic)                                 |
-| GET     | `/debug/db`                   | Public             | Connexion à la base de données (diagnostic)                   |
+| Méthode | Route                           | Accès                | Description                                                                     |
+| -------- | ------------------------------- | --------------------- | ------------------------------------------------------------------------------- |
+| POST     | `/admin/articles`             | admin, news           | Créer un article (multipart/form-data)                                         |
+| PATCH    | `/admin/articles/:id`         | admin, news           | Modifier un article (multipart/form-data)                                       |
+| DELETE   | `/admin/articles/:id`         | admin, news           | Supprimer un article et son fichier image                                       |
+| POST     | `/admin/artists`              | admin, lineup         | Créer un artiste (multipart/form-data)                                         |
+| PATCH    | `/admin/artists/:id`          | admin, lineup         | Modifier un artiste (multipart/form-data)                                       |
+| DELETE   | `/admin/artists/:id`          | admin, lineup         | Supprimer un artiste et son concert associé                                    |
+| POST     | `/admin/auth/login`           | Public                | Connexion administrateur                                                        |
+| POST     | `/admin/auth/logout`          | Authentifié          | Déconnexion                                                                    |
+| GET      | `/admin/auth/me`              | Authentifié          | Informations utilisateur + renouvellement token                                 |
+| PATCH    | `/admin/auth/password`        | Authentifié          | Modifier le mot de passe de l'utilisateur connecte                              |
+| POST     | `/admin/auth/forgot-password` | Public                | Reinitialiser le mot de passe et envoyer un nouveau par email                   |
+| GET      | `/admin/users`                | admin                 | Liste des utilisateurs                                                          |
+| POST     | `/admin/users`                | admin                 | Créer un utilisateur                                                           |
+| PATCH    | `/admin/users/:id`            | admin                 | Modifier un utilisateur                                                         |
+| DELETE   | `/admin/users/:id`            | admin                 | Supprimer un utilisateur                                                        |
+| POST     | `/contact/submit`             | Public                | Soumettre le formulaire de contact                                              |
+| GET      | `/public/home`                | Public                | Données agrégées pour la page d'accueil (artistes mis en avant + 2 articles) |
+| GET      | `/public/lineup`              | Public                | Liste des artistes de la programmation                                          |
+| GET      | `/public/news`                | Public / Privilégié | Liste des articles (tous si admin/news, publiés sinon)                         |
+| GET      | `/public/news/:id`            | Public / Privilégié | Détail d'un article (brouillons accessibles si admin/news)                     |
+| GET      | `/health`                     | Public                | Santé du serveur (diagnostic)                                                  |
+| GET      | `/debug/db`                   | Public                | Connexion à la base de données (diagnostic)                                   |
 
 ---
+
+## Public
+
+### GET `/public/home`
+
+Retourne les artistes avec `is_featured = TRUE` et les 2 derniers articles publiés. Les deux requêtes sont exécutées en parallèle via `Promise.all`.
+
+Authentification :
+
+- Aucune (route publique).
+
+Réponse en succès :
+
+- Statut : `200`
+- Corps :
+
+```json
+{
+  "artists": [
+    {
+      "id": "uuid",
+      "name": "Band A",
+      "url_media": "/uploads/artists/uuid.webp",
+      "description_media": "Photo promo",
+      "stage": "Grande Scene",
+      "start_time": "2025-06-21T20:00:00.000Z",
+      "end_time": "2025-06-21T21:30:00.000Z"
+    }
+  ],
+  "articles": [
+    {
+      "id": "uuid",
+      "title": "Ouverture de la billetterie",
+      "url_media": "/uploads/articles/uuid.webp",
+      "description_media": "Photo article",
+      "created_at": "2025-06-01T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+> `artists` contient uniquement les artistes dont `is_featured = TRUE` — au maximum 2 (limite appliquée par trigger en base). `articles` est vide s'il n'y a aucun article publié.
+
+Réponses d'erreur :
+
+- `500` `{ "error": "Erreur interne du serveur" }`
+
+---
+
+Base path: `/public/lineup`
+
+### GET `/public/lineup`
+
+Afficher la programmation (liste des artistes).
+
+Authentification:
+
+- Aucune (route publique).
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "artists": [
+    {
+      "id": "uuid",
+      "name": "Red Hot Chili Peppers",
+      "genre": "Rock",
+      "origin": "Etats-Unis, Los Angeles",
+      "bio": "Groupe de rock melant riffs lourds et funky.",
+      "url_media": "/uploads/artists/uuid.webp",
+      "description_media": "Photo promo du groupe Red Hot Chili Peppers",
+      "youtube_url": "https://www.youtube.com/@RedHotChiliPeppers",
+      "spotify_url": "https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5",
+      "stage": "Grande Scene",
+      "start_time": "2025-06-20T18:00:00.000Z",
+      "end_time": "2025-06-20T19:30:00.000Z"
+    }
+  ]
+}
+```
+
+> `stage`, `start_time` et `end_time` sont `null` si aucun concert n'est encore associe a l'artiste (LEFT JOIN).
+
+Reponses d'erreur:
+
+- `500` `{ "error": "Erreur serveur" }`
+
+### GET `/public/news`
+
+Retourne la liste des articles tries par date de creation decroissante.
+
+Middleware: `optionalAuth` — si l'utilisateur est authentifie avec le role `admin` ou `news`, tous les articles sont retournes (y compris les brouillons). Sinon, seuls les articles avec `is_published = TRUE` sont retournes.
+
+Authentification:
+
+- Aucune requise (route semi-publique).
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "articles": [
+    {
+      "id": "uuid",
+      "title": "Ouverture de la billetterie",
+      "is_published": true,
+      "created_at": "2026-04-06T10:00:00.000Z",
+      "url_media": "/uploads/articles/uuid.webp",
+      "description_media": "Photo de la billetterie",
+      "user_id": "uuid",
+      "author_name": "Admin"
+    }
+  ]
+}
+```
+
+> `content` n'est pas retourné dans la liste — utiliser `GET /public/news/:id` pour récupérer le contenu complet.
+> `author_name` est `null` si l'utilisateur auteur a ete supprime.
+
+Reponses d'erreur:
+
+- `500` `{ "error": "Erreur interne du serveur" }`
+
+---
+
+### GET `/public/news/:id`
+
+Retourne un article complet par son identifiant.
+
+Middleware: `optionalAuth` — si l'utilisateur est authentifie avec le role `admin` ou `news`, les brouillons (`is_published = FALSE`) sont accessibles (previsualisation). Sinon, un brouillon retourne `404`.
+
+Authentification:
+
+- Aucune requise (route semi-publique).
+
+Parametre d'URL:
+
+- `id`: UUID de l'article.
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "article": {
+    "id": "uuid",
+    "title": "Ouverture de la billetterie",
+    "content": "La billetterie du Vindhellfest ouvre officiellement ses portes.",
+    "is_published": true,
+    "created_at": "2026-04-06T10:00:00.000Z",
+    "url_media": "/uploads/articles/uuid.webp",
+    "description_media": "Photo de la billetterie",
+    "user_id": "uuid",
+    "author_name": "Admin"
+  }
+}
+```
+
+> `author_name` est `null` si l'utilisateur auteur a ete supprime.
+
+Reponses d'erreur:
+
+- `404` `{ "error": "Article introuvable" }` — article inexistant ou brouillon non accessible
 
 ## Authentification
 
@@ -559,90 +731,6 @@ Reponses d'erreur:
 
 ---
 
-### GET `/public/news`
-
-Retourne la liste des articles tries par date de creation decroissante.
-
-Middleware: `optionalAuth` — si l'utilisateur est authentifie avec le role `admin` ou `news`, tous les articles sont retournes (y compris les brouillons). Sinon, seuls les articles avec `is_published = TRUE` sont retournes.
-
-Authentification:
-
-- Aucune requise (route semi-publique).
-
-Reponse en succes:
-
-- Statut: `200`
-- Corps:
-
-```json
-{
-  "articles": [
-    {
-      "id": "uuid",
-      "title": "Ouverture de la billetterie",
-      "is_published": true,
-      "created_at": "2026-04-06T10:00:00.000Z",
-      "url_media": "/uploads/articles/uuid.webp",
-      "description_media": "Photo de la billetterie",
-      "user_id": "uuid",
-      "author_name": "Admin"
-    }
-  ]
-}
-```
-
-> `content` n'est pas retourné dans la liste — utiliser `GET /public/news/:id` pour récupérer le contenu complet.
-> `author_name` est `null` si l'utilisateur auteur a ete supprime.
-
-Reponses d'erreur:
-
-- `500` `{ "error": "Erreur interne du serveur" }`
-
----
-
-### GET `/public/news/:id`
-
-Retourne un article complet par son identifiant.
-
-Middleware: `optionalAuth` — si l'utilisateur est authentifie avec le role `admin` ou `news`, les brouillons (`is_published = FALSE`) sont accessibles (previsualisation). Sinon, un brouillon retourne `404`.
-
-Authentification:
-
-- Aucune requise (route semi-publique).
-
-Parametre d'URL:
-
-- `id`: UUID de l'article.
-
-Reponse en succes:
-
-- Statut: `200`
-- Corps:
-
-```json
-{
-  "article": {
-    "id": "uuid",
-    "title": "Ouverture de la billetterie",
-    "content": "La billetterie du Vindhellfest ouvre officiellement ses portes.",
-    "is_published": true,
-    "created_at": "2026-04-06T10:00:00.000Z",
-    "url_media": "/uploads/articles/uuid.webp",
-    "description_media": "Photo de la billetterie",
-    "user_id": "uuid",
-    "author_name": "Admin"
-  }
-}
-```
-
-> `author_name` est `null` si l'utilisateur auteur a ete supprime.
-
-Reponses d'erreur:
-
-- `404` `{ "error": "Article introuvable" }` — article inexistant ou brouillon non accessible
-
----
-
 ## Artists
 
 ### POST `/admin/artists`
@@ -870,96 +958,6 @@ Reponses d'erreur:
 
 ---
 
-## Public
-
-### GET `/public/home`
-
-Retourne les artistes avec `is_featured = TRUE` et les 2 derniers articles publiés. Les deux requêtes sont exécutées en parallèle via `Promise.all`.
-
-Authentification :
-
-- Aucune (route publique).
-
-Réponse en succès :
-
-- Statut : `200`
-- Corps :
-
-```json
-{
-  "artists": [
-    {
-      "id": "uuid",
-      "name": "Band A",
-      "url_media": "/uploads/artists/uuid.webp",
-      "description_media": "Photo promo",
-      "stage": "Grande Scene",
-      "start_time": "2025-06-21T20:00:00.000Z",
-      "end_time": "2025-06-21T21:30:00.000Z"
-    }
-  ],
-  "articles": [
-    {
-      "id": "uuid",
-      "title": "Ouverture de la billetterie",
-      "url_media": "/uploads/articles/uuid.webp",
-      "description_media": "Photo article",
-      "created_at": "2025-06-01T10:00:00.000Z"
-    }
-  ]
-}
-```
-
-> `artists` contient uniquement les artistes dont `is_featured = TRUE` — au maximum 2 (limite appliquée par trigger en base). `articles` est vide s'il n'y a aucun article publié.
-
-Réponses d'erreur :
-
-- `500` `{ "error": "Erreur interne du serveur" }`
-
----
-
-Base path: `/public/lineup`
-
-### GET `/public/lineup`
-
-Afficher la programmation (liste des artistes).
-
-Authentification:
-
-- Aucune (route publique).
-
-Reponse en succes:
-
-- Statut: `200`
-- Corps:
-
-```json
-{
-  "artists": [
-    {
-      "id": "uuid",
-      "name": "Red Hot Chili Peppers",
-      "genre": "Rock",
-      "origin": "Etats-Unis, Los Angeles",
-      "bio": "Groupe de rock melant riffs lourds et funky.",
-      "url_media": "/uploads/artists/uuid.webp",
-      "description_media": "Photo promo du groupe Red Hot Chili Peppers",
-      "youtube_url": "https://www.youtube.com/@RedHotChiliPeppers",
-      "spotify_url": "https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5",
-      "stage": "Grande Scene",
-      "start_time": "2025-06-20T18:00:00.000Z",
-      "end_time": "2025-06-20T19:30:00.000Z"
-    }
-  ]
-}
-```
-
-> `stage`, `start_time` et `end_time` sont `null` si aucun concert n'est encore associe a l'artiste (LEFT JOIN).
-
-Reponses d'erreur:
-
-- `500` `{ "error": "Erreur serveur" }`
-
 ## Diagnostic
 
 > `/health` est disponible en toutes circonstances. `/debug/db` est conditionné à `NODE_ENV !== "production"` — il retourne `404` en production.
@@ -980,7 +978,7 @@ Réponse en succès :
   "status": "ok",
   "message": "Backend is running"
 }
-````
+```
 
 ### GET `/debug/db`
 
