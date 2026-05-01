@@ -1,5 +1,5 @@
 -- //NOTE : Utiliser uniquement en phase de developpement.
-INSERT INTO artists (name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url)
+INSERT INTO artists (name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url, is_featured)
 VALUES (
   'Red Hot Chili Peppers',
   'Rock',
@@ -8,7 +8,8 @@ VALUES (
   '/uploads/artists/b1294ca2-4142-42cc-b990-38695e768a64.webp',
   'Photo promo du groupe Red Hot Chili Peppers',
   'https://www.youtube.com/@RedHotChiliPeppers',
-  'https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5'
+  'https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5',
+  true
 );
 
 INSERT INTO artists (name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url)
@@ -23,7 +24,7 @@ VALUES (
   'https://open.spotify.com/artist/7jy3rLJdDQY21OgRLCZ9sD'
 );
 
-INSERT INTO artists (name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url)
+INSERT INTO artists (name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url, is_featured)
 VALUES (
   'Oasis',
   'Britpop',
@@ -32,7 +33,8 @@ VALUES (
   '/uploads/artists/779ebce6-8a2a-4ecf-bcd1-3025ad0b2339.webp',
   'Photo promo du groupe Oasis',
   'https://www.youtube.com/@oasis',
-  'https://open.spotify.com/artist/2DaxqgrOhkeH0fpeiQq2f4'
+  'https://open.spotify.com/artist/2DaxqgrOhkeH0fpeiQq2f4',
+  true
 );
 
 INSERT INTO artists (name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url)
