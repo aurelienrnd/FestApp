@@ -23,6 +23,7 @@
 | GET     | `/public/home`                | Public             | Données agrégées pour la page d'accueil (artistes mis en avant + 2 articles) |
 | GET     | `/public/lineup`              | Public             | Liste des artistes de la programmation                        |
 | GET     | `/public/news`                | Public / Privilégié | Liste des articles (tous si admin/news, publiés sinon)        |
+| GET     | `/public/news/:id`            | Public / Privilégié | Détail d'un article (brouillons accessibles si admin/news)    |
 | GET     | `/health`                     | Public             | Santé du serveur (diagnostic)                                 |
 | GET     | `/debug/db`                   | Public             | Connexion à la base de données (diagnostic)                   |
 
@@ -596,6 +597,49 @@ Reponse en succes:
 Reponses d'erreur:
 
 - `500` `{ "error": "Erreur interne du serveur" }`
+
+---
+
+### GET `/public/news/:id`
+
+Retourne un article complet par son identifiant.
+
+Middleware: `optionalAuth` — si l'utilisateur est authentifie avec le role `admin` ou `news`, les brouillons (`is_published = FALSE`) sont accessibles (previsualisation). Sinon, un brouillon retourne `404`.
+
+Authentification:
+
+- Aucune requise (route semi-publique).
+
+Parametre d'URL:
+
+- `id`: UUID de l'article.
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "article": {
+    "id": "uuid",
+    "title": "Ouverture de la billetterie",
+    "content": "La billetterie du Vindhellfest ouvre officiellement ses portes.",
+    "is_published": true,
+    "created_at": "2026-04-06T10:00:00.000Z",
+    "url_media": "/uploads/articles/uuid.webp",
+    "description_media": "Photo de la billetterie",
+    "user_id": "uuid",
+    "author_name": "Admin"
+  }
+}
+```
+
+> `author_name` est `null` si l'utilisateur auteur a ete supprime.
+
+Reponses d'erreur:
+
+- `404` `{ "error": "Article introuvable" }` — article inexistant ou brouillon non accessible
 
 ---
 

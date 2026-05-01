@@ -113,7 +113,8 @@ apps/backend/
 │   │       ├── lineup/
 │   │       │   └── list_lineup.controller.ts
 │   │       └── news/
-│   │           └── get_articles.controller.ts
+│   │           ├── get_articles.controller.ts
+│   │           └── get_article.controller.ts
 │   ├── middlewares/
 │   │   ├── asyncHandler.ts
 │   │   ├── auth.ts
@@ -286,6 +287,7 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 | `public/home/get_home.controller.ts` | GET `/public/home` | Retourne les 2 artistes les plus récents et les 2 derniers articles publiés (Promise.all) |
 | `public/lineup/list_lineup.controller.ts` | GET `/public/lineup` | Liste tous les artistes avec leur concert associe (LEFT JOIN concerts) |
 | `public/news/get_articles.controller.ts` | GET `/public/news` | Liste les articles — tous si admin/news, publiés uniquement sinon (via `optionalAuth`) |
+| `public/news/get_article.controller.ts` | GET `/public/news/:id` | Retourne un article par son id — brouillons accessibles si admin/news (via `optionalAuth`) |
 | `contact/submit_contact.controller.ts` | POST `/contact/submit` | Transmet le message du formulaire de contact par email a l'organisation |
 
 ### `routes/`
@@ -303,7 +305,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 | `contact.routes.ts` | POST `/contact/submit` |
 | `home.routes.ts` | GET `/public/home` |
 | `lineup.routes.ts` | GET `/public/lineup` |
-| `news.routes.ts` | GET `/public/news` |
+| `news.routes.ts` | GET `/public/news`, GET `/public/news/:id` |
 
 **Ordre des middlewares sur les routes protégées :**
 
