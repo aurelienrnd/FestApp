@@ -79,7 +79,9 @@ apps/frontend/
 │   │   │   ├── lineup/
 │   │   │   │   └── page.tsx
 │   │   │   ├── news/
-│   │   │   │   └── page.tsx
+│   │   │   │   ├── page.tsx
+│   │   │   │   └── [id]/
+│   │   │   │       └── page.tsx
 │   │   │   ├── practical-info/
 │   │   │   │   └── page.tsx
 │   │   │   └── page.tsx
@@ -102,9 +104,11 @@ apps/frontend/
 │   │   │   ├── news/
 │   │   │   │   ├── page.tsx
 │   │   │   │   ├── NewsContent.tsx
+│   │   │   │   ├── ArticleDetailContent.tsx
 │   │   │   │   ├── AddArticleModal.tsx
-│   │   │   │   ├── NewsDetailModal.tsx
-│   │   │   │   └── DeleteArticleModal.tsx
+│   │   │   │   ├── DeleteArticleModal.tsx
+│   │   │   │   └── [id]/
+│   │   │   │       └── page.tsx
 │   │   │   └── users/
 │   │   │       ├── page.tsx
 │   │   │       ├── UsersContent.tsx
@@ -225,7 +229,8 @@ Le groupe de routes `(public)` est transparent pour les URLs (n'affecte pas les 
 | --- | --- | --- |
 | `(public)/page.tsx` | `/` | Page d'accueil — composant serveur async avec ISR (`revalidate: 60`). Fetche `GET /public/home` via `API_URL_SERVER` et assemble les 5 sections : `HomeHero`, `HomeProgrammation`, `HomeNews`, `HomeInfosPratiques`, `HomePartenaires` |
 | `(public)/lineup/` | `/lineup` | Programmation du festival — liste les artistes depuis l'API publique |
-| `(public)/news/` | `/news` | Actualités du festival — liste les articles publiés depuis `GET /public/news` avec image, titre, auteur et date. Chaque carte ouvre `NewsDetailModal` |
+| `(public)/news/` | `/news` | Actualités du festival — liste les articles publiés depuis `GET /public/news` avec image, titre, auteur et date. Chaque carte navigue vers `/news/[id]` |
+| `(public)/news/[id]/` | `/news/:id` | Détail d'un article — server component avec ISR (`revalidate: 60`). Fetche `GET /public/news/:id` et passe l'article à `ArticleDetailContent`. Redirige vers `/news` via `notFound()` si l'article n'existe pas ou n'est pas publié |
 | `(public)/practical-info/` | `/practical-info` | Informations pratiques |
 
 **Zone authentification — `(auth)/`**
@@ -244,6 +249,7 @@ Le groupe de routes `(auth)` est transparent pour les URLs. Son layout est ident
 | `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe si `mustChangePassword` est vrai. Affiche dynamiquement les dates du festival depuis `FESTIVAL_DAYS` |
 | `admin/lineup/` | `/admin/lineup` | Programmation — liste les artistes avec leur concert (`LineupContent.tsx`), modale d'ajout/modification 3 étapes (`AddArtistModal.tsx`), modale de suppression (`DeleteArtistModal.tsx`) — accès restreint aux rôles `admin` et `lineup` via `useRoleGuard`. Le champ date est un `<select>` limité aux jours de `FESTIVAL_DAYS`. Les concerts à cheval sur minuit sont gérés (end_time automatiquement décalé au lendemain) |
 | `admin/news/` | `/admin/news` | Gestion des actualités (`NewsContent.tsx`, `AddArticleModal.tsx`, `DeleteArticleModal.tsx`) — accès restreint aux rôles `admin` et `news` via `useRoleGuard`. Les brouillons (`is_published = false`) sont visibles uniquement en admin. Le tri Croissant/Décroissant est géré côté client |
+| `admin/news/[id]/` | `/admin/news/:id` | Prévisualisation d'un article (`ArticleDetailContent.tsx`) — client component, fetche `GET /public/news/:id` via `apiRequest` pour transmettre les cookies d'auth (accès aux brouillons). Hérite des restrictions de rôle de `/admin/news` via `useRoleGuard` avec correspondance préfixe |
 | `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) — accès restreint au rôle `admin` via `useRoleGuard`. `AddUserModal` gère l'ajout et la modification via une seule instance (prop `userToEdit`). Si l'utilisateur connecté se supprime lui-même, il est redirigé vers `/login` |
 
 ### `components/`
@@ -273,7 +279,7 @@ Hooks React réutilisables découplés des composants.
 | Fichier | Description |
 | --- | --- |
 | `useNavPath.ts` | Expose `pathname` et `isAdminPath` dérivés de `usePathname()` — consommé par `Banner`, `SideBarTool` et `AddButton` |
-| `useRoleGuard.ts` | Redirige vers `/admin/dashboard` si le rôle de l'utilisateur ne lui permet pas d'accéder à la route courante — compare le rôle via `useAdminUser()` et la route via `useNavPath()` avec les restrictions définies dans `navAdminItem` |
+| `useRoleGuard.ts` | Redirige vers `/admin/dashboard` si le rôle de l'utilisateur ne lui permet pas d'accéder à la route courante — compare le rôle via `useAdminUser()` et la route via `useNavPath()` avec les restrictions définies dans `navAdminItem`. Utilise une correspondance préfixe (`startsWith`) pour que les routes dynamiques (ex : `/admin/news/[id]`) héritent automatiquement des restrictions de leur route parente |
 
 ### `config/`
 
@@ -355,7 +361,7 @@ Tests unitaires des pages et de leurs flux principaux.
 | `DeleteArticleModal.test.tsx` | Vérifie la modale de suppression article — confirmation avec titre, succès (appel handleArticle), erreur API, fermeture après suppression |
 | `DeleteArtistModal.test.tsx` | Vérifie la modale de suppression artiste — confirmation, succès, erreur API et fermeture après suppression |
 | `NewsContent.test.tsx` | Vérifie la liste des articles — chargement, affichage titre/auteur, fallback "Auteur inconnu", badge "Brouillon" (admin uniquement), filtre brouillons sur page publique, boutons Modifier/Supprimer en admin, "Voir plus" en public, tri Croissant, suppression et modification |
-| `NewsDetailModal.test.tsx` | Vérifie la modale de détail article — affichage titre, contenu (absent si null), auteur (fallback "Auteur inconnu"), date formatée en français, image, bouton fermer |
+| `NewsContent.test.tsx` (mis à jour) | Vérifie que chaque carte contient un lien `Voir plus` vers `basePath/[id]` au lieu d'ouvrir une modale |
 | `ChangePasswordModal.test.tsx` | Vérifie la modale de changement de mot de passe — validation des saisies, gestion des erreurs API et mode forcé (sans bouton de fermeture) |
 | `DashboardContent.test.tsx` | Vérifie le tableau de bord — ouverture automatique de la modale si `mustChangePassword` est vrai et affichage des informations utilisateur |
 | `HomeHero.test.tsx` | Vérifie le logo (alt) |
