@@ -21,6 +21,9 @@ type CreateArtistApiResponse = {
   artist: ArtistListRow;
 };
 
+const YOUTUBE_REGEX = /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//;
+const SPOTIFY_REGEX = /^https?:\/\/open\.spotify\.com\//;
+
 /** Verifie si le formulaire de l'etape 1 est incomplet.
  * Retourne `true` si au moins un champ requis est vide.
  * @param {string} name Nom de l'artiste
@@ -133,6 +136,10 @@ export default function AddArtistModal({
     artistToEdit?.url_media ?? null,
   );
 
+  // Erreurs de validation des URLs (etape 1)
+  const [youtubeUrlError, setYoutubeUrlError] = useState<string | null>(null);
+  const [spotifyUrlError, setSpotifyUrlError] = useState<string | null>(null);
+
   // Gestion des erreurs et du chargement
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -153,6 +160,8 @@ export default function AddArtistModal({
     setBio("");
     setYoutubeUrl("");
     setSpotifyUrl("");
+    setYoutubeUrlError(null);
+    setSpotifyUrlError(null);
     setDescriptionMedia("");
     setStage("");
     setDate("");
@@ -162,6 +171,30 @@ export default function AddArtistModal({
     setImage(null);
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(null);
+  };
+
+  /** Valide les URLs YouTube et Spotify avant de passer a l'etape 2.
+   * Affiche un message d'erreur sous le champ concerne si le domaine est invalide.
+   */
+  const handleStep1Next = () => {
+    let hasError = false;
+    if (youtubeUrl && !YOUTUBE_REGEX.test(youtubeUrl)) {
+      setYoutubeUrlError(
+        "Le lien doit provenir de YouTube (youtube.com ou youtu.be).",
+      );
+      hasError = true;
+    } else {
+      setYoutubeUrlError(null);
+    }
+    if (spotifyUrl && !SPOTIFY_REGEX.test(spotifyUrl)) {
+      setSpotifyUrlError(
+        "Le lien doit provenir de Spotify (open.spotify.com).",
+      );
+      hasError = true;
+    } else {
+      setSpotifyUrlError(null);
+    }
+    if (!hasError) setStep(2);
   };
 
   // Gere la fermeture de la modal et reinitialise les etats associes
@@ -333,8 +366,14 @@ export default function AddArtistModal({
                   placeholder="Lien YouTube (optionnel)"
                   className="input"
                   value={youtubeUrl}
-                  onChange={(e) => setYoutubeUrl(e.target.value)}
+                  onChange={(e) => {
+                    setYoutubeUrl(e.target.value);
+                    setYoutubeUrlError(null);
+                  }}
                 />
+                {youtubeUrlError ? (
+                  <p className="error-message">{youtubeUrlError}</p>
+                ) : null}
               </div>
 
               <div>
@@ -348,8 +387,14 @@ export default function AddArtistModal({
                   placeholder="Lien Spotify (optionnel)"
                   className="input"
                   value={spotifyUrl}
-                  onChange={(e) => setSpotifyUrl(e.target.value)}
+                  onChange={(e) => {
+                    setSpotifyUrl(e.target.value);
+                    setSpotifyUrlError(null);
+                  }}
                 />
+                {spotifyUrlError ? (
+                  <p className="error-message">{spotifyUrlError}</p>
+                ) : null}
               </div>
             </div>
 
@@ -358,7 +403,7 @@ export default function AddArtistModal({
                 type="button"
                 className="btn-cta"
                 disabled={step1Invalid}
-                onClick={() => setStep(2)}
+                onClick={handleStep1Next}
               >
                 Suivant
               </button>
@@ -548,9 +593,7 @@ export default function AddArtistModal({
               </button>
             </div>
 
-            {error ? (
-              <p className="error-message">{error}</p>
-            ) : null}
+            {error ? <p className="error-message">{error}</p> : null}
           </form>
         )}
       </div>

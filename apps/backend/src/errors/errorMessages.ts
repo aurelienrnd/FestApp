@@ -28,4 +28,6 @@ export const ERRORS = {
   ARTICLE_FILE_REQUIRED: "Image requise",
   ARTIST_FEATURED_LIMIT:
     "Deux artistes sont déjà mis en avant sur la page d'accueil.",
+  ARTIST_INVALID_YOUTUBE_URL: "Le lien YouTube est invalide.",
+  ARTIST_INVALID_SPOTIFY_URL: "Le lien Spotify est invalide.",
 } as const;

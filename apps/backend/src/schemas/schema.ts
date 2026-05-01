@@ -57,8 +57,25 @@ export const createArtistSchema = z.object({
   origin: z.string().min(1).max(80).trim(),
   bio: z.string().min(1).trim(),
   description_media: z.string().min(1).max(255).trim(),
-  youtube_url: z.url().max(255).optional().or(z.literal("")),
-  spotify_url: z.url().max(255).optional().or(z.literal("")),
+  youtube_url: z
+    .url()
+    .max(255)
+    .refine(
+      (val) => /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(val),
+      {
+        message: "Le lien doit provenir de YouTube (youtube.com ou youtu.be).",
+      },
+    )
+    .optional()
+    .or(z.literal("")),
+  spotify_url: z
+    .url()
+    .max(255)
+    .refine((val) => /^https?:\/\/open\.spotify\.com\//.test(val), {
+      message: "Le lien doit provenir de Spotify (open.spotify.com).",
+    })
+    .optional()
+    .or(z.literal("")),
   stage: z.string().min(1).trim(),
   start_time: z.iso.datetime(),
   end_time: z.iso.datetime(),
