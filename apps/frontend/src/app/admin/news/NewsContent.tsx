@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { apiRequest } from "../../../functions/apiRequest";
@@ -9,7 +10,6 @@ import type { ArticleRow } from "../../../types";
 import LoadingLine from "../../../components/LoadingLine";
 import AddArticleModal from "./AddArticleModal";
 import DeleteArticleModal from "./DeleteArticleModal";
-import NewsDetailModal from "./NewsDetailModal";
 
 type ListArticlesResponse = { articles: ArticleRow[] };
 
@@ -20,7 +20,6 @@ type ListArticlesResponse = { articles: ArticleRow[] };
  * @param {() => void} props.onCloseAddModal Ferme la modale d'ajout article.
  * @param {string | null} props.activeFilter Filtre de tri — "Croissant" inverse l'ordre, null ou "Decroissant" conserve l'ordre DESC de l'API.
  * @children AddArticleModal - Affiche la modale d'ajout ou d'edition d'article.
- * @children NewsDetailModal - Affiche la modale de detail d'un article.
  * @children DeleteArticleModal - Affiche la modale de confirmation de suppression.
  */
 export default function NewsContent({
@@ -34,6 +33,7 @@ export default function NewsContent({
 }) {
   // Permet d'afficher les boutons d'édition/suppression et le badge "Brouillon" uniquement sur les pages admin (ex: /admin/news)
   const { isAdminPath } = useNavPath();
+  const basePath = isAdminPath ? "/admin/news" : "/news";
 
   // Stocke les articles, l'état de chargement et les erreurs éventuelles
   const [articles, setArticles] = useState<ArticleRow[]>([]);
@@ -72,8 +72,6 @@ export default function NewsContent({
   // États pour gérer les modales d'édition, de visualisation et de suppression
   const [articleToEdit, setArticleToEdit] = useState<ArticleRow | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-  const [articleToView, setArticleToView] = useState<ArticleRow | null>(null);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedArticleToDelete, setSelectedArticleToDelete] =
@@ -186,13 +184,10 @@ export default function NewsContent({
                 </div>
 
                 <div className="card-lineup-actions">
-                  <button
-                    type="button"
-                    className="btn-cta"
-                    onClick={() => setArticleToView(article)}
-                  >
+                  <Link href={`${basePath}/${article.id}`} className="btn-cta">
                     Voir plus
-                  </button>
+                  </Link>
+
                   {isAdminPath && (
                     <>
                       <button
@@ -233,12 +228,6 @@ export default function NewsContent({
         selectedArticle={selectedArticleToDelete}
         onClose={closeDeleteModal}
         handleArticle={handleArticleDeleted}
-      />
-
-      <NewsDetailModal
-        isOpen={articleToView !== null}
-        onClose={() => setArticleToView(null)}
-        article={articleToView}
       />
     </div>
   );
