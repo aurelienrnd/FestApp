@@ -17,7 +17,9 @@ export function useRoleGuard() {
     if (!adminUser) return;
 
     // voir si la route courante a une restriction de rôle
-    const currentItem = navAdminItem.find((item) => item.path === pathname);
+    const currentItem = navAdminItem.find(
+      (item) => item.path === pathname || pathname.startsWith(item.path + "/"),
+    );
     if (!currentItem?.role) return;
 
     // redirect si le rôle de l'utilisateur ne lui permet pas d'accéder à la route courante
