@@ -78,6 +78,9 @@ export type ArticleRow = {
   author_name: string | null;
 };
 
+/** Type representant une ligne article de la liste (sans content) — retourne par GET /public/news. */
+export type ArticleSummaryRow = Omit<ArticleRow, "content">;
+
 /** Type representant les informations de l'utilisateur connecte. */
 export type UserInfoRow = {
   id: string;

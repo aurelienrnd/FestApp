@@ -580,7 +580,6 @@ Reponse en succes:
     {
       "id": "uuid",
       "title": "Ouverture de la billetterie",
-      "content": "La billetterie du Vindhellfest ouvre officiellement ses portes.",
       "is_published": true,
       "created_at": "2026-04-06T10:00:00.000Z",
       "url_media": "/uploads/articles/uuid.webp",
@@ -592,6 +591,7 @@ Reponse en succes:
 }
 ```
 
+> `content` n'est pas retourné dans la liste — utiliser `GET /public/news/:id` pour récupérer le contenu complet.
 > `author_name` est `null` si l'utilisateur auteur a ete supprime.
 
 Reponses d'erreur:
