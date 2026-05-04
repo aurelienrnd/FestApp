@@ -22,6 +22,7 @@
 | POST     | `/contact/submit`             | Public                | Soumettre le formulaire de contact                                              |
 | GET      | `/public/home`                | Public                | Données agrégées pour la page d'accueil (artistes mis en avant + 2 articles) |
 | GET      | `/public/lineup`              | Public                | Liste des artistes de la programmation                                          |
+| GET      | `/public/lineup/:id`          | Public                | Détail d'un artiste                                                            |
 | GET      | `/public/news`                | Public / Privilégié | Liste des articles (tous si admin/news, publiés sinon)                         |
 | GET      | `/public/news/:id`            | Public / Privilégié | Détail d'un article (brouillons accessibles si admin/news)                     |
 | GET      | `/health`                     | Public                | Santé du serveur (diagnostic)                                                  |
@@ -118,6 +119,52 @@ Reponse en succes:
 Reponses d'erreur:
 
 - `500` `{ "error": "Erreur serveur" }`
+
+### GET `/public/lineup/:id`
+
+Retourne le detail d'un artiste par son identifiant, avec son concert associe si existant.
+
+Authentification:
+
+- Aucune (route publique).
+
+Parametre d'URL:
+
+- `id`: UUID de l'artiste.
+
+Reponse en succes:
+
+- Statut: `200`
+- Corps:
+
+```json
+{
+  "artist": {
+    "id": "uuid",
+    "name": "Red Hot Chili Peppers",
+    "genre": "Rock",
+    "origin": "Etats-Unis, Los Angeles",
+    "bio": "Groupe de rock melant riffs lourds et funky.",
+    "url_media": "/uploads/artists/uuid.webp",
+    "description_media": "Photo promo du groupe Red Hot Chili Peppers",
+    "youtube_url": "https://www.youtube.com/@RedHotChiliPeppers",
+    "spotify_url": "https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5",
+    "is_featured": false,
+    "stage": "Grande Scene",
+    "start_time": "2025-06-20T18:00:00.000Z",
+    "end_time": "2025-06-20T19:30:00.000Z"
+  }
+}
+```
+
+> `stage`, `start_time` et `end_time` sont `null` si aucun concert n'est encore associe a l'artiste (LEFT JOIN).
+
+Reponses d'erreur:
+
+- `404` `{ "error": "Artiste introuvable" }`
+- `500` `{ "error": "Erreur interne du serveur" }`
+
+---
 
 ### GET `/public/news`
 
