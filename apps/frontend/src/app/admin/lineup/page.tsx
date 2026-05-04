@@ -51,6 +51,7 @@ export default function Page() {
 
       <SideBarTool items={items}>
         <LineupContent
+          basePath="/admin/lineup"
           isAddModalOpen={isOpen}
           onCloseAddModal={() => setIsOpen(false)}
           activeFilter={activeFilter}

@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import AddArtistModal from "./AddArtistModal";
 import DeleteArtistModal from "./DeleteArtistModal";
-import ArtistDetailModal from "./ArtistDetailModal";
 import { useNavPath } from "../../../hooks/useNavPath";
 import type { ArtistListRow } from "../../../types";
 import LoadingLine from "../../../components/LoadingLine";
@@ -17,18 +17,20 @@ type ListArtistsResponse = { artists: ArtistListRow[] };
  * Recupere les artistes via l'API puis affiche un etat de chargement/erreur.
  * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
  * @function getApiErrorMessage Definit un message a retourner selon le statut de l'erreur
+ * @param {string} props.basePath Prefixe de route pour les liens de detail artiste (ex : "/lineup" ou "/admin/lineup").
  * @param {boolean} props.isAddModalOpen Ouvre la modale d'ajout artiste.
  * @param {() => void} props.onCloseAddModal Ferme la modale d'ajout artiste.
  * @param {string | null} props.activeFilter utilisee pour filtrer les artistes par jour — null affiche tous les artistes.
  * @children AddArtistModal - Affiche la modale d'ajout ou d'edition d'artiste.
- * @children ArtistDetailModal - Affiche la modale de detail d'un artiste.
  * @function handleArtistAdded Ajoute l'artiste cree a la liste locale et ferme la modale.
  */
 export default function LineupContent({
+  basePath,
   isAddModalOpen = false,
   onCloseAddModal = () => {},
   activeFilter = null,
 }: {
+  basePath: string;
   isAddModalOpen?: boolean;
   onCloseAddModal?: () => void;
   activeFilter?: string | null;
@@ -72,9 +74,6 @@ export default function LineupContent({
   // Artiste en cours d'edition (null = mode ajout)
   const [artistToEdit, setArtistToEdit] = useState<ArtistListRow | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-  // Artiste selectionne pour la modale de detail
-  const [artistToView, setArtistToView] = useState<ArtistListRow | null>(null);
 
   // Etats lies a la suppression d'un artiste
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -200,13 +199,9 @@ export default function LineupContent({
                 </div>
 
                 <div className="card-lineup-actions">
-                  <button
-                    type="button"
-                    className="btn-cta"
-                    onClick={() => setArtistToView(artist)}
-                  >
+                  <Link href={`${basePath}/${artist.id}`} className="btn-cta">
                     Voir plus
-                  </button>
+                  </Link>
                   {isAdminPath && (
                     <>
                       <button
@@ -247,11 +242,6 @@ export default function LineupContent({
         handleArtist={handleArtistDeleted}
       />
 
-      <ArtistDetailModal
-        isOpen={artistToView !== null}
-        onClose={() => setArtistToView(null)}
-        artist={artistToView}
-      />
     </div>
   );
 }

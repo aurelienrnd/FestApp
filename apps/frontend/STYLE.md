@@ -119,18 +119,22 @@ Details :
 
 ### Modales
 
-| Classe                  | Description                                                                        |
-| ----------------------- | ---------------------------------------------------------------------------------- |
-| `.modal-overlay`      | Fond semi-transparent — fixed,`z-50`, centré, `bg-(--color-overlay)`         |
-| `.modal`              | Conteneur de modale standard — arrondi, `bg-white text-black`, `max-h-[95vh]` scroll interne ; plein écran (`w-screen h-screen`) via `@media (max-height: 650px)` déclaré hors `@layer` |
-| `.modal-detail`       | Conteneur de modale détail —`w-[90vw]`, `bg-white`, arrondi, overflow hidden, `max-h-[95dvh]` |
-| `.detail-layout`      | Layout interne — flex colonne, relative, `overflow-y-auto` (scroll interne si contenu dépasse `modal-detail`) |
-| `.detail-img-wrapper` | Wrapper image —`relative w-full h-80`                                           |
-| `.detail-close-btn`   | Bouton fermeture — absolu `top-3 right-3 z-10`, texte noir                      |
-| `.detail-name-block`  | Bloc nom — fond `--color-1`, décalé à gauche                                 |
-| `.detail-name`        | Nom — texte blanc, bold, uppercase,`text-2xl`                                   |
-| `.detail-bio`         | Biographie —`bg-white text-black`, scrollable, `max-h-48`                     |
-| `.detail-date-block`  | Bloc date —`bg-black text-white`, bold, uppercase, décalé à droite           |
+| Classe             | Description                                                                                                                                        |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.modal-overlay` | Fond semi-transparent — fixed,`z-50`, centré, `bg-(--color-overlay)`                                                                          |
+| `.modal`         | Conteneur de modale standard — arrondi, `bg-white text-black`, `max-h-[95vh]` scroll interne ; plein écran (`w-screen h-screen`) via `@media (max-height: 650px)` déclaré hors `@layer` |
+
+### Détail artiste
+
+| Classe                | Description                                                                                           |
+| --------------------- | ----------------------------------------------------------------------------------------------------- |
+| `.detail-layout`    | Layout interne — flex colonne, relative. Usage : `ArtistDetailContent.tsx`                        |
+| `.detail-img-wrapper` | Wrapper image — `relative w-full h-96`. Usage : `ArtistDetailContent.tsx`                        |
+| `.detail-name-block`  | Bloc nom — fond `--color-1`, décalé à gauche. Usage : `ArtistDetailContent.tsx`               |
+| `.detail-name`        | Nom — texte blanc, bold, uppercase, `text-2xl`. Usage : `ArtistDetailContent.tsx`                |
+| `.detail-bio`         | Biographie — `bg-white text-black`, uppercase, `text-xs`. Usage : `ArtistDetailContent.tsx`      |
+| `.detail-date-block`  | Bloc date — `bg-black text-white`, bold, uppercase, décalé à droite. Usage : `ArtistDetailContent.tsx` |
+| `.detail-socials`     | Zone réseaux sociaux — flex centré, `gap-10`, `bg-black`, `p-6 text-2xl`. Usage : `ArtistDetailContent.tsx` |
 
 ### Cartes
 

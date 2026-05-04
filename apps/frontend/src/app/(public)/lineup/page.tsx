@@ -28,7 +28,7 @@ export default function Page() {
         <h1 className="title1">Lineup</h1>
       </div>
       <SideBarTool items={items}>
-        <LineupContent activeFilter={activeFilter} />
+        <LineupContent basePath="/lineup" activeFilter={activeFilter} />
       </SideBarTool>
     </section>
   );
