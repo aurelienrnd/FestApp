@@ -169,7 +169,6 @@ apps/frontend/
 │           ├── AddArticleModal.test.tsx
 │           ├── AddArtistModal.test.tsx
 │           ├── AddUserModal.test.tsx
-│           ├── ArtistDetailModal.test.tsx
 │           ├── ChangePasswordModal.test.tsx
 │           ├── DashboardContent.test.tsx
 │           ├── DeleteArticleModal.test.tsx
@@ -363,7 +362,6 @@ Tests unitaires des pages et de leurs flux principaux.
 | --- | --- |
 | `AddArticleModal.test.tsx` | Vérifie la modale d'ajout/modification article — navigation 2 étapes, validation (titre min 2 chars, description + image obligatoires en création), soumission POST et PATCH, mode édition pré-rempli (image optionnelle), erreur API |
 | `AddArtistModal.test.tsx` | Vérifie la modale d'ajout/modification artiste — navigation entre les 3 étapes, validation des champs obligatoires, champs YouTube/Spotify optionnels, soumission réussie (POST et PATCH), mode édition pré-rempli et gestion des erreurs API |
-| `ArtistDetailModal.test.tsx` | ⚠️ Fichier obsolète — teste `ArtistDetailModal` qui a été supprimé. À remplacer par un test de `ArtistDetailContent` |
 | `DeleteArticleModal.test.tsx` | Vérifie la modale de suppression article — confirmation avec titre, succès (appel handleArticle), erreur API, fermeture après suppression |
 | `DeleteArtistModal.test.tsx` | Vérifie la modale de suppression artiste — confirmation, succès, erreur API et fermeture après suppression |
 | `NewsContent.test.tsx` | Vérifie la liste des articles — chargement, affichage titre/auteur, fallback "Auteur inconnu", badge "Brouillon" (admin uniquement), filtre brouillons sur page publique, boutons Modifier/Supprimer en admin, "Voir plus" en public, tri Croissant, suppression et modification |
