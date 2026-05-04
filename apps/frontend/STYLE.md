@@ -34,7 +34,7 @@ Details :
 | Variable      | Valeur      | Usages                                                                                                                   |
 | ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `--color-1` | `#cb3346` | `globals.css` (`.btn-cta`, `.detail-name-block`, `.error-message`, `.card-profile-avatar`, `.card-profile-badge`), `HomeInfosPratiques.tsx` (inline barre colorée `bg`, icônes SVG `text`), `LineupContent.tsx` (inline badge "Page d'accueil" admin-only), composants divers |
-| `--color-2` | `#e4e4e7` | `globals.css` (`.input`, `.upload-zone`), `ArtistDetailModal.tsx` (inline icônes YouTube/Spotify) |
+| `--color-2` | `#e4e4e7` | `globals.css` (`.input`, `.upload-zone`) |
 | `--color-3` | `#0ea5e9` | `LoadingLine.tsx` (inline), `SectionCta.tsx` (inline), `Footer.tsx`                                             |
 
 ### Couleurs UI
@@ -123,18 +123,6 @@ Details :
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `.modal-overlay` | Fond semi-transparent — fixed,`z-50`, centré, `bg-(--color-overlay)`                                                                          |
 | `.modal`         | Conteneur de modale standard — arrondi, `bg-white text-black`, `max-h-[95vh]` scroll interne ; plein écran (`w-screen h-screen`) via `@media (max-height: 650px)` déclaré hors `@layer` |
-
-### Détail artiste
-
-| Classe                | Description                                                                                           |
-| --------------------- | ----------------------------------------------------------------------------------------------------- |
-| `.detail-layout`    | Layout interne — flex colonne, relative. Usage : `ArtistDetailContent.tsx`                        |
-| `.detail-img-wrapper` | Wrapper image — `relative w-full h-96`. Usage : `ArtistDetailContent.tsx`                        |
-| `.detail-name-block`  | Bloc nom — fond `--color-1`, décalé à gauche. Usage : `ArtistDetailContent.tsx`               |
-| `.detail-name`        | Nom — texte blanc, bold, uppercase, `text-2xl`. Usage : `ArtistDetailContent.tsx`                |
-| `.detail-bio`         | Biographie — `bg-white text-black`, uppercase, `text-xs`. Usage : `ArtistDetailContent.tsx`      |
-| `.detail-date-block`  | Bloc date — `bg-black text-white`, bold, uppercase, décalé à droite. Usage : `ArtistDetailContent.tsx` |
-| `.detail-socials`     | Zone réseaux sociaux — flex centré, `gap-10`, `bg-black`, `p-6 text-2xl`. Usage : `ArtistDetailContent.tsx` |
 
 ### Cartes
 

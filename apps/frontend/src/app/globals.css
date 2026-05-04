@@ -63,29 +63,6 @@
   .modal {
     @apply w-4xl max-w-[95vw] rounded-2xl bg-white text-black outline-none py-3 max-h-[95vh] overflow-y-auto;
   }
-  /* === DETAIL artiste === */
-  .detail-layout {
-    @apply relative flex flex-col;
-  }
-  .detail-img-wrapper {
-    @apply relative w-full h-96;
-  }
-  .detail-name-block {
-    @apply bg-(--color-1) px-6 py-3 ml-10 mb-3 mt-3;
-  }
-  .detail-name {
-    @apply text-white font-bold uppercase text-2xl;
-  }
-  .detail-bio {
-    @apply bg-white px-6 py-3 text-black uppercase text-xs;
-  }
-  .detail-date-block {
-    @apply bg-black text-white font-bold uppercase flex justify-around items-center px-6 py-6 tracking-wide text-xl mr-10 mb-3 mt-3;
-  }
-  .detail-socials {
-    @apply flex justify-center gap-10 bg-black p-6 text-2xl;
-  }
-
   /* === CARTES === */
   .card-primary {
     @apply font-black uppercase tracking-wide;

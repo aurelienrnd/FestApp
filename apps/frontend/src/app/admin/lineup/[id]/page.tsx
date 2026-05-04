@@ -46,5 +46,5 @@ export default function AdminArtistPage() {
   if (isLoading) return null;
   if (error || !artist) return <p className="content-centered">{error}</p>;
 
-  return <ArtistDetailContent artist={artist} />;
+  return <ArtistDetailContent artist={artist} backPath="/admin/lineup" />;
 }
