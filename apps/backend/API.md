@@ -274,7 +274,7 @@ Reponse en succes:
 
 ```json
 {
-  "message": "Authentification reussie"
+  "message": "Authentification réussie"
 }
 ```
 

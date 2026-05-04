@@ -284,7 +284,7 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 | `admin/users/create_user.controller.ts` | POST `/admin/users` | Crée un utilisateur et envoie le mot de passe provisoire par email |
 | `admin/users/update_user.controller.ts` | PATCH `/admin/users/:id` | Modifie les informations d'un utilisateur |
 | `admin/users/delete_user.controller.ts` | DELETE `/admin/users/:id` | Supprime définitivement un utilisateur |
-| `public/home/get_home.controller.ts` | GET `/public/home` | Retourne les 2 artistes les plus récents et les 2 derniers articles publiés (Promise.all) |
+| `public/home/get_home.controller.ts` | GET `/public/home` | Retourne les artistes avec `is_featured = TRUE` et les 2 derniers articles publiés (Promise.all) |
 | `public/lineup/list_lineup.controller.ts` | GET `/public/lineup` | Liste tous les artistes avec leur concert associe (LEFT JOIN concerts) |
 | `public/news/get_articles.controller.ts` | GET `/public/news` | Liste les articles — tous si admin/news, publiés uniquement sinon (via `optionalAuth`) |
 | `public/news/get_article.controller.ts` | GET `/public/news/:id` | Retourne un article par son id — brouillons accessibles si admin/news (via `optionalAuth`) |
@@ -406,7 +406,7 @@ Vitest exécute les tests, Supertest simule les appels HTTP sur l'API Express.
 | `create_artist.controller.test.ts` | Contrôleur `createArtist` — upload image, transaction SQL, rollback |
 | `delete_artist.controller.test.ts` | Contrôleur `deleteArtist` — suppression, UUID invalide, artiste introuvable, erreur DB |
 | `update_artist.controller.test.ts` | Contrôleur `updateArtist` — modification sans/avec image, UUID invalide, artiste introuvable, rollback transaction |
-| `get_home.controller.test.ts` | Contrôleur `getHomeController` — artistes récents + articles publiés, tableaux vides, erreur DB |
+| `get_home.controller.test.ts` | Contrôleur `getHomeController` — artistes featured + articles publiés, tableaux vides, erreur DB |
 | `list_lineup.controller.test.ts` | Contrôleur `listLineup` — liste artistes avec concerts (LEFT JOIN) |
 | `login.controller.test.ts` | Contrôleur `login` |
 | `logout.controller.test.ts` | Contrôleur `logout` |

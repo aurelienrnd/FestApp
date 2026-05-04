@@ -5,6 +5,7 @@
 
 # Ne pas versionner les dossier générés par les dépendances
 **/node_modules/
+**/dist/
 
 # A rajouter si besoin, les fichiers ou dossiers à ignorer
 .vscode/

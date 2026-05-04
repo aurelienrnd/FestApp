@@ -1,4 +1,6 @@
 import multer from "multer";
+import { AppError } from "../errors/AppError";
+import { ERRORS } from "../errors/errorMessages";
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 Mo
@@ -20,7 +22,7 @@ export const upload = multer({
     if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error("INVALID_FILE_TYPE"));
+      cb(new AppError(ERRORS.ARTIST_INVALID_FILE_TYPE, 400));
     }
   },
 });
