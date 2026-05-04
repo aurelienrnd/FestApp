@@ -12,7 +12,8 @@ function formatDate(isoString: string): string {
   });
 }
 
-/** Affiche le contenu complet d'un article — image de couverture, titre, auteur, date et corps du texte.
+/** Affiche le contenu complet d'un article — image héro pleine largeur avec titre en overlay,
+ * barre meta auteur/date, et corps de l'article.
  * @param {ArticleRow} props.article Article à afficher.
  */
 export default function ArticleDetailContent({
@@ -21,31 +22,43 @@ export default function ArticleDetailContent({
   article: ArticleRow;
 }) {
   return (
-    <article className="max-w-3xl mx-auto py-10 px-6 w-full">
-      <div className="relative w-full h-72 md:h-96">
+    <div>
+      <div className="relative w-full h-[55vh] md:h-[65vh] overflow-hidden">
         <Image
           src={article.url_media}
           alt={article.description_media}
           fill
-          sizes="(min-width: 768px) 896px, 100vw"
+          sizes="100vw"
           className="object-cover"
           priority
         />
+        <div className="absolute inset-0 bg-linear-to-t from-(--color-bg-visitor) to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 px-6 pb-8 md:px-16 md:pb-12">
+          <h1 className="text-white font-black uppercase text-3xl md:text-5xl leading-tight max-w-4xl">
+            {article.title}
+          </h1>
+        </div>
       </div>
-      <div className="bg-(--color-1) px-6 py-4 ml-10 mt-4 mb-3">
-        <h1 className="text-white font-black uppercase text-2xl md:text-4xl">
-          {article.title}
-        </h1>
-        <p className="text-sm uppercase tracking-wide text-white/70 mt-1">
-          {article.author_name ?? "Auteur inconnu"} —{" "}
+
+      <div className="bg-(--color-1) px-6 py-3 md:px-16 flex flex-wrap items-center gap-3">
+        <span className="text-white font-bold uppercase tracking-widest text-sm">
+          {article.author_name ?? "Auteur inconnu"}
+        </span>
+        <span className="text-white/50">—</span>
+        <span className="text-white/70 uppercase tracking-wide text-sm">
           {formatDate(article.created_at)}
-        </p>
+        </span>
       </div>
+
       {article.content && (
-        <div className="leading-relaxed space-y-4 py-6 px-2">
-          <p>{article.content}</p>
+        <div className="max-w-3xl mx-auto px-6 md:px-10 py-10 md:py-16">
+          <div className="leading-relaxed space-y-6 text-base md:text-lg">
+            {article.content.split("\n").map((paragraph, i) =>
+              paragraph.trim() ? <p key={i}>{paragraph}</p> : null,
+            )}
+          </div>
         </div>
       )}
-    </article>
+    </div>
   );
 }
