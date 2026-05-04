@@ -34,7 +34,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="w-full bg-(--color-bg) flex flex-col gap-6 px-6 py-10 min-md:flex-row min-md:items-center min-md:justify-between">
+      <footer className="w-full bg-(--color-bg) flex flex-col gap-6 px-6 py-10 md:flex-row md:items-center md:justify-between">
         <nav>
           <ul className="nav-list justify-center ">
             {legalLinks.map((item) => (

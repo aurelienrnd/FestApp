@@ -87,7 +87,7 @@
     transform: scale(1.02);
   }
   .card-media-img-wrapper {
-    @apply relative w-full h-48 lg:w-48 lg:h-28 lg:self-stretch flex-shrink-0;
+    @apply relative w-full h-48 lg:w-48 lg:h-28 lg:self-stretch shrink-0;
   }
   .card-media-img {
     @apply rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none object-cover;
@@ -150,7 +150,7 @@
     transform: scale(1.05);
   }
   .home-card-content {
-    @apply flex-shrink-0 flex flex-col items-center justify-center gap-3 p-6 text-center;
+    @apply shrink-0 flex flex-col items-center justify-center gap-3 p-6 text-center;
   }
 
   /* === HERO === */
