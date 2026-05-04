@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import type { ArtistListRow } from "../../../../types";
+import type { ArtistListRow } from "../../../../type";
 import ArtistDetailContent from "../../../admin/lineup/ArtistDetailContent";
 
 /** Page publique de détail d'un artiste — composant serveur.

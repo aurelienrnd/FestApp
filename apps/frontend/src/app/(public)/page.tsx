@@ -1,4 +1,4 @@
-import type { HomeData } from "../../types";
+import type { HomeData } from "../../type";
 import HomeHero from "./HomeHero";
 import HomeInfosPratiques from "./HomeInfosPratiques";
 import HomeNews from "./HomeNews";

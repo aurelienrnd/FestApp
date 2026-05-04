@@ -6,12 +6,10 @@ import Image from "next/image";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import { useNavPath } from "../../../hooks/useNavPath";
-import type { ArticleRow } from "../../../types";
+import type { ArticleRow, ListArticlesResponse } from "../../../type";
 import LoadingLine from "../../../components/LoadingLine";
 import AddArticleModal from "./AddArticleModal";
 import DeleteArticleModal from "./DeleteArticleModal";
-
-type ListArticlesResponse = { articles: ArticleRow[] };
 
 /** Affiche la liste des articles avec tri client-side selon activeFilter.
  * Recupere les articles via GET /public/news.

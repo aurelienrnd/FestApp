@@ -24,7 +24,7 @@ export type ArticleRow = {
 };
 
 /** Type representant un article de la liste (sans content) — retourne par GET /public/news. */
-export type ArticleSummary = Omit<ArticleRow, "content">;
+export type ArticleSummaryRow = Omit<ArticleRow, "content">;
 
 /** Type representant une ligne artiste retournee par l'API. */
 export type ArtistListRow = {
@@ -66,3 +66,12 @@ export type HomeData = {
   artists: HomeArtistRow[];
   articles: HomeArticleRow[];
 };
+
+/** Type representant la reponse de GET /admin/users. */
+export type ListUsersResponse = { users: UserListRow[] };
+
+/** Type representant la reponse de GET /public/news. */
+export type ListArticlesResponse = { articles: ArticleRow[] };
+
+/** Type representant la reponse de GET /public/lineup. */
+export type ListArtistsResponse = { artists: ArtistListRow[] };

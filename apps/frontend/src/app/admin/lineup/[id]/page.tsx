@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useRoleGuard } from "../../../../hooks/useRoleGuard";
 import { apiRequest } from "../../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../../functions/getApiErrorMessage";
-import type { ArtistListRow } from "../../../../types";
+import type { ArtistListRow } from "../../../../type";
 import ArtistDetailContent from "../ArtistDetailContent";
 
 /** Page admin de détail d'un artiste.

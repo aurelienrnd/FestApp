@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import type { ArticleRow } from "../../../../types";
+import type { ArticleRow } from "../../../../type";
 import ArticleDetailContent from "../../../admin/news/ArticleDetailContent";
 
 /** Page publique de détail d'un article — composant serveur.

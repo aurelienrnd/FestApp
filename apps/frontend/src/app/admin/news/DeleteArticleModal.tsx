@@ -8,7 +8,7 @@ import {
   apiRequest,
 } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
-import type { ArticleRow } from "../../../types";
+import type { ArticleRow } from "../../../type";
 
 type DeleteArticleModalProps = {
   isOpen: boolean;

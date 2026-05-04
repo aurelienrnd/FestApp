@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { HomeArticleRow } from "../../types";
+import type { HomeArticleRow } from "../../type";
 import SectionCta from "../../components/SectionCta";
 
 /** Affiche la section news de la page d'accueil — 2 derniers articles publiés.

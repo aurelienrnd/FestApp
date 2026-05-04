@@ -6,7 +6,7 @@ import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
-import type { ArtistListRow } from "../../../types";
+import type { ArtistListRow } from "../../../type";
 import { FESTIVAL_DAYS } from "../../../config/festival";
 
 type AddArtistModalProps = {

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { HomeArtistRow } from "../../types";
+import type { HomeArtistRow } from "../../type";
 import SectionCta from "../../components/SectionCta";
 
 /** Affiche la section programmation de la page d'accueil — 2 artistes les plus récents.

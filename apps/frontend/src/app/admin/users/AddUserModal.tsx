@@ -5,7 +5,7 @@ import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
-import type { UserListRow } from "../../../types";
+import type { UserListRow } from "../../../type";
 import { USER_ROLES } from "../../../config/ui";
 
 type AddUserModalProps = {

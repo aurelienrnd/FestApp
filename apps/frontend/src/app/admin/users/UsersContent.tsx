@@ -7,10 +7,8 @@ import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import { useAdminUser } from "../../../components/AdminUserProvider";
 import AddUserModal from "./AddUserModal";
 import DelateUserModal from "./DelateUserModal";
-import type { UserListRow } from "../../../types";
+import type { UserListRow, ListUsersResponse } from "../../../type";
 import LoadingLine from "../../../components/LoadingLine";
-
-type ListUsersResponse = { users: UserListRow[] };
 
 const formatDateFr = (value: string) =>
   new Date(value).toLocaleDateString("fr-FR", {

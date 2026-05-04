@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { ArticleRow } from "../../../types";
+import type { ArticleRow } from "../../../type";
 
 /** Formate une date ISO en "JJ MOIS AAAA" en français.
  * @param {string} isoString Date ISO 8601

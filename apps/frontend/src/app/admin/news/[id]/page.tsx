@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useRoleGuard } from "../../../../hooks/useRoleGuard";
 import { apiRequest } from "../../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../../functions/getApiErrorMessage";
-import type { ArticleRow } from "../../../../types";
+import type { ArticleRow } from "../../../../type";
 import ArticleDetailContent from "../ArticleDetailContent";
 
 /** Page admin de détail d'un article — permet la prévisualisation des brouillons.

@@ -8,10 +8,8 @@ import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import AddArtistModal from "./AddArtistModal";
 import DeleteArtistModal from "./DeleteArtistModal";
 import { useNavPath } from "../../../hooks/useNavPath";
-import type { ArtistListRow } from "../../../types";
+import type { ArtistListRow, ListArtistsResponse } from "../../../type";
 import LoadingLine from "../../../components/LoadingLine";
-
-type ListArtistsResponse = { artists: ArtistListRow[] };
 
 /** Affiche la liste des artistes filtrée par jour si activeFilter est defini.
  * Recupere les artistes via l'API puis affiche un etat de chargement/erreur.
