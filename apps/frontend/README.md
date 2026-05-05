@@ -109,6 +109,7 @@ apps/frontend/
 │   │   │   │   ├── page.tsx
 │   │   │   │   ├── NewsContent.tsx
 │   │   │   │   ├── ArticleDetailContent.tsx
+│   │   │   │   ├── ArticleEditButton.tsx
 │   │   │   │   ├── AddArticleModal.tsx
 │   │   │   │   ├── DeleteArticleModal.tsx
 │   │   │   │   └── [id]/
@@ -253,8 +254,8 @@ Le groupe de routes `(auth)` est transparent pour les URLs. Son layout est ident
 | `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe si `mustChangePassword` est vrai. Affiche dynamiquement les dates du festival depuis `FESTIVAL_DAYS` |
 | `admin/lineup/` | `/admin/lineup` | Programmation — liste les artistes avec leur concert (`LineupContent.tsx`), modale d'ajout/modification 3 étapes (`AddArtistModal.tsx`), modale de suppression (`DeleteArtistModal.tsx`) — accès restreint aux rôles `admin` et `lineup` via `useRoleGuard`. Le champ date est un `<select>` limité aux jours de `FESTIVAL_DAYS`. Les concerts à cheval sur minuit sont gérés (end_time automatiquement décalé au lendemain). Chaque carte navigue vers `/admin/lineup/[id]` |
 | `admin/lineup/[id]/` | `/admin/lineup/:id` | Détail d'un artiste (`ArtistDetailContent.tsx`) — client component, fetche `GET /public/lineup/:id` via `apiRequest`. Hérite des restrictions de rôle de `/admin/lineup` via `useRoleGuard` avec correspondance préfixe |
-| `admin/news/` | `/admin/news` | Gestion des actualités (`NewsContent.tsx`, `AddArticleModal.tsx`, `DeleteArticleModal.tsx`) — accès restreint aux rôles `admin` et `news` via `useRoleGuard`. Les brouillons (`is_published = false`) sont visibles uniquement en admin. Le tri Croissant/Décroissant est géré côté client |
-| `admin/news/[id]/` | `/admin/news/:id` | Prévisualisation d'un article (`ArticleDetailContent.tsx`) — client component, fetche `GET /public/news/:id` via `apiRequest` pour transmettre les cookies d'auth (accès aux brouillons). Hérite des restrictions de rôle de `/admin/news` via `useRoleGuard` avec correspondance préfixe |
+| `admin/news/` | `/admin/news` | Gestion des actualités (`NewsContent.tsx`, `AddArticleModal.tsx`, `DeleteArticleModal.tsx`) — accès restreint aux rôles `admin` et `news` via `useRoleGuard`. Les brouillons (`is_published = false`) sont visibles uniquement en admin. Le tri Croissant/Décroissant est géré côté client. L'édition d'un article se fait depuis la page de détail |
+| `admin/news/[id]/` | `/admin/news/:id` | Détail et édition d'un article — client component, fetche `GET /public/news/:id` via `apiRequest` (cookies d'auth pour l'accès aux brouillons). Affiche `ArticleDetailContent` (rendu statique partagé avec la page publique) et `ArticleEditButton` (`"use client"` — bouton + `AddArticleModal` en mode édition). Hérite des restrictions de rôle de `/admin/news` via `useRoleGuard` avec correspondance préfixe |
 | `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) — accès restreint au rôle `admin` via `useRoleGuard`. `AddUserModal` gère l'ajout et la modification via une seule instance (prop `userToEdit`). Si l'utilisateur connecté se supprime lui-même, il est redirigé vers `/login` |
 
 ### `components/`
@@ -364,7 +365,7 @@ Tests unitaires des pages et de leurs flux principaux.
 | `AddArtistModal.test.tsx` | Vérifie la modale d'ajout/modification artiste — navigation entre les 3 étapes, validation des champs obligatoires, champs YouTube/Spotify optionnels, soumission réussie (POST et PATCH), mode édition pré-rempli et gestion des erreurs API |
 | `DeleteArticleModal.test.tsx` | Vérifie la modale de suppression article — confirmation avec titre, succès (appel handleArticle), erreur API, fermeture après suppression |
 | `DeleteArtistModal.test.tsx` | Vérifie la modale de suppression artiste — confirmation, succès, erreur API et fermeture après suppression |
-| `NewsContent.test.tsx` | Vérifie la liste des articles — chargement, affichage titre/auteur, fallback "Auteur inconnu", badge "Brouillon" (admin uniquement), filtre brouillons sur page publique, boutons Modifier/Supprimer en admin, "Voir plus" en public, tri Croissant, suppression et modification |
+| `NewsContent.test.tsx` | Vérifie la liste des articles — chargement, affichage titre/auteur, fallback "Auteur inconnu", badge "Brouillon" (admin uniquement), filtre brouillons sur page publique, bouton Supprimer en admin, lien "Voir plus" vers `basePath/[id]`, tri Croissant, suppression et ajout |
 | `NewsContent.test.tsx` (mis à jour) | Vérifie que chaque carte contient un lien `Voir plus` vers `basePath/[id]` au lieu d'ouvrir une modale |
 | `ChangePasswordModal.test.tsx` | Vérifie la modale de changement de mot de passe — validation des saisies, gestion des erreurs API et mode forcé (sans bouton de fermeture) |
 | `DashboardContent.test.tsx` | Vérifie le tableau de bord — ouverture automatique de la modale si `mustChangePassword` est vrai et affichage des informations utilisateur |
