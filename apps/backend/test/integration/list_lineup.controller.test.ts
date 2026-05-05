@@ -37,30 +37,20 @@ describe("listLineup controller (integration)", () => {
       {
         id: "artist-1",
         name: "Band A",
-        genre: "Metal",
-        origin: "France",
-        bio: "Une bio",
         url_media: "https://youtube.com/bandA",
         description_media: "Live at Hellfest",
-        youtube_url: "https://www.youtube.com/@bandA",
-        spotify_url: null,
+        is_featured: false,
         stage: "Grande Scene",
         start_time: "2025-06-20T18:00:00.000Z",
-        end_time: "2025-06-20T19:30:00.000Z",
       },
       {
         id: "artist-2",
         name: "Band B",
-        genre: "Rock",
-        origin: "USA",
-        bio: "Autre bio",
         url_media: "https://youtube.com/bandB",
         description_media: "Studio session",
-        youtube_url: null,
-        spotify_url: null,
+        is_featured: false,
         stage: "Scene Metal",
         start_time: "2025-06-21T20:00:00.000Z",
-        end_time: "2025-06-21T21:30:00.000Z",
       },
     ]);
 
@@ -73,16 +63,11 @@ describe("listLineup controller (integration)", () => {
     expect(res.body.artists[0]).toEqual({
       id: "artist-1",
       name: "Band A",
-      genre: "Metal",
-      origin: "France",
-      bio: "Une bio",
       url_media: "https://youtube.com/bandA",
       description_media: "Live at Hellfest",
-      youtube_url: "https://www.youtube.com/@bandA",
-      spotify_url: null,
+      is_featured: false,
       stage: "Grande Scene",
       start_time: "2025-06-20T18:00:00.000Z",
-      end_time: "2025-06-20T19:30:00.000Z",
     });
     expect(mockQuery).toHaveBeenCalledWith(
       expect.stringContaining("LEFT JOIN concerts"),
@@ -95,16 +80,11 @@ describe("listLineup controller (integration)", () => {
       {
         id: "artist-1",
         name: "Band A",
-        genre: "Metal",
-        origin: "France",
-        bio: "Une bio",
         url_media: "https://youtube.com/bandA",
         description_media: "Live at Hellfest",
-        youtube_url: null,
-        spotify_url: null,
+        is_featured: false,
         stage: null,
         start_time: null,
-        end_time: null,
       },
     ]);
 
@@ -114,7 +94,6 @@ describe("listLineup controller (integration)", () => {
     expect(res.status).toBe(200);
     expect(res.body.artists[0].stage).toBeNull();
     expect(res.body.artists[0].start_time).toBeNull();
-    expect(res.body.artists[0].end_time).toBeNull();
   });
 
   it("should return 200 with empty array when no artists", async () => {

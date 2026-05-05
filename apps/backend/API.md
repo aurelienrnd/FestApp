@@ -99,22 +99,18 @@ Reponse en succes:
     {
       "id": "uuid",
       "name": "Red Hot Chili Peppers",
-      "genre": "Rock",
-      "origin": "Etats-Unis, Los Angeles",
-      "bio": "Groupe de rock melant riffs lourds et funky.",
       "url_media": "/uploads/artists/uuid.webp",
       "description_media": "Photo promo du groupe Red Hot Chili Peppers",
-      "youtube_url": "https://www.youtube.com/@RedHotChiliPeppers",
-      "spotify_url": "https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5",
+      "is_featured": false,
       "stage": "Grande Scene",
-      "start_time": "2025-06-20T18:00:00.000Z",
-      "end_time": "2025-06-20T19:30:00.000Z"
+      "start_time": "2025-06-20T18:00:00.000Z"
     }
   ]
 }
 ```
 
-> `stage`, `start_time` et `end_time` sont `null` si aucun concert n'est encore associe a l'artiste (LEFT JOIN).
+> `stage` et `start_time` sont `null` si aucun concert n'est encore associe a l'artiste (LEFT JOIN).
+> `bio`, `genre`, `origin`, `youtube_url`, `spotify_url` et `end_time` ne sont pas retournes dans la liste — utiliser `GET /public/lineup/:id` pour recuperer l'artiste complet.
 
 Reponses d'erreur:
 

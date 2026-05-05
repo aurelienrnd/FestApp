@@ -56,6 +56,12 @@ export type ArtistListRow = {
   is_featured: boolean;
 };
 
+/** Type representant une ligne artiste de la liste (sans bio, genre, origin, youtube_url, spotify_url, end_time) — retourne par GET /public/lineup. */
+export type ArtistSummaryRow = Omit<
+  ArtistListRow,
+  "bio" | "genre" | "origin" | "youtube_url" | "spotify_url" | "end_time"
+>;
+
 /** Type representant une ligne concert retournee par la base de donnees. */
 export type ConcertRow = {
   id: string;
