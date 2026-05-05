@@ -8,11 +8,11 @@ import {
   apiRequest,
 } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
-import type { ArticleRow } from "../../../type";
+import type { ArticleSummaryRow } from "../../../type";
 
 type DeleteArticleModalProps = {
   isOpen: boolean;
-  selectedArticle: ArticleRow | null;
+  selectedArticle: ArticleSummaryRow | null;
   onClose: () => void;
   handleArticle: (articleId: string) => void;
 };
@@ -21,7 +21,7 @@ type DeleteArticleModalProps = {
  * Ouvre une confirmation, lance la requete DELETE et affiche l'etat succes/erreur.
  * @param {DeleteArticleModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
- * @param {ArticleRow | null} props.selectedArticle Article selectionne pour la suppression.
+ * @param {ArticleSummaryRow | null} props.selectedArticle Article selectionne pour la suppression.
  * @param {() => void} props.onClose Ferme la modale.
  * @param {(articleId: string) => void} props.handleArticle Met a jour la liste des articles et ferme la modale.
  * @children ModalCloseButton Ferme la modale.

@@ -6,7 +6,7 @@ import Image from "next/image";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import { useNavPath } from "../../../hooks/useNavPath";
-import type { ArticleRow, ListArticlesResponse } from "../../../type";
+import type { ArticleRow, ArticleSummaryRow, ListArticlesResponse } from "../../../type";
 import LoadingLine from "../../../components/LoadingLine";
 import AddArticleModal from "./AddArticleModal";
 import DeleteArticleModal from "./DeleteArticleModal";
@@ -34,7 +34,7 @@ export default function NewsContent({
   const basePath = isAdminPath ? "/admin/news" : "/news";
 
   // Stocke les articles, l'état de chargement et les erreurs éventuelles
-  const [articles, setArticles] = useState<ArticleRow[]>([]);
+  const [articles, setArticles] = useState<ArticleSummaryRow[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -70,10 +70,10 @@ export default function NewsContent({
   // États pour gérer la modale de suppression
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedArticleToDelete, setSelectedArticleToDelete] =
-    useState<ArticleRow | null>(null);
+    useState<ArticleSummaryRow | null>(null);
 
   // Ouvre la modale de confirmation de suppression et stocke l'article sélectionné
-  const openDeleteModal = (article: ArticleRow) => {
+  const openDeleteModal = (article: ArticleSummaryRow) => {
     setSelectedArticleToDelete(article);
     setIsDeleteModalOpen(true);
   };
