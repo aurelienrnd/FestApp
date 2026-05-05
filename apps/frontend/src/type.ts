@@ -73,5 +73,11 @@ export type ListUsersResponse = { users: UserListRow[] };
 /** Type representant la reponse de GET /public/news. */
 export type ListArticlesResponse = { articles: ArticleSummaryRow[] };
 
+/** Type representant une ligne artiste de la liste (sans bio, genre, origin, youtube_url, spotify_url, end_time) — retourne par GET /public/lineup. */
+export type ArtistSummary = Omit<
+  ArtistListRow,
+  "bio" | "genre" | "origin" | "youtube_url" | "spotify_url" | "end_time"
+>;
+
 /** Type representant la reponse de GET /public/lineup. */
-export type ListArtistsResponse = { artists: ArtistListRow[] };
+export type ListArtistsResponse = { artists: ArtistSummary[] };

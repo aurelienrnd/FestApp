@@ -8,7 +8,7 @@ import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import AddArtistModal from "./AddArtistModal";
 import DeleteArtistModal from "./DeleteArtistModal";
 import { useNavPath } from "../../../hooks/useNavPath";
-import type { ArtistListRow, ListArtistsResponse } from "../../../type";
+import type { ArtistListRow, ArtistSummary, ListArtistsResponse } from "../../../type";
 import LoadingLine from "../../../components/LoadingLine";
 
 /** Affiche la liste des artistes filtrée par jour si activeFilter est defini.
@@ -19,7 +19,7 @@ import LoadingLine from "../../../components/LoadingLine";
  * @param {boolean} props.isAddModalOpen Ouvre la modale d'ajout artiste.
  * @param {() => void} props.onCloseAddModal Ferme la modale d'ajout artiste.
  * @param {string | null} props.activeFilter utilisee pour filtrer les artistes par jour — null affiche tous les artistes.
- * @children AddArtistModal - Affiche la modale d'ajout ou d'edition d'artiste.
+ * @children AddArtistModal - Affiche la modale d'ajout d'artiste.
  * @function handleArtistAdded Ajoute l'artiste cree a la liste locale et ferme la modale.
  */
 export default function LineupContent({
@@ -33,11 +33,11 @@ export default function LineupContent({
   onCloseAddModal?: () => void;
   activeFilter?: string | null;
 }) {
-  // Verifie si le chemin d'acces contient "/admin" pour afficher les boutons de modification/suppression
+  // Verifie si le chemin d'acces contient "/admin" pour afficher les boutons de suppression
   const { isAdminPath } = useNavPath();
 
   // Etats lies aux donnees
-  const [artists, setArtists] = useState<ArtistListRow[]>([]);
+  const [artists, setArtists] = useState<ArtistSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -69,17 +69,13 @@ export default function LineupContent({
     getArtists();
   }, []);
 
-  // Artiste en cours d'edition (null = mode ajout)
-  const [artistToEdit, setArtistToEdit] = useState<ArtistListRow | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
   // Etats lies a la suppression d'un artiste
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedArtistToDelete, setSelectedArtistToDelete] =
-    useState<ArtistListRow | null>(null);
+    useState<ArtistSummary | null>(null);
 
   // Ouvre la modale de suppression pour l'artiste selectionne
-  const openDeleteModal = (artist: ArtistListRow) => {
+  const openDeleteModal = (artist: ArtistSummary) => {
     setSelectedArtistToDelete(artist);
     setIsDeleteModalOpen(true);
   };
@@ -98,28 +94,6 @@ export default function LineupContent({
   // Ajoute l'artiste cree a la liste locale puis ferme la modale
   const handleArtistAdded = (artist: ArtistListRow) => {
     setArtists((current) => [...current, artist]);
-    onCloseAddModal();
-  };
-
-  // Ouvre la modale d'edition pour l'artiste selectionne
-  const openEditModal = (artist: ArtistListRow) => {
-    setArtistToEdit(artist);
-    setIsEditModalOpen(true);
-  };
-
-  // Met a jour l'artiste modifie dans la liste locale puis ferme la modale
-  const handleArtistEdited = (artist: ArtistListRow) => {
-    setArtists((current) =>
-      current.map((a) => (a.id === artist.id ? artist : a)),
-    );
-    setIsEditModalOpen(false);
-    setArtistToEdit(null);
-  };
-
-  // Ferme la modale (ajout ou edition) et reinitialise l'artiste selectionne
-  const closeModal = () => {
-    setIsEditModalOpen(false);
-    setArtistToEdit(null);
     onCloseAddModal();
   };
 
@@ -201,22 +175,13 @@ export default function LineupContent({
                     Voir plus
                   </Link>
                   {isAdminPath && (
-                    <>
-                      <button
-                        type="button"
-                        className="btn-action"
-                        onClick={() => openEditModal(artist)}
-                      >
-                        Modifier
-                      </button>
-                      <button
-                        type="button"
-                        className="btn-action"
-                        onClick={() => openDeleteModal(artist)}
-                      >
-                        Supprimer
-                      </button>
-                    </>
+                    <button
+                      type="button"
+                      className="btn-action"
+                      onClick={() => openDeleteModal(artist)}
+                    >
+                      Supprimer
+                    </button>
                   )}
                 </div>
               </li>
@@ -226,11 +191,9 @@ export default function LineupContent({
       </div>
 
       <AddArtistModal
-        key={artistToEdit?.id ?? "new"}
-        isOpen={isAddModalOpen || isEditModalOpen}
-        onClose={closeModal}
-        handleArtist={isEditModalOpen ? handleArtistEdited : handleArtistAdded}
-        artistToEdit={artistToEdit}
+        isOpen={isAddModalOpen}
+        onClose={onCloseAddModal}
+        handleArtist={handleArtistAdded}
       />
 
       <DeleteArtistModal
@@ -239,7 +202,6 @@ export default function LineupContent({
         onClose={closeDeleteModal}
         handleArtist={handleArtistDeleted}
       />
-
     </div>
   );
 }
