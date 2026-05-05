@@ -67,10 +67,7 @@ export default function NewsContent({
     getArticles();
   }, []);
 
-  // États pour gérer les modales d'édition, de visualisation et de suppression
-  const [articleToEdit, setArticleToEdit] = useState<ArticleRow | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
+  // États pour gérer la modale de suppression
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedArticleToDelete, setSelectedArticleToDelete] =
     useState<ArticleRow | null>(null);
@@ -95,28 +92,6 @@ export default function NewsContent({
   // Ajoute le nouvel article à la liste après ajout réussi
   const handleArticleAdded = (article: ArticleRow) => {
     setArticles((current) => [...current, article]);
-    onCloseAddModal();
-  };
-
-  // Ouvre la modale d'édition et stocke l'article à éditer
-  const openEditModal = (article: ArticleRow) => {
-    setArticleToEdit(article);
-    setIsEditModalOpen(true);
-  };
-
-  // Met à jour l'article dans la liste après édition réussie, puis ferme la modale d'édition
-  const handleArticleEdited = (article: ArticleRow) => {
-    setArticles((current) =>
-      current.map((a) => (a.id === article.id ? article : a)),
-    );
-    setIsEditModalOpen(false);
-    setArticleToEdit(null);
-  };
-
-  // Ferme la modale d'édition et réinitialise l'article à éditer
-  const closeModal = () => {
-    setIsEditModalOpen(false);
-    setArticleToEdit(null);
     onCloseAddModal();
   };
 
@@ -187,22 +162,13 @@ export default function NewsContent({
                   </Link>
 
                   {isAdminPath && (
-                    <>
-                      <button
-                        type="button"
-                        className="btn-action"
-                        onClick={() => openEditModal(article)}
-                      >
-                        Modifier
-                      </button>
-                      <button
-                        type="button"
-                        className="btn-action"
-                        onClick={() => openDeleteModal(article)}
-                      >
-                        Supprimer
-                      </button>
-                    </>
+                    <button
+                      type="button"
+                      className="btn-action"
+                      onClick={() => openDeleteModal(article)}
+                    >
+                      Supprimer
+                    </button>
                   )}
                 </div>
               </li>
@@ -212,13 +178,9 @@ export default function NewsContent({
       </div>
 
       <AddArticleModal
-        key={articleToEdit?.id ?? "new"}
-        isOpen={isAddModalOpen || isEditModalOpen}
-        onClose={closeModal}
-        handleArticle={
-          isEditModalOpen ? handleArticleEdited : handleArticleAdded
-        }
-        articleToEdit={articleToEdit}
+        isOpen={isAddModalOpen}
+        onClose={onCloseAddModal}
+        handleArticle={handleArticleAdded}
       />
 
       <DeleteArticleModal

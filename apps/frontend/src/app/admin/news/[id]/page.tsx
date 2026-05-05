@@ -7,6 +7,7 @@ import { apiRequest } from "../../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../../functions/getApiErrorMessage";
 import type { ArticleRow } from "../../../../type";
 import ArticleDetailContent from "../ArticleDetailContent";
+import ArticleEditButton from "../ArticleEditButton";
 
 /** Page admin de détail d'un article — permet la prévisualisation des brouillons.
  * Récupère l'article via GET /public/news/:id avec les cookies d'auth.
@@ -46,5 +47,13 @@ export default function AdminArticlePage() {
   if (isLoading) return null;
   if (error || !article) return <p className="content-centered">{error}</p>;
 
-  return <ArticleDetailContent article={article} />;
+  return (
+    <>
+      <ArticleDetailContent article={article} />
+      <ArticleEditButton
+        article={article}
+        onArticleEdited={(updated) => setArticle(updated)}
+      />
+    </>
+  );
 }
