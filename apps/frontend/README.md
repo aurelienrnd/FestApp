@@ -101,6 +101,7 @@ apps/frontend/
 │   │   │   │   ├── page.tsx
 │   │   │   │   ├── AddArtistModal.tsx
 │   │   │   │   ├── ArtistDetailContent.tsx
+│   │   │   │   ├── ArtistEditButton.tsx
 │   │   │   │   ├── DeleteArtistModal.tsx
 │   │   │   │   ├── LineupContent.tsx
 │   │   │   │   └── [id]/
@@ -252,8 +253,8 @@ Le groupe de routes `(auth)` est transparent pour les URLs. Son layout est ident
 | --- | --- | --- |
 | `admin/layout.tsx` | — | Vérifie la session via `/admin/auth/me`, redirige vers `/login` si non authentifié. Fournit `AdminUserProvider`, `Banner` et `Footer` — `Banner` a accès aux données utilisateur pour filtrer les liens par rôle |
 | `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe si `mustChangePassword` est vrai. Affiche dynamiquement les dates du festival depuis `FESTIVAL_DAYS` |
-| `admin/lineup/` | `/admin/lineup` | Programmation — liste les artistes avec leur concert (`LineupContent.tsx`), modale d'ajout/modification 3 étapes (`AddArtistModal.tsx`), modale de suppression (`DeleteArtistModal.tsx`) — accès restreint aux rôles `admin` et `lineup` via `useRoleGuard`. Le champ date est un `<select>` limité aux jours de `FESTIVAL_DAYS`. Les concerts à cheval sur minuit sont gérés (end_time automatiquement décalé au lendemain). Chaque carte navigue vers `/admin/lineup/[id]` |
-| `admin/lineup/[id]/` | `/admin/lineup/:id` | Détail d'un artiste (`ArtistDetailContent.tsx`) — client component, fetche `GET /public/lineup/:id` via `apiRequest`. Hérite des restrictions de rôle de `/admin/lineup` via `useRoleGuard` avec correspondance préfixe |
+| `admin/lineup/` | `/admin/lineup` | Programmation — liste les artistes avec leur concert (`LineupContent.tsx`), modale d'ajout 3 étapes (`AddArtistModal.tsx`), modale de suppression (`DeleteArtistModal.tsx`) — accès restreint aux rôles `admin` et `lineup` via `useRoleGuard`. Le champ date est un `<select>` limité aux jours de `FESTIVAL_DAYS`. Les concerts à cheval sur minuit sont gérés (end_time automatiquement décalé au lendemain). Chaque carte navigue vers `/admin/lineup/[id]` |
+| `admin/lineup/[id]/` | `/admin/lineup/:id` | Détail et édition d'un artiste — client component, fetche `GET /public/lineup/:id` via `apiRequest`. Affiche `ArtistDetailContent` (rendu statique partagé avec la page publique) et `ArtistEditButton` (`"use client"` — bouton + `AddArtistModal` en mode édition). Hérite des restrictions de rôle de `/admin/lineup` via `useRoleGuard` avec correspondance préfixe |
 | `admin/news/` | `/admin/news` | Gestion des actualités (`NewsContent.tsx`, `AddArticleModal.tsx`, `DeleteArticleModal.tsx`) — accès restreint aux rôles `admin` et `news` via `useRoleGuard`. Les brouillons (`is_published = false`) sont visibles uniquement en admin. Le tri Croissant/Décroissant est géré côté client. L'édition d'un article se fait depuis la page de détail |
 | `admin/news/[id]/` | `/admin/news/:id` | Détail et édition d'un article — client component, fetche `GET /public/news/:id` via `apiRequest` (cookies d'auth pour l'accès aux brouillons). Affiche `ArticleDetailContent` (rendu statique partagé avec la page publique) et `ArticleEditButton` (`"use client"` — bouton + `AddArticleModal` en mode édition). Hérite des restrictions de rôle de `/admin/news` via `useRoleGuard` avec correspondance préfixe |
 | `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) — accès restreint au rôle `admin` via `useRoleGuard`. `AddUserModal` gère l'ajout et la modification via une seule instance (prop `userToEdit`). Si l'utilisateur connecté se supprime lui-même, il est redirigé vers `/login` |
@@ -311,7 +312,7 @@ Types TypeScript partagés entre plusieurs composants.
 
 | Fichier | Description |
 | --- | --- |
-| `index.ts` | Centralise les types métier réutilisables : `UserRole` (union des rôles valides), `UserListRow` (données utilisateur API), `ArtistListRow` (données artiste API avec `youtube_url`, `spotify_url` nullables et `stage`, `start_time`, `end_time` nullables), `ArticleRow` (données article API avec `author_name` nullable via JOIN users), `HomeArtistRow` (sous-ensemble de `ArtistListRow` pour la home), `HomeArticleRow` (sous-ensemble de `ArticleRow` pour la home), `HomeData` (type agrégé retourné par `GET /public/home`) |
+| `index.ts` | Centralise les types métier réutilisables : `UserRole` (union des rôles valides), `UserListRow` (données utilisateur API), `ArtistListRow` (artiste complet — retourné par `GET /public/lineup/:id`, les endpoints admin POST/PATCH, et consommé par `ArtistEditButton` et `ArtistDetailContent`), `ArtistSummary` (sous-ensemble de `ArtistListRow` sans les champs détail — retourné par `GET /public/lineup` et utilisé dans `LineupContent`), `ArticleRow` (données article API avec `author_name` nullable via JOIN users), `ArticleSummaryRow` (sous-ensemble de `ArticleRow` sans `content` — retourné par `GET /public/news`), `HomeArtistRow` (sous-ensemble de `ArtistListRow` pour la home), `HomeArticleRow` (sous-ensemble de `ArticleRow` pour la home), `HomeData` (type agrégé retourné par `GET /public/home`) |
 
 ---
 
@@ -374,7 +375,7 @@ Tests unitaires des pages et de leurs flux principaux.
 | `HomeNews.test.tsx` | Vérifie l'affichage des titres d'articles et le retour null si tableau vide |
 | `HomePartenaires.test.tsx` | Vérifie le nombre de logos, la présence d'un alt non vide et le lien vers `/practical-info` |
 | `HomeProgrammation.test.tsx` | Vérifie l'affichage des noms d'artistes, scènes, dates formatées et le retour null si tableau vide |
-| `LineupContent.test.tsx` | Vérifie la liste des artistes — chargement, affichage avec données concert, fallbacks null (scène/date non définies), liste vide, erreur API, suppression et modification d'un artiste |
+| `LineupContent.test.tsx` | Vérifie la liste des artistes — chargement, affichage avec données concert, fallbacks null (scène/date non définies), liste vide, erreur API, suppression et ajout d'un artiste |
 | `LoginPage.test.tsx` | Vérifie le formulaire de connexion — gestion des erreurs (401, 429, 500) et redirection en cas de succès |
 | `UsersContent.test.tsx` | Vérifie le CRUD utilisateurs — chargement de la liste, ajout, modification, suppression, gestion des erreurs et redirection vers `/login` si l'utilisateur connecté se supprime lui-même |
 

@@ -7,10 +7,13 @@ import { apiRequest } from "../../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../../functions/getApiErrorMessage";
 import type { ArtistListRow } from "../../../../type";
 import ArtistDetailContent from "../ArtistDetailContent";
+import ArtistEditButton from "../ArtistEditButton";
 
 /** Page admin de détail d'un artiste.
  * Récupère l'artiste via GET /public/lineup/:id avec les cookies d'auth.
  * Les restrictions de rôle de /admin/lineup s'appliquent automatiquement via useRoleGuard.
+ * @children ArtistDetailContent Affiche les informations complètes de l'artiste.
+ * @children ArtistEditButton Bouton d'édition réservé à l'interface admin.
  */
 export default function AdminArtistPage() {
   useRoleGuard();
@@ -46,5 +49,13 @@ export default function AdminArtistPage() {
   if (isLoading) return null;
   if (error || !artist) return <p className="content-centered">{error}</p>;
 
-  return <ArtistDetailContent artist={artist} backPath="/admin/lineup" />;
+  return (
+    <>
+      <ArtistDetailContent artist={artist} backPath="/admin/lineup" />
+      <ArtistEditButton
+        artist={artist}
+        onArtistEdited={(updated) => setArtist(updated)}
+      />
+    </>
+  );
 }
