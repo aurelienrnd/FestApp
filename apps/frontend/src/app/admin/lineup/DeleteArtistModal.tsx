@@ -8,15 +8,11 @@ import {
   apiRequest,
 } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
-
-type ArtistToDelete = {
-  id: string;
-  name: string;
-};
+import type { ArtistListRow } from "../../../type";
 
 type DeleteArtistModalProps = {
   isOpen: boolean;
-  selectedArtist: ArtistToDelete | null;
+  selectedArtist: Pick<ArtistListRow, "id" | "name"> | null;
   onClose: () => void;
   handleArtist: (artistId: string) => void;
 };
@@ -25,7 +21,7 @@ type DeleteArtistModalProps = {
  * Ouvre une confirmation, lance la requete DELETE et affiche l'etat succes/erreur.
  * @param {DeleteArtistModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
- * @param {ArtistToDelete | null} props.selectedArtist Artiste selectionne pour la suppression.
+ * @param {Pick<ArtistListRow, "id" | "name"> | null} props.selectedArtist Artiste selectionne pour la suppression.
  * @param {() => void} props.onClose Ferme la modale.
  * @param {(artistId: string) => void} props.handleArtist Met a jour la liste des artistes et ferme la modale.
  * @children ModalCloseButton Ferme la modale.

@@ -7,7 +7,7 @@ import type { JwtPayload } from "jsonwebtoken";
 import { query } from "../db";
 import { AppError } from "../errors/AppError";
 import { ERRORS } from "../errors/errorMessages";
-import type { UserRole } from "../type";
+import type { AuthUserRow, SessionRow } from "../type";
 
 /** Verifie qu'un token est present dans le cookie de la requete
  * @return le token
@@ -63,18 +63,17 @@ export async function optionalAuth(
     const token = getTokenFromCookie(req);
     const { userId, sessionId } = decodedToken(token);
 
-    const user = await query<{
-      id: string;
-      display_name: string | null;
-      role: UserRole;
-    }>("SELECT id, display_name, role FROM users WHERE id = $1", [userId]);
+    const user = await query<AuthUserRow>(
+      "SELECT id, display_name, role FROM users WHERE id = $1",
+      [userId],
+    );
 
     if (!user[0]) {
       return next();
     }
 
     // Verifie que la session existe et n'est pas revoquee (logout invalide la session en BD)
-    const sessions = await query<{ id: string; revoked_at: Date | null }>(
+    const sessions = await query<Pick<SessionRow, "id" | "revoked_at">>(
       "SELECT id, revoked_at FROM sessions WHERE id = $1 AND user_id = $2",
       [sessionId, userId],
     );

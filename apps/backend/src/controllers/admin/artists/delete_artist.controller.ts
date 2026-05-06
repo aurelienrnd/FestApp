@@ -5,7 +5,7 @@ import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import type { ArtistListRow } from "../../../type";
+import type { ArtistMediaRow } from "../../../type";
 
 const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/artists");
 
@@ -27,7 +27,7 @@ export async function deleteArtist(req: Request, res: Response) {
   }
 
   // supprime l'artiste et retourne son url_media pour supprimer le fichier image
-  const deletedArtists = await query<Pick<ArtistListRow, "id" | "url_media">>(
+  const deletedArtists = await query<ArtistMediaRow>(
     "DELETE FROM artists WHERE id = $1 RETURNING id, url_media",
     [parsedParams.data.id],
   );

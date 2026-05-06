@@ -63,7 +63,7 @@ export function createApp() {
   if (process.env.NODE_ENV !== "production") {
     app.get("/debug/db", async (_req, res) => {
       try {
-        const rows = await query("SELECT NOW() as now");
+        const rows = await query<{ now: Date }>("SELECT NOW() as now");
         console.log("Connexion to the DB successful at:", rows[0].now);
         res.json({
           db: "ok",

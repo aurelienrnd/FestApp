@@ -7,7 +7,7 @@ import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import type { ArtistListRow, ConcertRow } from "../../../type";
+import type { ArtistListRow, ArtistMediaRow, ConcertRow } from "../../../type";
 
 const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/artists");
 
@@ -31,7 +31,7 @@ export async function updateArtist(req: Request, res: Response) {
   const artistId = parsedParams.data.id;
 
   // verifie que l'artiste existe et recupere son url_media actuelle
-  const existingArtists = await query<Pick<ArtistListRow, "id" | "url_media">>(
+  const existingArtists = await query<ArtistMediaRow>(
     "SELECT id, url_media FROM artists WHERE id = $1 LIMIT 1",
     [artistId],
   );

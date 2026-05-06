@@ -5,14 +5,16 @@ import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
 import { sendWelcomeEmail } from "../../../services/mailer";
+import type { UserListRow } from "../../../type";
 
 /** Verifie que l'email de l'utilisateur existe dans la BDD
  * @param {string} email email de l'utilisateur dans le body de la requete
  */
 async function existingEmail(email: string) {
-  const existingEmail = await query("SELECT id FROM users WHERE email = $1", [
-    email,
-  ]);
+  const existingEmail = await query<{ id: string }>(
+    "SELECT id FROM users WHERE email = $1",
+    [email],
+  );
   if (existingEmail.length > 0) {
     throw new AppError(ERRORS.USER_EMAIL_ALREADY_USED, 409);
   }
@@ -21,7 +23,7 @@ async function existingEmail(email: string) {
  * @param {string} displayName nom complet de l'utilisateur dans le body de la requete
  */
 async function existingDisplayName(displayName: string) {
-  const existingDisplayName = await query(
+  const existingDisplayName = await query<{ id: string }>(
     "SELECT id FROM users WHERE display_name = $1",
     [displayName],
   );
@@ -56,20 +58,14 @@ export const createUser = async (req: Request, res: Response) => {
   const passwordHash = await bcrypt.hash(temporaryPassword, 10);
 
   // Enregistre l'utilisateur en base de données et le recupaire
-  const createdUsers = await query<{
-    id: string;
-    email: string;
-    display_name: string;
-    role: string;
-    created_at: string;
-  }>(
+  const createdUsers = await query<UserListRow>(
     `INSERT INTO users (
       email,
       password_hash,
       display_name,
       role
     ) VALUES ($1, $2, $3, $4)
-     RETURNING id, email, display_name, role, created_at`,
+     RETURNING id, email, display_name, role, created_at, password_changed_at`,
     [email, passwordHash, displayName, role],
   );
   const createdUser = createdUsers[0];
@@ -87,6 +83,7 @@ export const createUser = async (req: Request, res: Response) => {
       display_name: createdUser.display_name,
       role: createdUser.role,
       created_at: createdUser.created_at,
+      password_changed_at: createdUser.password_changed_at,
     },
   });
 };

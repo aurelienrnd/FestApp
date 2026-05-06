@@ -3,6 +3,7 @@ import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
+import type { UserListRow } from "../../../type";
 
 /** Verifie que l'utilisateur existe dans la BDD via son id
  * @param {string} userId id de l'utilisateur dans les parametres de la requete
@@ -74,17 +75,11 @@ export async function updateUser(req: Request, res: Response) {
   await existingDisplayName(displayName, userId);
 
   // Met a jour l'utilisateur en base de donnees et le recupaire
-  const updatedUsers = await query<{
-    id: string;
-    email: string;
-    display_name: string;
-    role: string;
-    created_at: string;
-  }>(
+  const updatedUsers = await query<UserListRow>(
     `UPDATE users
      SET email = $1, display_name = $2, role = $3
      WHERE id = $4
-     RETURNING id, email, display_name, role, created_at`,
+     RETURNING id, email, display_name, role, created_at, password_changed_at`,
     [email, displayName, role, userId],
   );
   const updatedUser = updatedUsers[0];
@@ -100,6 +95,7 @@ export async function updateUser(req: Request, res: Response) {
       display_name: updatedUser.display_name,
       role: updatedUser.role,
       created_at: updatedUser.created_at,
+      password_changed_at: updatedUser.password_changed_at,
     },
   });
 }

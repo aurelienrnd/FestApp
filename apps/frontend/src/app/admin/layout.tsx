@@ -1,9 +1,7 @@
 ﻿import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import {
-  AdminUserProvider,
-  type AdminAuthMeResponse,
-} from "../../components/AdminUserProvider";
+import { AdminUserProvider } from "../../components/AdminUserProvider";
+import type { AdminAuthMeResponse } from "../../type";
 import Banner from "../../components/Banner";
 import Footer from "../../components/Footer";
 

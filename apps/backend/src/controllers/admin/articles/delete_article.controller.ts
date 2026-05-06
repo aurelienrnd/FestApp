@@ -5,7 +5,7 @@ import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import type { ArticleRow } from "../../../type";
+import type { ArticleMediaRow } from "../../../type";
 
 const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/articles");
 
@@ -23,7 +23,7 @@ export async function deleteArticle(req: Request, res: Response) {
   }
 
   // supprime l'article et retourne son url_media pour supprimer le fichier image
-  const deletedArticles = await query<Pick<ArticleRow, "id" | "url_media">>(
+  const deletedArticles = await query<ArticleMediaRow>(
     "DELETE FROM articles WHERE id = $1 RETURNING id, url_media",
     [parsedParams.data.id],
   );

@@ -17,7 +17,7 @@ type AddUserModalProps = {
 
 type CreateUserApiResponse = {
   message: string;
-  user?: UserListRow;
+  user: UserListRow;
 };
 
 /** Verifie si le formulaire d'ajout utilisateur est incomplet.
@@ -118,14 +118,7 @@ export default function AddUserModal({
       return;
     }
 
-    const fallbackUser: UserListRow = {
-      id: userToEdit?.id ?? "",
-      email,
-      display_name: `${firstName} ${lastName}`.trim(),
-      role: role as UserListRow["role"],
-      created_at: userToEdit?.created_at ?? new Date().toISOString(),
-    };
-    handleUser(result.data.user ?? fallbackUser);
+    handleUser(result.data.user);
     resetForm();
     setIsLoading(false);
   };

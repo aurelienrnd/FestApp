@@ -1,20 +1,7 @@
 ﻿"use client";
 
 import { createContext, useContext } from "react";
-
-// Type utilisateur renvoye par l'API admin/auth/me
-export type AdminUser = {
-  id: string;
-  email: string;
-  display_name: string;
-  role: string;
-};
-
-// Type global de la reponse de l'endpoint admin/auth/me
-export type AdminAuthMeResponse = {
-  user: AdminUser;
-  mustChangePassword: boolean;
-};
+import type { AdminAuthMeResponse } from "../type";
 
 // Context partage dans l'espace admin
 const AdminUserContext = createContext<AdminAuthMeResponse | null>(null);

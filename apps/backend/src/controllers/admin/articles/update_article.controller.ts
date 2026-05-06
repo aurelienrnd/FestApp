@@ -7,7 +7,7 @@ import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import type { ArticleRow } from "../../../type";
+import type { ArticleRow, ArticleMediaRow } from "../../../type";
 
 const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/articles");
 
@@ -27,7 +27,7 @@ export async function updateArticle(req: Request, res: Response) {
   const articleId = parsedParams.data.id;
 
   // verifie que l'article existe et recupere son url_media actuelle
-  const existingArticles = await query<Pick<ArticleRow, "id" | "url_media">>(
+  const existingArticles = await query<ArticleMediaRow>(
     "SELECT id, url_media FROM articles WHERE id = $1 LIMIT 1",
     [articleId],
   );

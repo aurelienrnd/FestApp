@@ -8,15 +8,11 @@ import {
   apiRequest,
 } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
-
-type UserToDelete = {
-  id: string;
-  display_name: string | null;
-};
+import type { UserListRow } from "../../../type";
 
 type DelateUserModalProps = {
   isOpen: boolean;
-  selectedUser: UserToDelete | null;
+  selectedUser: Pick<UserListRow, "id" | "display_name"> | null;
   onClose: () => void;
   handleUser: (userId: string) => void;
 };
@@ -25,7 +21,7 @@ type DelateUserModalProps = {
  * Ouvre une confirmation, lance la requete DELETE et affiche l'etat succes/erreur.
  * @param {DelateUserModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
- * @param {UserToDelete | null} props.selectedUser Utilisateur selectionne pour la suppression.
+ * @param {Pick<UserListRow, "id" | "display_name"> | null} props.selectedUser Utilisateur selectionne pour la suppression.
  * @param {() => void} props.onClose Ferme la modale.
  * @param {(userId: string) => void} props.handleUser Met a jour la liste des users et ferme la modale.
  * @children ModalCloseButton Ferme la modale.

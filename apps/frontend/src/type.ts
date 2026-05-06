@@ -1,3 +1,5 @@
+// === USERS ===
+
 /** Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`. */
 export type UserRole = "admin" | "lineup" | "news";
 
@@ -5,11 +7,30 @@ export type UserRole = "admin" | "lineup" | "news";
 export type UserListRow = {
   id: string;
   email: string;
-  display_name: string | null;
+  display_name: string;
   role: UserRole;
   created_at: string;
-  password_changed_at?: string | null;
+  password_changed_at: string | null;
 };
+
+/** Type representant la reponse de GET /admin/users. */
+export type ListUsersResponse = { users: UserListRow[] };
+
+/** Type representant l'utilisateur connecte retourne par GET /admin/auth/me. */
+export type AdminUser = {
+  id: string;
+  email: string;
+  display_name: string;
+  role: UserRole;
+};
+
+/** Type representant la reponse de GET /admin/auth/me. */
+export type AdminAuthMeResponse = {
+  user: AdminUser;
+  mustChangePassword: boolean;
+};
+
+// === ARTICLES ===
 
 /** Type representant une ligne article retournee par l'API. */
 export type ArticleRow = {
@@ -25,6 +46,17 @@ export type ArticleRow = {
 
 /** Type representant une ligne article de la liste (sans content) — retourne par GET /public/news. */
 export type ArticleSummaryRow = Omit<ArticleRow, "content">;
+
+/** Type representant les donnees article retournees par l'endpoint home. */
+export type HomeArticleRow = Pick<
+  ArticleRow,
+  "id" | "title" | "url_media" | "description_media" | "created_at"
+>;
+
+/** Type representant la reponse de GET /public/news. */
+export type ListArticlesResponse = { articles: ArticleSummaryRow[] };
+
+// === ARTISTS ===
 
 /** Type representant une ligne artiste retournee par l'API. */
 export type ArtistListRow = {
@@ -55,24 +87,6 @@ export type HomeArtistRow = Pick<
   | "description_media"
 >;
 
-/** Type representant les donnees article retournees par l'endpoint home. */
-export type HomeArticleRow = Pick<
-  ArticleRow,
-  "id" | "title" | "url_media" | "description_media" | "created_at"
->;
-
-/** Type representant les donnees agregees retournees par GET /public/home. */
-export type HomeData = {
-  artists: HomeArtistRow[];
-  articles: HomeArticleRow[];
-};
-
-/** Type representant la reponse de GET /admin/users. */
-export type ListUsersResponse = { users: UserListRow[] };
-
-/** Type representant la reponse de GET /public/news. */
-export type ListArticlesResponse = { articles: ArticleSummaryRow[] };
-
 /** Type representant une ligne artiste de la liste (sans bio, genre, origin, youtube_url, spotify_url, end_time) — retourne par GET /public/lineup. */
 export type ArtistSummary = Omit<
   ArtistListRow,
@@ -81,3 +95,11 @@ export type ArtistSummary = Omit<
 
 /** Type representant la reponse de GET /public/lineup. */
 export type ListArtistsResponse = { artists: ArtistSummary[] };
+
+// === UI ===
+
+/** Type representant les donnees agregees retournees par GET /public/home. */
+export type HomeData = {
+  artists: HomeArtistRow[];
+  articles: HomeArticleRow[];
+};
