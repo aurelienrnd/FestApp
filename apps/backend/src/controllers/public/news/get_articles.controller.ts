@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { query } from "../../../db";
-import type { ArticleSummaryRow } from "../../../type";
+import type { ArticleItem } from "../../../type";
 
 /** Retourne la liste des articles tries par date de creation decroissante.
  * Si l'utilisateur est authentifie avec le role "admin" ou "news", retourne tous les articles.
@@ -13,7 +13,7 @@ export async function getArticles(_req: Request, res: Response) {
   const isPrivileged =
     res.locals.userRole === "admin" || res.locals.userRole === "news";
 
-  const articles = await query<ArticleSummaryRow>(
+  const articles = await query<Omit<ArticleItem, "content" | "user_id">>(
     `SELECT a.id, a.title, a.is_published, a.created_at,
             a.url_media, a.description_media,
             u.display_name AS author_name

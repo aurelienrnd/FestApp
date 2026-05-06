@@ -4,7 +4,7 @@ import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
 import { requireUserId } from "../../../functions";
-import type { UserInfoRow } from "../../../type";
+import type { UserItem } from "../../../type";
 
 /** Recupere les informations de l'utilisateur connecte
  * Verifie que l'utilisateur est present dans le header
@@ -14,7 +14,7 @@ import type { UserInfoRow } from "../../../type";
 export async function userInfo(_req: Request, res: Response) {
   // Récupère l'userId depuis `res.locals`puis recherche l'utilisateur dnas la bdd,
   const reqUserId = requireUserId(res.locals.userId);
-  const rows = await query<UserInfoRow>(
+  const rows = await query<Omit<UserItem, "created_at">>(
     `SELECT id, email, display_name, role, password_changed_at
      FROM users
      WHERE id = $1

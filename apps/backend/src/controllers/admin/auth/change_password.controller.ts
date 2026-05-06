@@ -5,7 +5,7 @@ import { query } from "../../../db";
 import { requireUserId } from "../../../functions";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import type { DbUser } from "../../../type";
+import type { UserCredentialsRow } from "../../../type";
 
 /** Modifie le mot de passe de l'utilisateur connecte.
  * Verifie que le mot de passe actuel est correct, puis met a jour password_hash et password_changed_at.
@@ -20,7 +20,7 @@ export async function changePassword(req: Request, res: Response) {
   };
 
   // Recupere le hash actuel de l'utilisateur
-  const rows = await query<DbUser>(
+  const rows = await query<UserCredentialsRow>(
     `SELECT id, email, password_hash, display_name
      FROM users
      WHERE id = $1

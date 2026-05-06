@@ -7,7 +7,7 @@ import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import type { ArtistListRow, ArtistMediaRow, ConcertRow } from "../../../type";
+import type { ArtistItem, ArtistMediaRow, ConcertRow } from "../../../type";
 
 const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/artists");
 
@@ -76,7 +76,7 @@ export async function updateArtist(req: Request, res: Response) {
 
   try {
     // met a jour l'artiste en base de donnees
-    const updatedArtists = await query<ArtistListRow>(
+    const updatedArtists = await query<ArtistItem>(
       `UPDATE artists
        SET name = $1, genre = $2, origin = $3, bio = $4, url_media = $5, description_media = $6, youtube_url = $7, spotify_url = $8, is_featured = $9
        WHERE id = $10

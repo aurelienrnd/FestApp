@@ -7,7 +7,9 @@ import type { JwtPayload } from "jsonwebtoken";
 import { query } from "../db";
 import { AppError } from "../errors/AppError";
 import { ERRORS } from "../errors/errorMessages";
-import type { AuthUserRow, SessionRow } from "../type";
+import type { UserItem, SessionRow } from "../type";
+
+type AuthUserRow = Pick<UserItem, "id" | "display_name" | "role">;
 
 /** Verifie qu'un token est present dans le cookie de la requete
  * @return le token
@@ -104,11 +106,10 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
   const { userId, sessionId } = decodedToken(token);
 
   // Cherche l'utilisateur correspondant à l'userId extrait du token et renvoie sont nom et sont role
-  const user = await query<{
-    id: string;
-    display_name: string | null;
-    role: UserRole;
-  }>("SELECT id, display_name, role FROM users WHERE id = $1", [userId]);
+  const user = await query<AuthUserRow>(
+    "SELECT id, display_name, role FROM users WHERE id = $1",
+    [userId],
+  );
   if (!user[0]) {
     throw new AppError(ERRORS.AUTH_USER_NOT_FOUND, 401);
   }

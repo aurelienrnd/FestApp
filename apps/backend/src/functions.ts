@@ -3,7 +3,7 @@ import ms from "ms";
 import bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { serialize } from "cookie";
-import type { DbUser } from "../src/type";
+import type { UserCredentialsRow } from "../src/type";
 import type { SessionRow } from "../src/type";
 import { AppError } from "./errors/AppError";
 import { ERRORS } from "./errors/errorMessages";
@@ -33,9 +33,9 @@ export function envToStringValue(name: string): StringValue {
 }
 
 /** Teste si l'utilisateur existe
- * @param {DbUser | undefined} user utilisateur dans la base de donnees
+ * @param {UserCredentialsRow | undefined} user utilisateur dans la base de donnees
  */
-export function userExists(user: DbUser | undefined) {
+export function userExists(user: UserCredentialsRow | undefined) {
   if (!user) {
     throw new AppError(ERRORS.AUTH_INVALID_CREDENTIALS, 401);
   }

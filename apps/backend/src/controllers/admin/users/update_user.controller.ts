@@ -3,13 +3,15 @@ import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import type { UserListRow } from "../../../type";
+import type { UserItem } from "../../../type";
+
+type UserIdRow = { id: string };
 
 /** Verifie que l'utilisateur existe dans la BDD via son id
  * @param {string} userId id de l'utilisateur dans les parametres de la requete
  */
 async function userExists(userId: string) {
-  const users = await query<{ id: string }>(
+  const users = await query<UserIdRow>(
     "SELECT id FROM users WHERE id = $1 LIMIT 1",
     [userId],
   );
@@ -23,7 +25,7 @@ async function userExists(userId: string) {
  * @param {string} userId id de l'utilisateur en cours de modification
  */
 async function existingEmail(email: string, userId: string) {
-  const users = await query<{ id: string }>(
+  const users = await query<UserIdRow>(
     "SELECT id FROM users WHERE email = $1 AND id <> $2 LIMIT 1",
     [email, userId],
   );
@@ -37,7 +39,7 @@ async function existingEmail(email: string, userId: string) {
  * @param {string} userId id de l'utilisateur en cours de modification
  */
 async function existingDisplayName(displayName: string, userId: string) {
-  const users = await query<{ id: string }>(
+  const users = await query<UserIdRow>(
     "SELECT id FROM users WHERE display_name = $1 AND id <> $2 LIMIT 1",
     [displayName, userId],
   );
@@ -75,7 +77,7 @@ export async function updateUser(req: Request, res: Response) {
   await existingDisplayName(displayName, userId);
 
   // Met a jour l'utilisateur en base de donnees et le recupaire
-  const updatedUsers = await query<UserListRow>(
+  const updatedUsers = await query<UserItem>(
     `UPDATE users
      SET email = $1, display_name = $2, role = $3
      WHERE id = $4

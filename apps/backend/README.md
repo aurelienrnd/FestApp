@@ -231,15 +231,20 @@ Centralise la connexion PostgreSQL via un pool `pg` et expose une fonction `quer
 Centralise tous les types TypeScript partagés du backend :
 
 - `Express.Locals` augmentation — type `res.locals` avec `userId`, `userRole`, `userDisplayName`, `sessionId`
-- `DbUser` — ligne utilisateur retournée pour l'authentification (email, password_hash…)
-- `SessionRow` — ligne de session retournée par la base de données
-- `UserListRow` — ligne utilisateur pour les endpoints de liste/CRUD
-- `ArtistListRow` — ligne artiste pour l'endpoint de programmation (inclut `youtube_url`, `spotify_url` nullables, et `stage`, `start_time`, `end_time` nullables via LEFT JOIN concerts)
-- `ConcertRow` — ligne concert retournee lors de l'insertion en base
-- `ArticleRow` — ligne article pour les endpoints articles (inclut `user_id` nullable et `author_name` nullable via LEFT JOIN users)
-- `UserInfoRow` — ligne utilisateur pour l'endpoint `/admin/auth/me` (inclut `password_changed_at` pour calculer `mustChangePassword`)
-- `HomeArtistRow` — sous-ensemble de `ArtistListRow` retourné par l'endpoint home (id, name, stage, start_time, end_time, url_media, description_media)
-- `HomeArticleRow` — sous-ensemble de `ArticleRow` retourné par l'endpoint home (id, title, url_media, description_media, created_at)
+- `UserCredentialsRow` — ligne utilisateur interne pour l'authentification (contient `password_hash`, jamais exposé)
+- `AuthUserRow` — champs utilisateur chargés par le middleware auth (interne)
+- `SessionRow` — ligne de session retournée par la base de données (interne)
+- `ConcertRow` — ligne concert retournée lors de l'insertion en base (interne)
+- `ArtistMediaRow` — champs artiste pour la gestion du fichier image (interne)
+- `ArticleMediaRow` — champs article pour la gestion du fichier image (interne)
+- `UserList` — données utilisateur pour les endpoints de liste/CRUD (partagé front/back)
+- `UserInfo` — données utilisateur pour l'endpoint `/admin/auth/me` (partagé front/back)
+- `ArtistDetail` — données complètes d'un artiste, inclut `youtube_url`, `spotify_url` nullables et `stage`, `start_time`, `end_time` nullables via LEFT JOIN concerts (partagé front/back)
+- `ArtistLineup` — sous-ensemble de `ArtistDetail` retourné par `GET /public/lineup` (partagé front/back)
+- `HomeArtist` — sous-ensemble de `ArtistDetail` retourné par l'endpoint home (partagé front/back)
+- `Article` — données complètes d'un article, inclut `user_id` nullable et `author_name` nullable via LEFT JOIN users (partagé front/back)
+- `ArticleSummary` — sous-ensemble de `Article` retourné par `GET /public/news` (partagé front/back)
+- `HomeArticle` — sous-ensemble de `Article` retourné par l'endpoint home (partagé front/back)
 
 ### `functions.ts`
 

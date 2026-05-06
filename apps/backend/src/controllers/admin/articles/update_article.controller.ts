@@ -7,7 +7,7 @@ import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import type { ArticleRow, ArticleMediaRow } from "../../../type";
+import type { ArticleItem, ArticleMediaRow } from "../../../type";
 
 const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/articles");
 
@@ -60,7 +60,7 @@ export async function updateArticle(req: Request, res: Response) {
 
   try {
     // met a jour l'article et retourne les donnees avec le display_name de l'auteur via JOIN users
-    const updatedArticles = await query<ArticleRow>(
+    const updatedArticles = await query<ArticleItem>(
       `UPDATE articles
        SET title = $1, content = $2, is_published = $3, url_media = $4, description_media = $5
        WHERE id = $6
@@ -81,7 +81,7 @@ export async function updateArticle(req: Request, res: Response) {
     }
 
     // recupere le display_name de l'auteur via JOIN users
-    const articlesWithAuthor = await query<ArticleRow>(
+    const articlesWithAuthor = await query<ArticleItem>(
       `SELECT a.*, u.display_name AS author_name
        FROM articles a
        LEFT JOIN users u ON u.id = a.user_id

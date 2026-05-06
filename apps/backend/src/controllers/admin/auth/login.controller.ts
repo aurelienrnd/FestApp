@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import type { DbUser } from "../../../type.js";
+import type { UserCredentialsRow } from "../../../type.js";
 import ms from "ms";
 
 import { query } from "../../../db";
@@ -14,12 +14,12 @@ import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
 
 /** Cree la session dans la BDD
- * @param {DbUser} user utilisateur de la requete
+ * @param {UserCredentialsRow} user utilisateur de la requete
  * @param {string} SESSION_EXPIRES_IN variable d'environnement
  * @return l'ID de la session dans la BDD
  */
 export async function generateSession(
-  user: DbUser,
+  user: UserCredentialsRow,
   SESSION_EXPIRES_IN: string,
 ) {
   // Calcule la date d'expiration de la session via la varible d'environement
@@ -51,7 +51,7 @@ export async function login(req: Request, res: Response) {
   // Récupère le mot de passe et l'email dans la requete et dans la BDD
   const email = String(req.body.email).trim().toLowerCase();
   const password = String(req.body.password);
-  const result = await query<DbUser>(
+  const result = await query<UserCredentialsRow>(
     `SELECT id, email, password_hash, display_name
      FROM users
      WHERE email = $1

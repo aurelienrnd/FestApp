@@ -5,13 +5,15 @@ import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
 import { sendWelcomeEmail } from "../../../services/mailer";
-import type { UserListRow } from "../../../type";
+import type { UserItem } from "../../../type";
+
+type UserIdRow = { id: string };
 
 /** Verifie que l'email de l'utilisateur existe dans la BDD
  * @param {string} email email de l'utilisateur dans le body de la requete
  */
 async function existingEmail(email: string) {
-  const existingEmail = await query<{ id: string }>(
+  const existingEmail = await query<UserIdRow>(
     "SELECT id FROM users WHERE email = $1",
     [email],
   );
@@ -23,7 +25,7 @@ async function existingEmail(email: string) {
  * @param {string} displayName nom complet de l'utilisateur dans le body de la requete
  */
 async function existingDisplayName(displayName: string) {
-  const existingDisplayName = await query<{ id: string }>(
+  const existingDisplayName = await query<UserIdRow>(
     "SELECT id FROM users WHERE display_name = $1",
     [displayName],
   );
@@ -58,7 +60,7 @@ export const createUser = async (req: Request, res: Response) => {
   const passwordHash = await bcrypt.hash(temporaryPassword, 10);
 
   // Enregistre l'utilisateur en base de données et le recupaire
-  const createdUsers = await query<UserListRow>(
+  const createdUsers = await query<UserItem>(
     `INSERT INTO users (
       email,
       password_hash,

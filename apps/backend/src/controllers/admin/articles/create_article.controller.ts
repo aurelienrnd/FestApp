@@ -6,7 +6,7 @@ import sharp from "sharp";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import type { ArticleRow } from "../../../type";
+import type { ArticleItem } from "../../../type";
 
 const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/articles");
 
@@ -42,7 +42,7 @@ export async function createArticle(req: Request, res: Response) {
 
   try {
     // insere l'article et retourne les donnees avec le display_name de l'auteur via JOIN users
-    const createdArticles = await query<ArticleRow>(
+    const createdArticles = await query<ArticleItem>(
       `WITH inserted AS (
          INSERT INTO articles (title, content, is_published, url_media, description_media, user_id)
          VALUES ($1, $2, $3, $4, $5, $6)

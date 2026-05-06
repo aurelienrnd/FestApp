@@ -6,7 +6,7 @@ import sharp from "sharp";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import type { ArtistListRow, ConcertRow } from "../../../type";
+import type { ArtistItem, ConcertRow } from "../../../type";
 
 const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/artists");
 
@@ -51,7 +51,7 @@ export async function createArtist(req: Request, res: Response) {
 
   try {
     // insere l'artiste en base de donnees et retourne les donnees de l'artiste cree
-    const createdArtists = await query<ArtistListRow>(
+    const createdArtists = await query<ArtistItem>(
       `INSERT INTO artists (name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url, is_featured)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING id, name, genre, origin, bio, url_media, description_media, youtube_url, spotify_url, is_featured`,

@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import type { ArtistListRow } from "../../../type";
+import type { ArtistItem } from "../../../type";
 
 /** Retourne un artiste par son identifiant avec son concert associe si existant.
  * Leve une AppError 404 si l'artiste n'existe pas.
@@ -12,7 +12,7 @@ import type { ArtistListRow } from "../../../type";
 export async function getArtist(req: Request, res: Response) {
   const { id } = req.params;
 
-  const rows = await query<ArtistListRow>(
+  const rows = await query<ArtistItem>(
     `SELECT a.id, a.name, a.genre, a.origin, a.bio, a.url_media, a.description_media,
             a.youtube_url, a.spotify_url, a.is_featured,
             c.stage, c.start_time, c.end_time
