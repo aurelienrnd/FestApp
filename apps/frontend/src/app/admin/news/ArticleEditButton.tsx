@@ -24,13 +24,15 @@ export default function ArticleEditButton({
 
   return (
     <>
-      <button
-        type="button"
-        className="btn-action"
-        onClick={() => setIsModalOpen(true)}
-      >
-        Modifier
-      </button>
+      <div className="detail-edit-area">
+        <button
+          type="button"
+          className="btn-cta"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Modifier
+        </button>
+      </div>
       <AddArticleModal
         key={article.id}
         isOpen={isModalOpen}
