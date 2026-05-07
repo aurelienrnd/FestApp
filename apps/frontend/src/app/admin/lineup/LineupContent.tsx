@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { apiRequest } from "../../../functions/apiRequest";
-import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import { useFetch } from "../../../hooks/useFetch";
 import AddArtistModal from "./AddArtistModal";
 import DeleteArtistModal from "./DeleteArtistModal";
 import { useNavPath } from "../../../hooks/useNavPath";
@@ -38,38 +37,13 @@ export default function LineupContent({
   // Verifie si le chemin d'acces contient "/admin" pour afficher les boutons de suppression
   const { isAdminPath } = useNavPath();
 
-  // Etats lies aux donnees
+  const { data, isLoading, error } = useFetch<{ artists: ArtistSummary[] }>("/public/lineup");
+
+  // Liste mutable pour les ajouts et suppressions locaux
   const [artists, setArtists] = useState<ArtistSummary[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Charge la liste des artistes au montage du composant
   useEffect(() => {
-    const getArtists = async () => {
-      // Active le chargement et reinitialise les erreurs
-      setIsLoading(true);
-      setError(null);
-
-      // Appel API pour recuperer la liste des artistes
-      const result = await apiRequest<{ artists: ArtistSummary[] }>("/public/lineup", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      // Gestion des erreurs API
-      if (result.error) {
-        setError(getApiErrorMessage(result.error));
-        setIsLoading(false);
-        return;
-      }
-
-      // Mise a jour de la liste des artistes
-      setArtists(result.data?.artists ?? []);
-      setIsLoading(false);
-    };
-
-    getArtists();
-  }, []);
+    setArtists(data?.artists ?? []);
+  }, [data]);
 
   // Etats lies a la suppression d'un artiste
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);

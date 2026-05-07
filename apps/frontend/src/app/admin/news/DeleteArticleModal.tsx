@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
-import type { ApiMessageResponse } from "../../../type";
-import { apiRequest } from "../../../functions/apiRequest";
-import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import { useDelete } from "../../../hooks/useDelete";
 import type { ArticleItem } from "../../../type";
 
 type DeleteArticleModalProps = {
@@ -30,47 +27,15 @@ export default function DeleteArticleModal({
   onClose,
   handleArticle,
 }: DeleteArticleModalProps) {
-  // Etats de la suppression : en cours, erreur, succes.
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isDeleted, setIsDeleted] = useState(false);
+  const { handleDelete, isSubmitting, isDeleted, error: submitError } = useDelete("/admin/articles");
 
   // Reinitialise les etats et ferme la modale.
-  const handleClose = () => {
-    setIsSubmitting(false);
-    setSubmitError(null);
-    setIsDeleted(false);
-    onClose();
-  };
+  const handleClose = () => onClose();
 
   // Confirme la suppression et met a jour l'UI selon la reponse API.
-  const handleConfirmDelete = async () => {
-    // Si aucun article n'est selectionne, on ne fait rien.
+  const handleConfirmDelete = () => {
     if (!selectedArticle) return;
-
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    // Lance la requete de suppression.
-    const result = await apiRequest<ApiMessageResponse>(
-      `/admin/articles/${selectedArticle.id}`,
-      {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      },
-    );
-
-    // Si la reponse contient une erreur, on affiche le message d'erreur.
-    if (result.error) {
-      setSubmitError(getApiErrorMessage(result.error));
-      setIsSubmitting(false);
-      return;
-    }
-
-    // Si la suppression est reussie, on met a jour la liste des articles et on affiche le message de succes.
-    handleArticle(selectedArticle.id);
-    setIsDeleted(true);
-    setIsSubmitting(false);
+    handleDelete(selectedArticle.id, handleArticle);
   };
 
   return (

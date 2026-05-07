@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
-import type { ApiMessageResponse } from "../../../type";
-import { apiRequest } from "../../../functions/apiRequest";
-import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import { useDelete } from "../../../hooks/useDelete";
 import type { UserItem } from "../../../type";
 
 type DelateUserModalProps = {
@@ -30,50 +27,15 @@ export default function DelateUserModal({
   onClose,
   handleUser,
 }: DelateUserModalProps) {
-  // Etats locaux de soumission, d'erreur et de confirmation
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isDeleted, setIsDeleted] = useState(false);
+  const { handleDelete, isSubmitting, isDeleted, error: submitError } = useDelete("/admin/users");
 
+  // Reinitialise l’etat interne et ferme la modale
+  const handleClose = () => onClose();
 
-  // Reinitialise l'etat interne et ferme la modale
-  const handleClose = () => {
-    setIsSubmitting(false);
-    setSubmitError(null);
-    setIsDeleted(false);
-    onClose();
-  };
-
-  // Confirme la suppression et met a jour l'UI selon la reponse API
-  const handleConfirmDelete = async () => {
-    if (!selectedUser) {
-      return;
-    }
-
-    // Active l’état de soumission et réinitialise le message d’erreur
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    // Envoie une requête DELETE à l’API pour supprimer l’utilisateur sélectionné
-    const result = await apiRequest<ApiMessageResponse>(
-      `/admin/users/${selectedUser.id}`,
-      {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      },
-    );
-
-    // Gère l’erreur retournée par l’API et arrête le processus
-    if (result.error) {
-      setSubmitError(getApiErrorMessage(result.error));
-      setIsSubmitting(false);
-      return;
-    }
-
-    // Notifie la suppression de l’utilisateur, met à jour l’état local et désactive la soumission
-    handleUser(selectedUser.id);
-    setIsDeleted(true);
-    setIsSubmitting(false);
+  // Confirme la suppression et met a jour l’UI selon la reponse API
+  const handleConfirmDelete = () => {
+    if (!selectedUser) return;
+    handleDelete(selectedUser.id, handleUser);
   };
 
   return (

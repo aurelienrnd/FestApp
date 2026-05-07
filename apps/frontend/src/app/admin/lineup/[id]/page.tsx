@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useRoleGuard } from "../../../../hooks/useRoleGuard";
-import { apiRequest } from "../../../../functions/apiRequest";
-import { getApiErrorMessage } from "../../../../functions/getApiErrorMessage";
+import { useFetch } from "../../../../hooks/useFetch";
 import type { ArtistItem } from "../../../../type";
 import ArtistDetailContent from "../ArtistDetailContent";
 import ArtistEditButton from "../ArtistEditButton";
@@ -19,32 +18,13 @@ export default function AdminArtistPage() {
   useRoleGuard();
 
   const { id } = useParams<{ id: string }>();
+  const { data, isLoading, error } = useFetch<{ artist: ArtistItem }>(`/public/lineup/${id}`);
+
+  // État mutable pour les mises à jour locales après édition
   const [artist, setArtist] = useState<ArtistItem | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
   useEffect(() => {
-    const getArtist = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      const result = await apiRequest<{ artist: ArtistItem }>(`/public/lineup/${id}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (result.error) {
-        setError(getApiErrorMessage(result.error));
-        setIsLoading(false);
-        return;
-      }
-
-      setArtist(result.data?.artist ?? null);
-      setIsLoading(false);
-    };
-
-    getArtist();
-  }, [id]);
+    setArtist(data?.artist ?? null);
+  }, [data]);
 
   if (isLoading) return null;
   if (error || !artist) return <p className="content-centered">{error}</p>;

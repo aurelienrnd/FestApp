@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from "react";
 import type { ApiMessageResponse } from "../type";
-import { apiRequest } from "../functions/apiRequest";
-import { getApiErrorMessage } from "../functions/getApiErrorMessage";
+import { useMutation } from "../hooks/useMutation";
 /** Affiche un formulaire de contact avec les champs nom, email, sujet et message */
 export default function ContactUs() {
   // Champs du formulaire
@@ -10,9 +9,7 @@ export default function ContactUs() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
 
-  // Etats de gestion de la soumission
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { mutate, isLoading, error } = useMutation<ApiMessageResponse>("/contact/submit", "POST");
   const [success, setSuccess] = useState(false);
 
   // Verifie que tous les champs contiennent du texte valide
@@ -23,39 +20,19 @@ export default function ContactUs() {
     message.trim() === "";
 
   // Empeche le rechargement, valide le formulaire puis reinitialise les champs
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
-
-    if (isFormInvalid) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    const result = await apiRequest<ApiMessageResponse>("/contact/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: email.trim(),
-        name: name.trim(),
-        subject: subject.trim(),
-        message: message.trim(),
-      }),
-    });
-
-    if (result.error) {
-      setError(getApiErrorMessage(result.error));
-      setIsLoading(false);
-      return;
-    }
-
-    // reinitialise les champs et affiche le message de succes
-    setName("");
-    setEmail("");
-    setSubject("");
-    setMessage("");
-    setSuccess(true);
+    if (isFormInvalid) return;
+    mutate(
+      { email: email.trim(), name: name.trim(), subject: subject.trim(), message: message.trim() },
+      () => {
+        setName("");
+        setEmail("");
+        setSubject("");
+        setMessage("");
+        setSuccess(true);
+      },
+    );
   };
 
   return (

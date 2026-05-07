@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { apiRequest } from "../../../functions/apiRequest";
-import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import { useFetch } from "../../../hooks/useFetch";
 import { useAdminUser } from "../../../components/AdminUserProvider";
 import AddUserModal from "./AddUserModal";
 import DelateUserModal from "./DelateUserModal";
@@ -39,10 +38,13 @@ export default function UsersContent({
   const router = useRouter();
   const currentUser = useAdminUser();
 
-  // Etats lies aux donnees
+  const { data, isLoading, error } = useFetch<{ users: UserItem[] }>("/admin/users");
+
+  // Liste mutable pour les ajouts, modifications et suppressions locaux
   const [users, setUsers] = useState<UserItem[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    setUsers(data?.users ?? []);
+  }, [data]);
 
   // Etats lies a la suppression
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -51,34 +53,6 @@ export default function UsersContent({
 
   // Utilisateur en cours d'edition (null = mode ajout)
   const [userToEdit, setUserToEdit] = useState<UserItem | null>(null);
-
-  // Charge la liste des utilisateurs au montage du composant
-  useEffect(() => {
-    const getUsers = async () => {
-      // Active le chargement et reinitialise les erreurs
-      setIsLoading(true);
-      setError(null);
-
-      // Appel API pour recuperer la liste des utilisateurs
-      const result = await apiRequest<{ users: UserItem[] }>("/admin/users", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      // Gestion des erreurs API
-      if (result.error) {
-        setError(getApiErrorMessage(result.error));
-        setIsLoading(false);
-        return;
-      }
-
-      // Mise a jour de la liste des utilisateurs
-      setUsers(result.data?.users ?? []);
-      setIsLoading(false);
-    };
-
-    getUsers();
-  }, []);
 
   // Ouvre la modal de suppression et definit l'utilisateur selectionne
   const openDeleteModal = (user: UserItem) => {

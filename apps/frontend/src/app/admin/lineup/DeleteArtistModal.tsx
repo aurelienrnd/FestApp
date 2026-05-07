@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
-import type { ApiMessageResponse } from "../../../type";
-import { apiRequest } from "../../../functions/apiRequest";
-import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import { useDelete } from "../../../hooks/useDelete";
 import type { ArtistItem } from "../../../type";
 
 type DeleteArtistModalProps = {
@@ -30,49 +27,15 @@ export default function DeleteArtistModal({
   onClose,
   handleArtist,
 }: DeleteArtistModalProps) {
-  // Etats locaux de soumission, d'erreur et de confirmation
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isDeleted, setIsDeleted] = useState(false);
+  const { handleDelete, isSubmitting, isDeleted, error: submitError } = useDelete("/admin/artists");
 
   // Reinitialise l'etat interne et ferme la modale
-  const handleClose = () => {
-    setIsSubmitting(false);
-    setSubmitError(null);
-    setIsDeleted(false);
-    onClose();
-  };
+  const handleClose = () => onClose();
 
   // Confirme la suppression et met a jour l'UI selon la reponse API
-  const handleConfirmDelete = async () => {
-    if (!selectedArtist) {
-      return;
-    }
-
-    // Active l'etat de soumission et reinitialise le message d'erreur
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    // Envoie une requete DELETE a l'API pour supprimer l'artiste selectionne
-    const result = await apiRequest<ApiMessageResponse>(
-      `/admin/artists/${selectedArtist.id}`,
-      {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      },
-    );
-
-    // Gere l'erreur retournee par l'API et arrete le processus
-    if (result.error) {
-      setSubmitError(getApiErrorMessage(result.error));
-      setIsSubmitting(false);
-      return;
-    }
-
-    // Notifie la suppression de l'artiste, met a jour l'etat local et desactive la soumission
-    handleArtist(selectedArtist.id);
-    setIsDeleted(true);
-    setIsSubmitting(false);
+  const handleConfirmDelete = () => {
+    if (!selectedArtist) return;
+    handleDelete(selectedArtist.id, handleArtist);
   };
 
   return (

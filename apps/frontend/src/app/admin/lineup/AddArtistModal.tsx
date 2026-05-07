@@ -4,8 +4,7 @@ import { useState, type FormEvent, type ChangeEvent } from "react";
 import Image from "next/image";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
-import { apiRequest } from "../../../functions/apiRequest";
-import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import { useMutation } from "../../../hooks/useMutation";
 import type { ArtistItem, CreateApiResponse } from "../../../type";
 import { FESTIVAL_DAYS } from "../../../config/festival";
 
@@ -136,9 +135,10 @@ export default function AddArtistModal({
   const [youtubeUrlError, setYoutubeUrlError] = useState<string | null>(null);
   const [spotifyUrlError, setSpotifyUrlError] = useState<string | null>(null);
 
-  // Gestion des erreurs et du chargement
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { mutate, isLoading, error, reset } = useMutation<CreateApiResponse<{ artist: ArtistItem }>>(
+    isEditMode ? `/admin/artists/${artistToEdit!.id}` : "/admin/artists",
+    isEditMode ? "PATCH" : "POST",
+  );
 
   const step1Invalid = isStep1Invalid(name, genre, origin, bio);
   // En mode edition, l'image est optionnelle (on conserve l'existante si aucune nouvelle n'est choisie)
@@ -195,8 +195,7 @@ export default function AddArtistModal({
 
   // Gere la fermeture de la modal et reinitialise les etats associes
   const handleClose = () => {
-    setError(null);
-    setIsLoading(false);
+    reset();
     resetForm();
     onClose();
   };
@@ -213,9 +212,6 @@ export default function AddArtistModal({
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (step3Invalid) return;
-
-    setIsLoading(true);
-    setError(null);
 
     // Construit le FormData pour l'envoi multipart/form-data (requis par multer)
     const formData = new FormData();
@@ -250,28 +246,10 @@ export default function AddArtistModal({
     );
     formData.append("is_featured", String(isFeatured));
 
-    // En mode edition, appel PATCH sur l'artiste existant, sinon POST pour creer
-    const endpoint = isEditMode
-      ? `/admin/artists/${artistToEdit.id}`
-      : "/admin/artists";
-    const method = isEditMode ? "PATCH" : "POST";
-
-    const result = await apiRequest<CreateApiResponse<{ artist: ArtistItem }>>(endpoint, {
-      method,
-      body: formData,
+    mutate(formData, (data) => {
+      resetForm();
+      handleArtist(data.artist);
     });
-
-    // Affiche l'erreur retournee par l'API si la requete a echoue
-    if (result.error) {
-      setError(getApiErrorMessage(result.error));
-      setIsLoading(false);
-      return;
-    }
-
-    // Reinitialise le formulaire et notifie le parent avec l'artiste cree ou modifie
-    resetForm();
-    setIsLoading(false);
-    handleArtist(result.data.artist);
   };
 
   return (

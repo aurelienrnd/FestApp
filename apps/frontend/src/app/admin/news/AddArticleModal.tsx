@@ -4,8 +4,7 @@ import { useState, type FormEvent, type ChangeEvent } from "react";
 import Image from "next/image";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
-import { apiRequest } from "../../../functions/apiRequest";
-import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import { useMutation } from "../../../hooks/useMutation";
 import type { ArticleItem, CreateApiResponse } from "../../../type";
 
 type AddArticleModalProps = {
@@ -80,9 +79,10 @@ export default function AddArticleModal({
     articleToEdit?.url_media ?? null,
   );
 
-  // Gestion de l'etat de chargement et des erreurs de l'API
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { mutate, isLoading, error, reset } = useMutation<CreateApiResponse<{ article: ArticleItem }>>(
+    isEditMode ? `/admin/articles/${articleToEdit!.id}` : "/admin/articles",
+    isEditMode ? "PATCH" : "POST",
+  );
 
   // Validation des formulaires des deux etapes
   const step1Invalid = isStep1Invalid(title);
@@ -102,8 +102,7 @@ export default function AddArticleModal({
 
   // Ferme la modale et reinitialise le formulaire
   const handleClose = () => {
-    setError(null);
-    setIsLoading(false);
+    reset();
     resetForm();
     onClose();
   };
@@ -122,10 +121,6 @@ export default function AddArticleModal({
     event.preventDefault();
     if (step2Invalid) return;
 
-    // Reset de l'etat d'erreur et affichage du chargement
-    setIsLoading(true);
-    setError(null);
-
     // Construction du payload multipart/form-data
     const formData = new FormData();
     formData.append("title", title);
@@ -134,29 +129,10 @@ export default function AddArticleModal({
     formData.append("description_media", descriptionMedia);
     if (image !== null) formData.append("image", image);
 
-    // En mode edition, on PATCH vers /admin/articles/:id et l'image est optionnelle (conserve l'existante si aucune nouvelle n'est choisie).
-    const endpoint = isEditMode
-      ? `/admin/articles/${articleToEdit.id}`
-      : "/admin/articles";
-    const method = isEditMode ? "PATCH" : "POST";
-
-    // Appel de l'API pour creer ou modifier l'article
-    const result = await apiRequest<CreateApiResponse<{ article: ArticleItem }>>(endpoint, {
-      method,
-      body: formData,
+    mutate(formData, (data) => {
+      resetForm();
+      handleArticle(data.article);
     });
-
-    // En cas d'erreur API, affiche le message d'erreur et arrete le chargement
-    if (result.error) {
-      setError(getApiErrorMessage(result.error));
-      setIsLoading(false);
-      return;
-    }
-
-    // En cas de succès, reinitialise le formulaire, arrete le chargement, met a jour la liste des articles et ferme la modale
-    resetForm();
-    setIsLoading(false);
-    handleArticle(result.data.article);
   };
 
   return (

@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { apiRequest } from "../../../functions/apiRequest";
-import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import { useFetch } from "../../../hooks/useFetch";
 import { useNavPath } from "../../../hooks/useNavPath";
 import type { ArticleItem } from "../../../type";
 
@@ -35,39 +34,13 @@ export default function NewsContent({
   const { isAdminPath } = useNavPath();
   const basePath = isAdminPath ? "/admin/news" : "/news";
 
-  // Stocke les articles, l'état de chargement et les erreurs éventuelles
+  const { data, isLoading, error } = useFetch<{ articles: ArticleSummary[] }>("/public/news");
+
+  // Liste mutable pour les ajouts et suppressions locaux
   const [articles, setArticles] = useState<ArticleSummary[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Récupère les articles à l'affichage du composant
   useEffect(() => {
-    // Fonction asynchrone pour récupérer les articles depuis l'API
-    const getArticles = async () => {
-      // Initialise le chargement et réinitialise les erreurs
-      setIsLoading(true);
-      setError(null);
-
-      // Effectue la requête API pour récupérer les articles
-      const result = await apiRequest<{ articles: ArticleSummary[] }>("/public/news", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      // En cas d'erreur, stocke le message d'erreur et arrête le chargement
-      if (result.error) {
-        setError(getApiErrorMessage(result.error));
-        setIsLoading(false);
-        return;
-      }
-
-      // En cas de succès, stocke les articles récupérés et arrête le chargement
-      setArticles(result.data?.articles ?? []);
-      setIsLoading(false);
-    };
-
-    getArticles();
-  }, []);
+    setArticles(data?.articles ?? []);
+  }, [data]);
 
   // États pour gérer la modale de suppression
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);

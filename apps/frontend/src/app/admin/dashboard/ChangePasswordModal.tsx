@@ -4,8 +4,7 @@ import { useState, type FormEvent } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import type { ApiMessageResponse } from "../../../type";
-import { apiRequest } from "../../../functions/apiRequest";
-import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import { useMutation } from "../../../hooks/useMutation";
 
 type ChangePasswordModalProps = {
   isOpen: boolean;
@@ -32,11 +31,10 @@ export default function ChangePasswordModal({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // etats de gestion de la soumission
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Valeur de succes de la modification du mot de passe, affiche un message de succes et masque le formulaire
+  const { mutate, isLoading, error: apiError, reset } = useMutation<ApiMessageResponse>("/admin/auth/password", "PATCH");
+  // Erreur de validation locale (confirmation de mot de passe) — distincte de l'erreur API
+  const [localError, setLocalError] = useState<string | null>(null);
+  const error = localError ?? apiError;
   const [success, setSuccess] = useState(false);
 
 
@@ -53,27 +51,12 @@ export default function ChangePasswordModal({
 
     // Verifie que les deux nouveaux mots de passe sont identiques
     if (newPassword !== confirmPassword) {
-      setError("Les nouveaux mots de passe ne correspondent pas.");
+      setLocalError("Les nouveaux mots de passe ne correspondent pas.");
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-
-    const result = await apiRequest<ApiMessageResponse>("/admin/auth/password", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password: oldPassword, newPassword }),
-    });
-
-    if (result.error) {
-      setError(getApiErrorMessage(result.error));
-      setIsLoading(false);
-      return;
-    }
-
-    setSuccess(true);
-    setIsLoading(false);
+    setLocalError(null);
+    mutate({ password: oldPassword, newPassword }, () => setSuccess(true));
   };
 
   // Gere la fermeture de la modal et reinitialise les etats associes
@@ -81,8 +64,8 @@ export default function ChangePasswordModal({
     setOldPassword("");
     setNewPassword("");
     setConfirmPassword("");
-    setError(null);
-    setIsLoading(false);
+    setLocalError(null);
+    reset();
     setSuccess(false);
     onClose();
   };

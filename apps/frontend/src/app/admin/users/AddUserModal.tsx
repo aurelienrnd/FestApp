@@ -3,8 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
-import { apiRequest } from "../../../functions/apiRequest";
-import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import { useMutation } from "../../../hooks/useMutation";
 import type { UserItem, CreateApiResponse } from "../../../type";
 import { USER_ROLES } from "../../../config/ui";
 
@@ -65,10 +64,10 @@ export default function AddUserModal({
   const [email, setEmail] = useState(userToEdit?.email ?? "");
   const [role, setRole] = useState(userToEdit?.role ?? "");
 
-  // Gestion des erreurs lors de la soumission du formulaire
-  const [error, setError] = useState<string | null>(null);
-  // Indique si le formulaire envoye
-  const [isLoading, setIsLoading] = useState(false);
+  const { mutate, isLoading, error, reset } = useMutation<CreateApiResponse<{ user: UserItem }>>(
+    isEditMode ? `/admin/users/${userToEdit!.id}` : "/admin/users",
+    isEditMode ? "PATCH" : "POST",
+  );
 
 
   // Verifie si le formulaire d'ajout utilisateur est incomplet.
@@ -87,42 +86,15 @@ export default function AddUserModal({
     event.preventDefault();
     if (isFormInvalid) return;
 
-    setIsLoading(true);
-    setError(null);
-
-    // Verifie ci il sagit d'une creation ou d'une modification
-    const requestPath =
-      isEditMode && userToEdit?.id
-        ? `/admin/users/${userToEdit.id}`
-        : "/admin/users";
-    const requestMethod = isEditMode ? "PATCH" : "POST";
-
-    const result = await apiRequest<CreateApiResponse<{ user: UserItem }>>(requestPath, {
-      method: requestMethod,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        first_name: firstName,
-        last_name: lastName,
-        role,
-      }),
+    mutate({ email, first_name: firstName, last_name: lastName, role }, (data) => {
+      handleUser(data.user);
+      resetForm();
     });
-
-    if (result.error) {
-      setError(getApiErrorMessage(result.error));
-      setIsLoading(false);
-      return;
-    }
-
-    handleUser(result.data.user);
-    resetForm();
-    setIsLoading(false);
   };
 
   // Gere la fermeture de la modal et reinitialise les etats associes
   const handleClose = () => {
-    setError(null);
-    setIsLoading(false);
+    reset();
     onClose();
   };
 

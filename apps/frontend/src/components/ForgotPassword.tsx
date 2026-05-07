@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from "react";
 import type { ApiMessageResponse } from "../type";
-import { apiRequest } from "../functions/apiRequest";
-import { getApiErrorMessage } from "../functions/getApiErrorMessage";
+import { useMutation } from "../hooks/useMutation";
 
 /** Affiche le formulaire "Mot de passe oublié".
  * Permet à l'utilisateur de saisir son email pour demander la réinitialisation du mot de passe.
@@ -12,41 +11,17 @@ export default function ForgotPassword() {
   // Champ du formulaire
   const [email, setEmail] = useState("");
 
-  // Etats de gestion de la soumission
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { mutate, isLoading, error } = useMutation<ApiMessageResponse>("/admin/auth/forgot-password", "POST");
   const [success, setSuccess] = useState(false);
 
   // verifie que le champ email n'est pas vide (après suppression des espaces) pour activer le bouton d'envoi
   const isFormInvalid = email.trim() === "";
 
   // envoie une requete à l'API pour demander la réinitialisation du mot de passe, en fournissant l'email saisi par l'utilisateur
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
-
-    if (isFormInvalid) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    const result = await apiRequest<ApiMessageResponse>(
-      "/admin/auth/forgot-password",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
-      },
-    );
-
-    if (result.error) {
-      setError(getApiErrorMessage(result.error));
-      setIsLoading(false);
-      return;
-    }
-
-    setSuccess(true);
+    if (isFormInvalid) return;
+    mutate({ email: email.trim() }, () => setSuccess(true));
   };
 
   return (

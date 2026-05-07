@@ -6,8 +6,7 @@ import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import ForgotPassword from "../../../components/ForgotPassword";
 import type { ApiMessageResponse } from "../../../type";
-import { apiRequest } from "../../../functions/apiRequest";
-import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
+import { useMutation } from "../../../hooks/useMutation";
 
 /** Affiche la page de connexion admin avec un formulaire email/mot de passe.
  * Envoie la requete de connexion via `apiRequest` avec les credentials inclus.
@@ -25,8 +24,7 @@ export default function Page() {
   // Initialise les champs du formulaire, le message d'erreur et l'etat d'ouverture de la modale
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { mutate, isLoading, error } = useMutation<ApiMessageResponse>("/admin/auth/login", "POST");
   const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
     useState(false);
 
@@ -34,36 +32,12 @@ export default function Page() {
   const isFormInvalid = email.trim() === "" || password.trim() === "";
 
   // Gere l'envoi du login et affiche l'erreur si echec
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    // Empeche le rechargement de page, reset l'erreur, puis stoppe si formulaire invalide.
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
-    if (isFormInvalid) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    // Envoie la requete de connexion avec email/mot de passe au format JSON.
-    const result = await apiRequest<ApiMessageResponse>("/admin/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email.trim(),
-        password,
-      }),
+    if (isFormInvalid) return;
+    mutate({ email: email.trim(), password }, () => {
+      router.push("/admin/dashboard");
     });
-
-    // Si l'API renvoie une erreur, on l'affiche, sinon on redirige l'utilisateur vers le dashboard.
-    if (result.error) {
-      setError(getApiErrorMessage(result.error));
-      setIsLoading(false);
-      return;
-    }
-
-    router.push("/admin/dashboard");
   };
 
   return (
