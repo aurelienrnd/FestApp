@@ -226,42 +226,22 @@ Valide toutes les variables d'environnement obligatoires au démarrage via un sc
 
 Centralise la connexion PostgreSQL via un pool `pg` et expose une fonction `query()` réutilisable dans tous les contrôleurs.
 
-### `type.ts`
-
-Centralise tous les types TypeScript partagés du backend :
-
-- `Express.Locals` augmentation — type `res.locals` avec `userId`, `userRole`, `userDisplayName`, `sessionId`
-- `UserCredentialsRow` — ligne utilisateur interne pour l'authentification (contient `password_hash`, jamais exposé)
-- `AuthUserRow` — champs utilisateur chargés par le middleware auth (interne)
-- `SessionRow` — ligne de session retournée par la base de données (interne)
-- `ConcertRow` — ligne concert retournée lors de l'insertion en base (interne)
-- `ArtistMediaRow` — champs artiste pour la gestion du fichier image (interne)
-- `ArticleMediaRow` — champs article pour la gestion du fichier image (interne)
-- `UserList` — données utilisateur pour les endpoints de liste/CRUD (partagé front/back)
-- `UserInfo` — données utilisateur pour l'endpoint `/admin/auth/me` (partagé front/back)
-- `ArtistDetail` — données complètes d'un artiste, inclut `youtube_url`, `spotify_url` nullables et `stage`, `start_time`, `end_time` nullables via LEFT JOIN concerts (partagé front/back)
-- `ArtistLineup` — sous-ensemble de `ArtistDetail` retourné par `GET /public/lineup` (partagé front/back)
-- `HomeArtist` — sous-ensemble de `ArtistDetail` retourné par l'endpoint home (partagé front/back)
-- `Article` — données complètes d'un article, inclut `user_id` nullable et `author_name` nullable via LEFT JOIN users (partagé front/back)
-- `ArticleSummary` — sous-ensemble de `Article` retourné par `GET /public/news` (partagé front/back)
-- `HomeArticle` — sous-ensemble de `Article` retourné par l'endpoint home (partagé front/back)
-
 ### `functions.ts`
 
 Centralise les fonctions utilitaires réutilisables partagées entre middlewares et contrôleurs :
 
-| Fonction | Description |
-| --- | --- |
-| `getEnv(name)` | Lit une variable d'environnement, lève une erreur si absente |
-| `envToStringValue(name)` | Convertit une variable env en `StringValue` (format `ms`) |
-| `userExists(user)` | Lève `401` si l'utilisateur est `undefined` |
-| `passwordIsValid(password, hash)` | Compare un mot de passe en clair avec son hash bcrypt, lève `401` si invalide |
-| `initToken(userId, secret, expiresIn, sessionId)` | Crée et signe un JWT avec `userId` et `sessionId` |
-| `serializeCookie(name, secure, sameSite, token, time)` | Sérialise un cookie httpOnly à partir des variables d'environnement |
-| `sessionExists(session)` | Lève `401` si la session est `undefined` |
-| `sessionRevoked(session)` | Lève `401` si la session est révoquée ou expirée |
-| `requireUserId(reqUserId)` | Extrait et valide l'`userId` depuis la requête, lève `401` si absent |
-| `requireSessionId(reqSessionId)` | Extrait et valide le `sessionId` depuis la requête, lève `401` si absent |
+| Fonction                                                 | Description                                                                      |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `getEnv(name)`                                         | Lit une variable d'environnement, lève une erreur si absente                    |
+| `envToStringValue(name)`                               | Convertit une variable env en `StringValue` (format `ms`)                    |
+| `userExists(user)`                                     | Lève `401` si l'utilisateur est `undefined`                                 |
+| `passwordIsValid(password, hash)`                      | Compare un mot de passe en clair avec son hash bcrypt, lève `401` si invalide |
+| `initToken(userId, secret, expiresIn, sessionId)`      | Crée et signe un JWT avec `userId` et `sessionId`                           |
+| `serializeCookie(name, secure, sameSite, token, time)` | Sérialise un cookie httpOnly à partir des variables d'environnement            |
+| `sessionExists(session)`                               | Lève `401` si la session est `undefined`                                    |
+| `sessionRevoked(session)`                              | Lève `401` si la session est révoquée ou expirée                           |
+| `requireUserId(reqUserId)`                             | Extrait et valide l'`userId` depuis la requête, lève `401` si absent       |
+| `requireSessionId(reqSessionId)`                       | Extrait et valide le `sessionId` depuis la requête, lève `401` si absent   |
 
 ### `controllers/`
 
@@ -272,28 +252,28 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 
 **Contrôleurs implémentés :**
 
-| Fichier | Endpoint | Description |
-| --- | --- | --- |
-| `admin/auth/change_password.controller.ts` | PATCH `/admin/auth/password` | Vérifie l'ancien mot de passe et met à jour le hash + `password_changed_at` |
-| `admin/auth/forgot_password.controller.ts` | POST `/admin/auth/forgot-password` | Génère un mot de passe temporaire, met à jour le hash, remet `password_changed_at` à `null` et envoie le nouveau mot de passe par email |
-| `admin/auth/login.controller.ts` | POST `/admin/auth/login` | Vérifie les identifiants, crée une session, retourne un cookie JWT |
-| `admin/auth/logout.controller.ts` | POST `/admin/auth/logout` | Révoque la session en base |
-| `admin/auth/userInfo.controller.ts` | GET `/admin/auth/me` | Retourne les infos de l'utilisateur connecté, `mustChangePassword` et renouvelle le token |
-| `admin/articles/create_article.controller.ts` | POST `/admin/articles` | Cree un article avec upload image (sharp → WebP) et insere en base avec `author_name` via CTE |
-| `admin/articles/delete_article.controller.ts` | DELETE `/admin/articles/:id` | Supprime un article et son image du disque |
-| `admin/articles/update_article.controller.ts` | PATCH `/admin/articles/:id` | Modifie un article — remplace l'image (sharp → WebP) si une nouvelle est fournie |
-| `admin/artists/create_artist.controller.ts` | POST `/admin/artists` | Cree un artiste avec upload image (sharp → WebP) et insere le concert associe en transaction |
-| `admin/artists/delete_artist.controller.ts` | DELETE `/admin/artists/:id` | Supprime un artiste, son concert associe (CASCADE) et son image du disque |
-| `admin/artists/update_artist.controller.ts` | PATCH `/admin/artists/:id` | Modifie un artiste et son concert en transaction — remplace l'image (sharp → WebP) si une nouvelle est fournie |
-| `admin/users/list_users.controller.ts` | GET `/admin/users` | Liste tous les utilisateurs admin |
-| `admin/users/create_user.controller.ts` | POST `/admin/users` | Crée un utilisateur et envoie le mot de passe provisoire par email |
-| `admin/users/update_user.controller.ts` | PATCH `/admin/users/:id` | Modifie les informations d'un utilisateur |
-| `admin/users/delete_user.controller.ts` | DELETE `/admin/users/:id` | Supprime définitivement un utilisateur |
-| `public/home/get_home.controller.ts` | GET `/public/home` | Retourne les artistes avec `is_featured = TRUE` et les 2 derniers articles publiés (Promise.all) |
-| `public/lineup/list_lineup.controller.ts` | GET `/public/lineup` | Liste tous les artistes avec leur concert associe (LEFT JOIN concerts) |
-| `public/news/get_articles.controller.ts` | GET `/public/news` | Liste les articles — tous si admin/news, publiés uniquement sinon (via `optionalAuth`) |
-| `public/news/get_article.controller.ts` | GET `/public/news/:id` | Retourne un article par son id — brouillons accessibles si admin/news (via `optionalAuth`) |
-| `contact/submit_contact.controller.ts` | POST `/contact/submit` | Transmet le message du formulaire de contact par email a l'organisation |
+| Fichier                                         | Endpoint                             | Description                                                                                                                                     |
+| ----------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `admin/auth/change_password.controller.ts`    | PATCH `/admin/auth/password`       | Vérifie l'ancien mot de passe et met à jour le hash +`password_changed_at`                                                                  |
+| `admin/auth/forgot_password.controller.ts`    | POST `/admin/auth/forgot-password` | Génère un mot de passe temporaire, met à jour le hash, remet `password_changed_at` à `null` et envoie le nouveau mot de passe par email |
+| `admin/auth/login.controller.ts`              | POST `/admin/auth/login`           | Vérifie les identifiants, crée une session, retourne un cookie JWT                                                                            |
+| `admin/auth/logout.controller.ts`             | POST `/admin/auth/logout`          | Révoque la session en base                                                                                                                     |
+| `admin/auth/userInfo.controller.ts`           | GET `/admin/auth/me`               | Retourne les infos de l'utilisateur connecté,`mustChangePassword` et renouvelle le token                                                     |
+| `admin/articles/create_article.controller.ts` | POST `/admin/articles`             | Cree un article avec upload image (sharp → WebP) et insere en base avec `author_name` via CTE                                                |
+| `admin/articles/delete_article.controller.ts` | DELETE `/admin/articles/:id`       | Supprime un article et son image du disque                                                                                                      |
+| `admin/articles/update_article.controller.ts` | PATCH `/admin/articles/:id`        | Modifie un article — remplace l'image (sharp → WebP) si une nouvelle est fournie                                                              |
+| `admin/artists/create_artist.controller.ts`   | POST `/admin/artists`              | Cree un artiste avec upload image (sharp → WebP) et insere le concert associe en transaction                                                   |
+| `admin/artists/delete_artist.controller.ts`   | DELETE `/admin/artists/:id`        | Supprime un artiste, son concert associe (CASCADE) et son image du disque                                                                       |
+| `admin/artists/update_artist.controller.ts`   | PATCH `/admin/artists/:id`         | Modifie un artiste et son concert en transaction — remplace l'image (sharp → WebP) si une nouvelle est fournie                                |
+| `admin/users/list_users.controller.ts`        | GET `/admin/users`                 | Liste tous les utilisateurs admin                                                                                                               |
+| `admin/users/create_user.controller.ts`       | POST `/admin/users`                | Crée un utilisateur et envoie le mot de passe provisoire par email                                                                             |
+| `admin/users/update_user.controller.ts`       | PATCH `/admin/users/:id`           | Modifie les informations d'un utilisateur                                                                                                       |
+| `admin/users/delete_user.controller.ts`       | DELETE `/admin/users/:id`          | Supprime définitivement un utilisateur                                                                                                         |
+| `public/home/get_home.controller.ts`          | GET `/public/home`                 | Retourne les artistes avec `is_featured = TRUE` et les 2 derniers articles publiés (Promise.all)                                             |
+| `public/lineup/list_lineup.controller.ts`     | GET `/public/lineup`               | Liste tous les artistes avec leur concert associe (LEFT JOIN concerts)                                                                          |
+| `public/news/get_articles.controller.ts`      | GET `/public/news`                 | Liste les articles — tous si admin/news, publiés uniquement sinon (via `optionalAuth`)                                                      |
+| `public/news/get_article.controller.ts`       | GET `/public/news/:id`             | Retourne un article par son id — brouillons accessibles si admin/news (via `optionalAuth`)                                                   |
+| `contact/submit_contact.controller.ts`        | POST `/contact/submit`             | Transmet le message du formulaire de contact par email a l'organisation                                                                         |
 
 ### `routes/`
 
@@ -301,16 +281,16 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 
 **Routes actives :**
 
-| Fichier | Endpoints actifs |
-| --- | --- |
-| `admin.articles.routes.ts` | POST `/admin/articles`, PATCH `/admin/articles/:id`, DELETE `/admin/articles/:id` |
-| `admin.artists.routes.ts` | POST `/admin/artists`, PATCH `/admin/artists/:id`, DELETE `/admin/artists/:id` |
-| `admin.auth.routes.ts` | POST `/admin/auth/login`, POST `/admin/auth/logout`, GET `/admin/auth/me`, PATCH `/admin/auth/password`, POST `/admin/auth/forgot-password` |
-| `admin.users.routes.ts` | GET `/admin/users`, POST `/admin/users`, PATCH `/admin/users/:id`, DELETE `/admin/users/:id` |
-| `contact.routes.ts` | POST `/contact/submit` |
-| `home.routes.ts` | GET `/public/home` |
-| `lineup.routes.ts` | GET `/public/lineup` |
-| `news.routes.ts` | GET `/public/news`, GET `/public/news/:id` |
+| Fichier                      | Endpoints actifs                                                                                                                                      |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `admin.articles.routes.ts` | POST `/admin/articles`, PATCH `/admin/articles/:id`, DELETE `/admin/articles/:id`                                                               |
+| `admin.artists.routes.ts`  | POST `/admin/artists`, PATCH `/admin/artists/:id`, DELETE `/admin/artists/:id`                                                                  |
+| `admin.auth.routes.ts`     | POST `/admin/auth/login`, POST `/admin/auth/logout`, GET `/admin/auth/me`, PATCH `/admin/auth/password`, POST `/admin/auth/forgot-password` |
+| `admin.users.routes.ts`    | GET `/admin/users`, POST `/admin/users`, PATCH `/admin/users/:id`, DELETE `/admin/users/:id`                                                  |
+| `contact.routes.ts`        | POST `/contact/submit`                                                                                                                              |
+| `home.routes.ts`           | GET `/public/home`                                                                                                                                  |
+| `lineup.routes.ts`         | GET `/public/lineup`                                                                                                                                |
+| `news.routes.ts`           | GET `/public/news`, GET `/public/news/:id`                                                                                                        |
 
 **Ordre des middlewares sur les routes protégées :**
 
@@ -322,17 +302,17 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 
 ### `middlewares/`
 
-| Fichier | Description |
-| --- | --- |
-| `asyncHandler.ts` | Enveloppe un handler async et transfère automatiquement les erreurs vers `next(error)` |
-| `auth.ts` | Contient deux middlewares : `auth` (bloque si token absent/invalide) et `optionalAuth` (tente l'authentification, appelle `next()` dans tous les cas — peuple `res.locals` uniquement si token valide et session non révoquée) |
-| `sessionIsOpen.ts` | Vérifie en base que la session existe, n'est pas révoquée et n'est pas expirée — renouvelle le token |
-| `requireRole.ts` | Factory middleware — vérifie que `res.locals.userRole` est dans la liste des rôles autorisés, renvoie `403` sinon |
-| `hashPassword.ts` | Factory middleware — hashe le champ mot de passe spécifié dans `req.body` avec bcrypt avant de passer au handler suivant |
-| `rateLimitLogin.ts` | Limite le nombre de tentatives de connexion par IP (`express-rate-limit`) |
-| `upload.ts` | Middleware Multer — gère l'upload d'image (`image` field, jpeg/png/webp, 5 Mo max) et expose `req.file` au contrôleur |
-| `validateBody.ts` | Valide `req.body` contre un schéma Zod — renvoie `400` si invalide |
-| `errorHandler.ts` | Gestion globale des erreurs : `notFoundHandler` (404 pour routes inconnues) et `errorHandler` (centralise la réponse HTTP finale) |
+| Fichier               | Description                                                                                                                                                                                                                              |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `asyncHandler.ts`   | Enveloppe un handler async et transfère automatiquement les erreurs vers `next(error)`                                                                                                                                                |
+| `auth.ts`           | Contient deux middlewares :`auth` (bloque si token absent/invalide) et `optionalAuth` (tente l'authentification, appelle `next()` dans tous les cas — peuple `res.locals` uniquement si token valide et session non révoquée) |
+| `sessionIsOpen.ts`  | Vérifie en base que la session existe, n'est pas révoquée et n'est pas expirée — renouvelle le token                                                                                                                                |
+| `requireRole.ts`    | Factory middleware — vérifie que `res.locals.userRole` est dans la liste des rôles autorisés, renvoie `403` sinon                                                                                                                |
+| `hashPassword.ts`   | Factory middleware — hashe le champ mot de passe spécifié dans `req.body` avec bcrypt avant de passer au handler suivant                                                                                                            |
+| `rateLimitLogin.ts` | Limite le nombre de tentatives de connexion par IP (`express-rate-limit`)                                                                                                                                                              |
+| `upload.ts`         | Middleware Multer — gère l'upload d'image (`image` field, jpeg/png/webp, 5 Mo max) et expose `req.file` au contrôleur                                                                                                             |
+| `validateBody.ts`   | Valide `req.body` contre un schéma Zod — renvoie `400` si invalide                                                                                                                                                                 |
+| `errorHandler.ts`   | Gestion globale des erreurs :`notFoundHandler` (404 pour routes inconnues) et `errorHandler` (centralise la réponse HTTP finale)                                                                                                    |
 
 ### `errors/`
 
@@ -340,6 +320,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 - `errorMessages.ts` : dictionnaire central `ERRORS` — uniformise tous les messages d'erreur renvoyés au client.
 
 **Pourquoi ce dossier est important :**
+
 - Garantit un format de réponse cohérent : `{ "error": "..." }`
 - Évite les messages dupliqués dans les contrôleurs et middlewares
 - Facilite la maintenance (un message changé à un seul endroit)
@@ -352,15 +333,15 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 
 - `schema.ts` : schémas Zod utilisés pour la validation des body. Chaque schéma sert à la fois à la création et à la modification (pas de schéma `update*` séparé) :
 
-| Schéma | Utilisé par |
-| --- | --- |
-| `createUserSchema` | POST et PATCH `/admin/users` |
-| `changePasswordSchema` | PATCH `/admin/auth/password` |
-| `loginSchema` | POST `/admin/auth/login` |
+| Schéma                  | Utilisé par                         |
+| ------------------------ | ------------------------------------ |
+| `createUserSchema`     | POST et PATCH `/admin/users`       |
+| `changePasswordSchema` | PATCH `/admin/auth/password`       |
+| `loginSchema`          | POST `/admin/auth/login`           |
 | `forgotPasswordSchema` | POST `/admin/auth/forgot-password` |
-| `contactSchema` | POST `/contact/submit` |
-| `createArticleSchema` | POST et PATCH `/admin/articles` |
-| `createArtistSchema` | POST et PATCH `/admin/artists` |
+| `contactSchema`        | POST `/contact/submit`             |
+| `createArticleSchema`  | POST et PATCH `/admin/articles`    |
+| `createArtistSchema`   | POST et PATCH `/admin/artists`     |
 
 ---
 
@@ -377,14 +358,14 @@ Le backend suit un flux unique :
 
 **Codes HTTP utilisés :**
 
-| Code | Cas |
-| --- | --- |
-| `400` | Body invalide, format de mot de passe incorrect |
+| Code    | Cas                                                   |
+| ------- | ----------------------------------------------------- |
+| `400` | Body invalide, format de mot de passe incorrect       |
 | `401` | Token absent, invalide ou session expirée/révoquée |
-| `404` | Route inconnue (`notFoundHandler`) |
-| `409` | Conflit métier (ex : email déjà utilisé) |
-| `429` | Trop de tentatives de connexion (`rateLimitLogin`) |
-| `500` | Erreur interne non prévue |
+| `404` | Route inconnue (`notFoundHandler`)                  |
+| `409` | Conflit métier (ex : email déjà utilisé)          |
+| `429` | Trop de tentatives de connexion (`rateLimitLogin`)  |
+| `500` | Erreur interne non prévue                            |
 
 ---
 
@@ -394,42 +375,42 @@ Vitest exécute les tests, Supertest simule les appels HTTP sur l'API Express.
 
 **Tests d'intégration** (`test/integration/`) — valident plusieurs couches ensemble (middleware + contrôleur + base de données) :
 
-| Fichier | Ce qui est testé |
-| --- | --- |
-| `auth.test.ts` | Middleware `auth` |
-| `sessionIsOpen.test.ts` | Middleware `sessionIsOpen` |
-| `hashPassword.test.ts` | Middleware `hashPassword` |
-| `rateLimitLogin.test.ts` | Middleware `rateLimitLogin` |
-| `requireRole.test.ts` | Middleware `requireRole` |
-| `validateBody.test.ts` | Middleware `validateBody` (`createUserSchema`, `loginSchema`, `createArtistSchema`) |
-| `errorHandler.test.ts` | Middleware `errorHandler` et `notFoundHandler` |
-| `health.test.ts` | Route `/health` |
-| `create_article.controller.test.ts` | Contrôleur `createArticle` — upload image, insertion en base, rollback |
-| `update_article.controller.test.ts` | Contrôleur `updateArticle` — modification sans/avec image, UUID invalide, article introuvable |
-| `delete_article.controller.test.ts` | Contrôleur `deleteArticle` — suppression, UUID invalide, article introuvable |
-| `get_articles.controller.test.ts` | Contrôleur `getArticles` — liste tous (admin/news), publiés uniquement (visiteur), `optionalAuth` |
-| `create_artist.controller.test.ts` | Contrôleur `createArtist` — upload image, transaction SQL, rollback |
-| `delete_artist.controller.test.ts` | Contrôleur `deleteArtist` — suppression, UUID invalide, artiste introuvable, erreur DB |
-| `update_artist.controller.test.ts` | Contrôleur `updateArtist` — modification sans/avec image, UUID invalide, artiste introuvable, rollback transaction |
-| `get_home.controller.test.ts` | Contrôleur `getHomeController` — artistes featured + articles publiés, tableaux vides, erreur DB |
-| `list_lineup.controller.test.ts` | Contrôleur `listLineup` — liste artistes avec concerts (LEFT JOIN) |
-| `login.controller.test.ts` | Contrôleur `login` |
-| `logout.controller.test.ts` | Contrôleur `logout` |
-| `change_password.controller.test.ts` | Contrôleur `changePassword` — vérification ancien mot de passe, mise à jour hash et `password_changed_at` |
-| `userInfo.controller.test.ts` | Contrôleur `userInfo` — infos utilisateur connecté, `mustChangePassword` et renouvellement du token |
-| `list_users.controller.test.ts` | Contrôleur `listUsers` |
-| `create_user.controller.test.ts` | Contrôleur `createUser` |
-| `forgot_password.controller.test.ts` | Contrôleur `forgotPassword` |
-| `submit_contact.controller.test.ts` | Contrôleur `submitContact` |
-| `update_user.controller.test.ts` | Contrôleur `updateUser` |
-| `delete_user.controller.test.ts` | Contrôleur `deleteUser` |
+| Fichier                                | Ce qui est testé                                                                                                      |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `auth.test.ts`                       | Middleware `auth`                                                                                                    |
+| `sessionIsOpen.test.ts`              | Middleware `sessionIsOpen`                                                                                           |
+| `hashPassword.test.ts`               | Middleware `hashPassword`                                                                                            |
+| `rateLimitLogin.test.ts`             | Middleware `rateLimitLogin`                                                                                          |
+| `requireRole.test.ts`                | Middleware `requireRole`                                                                                             |
+| `validateBody.test.ts`               | Middleware `validateBody` (`createUserSchema`, `loginSchema`, `createArtistSchema`)                            |
+| `errorHandler.test.ts`               | Middleware `errorHandler` et `notFoundHandler`                                                                     |
+| `health.test.ts`                     | Route `/health`                                                                                                      |
+| `create_article.controller.test.ts`  | Contrôleur `createArticle` — upload image, insertion en base, rollback                                             |
+| `update_article.controller.test.ts`  | Contrôleur `updateArticle` — modification sans/avec image, UUID invalide, article introuvable                      |
+| `delete_article.controller.test.ts`  | Contrôleur `deleteArticle` — suppression, UUID invalide, article introuvable                                       |
+| `get_articles.controller.test.ts`    | Contrôleur `getArticles` — liste tous (admin/news), publiés uniquement (visiteur), `optionalAuth`               |
+| `create_artist.controller.test.ts`   | Contrôleur `createArtist` — upload image, transaction SQL, rollback                                                |
+| `delete_artist.controller.test.ts`   | Contrôleur `deleteArtist` — suppression, UUID invalide, artiste introuvable, erreur DB                             |
+| `update_artist.controller.test.ts`   | Contrôleur `updateArtist` — modification sans/avec image, UUID invalide, artiste introuvable, rollback transaction |
+| `get_home.controller.test.ts`        | Contrôleur `getHomeController` — artistes featured + articles publiés, tableaux vides, erreur DB                  |
+| `list_lineup.controller.test.ts`     | Contrôleur `listLineup` — liste artistes avec concerts (LEFT JOIN)                                                 |
+| `login.controller.test.ts`           | Contrôleur `login`                                                                                                  |
+| `logout.controller.test.ts`          | Contrôleur `logout`                                                                                                 |
+| `change_password.controller.test.ts` | Contrôleur `changePassword` — vérification ancien mot de passe, mise à jour hash et `password_changed_at`      |
+| `userInfo.controller.test.ts`        | Contrôleur `userInfo` — infos utilisateur connecté, `mustChangePassword` et renouvellement du token             |
+| `list_users.controller.test.ts`      | Contrôleur `listUsers`                                                                                              |
+| `create_user.controller.test.ts`     | Contrôleur `createUser`                                                                                             |
+| `forgot_password.controller.test.ts` | Contrôleur `forgotPassword`                                                                                         |
+| `submit_contact.controller.test.ts`  | Contrôleur `submitContact`                                                                                          |
+| `update_user.controller.test.ts`     | Contrôleur `updateUser`                                                                                             |
+| `delete_user.controller.test.ts`     | Contrôleur `deleteUser`                                                                                             |
 
 **Tests unitaires** (`test/unitaire/`) — ciblent des fonctions isolées :
 
-| Fichier | Ce qui est testé |
-| --- | --- |
-| `asyncHandler.test.ts` | Utilitaire `asyncHandler` |
-| `functions.test.ts` | Fonctions utilitaires (`functions.ts`) |
+| Fichier                  | Ce qui est testé                        |
+| ------------------------ | ---------------------------------------- |
+| `asyncHandler.test.ts` | Utilitaire `asyncHandler`              |
+| `functions.test.ts`    | Fonctions utilitaires (`functions.ts`) |
 
 ---
 
