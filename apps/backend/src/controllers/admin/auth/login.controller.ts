@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import type { UserCredentialsRow } from "../../../type.js";
+import type { UserCredentialsRow, IdRow } from "../../../type.js";
 import ms from "ms";
 
 import { query } from "../../../db";
@@ -28,7 +28,7 @@ export async function generateSession(
   );
 
   // Crée une nouvelle session en base pour l'utilisateur
-  const rows = await query<{ id: string }>(
+  const rows = await query<IdRow>(
     `INSERT INTO sessions (user_id, expires_at) VALUES ($1, $2) RETURNING id`,
     [user.id, expiresAt],
   );

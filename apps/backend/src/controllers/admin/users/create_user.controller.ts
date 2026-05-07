@@ -5,15 +5,13 @@ import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
 import { sendWelcomeEmail } from "../../../services/mailer";
-import type { UserItem } from "../../../type";
-
-type UserIdRow = { id: string };
+import type { UserItem, IdRow } from "../../../type";
 
 /** Verifie que l'email de l'utilisateur existe dans la BDD
  * @param {string} email email de l'utilisateur dans le body de la requete
  */
 async function existingEmail(email: string) {
-  const existingEmail = await query<UserIdRow>(
+  const existingEmail = await query<IdRow>(
     "SELECT id FROM users WHERE email = $1",
     [email],
   );
@@ -25,7 +23,7 @@ async function existingEmail(email: string) {
  * @param {string} displayName nom complet de l'utilisateur dans le body de la requete
  */
 async function existingDisplayName(displayName: string) {
-  const existingDisplayName = await query<UserIdRow>(
+  const existingDisplayName = await query<IdRow>(
     "SELECT id FROM users WHERE display_name = $1",
     [displayName],
   );

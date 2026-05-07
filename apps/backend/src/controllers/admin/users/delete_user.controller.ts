@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import type { IdRow } from "../../../type";
 import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
@@ -18,7 +19,7 @@ export async function deleteUser(req: Request, res: Response) {
   }
 
   // Supprime l’utilisateur correspondant à l’id fourni, si aucun utilisateur n’a été supprimé, retourne une erreur 404
-  const deletedUsers = await query<{ id: string }>(
+  const deletedUsers = await query<IdRow>(
     "DELETE FROM users WHERE id = $1 RETURNING id",
     [parsedParams.data.id],
   );

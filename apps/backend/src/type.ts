@@ -15,7 +15,10 @@ declare global {
 
 /* === USERS === */
 
-// Type representant une ligne de la table users retournee par la base de donnees. */
+/** Type representant une ligne retournant uniquement l'id — utilise pour les verifications d'existence en BDD. */
+export type IdRow = { id: string };
+
+/** Type representant une ligne de la table users retournee par la base de donnees. */
 export type UserCredentialsRow = {
   id: string;
   email: string;
@@ -23,7 +26,7 @@ export type UserCredentialsRow = {
   display_name: string;
 };
 
-// Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`.
+/** Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`. */
 export type UserRole = "admin" | "lineup" | "news";
 
 /** Type representant les donnees utilisateur retournees par les endpoints de liste/CRUD — partage avec le front. */
