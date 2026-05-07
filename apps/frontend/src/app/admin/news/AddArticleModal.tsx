@@ -6,19 +6,15 @@ import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
-import type { ArticleRow } from "../../../type";
+import type { ArticleItem, CreateApiResponse } from "../../../type";
 
 type AddArticleModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  handleArticle: (article: ArticleRow) => void;
-  articleToEdit?: ArticleRow | null;
+  handleArticle: (article: ArticleItem) => void;
+  articleToEdit?: ArticleItem | null;
 };
 
-type CreateArticleApiResponse = {
-  message: string;
-  article: ArticleRow;
-};
 
 /** Verifie si le formulaire de l'etape 1 est incomplet.
  * Retourne `true` si le titre est vide.
@@ -52,8 +48,8 @@ function isStep2Invalid(
  * @param {AddArticleModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
  * @param {() => void} props.onClose Ferme la modale.
- * @param {(article: ArticleRow) => void} props.handleArticle Met a jour la liste des articles et ferme la modale.
- * @param {ArticleRow | null} props.articleToEdit Article a modifier — pre-remplit le formulaire si defini.
+ * @param {(article: ArticleItem) => void} props.handleArticle Met a jour la liste des articles et ferme la modale.
+ * @param {ArticleItem | null} props.articleToEdit Article a modifier — pre-remplit le formulaire si defini.
  * @children ModalCloseButton Ferme la modale.
  */
 export default function AddArticleModal({
@@ -145,7 +141,7 @@ export default function AddArticleModal({
     const method = isEditMode ? "PATCH" : "POST";
 
     // Appel de l'API pour creer ou modifier l'article
-    const result = await apiRequest<CreateArticleApiResponse>(endpoint, {
+    const result = await apiRequest<CreateApiResponse<{ article: ArticleItem }>>(endpoint, {
       method,
       body: formData,
     });

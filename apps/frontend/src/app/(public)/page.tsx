@@ -1,4 +1,4 @@
-import type { HomeData } from "../../type";
+import type { HomeArtist, HomeArticle } from "../../type";
 import HomeHero from "./HomeHero";
 import HomeInfosPratiques from "./HomeInfosPratiques";
 import HomeNews from "./HomeNews";
@@ -15,7 +15,7 @@ export default async function Home() {
     next: { revalidate: 60 },
   });
 
-  const data: HomeData = res.ok
+  const data: { artists: HomeArtist[]; articles: HomeArticle[] } = res.ok
     ? await res.json()
     : { artists: [], articles: [] };
 

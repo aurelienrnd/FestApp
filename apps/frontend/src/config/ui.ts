@@ -1,14 +1,4 @@
-/** Type d'un element de navigation — label affiché, chemin, état actif et callback optionnel. */
-export type NavItem = {
-  label?: string;
-  labelBtn?: string;
-  path?: string;
-  active?: boolean;
-  value?: string;
-  role?: string;
-  desc?: string;
-  onClick?: () => void;
-};
+import type { NavItem } from "../type";
 
 /** Liens affiches dans la navigation publique (visiteur non connecte). */
 export const navVisitorItems: NavItem[] = [

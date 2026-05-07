@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faYoutube, faSpotify } from "@fortawesome/free-brands-svg-icons";
-import type { ArtistListRow } from "../../../type";
+import type { ArtistItem } from "../../../type";
 
 /** Formate une date ISO en "JOUR JJ MOIS HHhMM" en francais majuscule.
  * @param {string} isoString Date ISO 8601
@@ -20,14 +20,14 @@ function formatConcertDateTime(isoString: string): string {
 
 /** Affiche le detail complet d'un artiste : image hero pleine largeur avec nom en overlay,
  * barre de date, biographie et liens sociaux.
- * @param {ArtistListRow} props.artist Artiste a afficher.
+ * @param {ArtistItem} props.artist Artiste a afficher.
  * @param {string} props.backPath Chemin du lien retour (defaut : "/lineup").
  */
 export default function ArtistDetailContent({
   artist,
   backPath = "/lineup",
 }: {
-  artist: ArtistListRow;
+  artist: ArtistItem;
   backPath?: string;
 }) {
   return (

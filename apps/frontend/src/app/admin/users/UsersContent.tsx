@@ -7,7 +7,7 @@ import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import { useAdminUser } from "../../../components/AdminUserProvider";
 import AddUserModal from "./AddUserModal";
 import DelateUserModal from "./DelateUserModal";
-import type { UserListRow, ListUsersResponse } from "../../../type";
+import type { UserItem } from "../../../type";
 import LoadingLine from "../../../components/LoadingLine";
 
 const formatDateFr = (value: string) =>
@@ -40,17 +40,17 @@ export default function UsersContent({
   const currentUser = useAdminUser();
 
   // Etats lies aux donnees
-  const [users, setUsers] = useState<UserListRow[]>([]);
+  const [users, setUsers] = useState<UserItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Etats lies a la suppression
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedUserToDelete, setSelectedUserToDelete] =
-    useState<UserListRow | null>(null);
+    useState<UserItem | null>(null);
 
   // Utilisateur en cours d'edition (null = mode ajout)
-  const [userToEdit, setUserToEdit] = useState<UserListRow | null>(null);
+  const [userToEdit, setUserToEdit] = useState<UserItem | null>(null);
 
   // Charge la liste des utilisateurs au montage du composant
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function UsersContent({
       setError(null);
 
       // Appel API pour recuperer la liste des utilisateurs
-      const result = await apiRequest<ListUsersResponse>("/admin/users", {
+      const result = await apiRequest<{ users: UserItem[] }>("/admin/users", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -81,7 +81,7 @@ export default function UsersContent({
   }, []);
 
   // Ouvre la modal de suppression et definit l'utilisateur selectionne
-  const openDeleteModal = (user: UserListRow) => {
+  const openDeleteModal = (user: UserItem) => {
     setSelectedUserToDelete(user);
     setIsDeleteModalOpen(true);
   };
@@ -105,7 +105,7 @@ export default function UsersContent({
   };
 
   // Ajoute ou met a jour un utilisateur dans la liste locale
-  const upsertUser = (savedUser: UserListRow) => {
+  const upsertUser = (savedUser: UserItem) => {
     setUsers((currentUsers) => {
       // Vérifie si un utilisateur avec le même id existe déjà
       const userAlreadyExists = currentUsers.some(
@@ -124,7 +124,7 @@ export default function UsersContent({
   };
 
   // Ouvre la modale d'edition pour l'utilisateur selectionne
-  const openEditModal = (user: UserListRow) => {
+  const openEditModal = (user: UserItem) => {
     setUserToEdit(user);
   };
 
@@ -135,7 +135,7 @@ export default function UsersContent({
   };
 
   // Met a jour la liste apres ajout ou modification puis ferme la modale
-  const handleUser = (savedUser: UserListRow) => {
+  const handleUser = (savedUser: UserItem) => {
     upsertUser(savedUser);
     closeModal();
   };

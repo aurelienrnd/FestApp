@@ -3,16 +3,14 @@
 import { useState } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
-import {
-  type ApiMessageResponse,
-  apiRequest,
-} from "../../../functions/apiRequest";
+import type { ApiMessageResponse } from "../../../type";
+import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
-import type { ArticleRow } from "../../../type";
+import type { ArticleItem } from "../../../type";
 
 type DeleteArticleModalProps = {
   isOpen: boolean;
-  selectedArticle: Pick<ArticleRow, "id" | "title"> | null;
+  selectedArticle: Pick<ArticleItem, "id" | "title"> | null;
   onClose: () => void;
   handleArticle: (articleId: string) => void;
 };
@@ -21,7 +19,7 @@ type DeleteArticleModalProps = {
  * Ouvre une confirmation, lance la requete DELETE et affiche l'etat succes/erreur.
  * @param {DeleteArticleModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
- * @param {Pick<ArticleRow, "id" | "title"> | null} props.selectedArticle Article selectionne pour la suppression.
+ * @param {Pick<ArticleItem, "id" | "title"> | null} props.selectedArticle Article selectionne pour la suppression.
  * @param {() => void} props.onClose Ferme la modale.
  * @param {(articleId: string) => void} props.handleArticle Met a jour la liste des articles et ferme la modale.
  * @children ModalCloseButton Ferme la modale.

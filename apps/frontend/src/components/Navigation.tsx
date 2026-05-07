@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { NavItem } from "../config/ui";
+import type { NavItem } from "../type";
 
 
 /** Affiche une navigation verticale (sidebar ou modal).

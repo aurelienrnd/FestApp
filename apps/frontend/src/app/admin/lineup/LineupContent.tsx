@@ -8,7 +8,9 @@ import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import AddArtistModal from "./AddArtistModal";
 import DeleteArtistModal from "./DeleteArtistModal";
 import { useNavPath } from "../../../hooks/useNavPath";
-import type { ArtistListRow, ArtistSummary, ListArtistsResponse } from "../../../type";
+import type { ArtistItem } from "../../../type";
+
+type ArtistSummary = Omit<ArtistItem, "bio" | "genre" | "origin" | "youtube_url" | "spotify_url" | "end_time">;
 import LoadingLine from "../../../components/LoadingLine";
 
 /** Affiche la liste des artistes filtrée par jour si activeFilter est defini.
@@ -49,7 +51,7 @@ export default function LineupContent({
       setError(null);
 
       // Appel API pour recuperer la liste des artistes
-      const result = await apiRequest<ListArtistsResponse>("/public/lineup", {
+      const result = await apiRequest<{ artists: ArtistSummary[] }>("/public/lineup", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -92,7 +94,7 @@ export default function LineupContent({
   };
 
   // Ajoute l'artiste cree a la liste locale puis ferme la modale
-  const handleArtistAdded = (artist: ArtistListRow) => {
+  const handleArtistAdded = (artist: ArtistItem) => {
     setArtists((current) => [...current, artist]);
     onCloseAddModal();
   };

@@ -5,10 +5,8 @@ import { type FormEvent, useState } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import ForgotPassword from "../../../components/ForgotPassword";
-import {
-  apiRequest,
-  type ApiMessageResponse,
-} from "../../../functions/apiRequest";
+import type { ApiMessageResponse } from "../../../type";
+import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 
 /** Affiche la page de connexion admin avec un formulaire email/mot de passe.

@@ -6,7 +6,9 @@ import Image from "next/image";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 import { useNavPath } from "../../../hooks/useNavPath";
-import type { ArticleRow, ArticleSummaryRow, ListArticlesResponse } from "../../../type";
+import type { ArticleItem } from "../../../type";
+
+type ArticleSummary = Omit<ArticleItem, "content">;
 import LoadingLine from "../../../components/LoadingLine";
 import AddArticleModal from "./AddArticleModal";
 import DeleteArticleModal from "./DeleteArticleModal";
@@ -34,7 +36,7 @@ export default function NewsContent({
   const basePath = isAdminPath ? "/admin/news" : "/news";
 
   // Stocke les articles, l'état de chargement et les erreurs éventuelles
-  const [articles, setArticles] = useState<ArticleSummaryRow[]>([]);
+  const [articles, setArticles] = useState<ArticleSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -47,7 +49,7 @@ export default function NewsContent({
       setError(null);
 
       // Effectue la requête API pour récupérer les articles
-      const result = await apiRequest<ListArticlesResponse>("/public/news", {
+      const result = await apiRequest<{ articles: ArticleSummary[] }>("/public/news", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -70,10 +72,10 @@ export default function NewsContent({
   // États pour gérer la modale de suppression
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedArticleToDelete, setSelectedArticleToDelete] =
-    useState<ArticleSummaryRow | null>(null);
+    useState<ArticleSummary | null>(null);
 
   // Ouvre la modale de confirmation de suppression et stocke l'article sélectionné
-  const openDeleteModal = (article: ArticleSummaryRow) => {
+  const openDeleteModal = (article: ArticleSummary) => {
     setSelectedArticleToDelete(article);
     setIsDeleteModalOpen(true);
   };
@@ -90,7 +92,7 @@ export default function NewsContent({
   };
 
   // Ajoute le nouvel article à la liste après ajout réussi
-  const handleArticleAdded = (article: ArticleRow) => {
+  const handleArticleAdded = (article: ArticleItem) => {
     setArticles((current) => [...current, article]);
     onCloseAddModal();
   };

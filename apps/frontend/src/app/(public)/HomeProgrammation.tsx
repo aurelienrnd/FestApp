@@ -1,14 +1,14 @@
 import Image from "next/image";
-import type { HomeArtistRow } from "../../type";
+import type { HomeArtist } from "../../type";
 import SectionCta from "../../components/SectionCta";
 
 /** Affiche la section programmation de la page d'accueil — 2 artistes les plus récents.
- * @param {HomeArtistRow[]} props.artists Liste des artistes à afficher.
+ * @param {HomeArtist[]} props.artists Liste des artistes à afficher.
  */
 export default function HomeProgrammation({
   artists,
 }: {
-  artists: HomeArtistRow[];
+  artists: HomeArtist[];
 }) {
   // Si la liste est vide, on n'affiche pas la section du tout.
   if (artists.length === 0) return null;

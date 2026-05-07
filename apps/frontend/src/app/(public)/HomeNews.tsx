@@ -1,11 +1,11 @@
 import Image from "next/image";
-import type { HomeArticleRow } from "../../type";
+import type { HomeArticle } from "../../type";
 import SectionCta from "../../components/SectionCta";
 
 /** Affiche la section news de la page d'accueil — 2 derniers articles publiés.
- * @param {HomeArticleRow[]} props.articles Liste des articles à afficher.
+ * @param {HomeArticle[]} props.articles Liste des articles à afficher.
  */
-export default function HomeNews({ articles }: { articles: HomeArticleRow[] }) {
+export default function HomeNews({ articles }: { articles: HomeArticle[] }) {
   // si aucun article n'est publié, on n'affiche pas la section
   if (articles.length === 0) return null;
 

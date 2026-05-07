@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import type { ArticleRow } from "../../../../type";
+import type { ArticleItem } from "../../../../type";
 import ArticleDetailContent from "../../../admin/news/ArticleDetailContent";
 
 /** Page publique de détail d'un article — composant serveur.
@@ -21,7 +21,7 @@ export default async function ArticlePage({
 
   if (!res.ok) notFound();
 
-  const { article }: { article: ArticleRow } = await res.json();
+  const { article }: { article: ArticleItem } = await res.json();
 
   return <ArticleDetailContent article={article} />;
 }

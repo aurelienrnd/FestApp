@@ -6,20 +6,16 @@ import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
-import type { ArtistListRow } from "../../../type";
+import type { ArtistItem, CreateApiResponse } from "../../../type";
 import { FESTIVAL_DAYS } from "../../../config/festival";
 
 type AddArtistModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  handleArtist: (artist: ArtistListRow) => void;
-  artistToEdit?: ArtistListRow | null;
+  handleArtist: (artist: ArtistItem) => void;
+  artistToEdit?: ArtistItem | null;
 };
 
-type CreateArtistApiResponse = {
-  message: string;
-  artist: ArtistListRow;
-};
 
 const YOUTUBE_REGEX = /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//;
 const SPOTIFY_REGEX = /^https?:\/\/open\.spotify\.com\//;
@@ -79,8 +75,8 @@ function isStep3Invalid(
  * @param {AddArtistModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
  * @param {() => void} props.onClose Ferme la modale.
- * @param {(artist: ArtistListRow) => void} props.handleArtist Met a jour la liste des artistes et ferme la modale.
- * @param {ArtistListRow | null} props.artistToEdit Artiste a modifier — pre-remplit le formulaire si defini.
+ * @param {(artist: ArtistItem) => void} props.handleArtist Met a jour la liste des artistes et ferme la modale.
+ * @param {ArtistItem | null} props.artistToEdit Artiste a modifier — pre-remplit le formulaire si defini.
  * @children ModalCloseButton Ferme la modale.
  */
 export default function AddArtistModal({
@@ -260,7 +256,7 @@ export default function AddArtistModal({
       : "/admin/artists";
     const method = isEditMode ? "PATCH" : "POST";
 
-    const result = await apiRequest<CreateArtistApiResponse>(endpoint, {
+    const result = await apiRequest<CreateApiResponse<{ artist: ArtistItem }>>(endpoint, {
       method,
       body: formData,
     });

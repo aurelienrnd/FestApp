@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
-import { apiRequest, type ApiMessageResponse } from "../functions/apiRequest";
+import type { ApiMessageResponse } from "../type";
+import { apiRequest } from "../functions/apiRequest";
 import { getApiErrorMessage } from "../functions/getApiErrorMessage";
 
 /** Affiche le formulaire "Mot de passe oublié".

@@ -17,10 +17,6 @@ export type ApiRequestResult<T> =
   | { data: T; error: null }
   | { data: null; error: ApiRequestError };
 
-export type ApiMessageResponse = {
-  message?: string;
-};
-
 /** Récupère le message d'erreur renvoyé par l'API.
  * Vérifie que la valeur retournée est un objet contenant une propriété `error`.
  * Retourne la chaîne si `error` est de type `string`, sinon `undefined`.

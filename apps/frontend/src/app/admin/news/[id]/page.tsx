@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useRoleGuard } from "../../../../hooks/useRoleGuard";
 import { apiRequest } from "../../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../../functions/getApiErrorMessage";
-import type { ArticleRow } from "../../../../type";
+import type { ArticleItem } from "../../../../type";
 import ArticleDetailContent from "../ArticleDetailContent";
 import ArticleEditButton from "../ArticleEditButton";
 
@@ -17,7 +17,7 @@ export default function AdminArticlePage() {
   useRoleGuard();
 
   const { id } = useParams<{ id: string }>();
-  const [article, setArticle] = useState<ArticleRow | null>(null);
+  const [article, setArticle] = useState<ArticleItem | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,7 +26,7 @@ export default function AdminArticlePage() {
       setIsLoading(true);
       setError(null);
 
-      const result = await apiRequest<{ article: ArticleRow }>(`/public/news/${id}`, {
+      const result = await apiRequest<{ article: ArticleItem }>(`/public/news/${id}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });

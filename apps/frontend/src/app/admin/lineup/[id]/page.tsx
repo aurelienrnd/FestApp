@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useRoleGuard } from "../../../../hooks/useRoleGuard";
 import { apiRequest } from "../../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../../functions/getApiErrorMessage";
-import type { ArtistListRow } from "../../../../type";
+import type { ArtistItem } from "../../../../type";
 import ArtistDetailContent from "../ArtistDetailContent";
 import ArtistEditButton from "../ArtistEditButton";
 
@@ -19,7 +19,7 @@ export default function AdminArtistPage() {
   useRoleGuard();
 
   const { id } = useParams<{ id: string }>();
-  const [artist, setArtist] = useState<ArtistListRow | null>(null);
+  const [artist, setArtist] = useState<ArtistItem | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -28,7 +28,7 @@ export default function AdminArtistPage() {
       setIsLoading(true);
       setError(null);
 
-      const result = await apiRequest<{ artist: ArtistListRow }>(`/public/lineup/${id}`, {
+      const result = await apiRequest<{ artist: ArtistItem }>(`/public/lineup/${id}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });

@@ -1,10 +1,10 @@
-// === USERS ===
+/* === USERS === */
 
 /** Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`. */
 export type UserRole = "admin" | "lineup" | "news";
 
 /** Type representant une ligne utilisateur retournee par l'API. */
-export type UserListRow = {
+export type UserItem = {
   id: string;
   email: string;
   display_name: string;
@@ -13,16 +13,8 @@ export type UserListRow = {
   password_changed_at: string | null;
 };
 
-/** Type representant la reponse de GET /admin/users. */
-export type ListUsersResponse = { users: UserListRow[] };
-
 /** Type representant l'utilisateur connecte retourne par GET /admin/auth/me. */
-export type AdminUser = {
-  id: string;
-  email: string;
-  display_name: string;
-  role: UserRole;
-};
+export type AdminUser = Omit<UserItem, "created_at" | "password_changed_at">;
 
 /** Type representant la reponse de GET /admin/auth/me. */
 export type AdminAuthMeResponse = {
@@ -30,10 +22,10 @@ export type AdminAuthMeResponse = {
   mustChangePassword: boolean;
 };
 
-// === ARTICLES ===
+/* === ARTICLES === */
 
 /** Type representant une ligne article retournee par l'API. */
-export type ArticleRow = {
+export type ArticleItem = {
   id: string;
   title: string;
   content: string | null;
@@ -44,22 +36,16 @@ export type ArticleRow = {
   author_name: string | null;
 };
 
-/** Type representant une ligne article de la liste (sans content) — retourne par GET /public/news. */
-export type ArticleSummaryRow = Omit<ArticleRow, "content">;
-
 /** Type representant les donnees article retournees par l'endpoint home. */
-export type HomeArticleRow = Pick<
-  ArticleRow,
+export type HomeArticle = Pick<
+  ArticleItem,
   "id" | "title" | "url_media" | "description_media" | "created_at"
 >;
 
-/** Type representant la reponse de GET /public/news. */
-export type ListArticlesResponse = { articles: ArticleSummaryRow[] };
-
-// === ARTISTS ===
+/* === ARTISTS === */
 
 /** Type representant une ligne artiste retournee par l'API. */
-export type ArtistListRow = {
+export type ArtistItem = {
   id: string;
   name: string;
   genre: string;
@@ -76,8 +62,8 @@ export type ArtistListRow = {
 };
 
 /** Type representant les donnees artiste retournees par l'endpoint home. */
-export type HomeArtistRow = Pick<
-  ArtistListRow,
+export type HomeArtist = Pick<
+  ArtistItem,
   | "id"
   | "name"
   | "stage"
@@ -87,19 +73,26 @@ export type HomeArtistRow = Pick<
   | "description_media"
 >;
 
-/** Type representant une ligne artiste de la liste (sans bio, genre, origin, youtube_url, spotify_url, end_time) — retourne par GET /public/lineup. */
-export type ArtistSummary = Omit<
-  ArtistListRow,
-  "bio" | "genre" | "origin" | "youtube_url" | "spotify_url" | "end_time"
->;
+/* === UI === */
 
-/** Type representant la reponse de GET /public/lineup. */
-export type ListArtistsResponse = { artists: ArtistSummary[] };
-
-// === UI ===
-
-/** Type representant les donnees agregees retournees par GET /public/home. */
-export type HomeData = {
-  artists: HomeArtistRow[];
-  articles: HomeArticleRow[];
+/** Type d'un element de navigation — label affiché, chemin, état actif et callback optionnel. */
+export type NavItem = {
+  label?: string;
+  labelBtn?: string;
+  path?: string;
+  active?: boolean;
+  value?: string;
+  role?: string;
+  desc?: string;
+  onClick?: () => void;
 };
+
+/* === API === */
+
+/** Type representant une reponse API generique avec un message optionnel. */
+export type ApiMessageResponse = {
+  message?: string;
+};
+
+/** Type representant une reponse API de creation ou modification — message + entite retournee. */
+export type CreateApiResponse<T> = { message: string } & T;

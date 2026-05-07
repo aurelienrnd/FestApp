@@ -3,10 +3,8 @@
 import { useState, type FormEvent } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
-import {
-  apiRequest,
-  type ApiMessageResponse,
-} from "../../../functions/apiRequest";
+import type { ApiMessageResponse } from "../../../type";
+import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
 
 type ChangePasswordModalProps = {

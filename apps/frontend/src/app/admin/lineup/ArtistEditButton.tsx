@@ -1,23 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import type { ArtistListRow } from "../../../type";
+import type { ArtistItem } from "../../../type";
 import AddArtistModal from "./AddArtistModal";
 
 /** Bouton d'édition et modale d'édition pour la page de détail artiste.
- * @param {ArtistListRow} props.artist Artiste à modifier.
- * @param {(artist: ArtistListRow) => void} props.onArtistEdited Appelé avec l'artiste mis à jour après édition réussie.
+ * @param {ArtistItem} props.artist Artiste à modifier.
+ * @param {(artist: ArtistItem) => void} props.onArtistEdited Appelé avec l'artiste mis à jour après édition réussie.
  */
 export default function ArtistEditButton({
   artist,
   onArtistEdited,
 }: {
-  artist: ArtistListRow;
-  onArtistEdited: (artist: ArtistListRow) => void;
+  artist: ArtistItem;
+  onArtistEdited: (artist: ArtistItem) => void;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleArtistEdited = (updatedArtist: ArtistListRow) => {
+  const handleArtistEdited = (updatedArtist: ArtistItem) => {
     onArtistEdited(updatedArtist);
     setIsModalOpen(false);
   };

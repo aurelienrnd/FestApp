@@ -9,8 +9,8 @@ import {
   navVisitorItems,
   navAdminItem,
   filterNavByRole,
-  type NavItem,
 } from "../config/ui";
+import type { NavItem } from "../type";
 import { TICKETING_URL } from "../config/festival";
 import { useAdminUser } from "./AdminUserProvider";
 import logo from "../../public/header_logo.png";
@@ -19,7 +19,8 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { useNavPath } from "../hooks/useNavPath";
 import ModalCloseButton from "./ModalCloseButton";
 import Navigation from "./Navigation";
-import { apiRequest, type ApiMessageResponse } from "../functions/apiRequest";
+import type { ApiMessageResponse } from "../type";
+import { apiRequest } from "../functions/apiRequest";
 
 /** Affiche un bouton de billetterie
  * Contient un lien externe vers un site de recherche de billetterie

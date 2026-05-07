@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { ArticleRow } from "../../../type";
+import type { ArticleItem } from "../../../type";
 
 /** Formate une date ISO en "JJ MOIS AAAA" en français.
  * @param {string} isoString Date ISO 8601
@@ -14,12 +14,12 @@ function formatDate(isoString: string): string {
 
 /** Affiche le contenu complet d'un article — image héro pleine largeur avec titre en overlay,
  * barre meta auteur/date, et corps de l'article.
- * @param {ArticleRow} props.article Article à afficher.
+ * @param {ArticleItem} props.article Article à afficher.
  */
 export default function ArticleDetailContent({
   article,
 }: {
-  article: ArticleRow;
+  article: ArticleItem;
 }) {
   return (
     <div>

@@ -5,20 +5,16 @@ import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import { apiRequest } from "../../../functions/apiRequest";
 import { getApiErrorMessage } from "../../../functions/getApiErrorMessage";
-import type { UserListRow } from "../../../type";
+import type { UserItem, CreateApiResponse } from "../../../type";
 import { USER_ROLES } from "../../../config/ui";
 
 type AddUserModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  handleUser: (user: UserListRow) => void;
-  userToEdit?: UserListRow | null;
+  handleUser: (user: UserItem) => void;
+  userToEdit?: UserItem | null;
 };
 
-type CreateUserApiResponse = {
-  message: string;
-  user: UserListRow;
-};
 
 /** Verifie si le formulaire d'ajout utilisateur est incomplet.
  * Retourne `true` si au moins un champ requis est vide.
@@ -48,7 +44,7 @@ function isAddUserFormInvalid(
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
  * @param {() => void} props.onClose Ferme la modale.
  * @param {(user) => void} props.handleUser Met a jour la liste des users et ferme la modale.
- * @param {UserListRow | null} props.userToEdit Utilisateur a modifier — pre-remplit le formulaire si defini.
+ * @param {UserItem | null} props.userToEdit Utilisateur a modifier — pre-remplit le formulaire si defini.
  * @children ModalCloseButton Ferme la modale.
  */
 export default function AddUserModal({
@@ -101,7 +97,7 @@ export default function AddUserModal({
         : "/admin/users";
     const requestMethod = isEditMode ? "PATCH" : "POST";
 
-    const result = await apiRequest<CreateUserApiResponse>(requestPath, {
+    const result = await apiRequest<CreateApiResponse<{ user: UserItem }>>(requestPath, {
       method: requestMethod,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
