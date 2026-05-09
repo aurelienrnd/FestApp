@@ -7,7 +7,7 @@ import { filterLineUpItems } from "../../../config/ui";
 import AddButton from "../../../components/AddButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import LineupContent from "./LineupContent";
+import LineupContent from "../../../components/LineupContent";
 import { useRoleGuard } from "../../../hooks/useRoleGuard";
 
 /** Page admin de gestion des artistes.

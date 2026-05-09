@@ -4,7 +4,7 @@ import { useState } from "react";
 import SideBarTool from "../../../components/SideBarTool";
 import { filterLineUpItems } from "../../../config/ui";
 import AddButton from "../../../components/AddButton";
-import LineupContent from "../../admin/lineup/LineupContent";
+import LineupContent from "../../../components/LineupContent";
 
 /** Page publique de la programmation du festival.
  * Gere le filtre actif par jour et le transmet a LineupContent.

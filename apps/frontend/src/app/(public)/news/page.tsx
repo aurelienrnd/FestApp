@@ -4,7 +4,7 @@ import { useState } from "react";
 import SideBarTool from "../../../components/SideBarTool";
 import { filterNewsItems } from "../../../config/ui";
 import AddButton from "../../../components/AddButton";
-import NewsContent from "../../admin/news/NewsContent";
+import NewsContent from "../../../components/NewsContent";
 
 /** Page publique des articles du festival.
  * Gere le filtre actif (tri) et le transmet a NewsContent.

@@ -3,15 +3,15 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useFetch } from "../../../hooks/useFetch";
-import { useModal } from "../../../hooks/useModal";
+import { useFetch } from "../hooks/useFetch";
+import { useModal } from "../hooks/useModal";
 import AddArtistModal from "./AddArtistModal";
-import DeleteModal from "../../../components/DeleteModal";
-import { useNavPath } from "../../../hooks/useNavPath";
-import type { ArtistItem } from "../../../type";
+import DeleteModal from "./DeleteModal";
+import { useNavPath } from "../hooks/useNavPath";
+import type { ArtistItem } from "../type";
 
 type ArtistSummary = Omit<ArtistItem, "bio" | "genre" | "origin" | "youtube_url" | "spotify_url" | "end_time">;
-import LoadingLine from "../../../components/LoadingLine";
+import LoadingLine from "./LoadingLine";
 
 /** Affiche la liste des artistes filtrée par jour si activeFilter est defini.
  * Recupere les artistes via l'API puis affiche un etat de chargement/erreur.

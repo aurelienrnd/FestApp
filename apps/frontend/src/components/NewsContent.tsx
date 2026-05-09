@@ -3,16 +3,16 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useFetch } from "../../../hooks/useFetch";
-import { useModal } from "../../../hooks/useModal";
-import { useNavPath } from "../../../hooks/useNavPath";
-import type { ArticleItem } from "../../../type";
+import { useFetch } from "../hooks/useFetch";
+import { useModal } from "../hooks/useModal";
+import { useNavPath } from "../hooks/useNavPath";
+import type { ArticleItem } from "../type";
 
 type ArticleSummary = Omit<ArticleItem, "content">;
-import LoadingLine from "../../../components/LoadingLine";
-import { formatDateLong } from "../../../functions/formatDate";
+import LoadingLine from "./LoadingLine";
+import { formatDateLong } from "../functions/formatDate";
 import AddArticleModal from "./AddArticleModal";
-import DeleteModal from "../../../components/DeleteModal";
+import DeleteModal from "./DeleteModal";
 
 /** Affiche la liste des articles avec tri client-side selon activeFilter.
  * Recupere les articles via GET /public/news.

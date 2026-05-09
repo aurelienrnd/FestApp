@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faYoutube, faSpotify } from "@fortawesome/free-brands-svg-icons";
-import type { ArtistItem } from "../../../type";
+import type { ArtistItem } from "../type";
 
 /** Formate une date ISO en "JOUR JJ MOIS HHhMM" en francais majuscule.
  * @param {string} isoString Date ISO 8601

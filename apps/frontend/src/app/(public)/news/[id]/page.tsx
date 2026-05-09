@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { ArticleItem } from "../../../../type";
-import ArticleDetailContent from "../../../admin/news/ArticleDetailContent";
+import ArticleDetailContent from "../../../../components/ArticleDetailContent";
 import { fetchPublic } from "../../../../functions/fetchPublic";
 
 /** Page publique de détail d'un article — composant serveur.

@@ -1,6 +1,6 @@
 import Image from "next/image";
-import type { ArticleItem } from "../../../type";
-import { formatDateLong } from "../../../functions/formatDate";
+import type { ArticleItem } from "../type";
+import { formatDateLong } from "../functions/formatDate";
 
 /** Affiche le contenu complet d'un article — image héro pleine largeur avec titre en overlay,
  * barre meta auteur/date, et corps de l'article.

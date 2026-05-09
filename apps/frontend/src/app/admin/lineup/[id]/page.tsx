@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useRoleGuard } from "../../../../hooks/useRoleGuard";
 import { useFetch } from "../../../../hooks/useFetch";
 import type { ArtistItem } from "../../../../type";
-import ArtistDetailContent from "../ArtistDetailContent";
+import ArtistDetailContent from "../../../../components/ArtistDetailContent";
 import ArtistEditButton from "../ArtistEditButton";
 
 /** Page admin de détail d'un artiste.

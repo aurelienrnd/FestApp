@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useRoleGuard } from "../../../../hooks/useRoleGuard";
 import { useFetch } from "../../../../hooks/useFetch";
 import type { ArticleItem } from "../../../../type";
-import ArticleDetailContent from "../ArticleDetailContent";
+import ArticleDetailContent from "../../../../components/ArticleDetailContent";
 import ArticleEditButton from "../ArticleEditButton";
 
 /** Page admin de détail d'un article — permet la prévisualisation des brouillons.

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { ArtistItem } from "../../../../type";
-import ArtistDetailContent from "../../../admin/lineup/ArtistDetailContent";
+import ArtistDetailContent from "../../../../components/ArtistDetailContent";
 import { fetchPublic } from "../../../../functions/fetchPublic";
 
 /** Page publique de détail d'un artiste — composant serveur.
