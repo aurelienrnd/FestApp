@@ -1,5 +1,5 @@
 "use client";
-// Import
+
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -129,7 +129,7 @@ function DesktopNav({
  * @children BtnTicket Affiche un bouton de billetterie
  * @children Navigation Affiche une navigation verticale
  */
-export function MobilNav({
+function MobilNav({
   items,
   pathname,
   isAdminPath,

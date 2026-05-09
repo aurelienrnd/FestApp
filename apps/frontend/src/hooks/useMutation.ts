@@ -68,7 +68,6 @@ export function useMutation<T>(
     setIsLoading(false);
   };
 
-  // // Remet isLoading et error à leur valeur initiale — à appeler à la fermeture d'une modale
   const reset = () => {
     setIsLoading(false);
     setError(null);
