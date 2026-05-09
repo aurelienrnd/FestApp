@@ -95,6 +95,7 @@ export default function AddUserModal({
   // Gere la fermeture de la modal et reinitialise les etats associes
   const handleClose = () => {
     reset();
+    resetForm();
     onClose();
   };
 
