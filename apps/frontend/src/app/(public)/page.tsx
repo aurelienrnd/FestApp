@@ -4,20 +4,16 @@ import HomeInfosPratiques from "./HomeInfosPratiques";
 import HomeNews from "./HomeNews";
 import HomePartenaires from "./HomePartenaires";
 import HomeProgrammation from "./HomeProgrammation";
+import { fetchPublic } from "../../functions/fetchPublic";
 
 /** Page d'accueil publique — composant serveur avec ISR (revalidation toutes les 60 secondes).
  * Récupère les données agrégées depuis GET /public/home.
+ * @function fetchPublic Effectue un fetch GET côté serveur avec revalidation ISR.
  */
 export default async function Home() {
-  const apiUrl = process.env.API_URL_SERVER || process.env.NEXT_PUBLIC_API_URL;
-
-  const res = await fetch(`${apiUrl}/public/home`, {
-    next: { revalidate: 60 },
-  });
-
-  const data: { artists: HomeArtist[]; articles: HomeArticle[] } = res.ok
-    ? await res.json()
-    : { artists: [], articles: [] };
+  const data = await fetchPublic<{ artists: HomeArtist[]; articles: HomeArticle[] }>(
+    "/public/home",
+  ) ?? { artists: [], articles: [] };
 
   return (
     <>

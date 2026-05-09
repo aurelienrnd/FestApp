@@ -1,11 +1,13 @@
 import { notFound } from "next/navigation";
 import type { ArticleItem } from "../../../../type";
 import ArticleDetailContent from "../../../admin/news/ArticleDetailContent";
+import { fetchPublic } from "../../../../functions/fetchPublic";
 
 /** Page publique de détail d'un article — composant serveur.
  * Récupère l'article via GET /public/news/:id et le passe à ArticleDetailContent.
  * Redirige vers /news si l'article n'existe pas ou n'est pas publié.
  * @param {{ id: string }} props.params Paramètres de route dynamique.
+ * @function fetchPublic Effectue un fetch GET côté serveur avec revalidation ISR.
  */
 export default async function ArticlePage({
   params,
@@ -13,15 +15,9 @@ export default async function ArticlePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const apiUrl = process.env.API_URL_SERVER || process.env.NEXT_PUBLIC_API_URL;
+  const data = await fetchPublic<{ article: ArticleItem }>(`/public/news/${id}`);
 
-  const res = await fetch(`${apiUrl}/public/news/${id}`, {
-    next: { revalidate: 60 },
-  });
+  if (!data) notFound();
 
-  if (!res.ok) notFound();
-
-  const { article }: { article: ArticleItem } = await res.json();
-
-  return <ArticleDetailContent article={article} />;
+  return <ArticleDetailContent article={data.article} />;
 }
