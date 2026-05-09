@@ -1,16 +1,6 @@
 import Image from "next/image";
 import type { ArticleItem } from "../../../type";
-
-/** Formate une date ISO en "JJ MOIS AAAA" en français.
- * @param {string} isoString Date ISO 8601
- */
-function formatDate(isoString: string): string {
-  return new Date(isoString).toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
+import { formatDateLong } from "../../../functions/formatDate";
 
 /** Affiche le contenu complet d'un article — image héro pleine largeur avec titre en overlay,
  * barre meta auteur/date, et corps de l'article.
@@ -46,7 +36,7 @@ export default function ArticleDetailContent({
         </span>
         <span className="text-white/50">—</span>
         <span className="text-white/70 uppercase tracking-wide text-sm">
-          {formatDate(article.created_at)}
+          {formatDateLong(article.created_at)}
         </span>
       </div>
 

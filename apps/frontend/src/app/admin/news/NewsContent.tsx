@@ -10,6 +10,7 @@ import type { ArticleItem } from "../../../type";
 
 type ArticleSummary = Omit<ArticleItem, "content">;
 import LoadingLine from "../../../components/LoadingLine";
+import { formatDateLong } from "../../../functions/formatDate";
 import AddArticleModal from "./AddArticleModal";
 import DeleteModal from "../../../components/DeleteModal";
 
@@ -114,11 +115,7 @@ export default function NewsContent({
                   </div>
 
                   <span className="card-secondary">
-                    {new Date(article.created_at).toLocaleDateString("fr-FR", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    {formatDateLong(article.created_at)}
                   </span>
                 </div>
 

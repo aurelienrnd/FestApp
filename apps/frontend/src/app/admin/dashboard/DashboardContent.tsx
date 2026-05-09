@@ -7,15 +7,7 @@ import { useModal } from "../../../hooks/useModal";
 import { FESTIVAL_DAYS, FESTIVAL_LOCATION } from "../../../config/festival";
 import { navAdminQuickLinks, filterNavByRole } from "../../../config/ui";
 import ChangePasswordModal from "./ChangePasswordModal";
-
-/** Formate une date ISO en français long. */
-function formatDateFr(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
+import { formatDateLong } from "../../../functions/formatDate";
 
 /** Retourne le nombre de jours restants avant une date ISO. */
 function getDaysUntil(dateStr: string): number {
@@ -120,8 +112,8 @@ export default function DashboardContent() {
           </div>
 
           <p className="text-xs text-(--color-text-input) border-t border-(--color-text-input) pt-4 uppercase tracking-wide">
-            Du {formatDateFr(FESTIVAL_DAYS[0])} au{" "}
-            {formatDateFr(FESTIVAL_DAYS[FESTIVAL_DAYS.length - 1])}
+            Du {formatDateLong(FESTIVAL_DAYS[0])} au{" "}
+            {formatDateLong(FESTIVAL_DAYS[FESTIVAL_DAYS.length - 1])}
           </p>
         </div>
 

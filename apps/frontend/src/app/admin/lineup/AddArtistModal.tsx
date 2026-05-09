@@ -7,6 +7,7 @@ import ModalCloseButton from "../../../components/ModalCloseButton";
 import { useMutation } from "../../../hooks/useMutation";
 import type { ArtistItem, CreateApiResponse } from "../../../type";
 import { FESTIVAL_DAYS } from "../../../config/festival";
+import { formatDateLong } from "../../../functions/formatDate";
 
 type AddArtistModalProps = {
   isOpen: boolean;
@@ -525,11 +526,7 @@ export default function AddArtistModal({
                   <option value="">-- Choisir un jour --</option>
                   {FESTIVAL_DAYS.map((d) => (
                     <option key={d} value={d}>
-                      {new Date(d).toLocaleDateString("fr-FR", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
+                      {formatDateLong(d)}
                     </option>
                   ))}
                 </select>
