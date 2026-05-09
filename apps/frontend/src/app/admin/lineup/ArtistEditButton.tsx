@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import type { ArtistItem } from "../../../type";
+import { useModal } from "../../../hooks/useModal";
 import AddArtistModal from "./AddArtistModal";
 
 /** Bouton d'édition et modale d'édition pour la page de détail artiste.
@@ -15,11 +15,11 @@ export default function ArtistEditButton({
   artist: ArtistItem;
   onArtistEdited: (artist: ArtistItem) => void;
 }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isOpen, open, close } = useModal();
 
   const handleArtistEdited = (updatedArtist: ArtistItem) => {
     onArtistEdited(updatedArtist);
-    setIsModalOpen(false);
+    close();
   };
 
   return (
@@ -28,15 +28,15 @@ export default function ArtistEditButton({
         <button
           type="button"
           className="btn-cta"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => open()}
         >
           Modifier
         </button>
       </div>
       <AddArtistModal
         key={artist.id}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isOpen}
+        onClose={close}
         handleArtist={handleArtistEdited}
         artistToEdit={artist}
       />

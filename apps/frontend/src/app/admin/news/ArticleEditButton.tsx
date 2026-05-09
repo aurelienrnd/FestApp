@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import type { ArticleItem } from "../../../type";
+import { useModal } from "../../../hooks/useModal";
 import AddArticleModal from "./AddArticleModal";
 
 /** Bouton d'édition et modale d'édition pour la page de détail article.
@@ -15,11 +15,11 @@ export default function ArticleEditButton({
   article: ArticleItem;
   onArticleEdited: (article: ArticleItem) => void;
 }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isOpen, open, close } = useModal();
 
   const handleArticleEdited = (updatedArticle: ArticleItem) => {
     onArticleEdited(updatedArticle);
-    setIsModalOpen(false);
+    close();
   };
 
   return (
@@ -28,15 +28,15 @@ export default function ArticleEditButton({
         <button
           type="button"
           className="btn-cta"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => open()}
         >
           Modifier
         </button>
       </div>
       <AddArticleModal
         key={article.id}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isOpen}
+        onClose={close}
         handleArticle={handleArticleEdited}
         articleToEdit={article}
       />

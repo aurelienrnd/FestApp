@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useAdminUser } from "../../../components/AdminUserProvider";
+import { useModal } from "../../../hooks/useModal";
 import { FESTIVAL_DAYS, FESTIVAL_LOCATION } from "../../../config/festival";
 import { navAdminQuickLinks, filterNavByRole } from "../../../config/ui";
 import ChangePasswordModal from "./ChangePasswordModal";
@@ -36,15 +36,17 @@ function getDaysUntil(dateStr: string): number {
 export default function DashboardContent() {
   const adminUser = useAdminUser();
   const router = useRouter();
-  const [isChangePasswordModalOpen, setIsChangePasswordModal] = useState(
-    adminUser?.mustChangePassword ?? false,
-  );
+  const {
+    isOpen: isChangePasswordModalOpen,
+    open: openChangePassword,
+    close: closeChangePassword,
+  } = useModal(adminUser?.mustChangePassword ?? false);
 
   if (!adminUser) return null;
   const { user, mustChangePassword } = adminUser;
 
   const handleModalClose = () => {
-    setIsChangePasswordModal(false);
+    closeChangePassword();
     if (mustChangePassword) router.refresh();
   };
 
@@ -81,7 +83,7 @@ export default function DashboardContent() {
             <button
               type="button"
               className="btn-cta"
-              onClick={() => setIsChangePasswordModal(true)}
+              onClick={() => openChangePassword()}
             >
               Modifier
             </button>

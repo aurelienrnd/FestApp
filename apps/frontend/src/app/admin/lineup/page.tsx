@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useModal } from "../../../hooks/useModal";
 import SideBarTool from "../../../components/SideBarTool";
 import { filterLineUpItems } from "../../../config/ui";
 import AddButton from "../../../components/AddButton";
@@ -21,8 +22,7 @@ export default function Page() {
   // Verifie que l'utilisateur a les droits d'accès à la page admin
   useRoleGuard();
 
-  // Etat pour ouvrir la modale d'ajout d'artiste et pour stocker le filtre actif
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, open, close } = useModal();
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   // Mappe les items de filtre pour ajouter la logique d'activation et de clic
@@ -43,7 +43,7 @@ export default function Page() {
           type="button"
           className="mb-(--ctx-title-mb)"
           aria-label="Ouvrir les filtres"
-          onClick={() => setIsOpen(true)}
+          onClick={() => open()}
         >
           <FontAwesomeIcon icon={faPlus} />
         </button>
@@ -53,7 +53,7 @@ export default function Page() {
         <LineupContent
           basePath="/admin/lineup"
           isAddModalOpen={isOpen}
-          onCloseAddModal={() => setIsOpen(false)}
+          onCloseAddModal={close}
           activeFilter={activeFilter}
         />
       </SideBarTool>

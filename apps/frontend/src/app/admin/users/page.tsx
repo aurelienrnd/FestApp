@@ -6,6 +6,7 @@ import AddButton from "../../../components/AddButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
+import { useModal } from "../../../hooks/useModal";
 import UsersContent from "./UsersContent";
 import { useRoleGuard } from "../../../hooks/useRoleGuard";
 
@@ -19,8 +20,7 @@ import { useRoleGuard } from "../../../hooks/useRoleGuard";
 export default function Page() {
   useRoleGuard();
 
-  // Initialise l'etat d'ouverture de la modal pour ajouter un utilisateur
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, open, close } = useModal();
 
   // Etat du filtre utilisateurs (tout / admin / lineup / news)
   const [userFilter, setUserFilter] = useState<
@@ -50,7 +50,7 @@ export default function Page() {
             type="button"
             className="mb-(--ctx-title-mb)"
             aria-label="Ouvrir les filtres"
-            onClick={() => setIsOpen(true)}
+            onClick={() => open()}
           >
             <FontAwesomeIcon icon={faPlus} />
           </button>
@@ -59,7 +59,7 @@ export default function Page() {
         <SideBarTool items={userFilterItems}>
           <UsersContent
             isAddModalOpen={isOpen}
-            onCloseAddModal={() => setIsOpen(false)}
+            onCloseAddModal={close}
             filterBy={userFilter}
           />
         </SideBarTool>

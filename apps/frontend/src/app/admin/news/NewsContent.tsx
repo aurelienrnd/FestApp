@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useFetch } from "../../../hooks/useFetch";
+import { useModal } from "../../../hooks/useModal";
 import { useNavPath } from "../../../hooks/useNavPath";
 import type { ArticleItem } from "../../../type";
 
@@ -42,26 +43,16 @@ export default function NewsContent({
     setArticles(data?.articles ?? []);
   }, [data]);
 
-  // États pour gérer la modale de suppression
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedArticleToDelete, setSelectedArticleToDelete] =
-    useState<ArticleSummary | null>(null);
-
-  // Ouvre la modale de confirmation de suppression et stocke l'article sélectionné
-  const openDeleteModal = (article: ArticleSummary) => {
-    setSelectedArticleToDelete(article);
-    setIsDeleteModalOpen(true);
-  };
+  const {
+    isOpen: isDeleteModalOpen,
+    item: selectedArticleToDelete,
+    open: openDeleteModal,
+    close: closeDeleteModal,
+  } = useModal<ArticleSummary>();
 
   // Supprime l'article de la liste après confirmation de suppression
   const handleArticleDeleted = (articleId: string) => {
     setArticles((current) => current.filter((a) => a.id !== articleId));
-  };
-
-  // Ferme la modale de suppression et réinitialise l'article sélectionné
-  const closeDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-    setSelectedArticleToDelete(null);
   };
 
   // Ajoute le nouvel article à la liste après ajout réussi

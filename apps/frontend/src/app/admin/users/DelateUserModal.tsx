@@ -27,10 +27,13 @@ export default function DelateUserModal({
   onClose,
   handleUser,
 }: DelateUserModalProps) {
-  const { handleDelete, isSubmitting, isDeleted, error: submitError } = useDelete("/admin/users");
+  const { handleDelete, isSubmitting, isDeleted, error: submitError, reset } = useDelete("/admin/users");
 
   // Reinitialise l’etat interne et ferme la modale
-  const handleClose = () => onClose();
+  const handleClose = () => {
+    reset();
+    onClose();
+  };
 
   // Confirme la suppression et met a jour l’UI selon la reponse API
   const handleConfirmDelete = () => {

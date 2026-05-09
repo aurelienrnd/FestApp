@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useModal } from "../../../hooks/useModal";
 import SideBarTool from "../../../components/SideBarTool";
 import { filterNewsItems } from "../../../config/ui";
 import AddButton from "../../../components/AddButton";
@@ -20,7 +21,7 @@ import { useRoleGuard } from "../../../hooks/useRoleGuard";
 export default function Page() {
   useRoleGuard();
 
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, open, close } = useModal();
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   const items = filterNewsItems.map((item) => ({
@@ -41,7 +42,7 @@ export default function Page() {
           type="button"
           className="mb-(--ctx-title-mb)"
           aria-label="Ajouter un article"
-          onClick={() => setIsOpen(true)}
+          onClick={() => open()}
         >
           <FontAwesomeIcon icon={faPlus} />
         </button>
@@ -50,7 +51,7 @@ export default function Page() {
       <SideBarTool items={items}>
         <NewsContent
           isAddModalOpen={isOpen}
-          onCloseAddModal={() => setIsOpen(false)}
+          onCloseAddModal={close}
           activeFilter={activeFilter}
         />
       </SideBarTool>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useFetch } from "../../../hooks/useFetch";
+import { useModal } from "../../../hooks/useModal";
 import AddArtistModal from "./AddArtistModal";
 import DeleteArtistModal from "./DeleteArtistModal";
 import { useNavPath } from "../../../hooks/useNavPath";
@@ -45,26 +46,16 @@ export default function LineupContent({
     setArtists(data?.artists ?? []);
   }, [data]);
 
-  // Etats lies a la suppression d'un artiste
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedArtistToDelete, setSelectedArtistToDelete] =
-    useState<ArtistSummary | null>(null);
-
-  // Ouvre la modale de suppression pour l'artiste selectionne
-  const openDeleteModal = (artist: ArtistSummary) => {
-    setSelectedArtistToDelete(artist);
-    setIsDeleteModalOpen(true);
-  };
+  const {
+    isOpen: isDeleteModalOpen,
+    item: selectedArtistToDelete,
+    open: openDeleteModal,
+    close: closeDeleteModal,
+  } = useModal<ArtistSummary>();
 
   // Retire l'artiste supprime de la liste locale
   const handleArtistDeleted = (artistId: string) => {
     setArtists((current) => current.filter((a) => a.id !== artistId));
-  };
-
-  // Ferme la modale de suppression et reinitialise l'artiste selectionne
-  const closeDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-    setSelectedArtistToDelete(null);
   };
 
   // Ajoute l'artiste cree a la liste locale puis ferme la modale

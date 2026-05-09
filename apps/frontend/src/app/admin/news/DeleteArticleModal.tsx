@@ -27,10 +27,13 @@ export default function DeleteArticleModal({
   onClose,
   handleArticle,
 }: DeleteArticleModalProps) {
-  const { handleDelete, isSubmitting, isDeleted, error: submitError } = useDelete("/admin/articles");
+  const { handleDelete, isSubmitting, isDeleted, error: submitError, reset } = useDelete("/admin/articles");
 
   // Reinitialise les etats et ferme la modale.
-  const handleClose = () => onClose();
+  const handleClose = () => {
+    reset();
+    onClose();
+  };
 
   // Confirme la suppression et met a jour l'UI selon la reponse API.
   const handleConfirmDelete = () => {

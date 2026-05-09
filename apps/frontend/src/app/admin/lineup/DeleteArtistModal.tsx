@@ -27,10 +27,13 @@ export default function DeleteArtistModal({
   onClose,
   handleArtist,
 }: DeleteArtistModalProps) {
-  const { handleDelete, isSubmitting, isDeleted, error: submitError } = useDelete("/admin/artists");
+  const { handleDelete, isSubmitting, isDeleted, error: submitError, reset } = useDelete("/admin/artists");
 
   // Reinitialise l'etat interne et ferme la modale
-  const handleClose = () => onClose();
+  const handleClose = () => {
+    reset();
+    onClose();
+  };
 
   // Confirme la suppression et met a jour l'UI selon la reponse API
   const handleConfirmDelete = () => {

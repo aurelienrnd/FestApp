@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFetch } from "../../../hooks/useFetch";
+import { useModal } from "../../../hooks/useModal";
 import { useAdminUser } from "../../../components/AdminUserProvider";
 import AddUserModal from "./AddUserModal";
 import DelateUserModal from "./DelateUserModal";
@@ -35,30 +36,33 @@ export default function UsersContent({
   onCloseAddModal?: () => void;
   filterBy?: "all" | "admin" | "lineup" | "news";
 }) {
+  // Navigation et contexte utilisateur
   const router = useRouter();
   const currentUser = useAdminUser();
 
-  const { data, isLoading, error } = useFetch<{ users: UserItem[] }>("/admin/users");
-
-  // Liste mutable pour les ajouts, modifications et suppressions locaux
+  // Initialise la liste des utilisateurs
   const [users, setUsers] = useState<UserItem[]>([]);
+  const { data, isLoading, error } = useFetch<{ users: UserItem[] }>(
+    "/admin/users",
+  );
   useEffect(() => {
     setUsers(data?.users ?? []);
   }, [data]);
 
-  // Etats lies a la suppression
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedUserToDelete, setSelectedUserToDelete] =
-    useState<UserItem | null>(null);
+  const {
+    isOpen: isDeleteModalOpen,
+    item: selectedUserToDelete,
+    open: openDeleteModal,
+    close: closeDeleteModal,
+  } = useModal<UserItem>();
 
-  // Utilisateur en cours d'edition (null = mode ajout)
-  const [userToEdit, setUserToEdit] = useState<UserItem | null>(null);
+  const {
+    isOpen: isEditModalOpen,
+    item: userToEdit,
+    open: openEditModal,
+    close: closeEditModal,
+  } = useModal<UserItem>();
 
-  // Ouvre la modal de suppression et definit l'utilisateur selectionne
-  const openDeleteModal = (user: UserItem) => {
-    setSelectedUserToDelete(user);
-    setIsDeleteModalOpen(true);
-  };
   // Met a jour la liste des utilisateurs apres suppression en retirant l'utilisateur correspondant a l'id fourni
   const handleUserDeleted = (userId: string) => {
     // Redirige vers /login si l'utilisateur supprime est l'utilisateur connecte
@@ -71,11 +75,6 @@ export default function UsersContent({
     setUsers((currentUsers) =>
       currentUsers.filter((user) => user.id !== userId),
     );
-  };
-  // Masque la modal de suppression et reinitialise l'utilisateur selectionne
-  const closeDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-    setSelectedUserToDelete(null);
   };
 
   // Ajoute ou met a jour un utilisateur dans la liste locale
@@ -97,14 +96,9 @@ export default function UsersContent({
     });
   };
 
-  // Ouvre la modale d'edition pour l'utilisateur selectionne
-  const openEditModal = (user: UserItem) => {
-    setUserToEdit(user);
-  };
-
   // Ferme la modale (ajout ou edition) et reinitialise l'utilisateur selectionne
   const closeModal = () => {
-    setUserToEdit(null);
+    closeEditModal();
     onCloseAddModal();
   };
 
@@ -141,10 +135,7 @@ export default function UsersContent({
         ) : (
           <ul className="flex flex-col gap-4 w-full">
             {filteredUsers.map((user) => (
-              <li
-                key={user.id}
-                className="card-profile p-6 gap-6"
-              >
+              <li key={user.id} className="card-profile p-6 gap-6">
                 {/* Avatar */}
                 <div className="card-profile-avatar w-14 h-14 text-2xl">
                   {(user.display_name ?? "U").slice(0, 1)}
@@ -207,7 +198,7 @@ export default function UsersContent({
       />
       <AddUserModal
         key={userToEdit?.id ?? "new"}
-        isOpen={isAddModalOpen || userToEdit !== null}
+        isOpen={isAddModalOpen || isEditModalOpen}
         onClose={closeModal}
         handleUser={handleUser}
         userToEdit={userToEdit}
