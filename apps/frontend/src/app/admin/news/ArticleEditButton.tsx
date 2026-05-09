@@ -34,7 +34,6 @@ export default function ArticleEditButton({
         </button>
       </div>
       <AddArticleModal
-        key={article.id}
         isOpen={isOpen}
         onClose={close}
         handleArticle={handleArticleEdited}

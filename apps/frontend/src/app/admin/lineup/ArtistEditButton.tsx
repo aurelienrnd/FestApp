@@ -34,7 +34,6 @@ export default function ArtistEditButton({
         </button>
       </div>
       <AddArtistModal
-        key={artist.id}
         isOpen={isOpen}
         onClose={close}
         handleArtist={handleArtistEdited}

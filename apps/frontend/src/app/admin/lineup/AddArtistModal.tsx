@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent, type ChangeEvent } from "react";
+import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
 import Image from "next/image";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
@@ -134,6 +134,35 @@ export default function AddArtistModal({
   // Erreurs de validation des URLs (etape 1)
   const [youtubeUrlError, setYoutubeUrlError] = useState<string | null>(null);
   const [spotifyUrlError, setSpotifyUrlError] = useState<string | null>(null);
+
+  // Reinitialise les champs avec les valeurs de l'artiste a modifier a chaque ouverture de la modale
+  useEffect(() => {
+    if (!isOpen) return;
+    const start = artistToEdit?.start_time
+      ? new Date(artistToEdit.start_time)
+      : null;
+    setStep(1);
+    setName(artistToEdit?.name ?? "");
+    setGenre(artistToEdit?.genre ?? "");
+    setOrigin(artistToEdit?.origin ?? "");
+    setBio(artistToEdit?.bio ?? "");
+    setYoutubeUrl(artistToEdit?.youtube_url ?? "");
+    setSpotifyUrl(artistToEdit?.spotify_url ?? "");
+    setYoutubeUrlError(null);
+    setSpotifyUrlError(null);
+    setIsFeatured(artistToEdit?.is_featured ?? false);
+    setDescriptionMedia(artistToEdit?.description_media ?? "");
+    setStage(artistToEdit?.stage ?? "");
+    setDate(start ? start.toISOString().slice(0, 10) : "");
+    setStartTime(start ? start.toTimeString().slice(0, 5) : "");
+    setEndTime(
+      artistToEdit?.end_time
+        ? new Date(artistToEdit.end_time).toTimeString().slice(0, 5)
+        : "",
+    );
+    setImage(null);
+    setPreviewUrl(artistToEdit?.url_media ?? null);
+  }, [isOpen, artistToEdit]);
 
   const { mutate, isLoading, error, reset } = useMutation<CreateApiResponse<{ artist: ArtistItem }>>(
     isEditMode ? `/admin/artists/${artistToEdit!.id}` : "/admin/artists",

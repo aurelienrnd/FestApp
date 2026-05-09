@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent, type ChangeEvent } from "react";
+import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
 import Image from "next/image";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
@@ -78,6 +78,18 @@ export default function AddArticleModal({
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     articleToEdit?.url_media ?? null,
   );
+
+  // Reinitialise les champs avec les valeurs de l'article a modifier a chaque ouverture de la modale
+  useEffect(() => {
+    if (!isOpen) return;
+    setStep(1);
+    setTitle(articleToEdit?.title ?? "");
+    setContent(articleToEdit?.content ?? "");
+    setIsPublished(articleToEdit?.is_published ?? false);
+    setDescriptionMedia(articleToEdit?.description_media ?? "");
+    setImage(null);
+    setPreviewUrl(articleToEdit?.url_media ?? null);
+  }, [isOpen, articleToEdit]);
 
   const { mutate, isLoading, error, reset } = useMutation<CreateApiResponse<{ article: ArticleItem }>>(
     isEditMode ? `/admin/articles/${articleToEdit!.id}` : "/admin/articles",
