@@ -1,17 +1,18 @@
 import nodemailer from "nodemailer";
 import { getEnv } from "../functions";
+import { AppError } from "../errors/AppError";
+import { ERRORS } from "../errors/errorMessages";
 
-/** Cree et retourne un transporteur SMTP configure depuis les variables d'environnement */
-function createTransporter() {
-  return nodemailer.createTransport({
-    host: getEnv("SMTP_HOST"),
-    port: Number(getEnv("SMTP_PORT")),
-    auth: {
-      user: getEnv("SMTP_USER"),
-      pass: getEnv("SMTP_PASS"),
-    },
-  });
-}
+/** Instance partagee du transporteur SMTP — configuree une seule fois au demarrage. */
+const transporter = nodemailer.createTransport({
+  host: getEnv("SMTP_HOST"),
+  port: Number(getEnv("SMTP_PORT")),
+  secure: getEnv("SMTP_SECURE") === "true",
+  auth: {
+    user: getEnv("SMTP_USER"),
+    pass: getEnv("SMTP_PASS"),
+  },
+});
 
 /** Envoie un nouveau mot de passe temporaire a l'utilisateur qui a demande la reinitialisation.
  * @param {string} to adresse email du destinataire
@@ -23,14 +24,16 @@ export async function sendPasswordResetEmail(
   displayName: string,
   tempPassword: string,
 ): Promise<void> {
-  const transporter = createTransporter();
-
-  await transporter.sendMail({
-    from: `"Vindhellfest" <${getEnv("SMTP_USER")}>`,
-    to,
-    subject: "Reinitialisation de votre mot de passe",
-    text: `Bonjour ${displayName},\n\nVous avez demande la reinitialisation de votre mot de passe.\nVotre nouveau mot de passe provisoire : ${tempPassword}\n\nVeuillez le modifier des votre prochaine connexion.`,
-  });
+  try {
+    await transporter.sendMail({
+      from: `"Vindhellfest" <${getEnv("SMTP_USER")}>`,
+      to,
+      subject: "Reinitialisation de votre mot de passe",
+      text: `Bonjour ${displayName},\n\nVous avez demande la reinitialisation de votre mot de passe.\nVotre nouveau mot de passe provisoire : ${tempPassword}\n\nVeuillez le modifier des votre prochaine connexion.`,
+    });
+  } catch {
+    throw new AppError(ERRORS.MAIL_SEND_ERROR, 500);
+  }
 }
 
 /** Transmet le message du formulaire de contact a l'adresse de l'organisation.
@@ -45,15 +48,17 @@ export async function sendContactEmail(
   subject: string,
   message: string,
 ): Promise<void> {
-  const transporter = createTransporter();
-
-  await transporter.sendMail({
-    from: `"Vindhellfest" <${getEnv("SMTP_USER")}>`,
-    to: getEnv("CONTACT_EMAIL"),
-    replyTo: from,
-    subject: `[Contact] ${subject}`,
-    text: `Message de : ${name} <${from}>\n\n${message}`,
-  });
+  try {
+    await transporter.sendMail({
+      from: `"Vindhellfest" <${getEnv("SMTP_USER")}>`,
+      to: getEnv("CONTACT_EMAIL"),
+      replyTo: from,
+      subject: `[Contact] ${subject}`,
+      text: `Message de : ${name} <${from}>\n\n${message}`,
+    });
+  } catch {
+    throw new AppError(ERRORS.MAIL_SEND_ERROR, 500);
+  }
 }
 
 /** Envoie les identifiants provisoires au nouvel utilisateur cree par un admin.
@@ -66,12 +71,14 @@ export async function sendWelcomeEmail(
   displayName: string,
   tempPassword: string,
 ): Promise<void> {
-  const transporter = createTransporter();
-
-  await transporter.sendMail({
-    from: `"Vindhellfest" <${getEnv("SMTP_USER")}>`,
-    to,
-    subject: "Votre compte Vindhellfest",
-    text: `Bonjour ${displayName},\n\nVotre compte a ete cree.\nIdentifiant : ${to}\nMot de passe provisoire : ${tempPassword}\n\nVeuillez le modifier des votre premiere connexion.`,
-  });
+  try {
+    await transporter.sendMail({
+      from: `"Vindhellfest" <${getEnv("SMTP_USER")}>`,
+      to,
+      subject: "Votre compte Vindhellfest",
+      text: `Bonjour ${displayName},\n\nVotre compte a ete cree.\nIdentifiant : ${to}\nMot de passe provisoire : ${tempPassword}\n\nVeuillez le modifier des votre premiere connexion.`,
+    });
+  } catch {
+    throw new AppError(ERRORS.MAIL_SEND_ERROR, 500);
+  }
 }

@@ -30,4 +30,5 @@ export const ERRORS = {
     "Deux artistes sont déjà mis en avant sur la page d'accueil.",
   ARTIST_INVALID_YOUTUBE_URL: "Le lien YouTube est invalide.",
   ARTIST_INVALID_SPOTIFY_URL: "Le lien Spotify est invalide.",
+  MAIL_SEND_ERROR: "Erreur lors de l'envoi de l'email.",
 } as const;
