@@ -20,7 +20,7 @@ import { useNavPath } from "../hooks/useNavPath";
 import ModalCloseButton from "./ModalCloseButton";
 import Navigation from "./Navigation";
 import type { ApiMessageResponse } from "../type";
-import { apiRequest } from "../functions/apiRequest";
+import { useMutation } from "../hooks/useMutation";
 
 /** Affiche un bouton de billetterie
  * Contient un lien externe vers un site de recherche de billetterie
@@ -180,8 +180,7 @@ export function MobilNav({
  * Ecoute les changements de taille d'ecran pour mettre a jour l'etat `isDesktop`
  * Affiche DesktopNav sur ecran large, sinon MobilNav
  * Rend le header transparent sur la page d'accueil tant que l'utilisateur n'a pas scrolle
- * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
- * @function getApiErrorMessage Définit un message à retourner à l'utilisateur selon le statut de l'erreur
+ * @function useMutation Envoie la requete de deconnexion via POST /admin/auth/logout
  * @children DesktopNav Affiche le menu de navigation pour l'affichage desktop
  * @children MobilNav Affiche le menu de navigation pour l'affichage mobile
  */
@@ -218,17 +217,14 @@ export default function Banner() {
 
   const isOverHero = isHome && scrollAtTop;
 
+  const { mutate: logout } = useMutation<ApiMessageResponse>(
+    "/admin/auth/logout",
+    "POST",
+  );
+
   // Envoie la requete de deconnexion puis redirige vers `/login`
-  const handleLogout = async () => {
-    const result = await apiRequest<ApiMessageResponse>("/admin/auth/logout", {
-      method: "POST",
-    });
-
-    if (result.error) {
-      return;
-    }
-
-    router.push("/login");
+  const handleLogout = () => {
+    logout(null, () => router.push("/login"));
   };
 
   return (

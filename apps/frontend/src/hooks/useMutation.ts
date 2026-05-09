@@ -7,7 +7,7 @@ import { getApiErrorMessage } from "../functions/getApiErrorMessage";
  * @param {string} endpoint Chemin de l'endpoint (ex : "/admin/artists").
  * @param {'POST' | 'PATCH'} method Méthode HTTP à utiliser.
  * @return {Object} Un objet contenant :
- * - mutate: une fonction pour effectuer la mutation, prenant en paramètre le corps de la requête et une fonction de callback à appeler en cas de succès.
+ * - mutate: une fonction pour effectuer la mutation, prenant en paramètre le corps de la requête (null si aucun body) et une fonction de callback à appeler en cas de succès.
  * - isLoading: un booléen indiquant si la requête est en cours.
  * - error: un message d'erreur en cas d'échec de la requête, ou null si aucune erreur.
  * - reset: une fonction pour réinitialiser l'état de chargement et d'erreur (utile à la fermeture d'une modale).
@@ -17,7 +17,7 @@ export function useMutation<T>(
   method: "POST" | "PATCH",
 ): {
   mutate: (
-    body: FormData | Record<string, unknown>,
+    body: FormData | Record<string, unknown> | null,
     onSuccess: (data: T) => void,
   ) => Promise<void>;
 
@@ -30,27 +30,28 @@ export function useMutation<T>(
   const [error, setError] = useState<string | null>(null);
 
   /** Fonction pour effectuer la mutation
-   * @param {FormData | Record<string, unknown>} body Corps de la requête.
+   * @param {FormData | Record<string, unknown> | null} body Corps de la requête — null si aucun body à envoyer.
    * @param {(data: T) => void} onSuccess Callback appelé avec les données en cas de succès.
    */
   const mutate = async (
-    body: FormData | Record<string, unknown>,
+    body: FormData | Record<string, unknown> | null,
     onSuccess: (data: T) => void,
   ) => {
     // réinitialisation de isLoading et error
     setIsLoading(true);
     setError(null);
 
-    // préparation de la requête en fonction du type de body
+    // préparation de la requête en fonction du type de body si il y en a un
     const init: RequestInit =
-      // Si le body est un FormData, on l'envoie tel quel autrement on stringify le body et on ajoute l'en-tête Content-Type
       body instanceof FormData
         ? { method, body }
-        : {
-            method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          };
+        : body !== null
+          ? {
+              method,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body),
+            }
+          : { method };
 
     // Envoi de la requête et récupération du résultat typé
     const result = await apiRequest<T>(endpoint, init);
