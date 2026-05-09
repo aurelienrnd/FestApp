@@ -10,14 +10,16 @@ import { getApiErrorMessage } from "../functions/getApiErrorMessage";
  * - isSubmitting : booléen indiquant si la requête est en cours.
  * - isDeleted : booléen passant à true après une suppression réussie.
  * - error : message d'erreur en cas d'échec, ou null.
+ * - reset : remet isDeleted et error à leur valeur initiale — à appeler à la fermeture de la modale.
  */
 export function useDelete(endpoint: string): {
   handleDelete: (id: string, onSuccess: (id: string) => void) => Promise<void>;
   isSubmitting: boolean;
   isDeleted: boolean;
   error: string | null;
+  reset: () => void;
 } {
-  // initialisation de isSubmitting, is isDeleted et error
+  // initialisation de isSubmitting, isDeleted et error
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,5 +52,11 @@ export function useDelete(endpoint: string): {
     setIsSubmitting(false);
   };
 
-  return { handleDelete, isSubmitting, isDeleted, error };
+  // Remet isDeleted et error à leur valeur initiale — à appeler à la fermeture d'une modale
+  const reset = () => {
+    setIsDeleted(false);
+    setError(null);
+  };
+
+  return { handleDelete, isSubmitting, isDeleted, error, reset };
 }
