@@ -87,50 +87,31 @@ export default function AddArtistModal({
 }: AddArtistModalProps) {
   const isEditMode = artistToEdit !== null;
 
-  // Calcul des valeurs initiales depuis artistToEdit en mode edition
-  const initialStart = artistToEdit?.start_time
-    ? new Date(artistToEdit.start_time)
-    : null;
-
   // Etape active de la modal
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
   // Champs de l'etape 1
-  const [name, setName] = useState(artistToEdit?.name ?? "");
-  const [genre, setGenre] = useState(artistToEdit?.genre ?? "");
-  const [origin, setOrigin] = useState(artistToEdit?.origin ?? "");
-  const [bio, setBio] = useState(artistToEdit?.bio ?? "");
-  const [youtubeUrl, setYoutubeUrl] = useState(artistToEdit?.youtube_url ?? "");
-  const [spotifyUrl, setSpotifyUrl] = useState(artistToEdit?.spotify_url ?? "");
-  const [isFeatured, setIsFeatured] = useState(
-    artistToEdit?.is_featured ?? false,
-  );
+  const [name, setName] = useState("");
+  const [genre, setGenre] = useState("");
+  const [origin, setOrigin] = useState("");
+  const [bio, setBio] = useState("");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [spotifyUrl, setSpotifyUrl] = useState("");
+  const [isFeatured, setIsFeatured] = useState(false);
 
   // Champs de l'etape 2
-  const [descriptionMedia, setDescriptionMedia] = useState(
-    artistToEdit?.description_media ?? "",
-  );
+  const [descriptionMedia, setDescriptionMedia] = useState("");
   const [image, setImage] = useState<File | null>(null);
 
   // Champs de l'etape 3
-  const [stage, setStage] = useState(artistToEdit?.stage ?? "");
-  const [date, setDate] = useState(
-    initialStart ? initialStart.toISOString().slice(0, 10) : "",
-  );
-  const [startTime, setStartTime] = useState(
-    initialStart ? initialStart.toTimeString().slice(0, 5) : "",
-  );
-  const [endTime, setEndTime] = useState(
-    // Si l'heure de fin est inferieure a l'heure de debut, le concert passe minuit — endTime est le lendemains du date selectionnee
-    artistToEdit?.end_time
-      ? new Date(artistToEdit.end_time).toTimeString().slice(0, 5)
-      : "",
-  );
+  const [stage, setStage] = useState("");
+  const [date, setDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  // Si l'heure de fin est inferieure a l'heure de debut, le concert passe minuit — endTime est le lendemain du date selectionnee
+  const [endTime, setEndTime] = useState("");
 
   // URL de previsualisation de l'image selectionnee
-  const [previewUrl, setPreviewUrl] = useState<string | null>(
-    artistToEdit?.url_media ?? null,
-  );
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Erreurs de validation des URLs (etape 1)
   const [youtubeUrlError, setYoutubeUrlError] = useState<string | null>(null);

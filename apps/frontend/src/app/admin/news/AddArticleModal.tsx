@@ -64,20 +64,14 @@ export default function AddArticleModal({
   const [step, setStep] = useState<1 | 2>(1);
 
   // Champs de l'etape 1
-  const [title, setTitle] = useState(articleToEdit?.title ?? "");
-  const [content, setContent] = useState(articleToEdit?.content ?? "");
-  const [isPublished, setIsPublished] = useState(
-    articleToEdit?.is_published ?? false,
-  );
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [isPublished, setIsPublished] = useState(false);
 
   // Champs de l'etape 2
-  const [descriptionMedia, setDescriptionMedia] = useState(
-    articleToEdit?.description_media ?? "",
-  );
+  const [descriptionMedia, setDescriptionMedia] = useState("");
   const [image, setImage] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(
-    articleToEdit?.url_media ?? null,
-  );
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Reinitialise les champs avec les valeurs de l'article a modifier a chaque ouverture de la modale
   useEffect(() => {
