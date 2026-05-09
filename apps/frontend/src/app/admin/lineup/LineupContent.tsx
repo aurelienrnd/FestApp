@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useFetch } from "../../../hooks/useFetch";
 import { useModal } from "../../../hooks/useModal";
 import AddArtistModal from "./AddArtistModal";
-import DeleteArtistModal from "./DeleteArtistModal";
+import DeleteModal from "../../../components/DeleteModal";
 import { useNavPath } from "../../../hooks/useNavPath";
 import type { ArtistItem } from "../../../type";
 
@@ -163,11 +163,14 @@ export default function LineupContent({
         handleArtist={handleArtistAdded}
       />
 
-      <DeleteArtistModal
+      <DeleteModal
         isOpen={isDeleteModalOpen}
-        selectedArtist={selectedArtistToDelete}
+        item={selectedArtistToDelete}
         onClose={closeDeleteModal}
-        handleArtist={handleArtistDeleted}
+        onDeleted={handleArtistDeleted}
+        endpoint="/admin/artists"
+        entityName="artiste"
+        getLabel={(a) => a.name}
       />
     </div>
   );

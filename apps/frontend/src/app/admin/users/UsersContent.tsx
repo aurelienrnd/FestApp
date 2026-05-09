@@ -6,7 +6,7 @@ import { useFetch } from "../../../hooks/useFetch";
 import { useModal } from "../../../hooks/useModal";
 import { useAdminUser } from "../../../components/AdminUserProvider";
 import AddUserModal from "./AddUserModal";
-import DelateUserModal from "./DelateUserModal";
+import DeleteModal from "../../../components/DeleteModal";
 import type { UserItem } from "../../../type";
 import LoadingLine from "../../../components/LoadingLine";
 
@@ -190,11 +190,14 @@ export default function UsersContent({
         )}
       </div>
 
-      <DelateUserModal
+      <DeleteModal
         isOpen={isDeleteModalOpen}
-        selectedUser={selectedUserToDelete}
+        item={selectedUserToDelete}
         onClose={closeDeleteModal}
-        handleUser={handleUserDeleted}
+        onDeleted={handleUserDeleted}
+        endpoint="/admin/users"
+        entityName="utilisateur"
+        getLabel={(u) => u.display_name}
       />
       <AddUserModal
         key={userToEdit?.id ?? "new"}

@@ -11,7 +11,7 @@ import type { ArticleItem } from "../../../type";
 type ArticleSummary = Omit<ArticleItem, "content">;
 import LoadingLine from "../../../components/LoadingLine";
 import AddArticleModal from "./AddArticleModal";
-import DeleteArticleModal from "./DeleteArticleModal";
+import DeleteModal from "../../../components/DeleteModal";
 
 /** Affiche la liste des articles avec tri client-side selon activeFilter.
  * Recupere les articles via GET /public/news.
@@ -149,11 +149,14 @@ export default function NewsContent({
         handleArticle={handleArticleAdded}
       />
 
-      <DeleteArticleModal
+      <DeleteModal
         isOpen={isDeleteModalOpen}
-        selectedArticle={selectedArticleToDelete}
+        item={selectedArticleToDelete}
         onClose={closeDeleteModal}
-        handleArticle={handleArticleDeleted}
+        onDeleted={handleArticleDeleted}
+        endpoint="/admin/articles"
+        entityName="article"
+        getLabel={(a) => a.title}
       />
     </div>
   );
