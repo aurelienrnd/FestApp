@@ -1,7 +1,7 @@
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import NewsContent from "../../../src/app/admin/news/NewsContent";
+import NewsContent from "../../../src/components/NewsContent";
 import { ApiRequestError } from "../../../src/functions/apiRequest";
 
 // Mock de next/image pour eviter les erreurs de rendu dans jsdom
@@ -39,13 +39,13 @@ vi.mock("../../../src/functions/apiRequest", async () => {
   };
 });
 
-const mockArticle = {
-  id: "article-1",
+const mockNews = {
+  id: "news-1",
   title: "Ouverture de la billetterie",
   content: "La billetterie ouvre.",
   is_published: true,
   created_at: "2026-04-06T10:00:00.000Z",
-  url_media: "/uploads/articles/uuid.webp",
+  url_media: "/uploads/news/uuid.webp",
   description_media: "Photo de la billetterie",
   author_name: "Admin",
 };
@@ -82,20 +82,20 @@ describe("NewsContent", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows empty state when no articles", async () => {
+  it("shows empty state when no news", async () => {
     mockApiRequest.mockResolvedValueOnce({
-      data: { articles: [] },
+      data: { newsList:[] },
       error: null,
     });
 
     render(<NewsContent />);
 
-    expect(await screen.findByText("Aucun article.")).toBeInTheDocument();
+    expect(await screen.findByText("Aucune news.")).toBeInTheDocument();
   });
 
-  it("displays article title and author", async () => {
+  it("displays news title and author", async () => {
     mockApiRequest.mockResolvedValueOnce({
-      data: { articles: [mockArticle] },
+      data: { newsList:[mockNews] },
       error: null,
     });
 
@@ -109,7 +109,7 @@ describe("NewsContent", () => {
 
   it("shows 'Auteur inconnu' when author_name is null", async () => {
     mockApiRequest.mockResolvedValueOnce({
-      data: { articles: [{ ...mockArticle, author_name: null }] },
+      data: { newsList:[{ ...mockNews, author_name: null }] },
       error: null,
     });
 
@@ -118,9 +118,9 @@ describe("NewsContent", () => {
     expect(await screen.findByText("Auteur inconnu")).toBeInTheDocument();
   });
 
-  it("shows draft badge in admin path for unpublished articles", async () => {
+  it("shows draft badge in admin path for unpublished news", async () => {
     mockApiRequest.mockResolvedValueOnce({
-      data: { articles: [{ ...mockArticle, is_published: false }] },
+      data: { newsList:[{ ...mockNews, is_published: false }] },
       error: null,
     });
 
@@ -132,7 +132,7 @@ describe("NewsContent", () => {
   it("hides draft badge on non-admin path", async () => {
     mockUseNavPath.mockReturnValue({ isAdminPath: false });
     mockApiRequest.mockResolvedValueOnce({
-      data: { articles: [mockArticle] },
+      data: { newsList:[mockNews] },
       error: null,
     });
 
@@ -142,13 +142,13 @@ describe("NewsContent", () => {
     expect(screen.queryByText("Brouillon")).not.toBeInTheDocument();
   });
 
-  it("hides unpublished articles on non-admin path", async () => {
+  it("hides unpublished news on non-admin path", async () => {
     mockUseNavPath.mockReturnValue({ isAdminPath: false });
     mockApiRequest.mockResolvedValueOnce({
       data: {
-        articles: [
-          mockArticle,
-          { ...mockArticle, id: "article-2", title: "Brouillon secret", is_published: false },
+        newsList: [
+          mockNews,
+          { ...mockNews, id: "news-2", title: "Brouillon secret", is_published: false },
         ],
       },
       error: null,
@@ -162,9 +162,9 @@ describe("NewsContent", () => {
     expect(screen.queryByText("Brouillon secret")).not.toBeInTheDocument();
   });
 
-  it("shows Modifier and Supprimer buttons on admin path", async () => {
+  it("shows Modifier and Supprimer buttons on admin path for news", async () => {
     mockApiRequest.mockResolvedValueOnce({
-      data: { articles: [mockArticle] },
+      data: { newsList:[mockNews] },
       error: null,
     });
 
@@ -180,7 +180,7 @@ describe("NewsContent", () => {
   it("shows 'Voir plus' button on non-admin path", async () => {
     mockUseNavPath.mockReturnValue({ isAdminPath: false });
     mockApiRequest.mockResolvedValueOnce({
-      data: { articles: [mockArticle] },
+      data: { newsList:[mockNews] },
       error: null,
     });
 
@@ -193,12 +193,12 @@ describe("NewsContent", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("reverses article order when activeFilter is 'Croissant'", async () => {
+  it("reverses news order when activeFilter is 'Croissant'", async () => {
     mockApiRequest.mockResolvedValueOnce({
       data: {
-        articles: [
-          { ...mockArticle, id: "article-1", title: "Article Recent" },
-          { ...mockArticle, id: "article-2", title: "Article Ancien" },
+        newsList: [
+          { ...mockNews, id: "news-1", title: "News Recente" },
+          { ...mockNews, id: "news-2", title: "News Ancienne" },
         ],
       },
       error: null,
@@ -206,27 +206,27 @@ describe("NewsContent", () => {
 
     render(<NewsContent activeFilter="Croissant" />);
 
-    await screen.findByText("Article Recent");
+    await screen.findByText("News Recente");
     const items = screen.getAllByRole("listitem");
-    expect(items[0]).toHaveTextContent("Article Ancien");
-    expect(items[1]).toHaveTextContent("Article Recent");
+    expect(items[0]).toHaveTextContent("News Ancienne");
+    expect(items[1]).toHaveTextContent("News Recente");
   });
 
-  it("deletes an article and removes it from the list", async () => {
+  it("deletes a news and removes it from the list", async () => {
     const user = userEvent.setup();
 
     mockApiRequest
       .mockResolvedValueOnce({
         data: {
-          articles: [
-            mockArticle,
-            { ...mockArticle, id: "article-2", title: "Deuxieme Article" },
+          newsList: [
+            mockNews,
+            { ...mockNews, id: "news-2", title: "Deuxieme News" },
           ],
         },
         error: null,
       })
       .mockResolvedValueOnce({
-        data: { message: "Article supprime" },
+        data: { message: "News supprimee" },
         error: null,
       });
 
@@ -236,34 +236,34 @@ describe("NewsContent", () => {
     await user.click(screen.getAllByRole("button", { name: "Supprimer" })[0]);
     await user.click(screen.getByRole("button", { name: "Confirmer" }));
 
-    await screen.findByText("L'article a ete supprime.");
+    await screen.findByText("L'news a ete supprime.");
     await waitFor(() => {
       expect(
         screen.queryByText("Ouverture de la billetterie"),
       ).not.toBeInTheDocument();
     });
-    expect(screen.getByText("Deuxieme Article")).toBeInTheDocument();
+    expect(screen.getByText("Deuxieme News")).toBeInTheDocument();
     expect(mockApiRequest).toHaveBeenNthCalledWith(
       2,
-      "/admin/articles/article-1",
+      "/admin/news/news-1",
       { method: "DELETE", headers: { "Content-Type": "application/json" } },
     );
   });
 
-  it("edits an article and updates it in the list", async () => {
+  it("edits a news and updates it in the list", async () => {
     const user = userEvent.setup();
-    const updatedArticle = {
-      ...mockArticle,
+    const updatedNews = {
+      ...mockNews,
       title: "Ouverture de la billetterie (modifie)",
     };
 
     mockApiRequest
       .mockResolvedValueOnce({
-        data: { articles: [mockArticle] },
+        data: { newsList:[mockNews] },
         error: null,
       })
       .mockResolvedValueOnce({
-        data: { message: "Article modifie", article: updatedArticle },
+        data: { message: "News modifiee", news: updatedNews },
         error: null,
       });
 
@@ -288,7 +288,7 @@ describe("NewsContent", () => {
     ).toBeInTheDocument();
     expect(mockApiRequest).toHaveBeenNthCalledWith(
       2,
-      `/admin/articles/${mockArticle.id}`,
+      `/admin/news/${mockNews.id}`,
       expect.objectContaining({ method: "PATCH" }),
     );
   });

@@ -24,8 +24,8 @@ export const ERRORS = {
   ARTIST_FILE_REQUIRED: "Image requise",
   ARTIST_INVALID_FILE_TYPE:
     "Type de fichier non autorise (jpeg, png ou webp uniquement)",
-  ARTICLE_NOT_FOUND: "Article introuvable",
-  ARTICLE_FILE_REQUIRED: "Image requise",
+  NEWS_NOT_FOUND: "News introuvable",
+  NEWS_FILE_REQUIRED: "Image requise",
   ARTIST_FEATURED_LIMIT:
     "Deux artistes sont déjà mis en avant sur la page d'accueil.",
   ARTIST_INVALID_YOUTUBE_URL: "Le lien YouTube est invalide.",

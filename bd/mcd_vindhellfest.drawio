@@ -16,10 +16,10 @@
         <mxCell id="session_attrs" parent="1" style="text;html=1;strokeColor=#6c8ebf;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="expires_at&#xa;created_at&#xa;revoked_at" vertex="1">
           <mxGeometry height="80" width="200" x="130" y="250" as="geometry" />
         </mxCell>
-        <mxCell id="article" parent="1" style="text;html=1;strokeColor=none;fillColor=#dae8fc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=13;" value="ARTICLE" vertex="1">
+        <mxCell id="news" parent="1" style="text;html=1;strokeColor=none;fillColor=#dae8fc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=13;" value="news" vertex="1">
           <mxGeometry height="40" width="200" x="1050" y="210" as="geometry" />
         </mxCell>
-        <mxCell id="article_attrs" parent="1" style="text;html=1;strokeColor=#6c8ebf;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="title&#xa;content&#xa;is_published&#xa;created_at&#xa;url_media&#xa;description_media" vertex="1">
+        <mxCell id="news_attrs" parent="1" style="text;html=1;strokeColor=#6c8ebf;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="title&#xa;content&#xa;is_published&#xa;created_at&#xa;url_media&#xa;description_media" vertex="1">
           <mxGeometry height="140" width="200" x="1050" y="250" as="geometry" />
         </mxCell>
         <mxCell id="artiste" parent="1" style="text;html=1;strokeColor=none;fillColor=#d5e8d4;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=13;" value="ARTISTE" vertex="1">
@@ -64,7 +64,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="rel_redige_art" edge="1" parent="1" source="assoc_redige" style="endArrow=none;html=1;" target="article" value="">
+        <mxCell id="rel_redige_art" edge="1" parent="1" source="assoc_redige" style="endArrow=none;html=1;" target="news" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="card_redige_art" connectable="0" parent="rel_redige_art" style="resizable=0;html=1;align=center;fontSize=12;fontStyle=1;fillColor=none;strokeColor=none;" value="(0,1)" vertex="1">

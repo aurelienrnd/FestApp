@@ -15,11 +15,11 @@ bd/
 ├── init/
 │   ├── 01_user_schema.sql
 │   ├── 02_sessions_schema.sql
-│   ├── 03_article_schema.sql
+│   ├── 03_news_schema.sql
 │   ├── 04_artist_schema.sql
 │   ├── 05_concert_schema.sql
 │   ├── 06_seed_users.sql
-│   ├── 07_seed_articles.sql
+│   ├── 07_seed_news.sql
 │   ├── 08_seed_artists.sql
 │   └── 09_seed_concerts.sql
 └── README.md
@@ -78,24 +78,24 @@ Gère la persistance des connexions et la sécurité des accès dans le cadre de
 
 ---
 
-### `03_article_schema.sql` — Table `articles`
+### `03_news_schema.sql` — Table `news`
 
 **Extensions utilisées :** `pgcrypto`
 
 Stocke le contenu éditorial du festival (actualités, annonces).
 
-| Colonne             | Type           | Contraintes                               | Description                                                  |
-| ------------------- | -------------- | ----------------------------------------- | ------------------------------------------------------------ |
-| `id`                | `UUID`         | PRIMARY KEY                               | Identifiant unique de l'article                              |
-| `title`             | `VARCHAR(150)` | NOT NULL                                  | Titre de l'article                                           |
-| `content`           | `TEXT`         | NULL                                      | Corps de l'article                                           |
-| `is_published`      | `BOOLEAN`      | NOT NULL, DEFAULT `FALSE`                 | Statut de publication                                        |
-| `created_at`        | `TIMESTAMPTZ`  | NOT NULL, DEFAULT `NOW()`                 | Date de création                                             |
-| `url_media`         | `VARCHAR(255)` | NOT NULL                                  | URL ou chemin du média associé                               |
-| `description_media` | `VARCHAR(255)` | NOT NULL                                  | Texte alternatif du média                                    |
-| `user_id`           | `UUID`         | NULL, FK → `users(id)` ON DELETE SET NULL | Auteur de l'article (`NULL` si l'utilisateur a été supprimé) |
+| Colonne             | Type           | Contraintes                               | Description                                               |
+| ------------------- | -------------- | ----------------------------------------- | --------------------------------------------------------- |
+| `id`                | `UUID`         | PRIMARY KEY                               | Identifiant unique de l'news                              |
+| `title`             | `VARCHAR(150)` | NOT NULL                                  | Titre de l'news                                           |
+| `content`           | `TEXT`         | NULL                                      | Corps de l'news                                           |
+| `is_published`      | `BOOLEAN`      | NOT NULL, DEFAULT `FALSE`                 | Statut de publication                                     |
+| `created_at`        | `TIMESTAMPTZ`  | NOT NULL, DEFAULT `NOW()`                 | Date de création                                          |
+| `url_media`         | `VARCHAR(255)` | NOT NULL                                  | URL ou chemin du média associé                            |
+| `description_media` | `VARCHAR(255)` | NOT NULL                                  | Texte alternatif du média                                 |
+| `user_id`           | `UUID`         | NULL, FK → `users(id)` ON DELETE SET NULL | Auteur de l'news (`NULL` si l'utilisateur a été supprimé) |
 
-**Contrainte :** Si un utilisateur est supprimé, son `user_id` passe à `NULL` dans les articles qu'il a rédigés — l'article est conservé et l'auteur s'affiche comme « Auteur inconnu » (`ON DELETE SET NULL`).
+**Contrainte :** Si un utilisateur est supprimé, son `user_id` passe à `NULL` dans les news qu'il a rédigés — l'news est conservé et l'auteur s'affiche comme « Auteur inconnu » (`ON DELETE SET NULL`).
 
 **Index :** `created_at`, `is_published`
 
@@ -174,30 +174,30 @@ Les fichiers `06` à `09` sont exécutés après la création des tables. Ils in
 
 Insère 3 utilisateurs couvrant chacun des rôles disponibles.
 
-| Email                  | Display name     | Rôle     |
-| ---------------------- | ---------------- | -------- |
-| `admin@example.com`    | Admin            | `admin`  |
-| `lineup@example.com`   | Lineup Manager   | `lineup` |
-| `news@example.com`     | News Editor      | `news`   |
+| Email                | Display name   | Rôle     |
+| -------------------- | -------------- | -------- |
+| `admin@example.com`  | Admin          | `admin`  |
+| `lineup@example.com` | Lineup Manager | `lineup` |
+| `news@example.com`   | News Editor    | `news`   |
 
 ---
 
-### `07_seed_articles.sql` — Articles de développement
+### `07_seed_news.sql` — news de développement
 
-Insère 10 articles liés à `admin@example.com`, avec des dates relatives (`NOW() - INTERVAL '...'`) couvrant jusqu'à 365 jours en arrière.
+Insère 10 news liés à `admin@example.com`, avec des dates relatives (`NOW() - INTERVAL '...'`) couvrant jusqu'à 365 jours en arrière.
 
-| Titre                                          | Statut     |
-| ---------------------------------------------- | ---------- |
-| Ouverture de la billetterie                    | Publié     |
-| Nouvelle tête d'affiche                        | Brouillon  |
-| Le programme complet est dévoilé               | Publié     |
-| Infos pratiques : accès et stationnement       | Publié     |
-| Oasis de retour : une exclusivité Vindhellfest | Publié     |
-| Les coulisses du festival                      | Publié     |
-| Restauration : les meilleurs stands            | Brouillon  |
-| Retour sur la première édition                 | Publié     |
-| Développement durable : nos engagements        | Publié     |
-| Concours : gagnez vos pass VIP                 | Brouillon  |
+| Titre                                          | Statut    |
+| ---------------------------------------------- | --------- |
+| Ouverture de la billetterie                    | Publié    |
+| Nouvelle tête d'affiche                        | Brouillon |
+| Le programme complet est dévoilé               | Publié    |
+| Infos pratiques : accès et stationnement       | Publié    |
+| Oasis de retour : une exclusivité Vindhellfest | Publié    |
+| Les coulisses du festival                      | Publié    |
+| Restauration : les meilleurs stands            | Brouillon |
+| Retour sur la première édition                 | Publié    |
+| Développement durable : nos engagements        | Publié    |
+| Concours : gagnez vos pass VIP                 | Brouillon |
 
 ---
 
@@ -205,18 +205,18 @@ Insère 10 articles liés à `admin@example.com`, avec des dates relatives (`NOW
 
 Insère 10 artistes rock avec biographies complètes, chemins d'images locaux et liens YouTube/Spotify officiels.
 
-| Nom                     | Genre          | Origine                   |
-| ----------------------- | -------------- | ------------------------- |
-| Red Hot Chili Peppers   | Rock           | États-Unis, Los Angeles   |
-| Foo Fighters            | Rock           | États-Unis, Seattle       |
-| Oasis                   | Britpop        | Royaume-Uni, Manchester   |
-| AC/DC                   | Hard rock      | Australie, Sydney         |
-| Guns N' Roses           | Hard rock      | États-Unis, Los Angeles   |
-| Pearl Jam               | Grunge         | États-Unis, Seattle       |
-| Muse                    | Rock alternatif| Royaume-Uni, Teignmouth   |
-| Arctic Monkeys          | Indie rock     | Royaume-Uni, Sheffield    |
-| Queens of the Stone Age | Hard rock      | États-Unis, Palm Desert   |
-| The Strokes             | Indie rock     | États-Unis, New York      |
+| Nom                     | Genre           | Origine                 |
+| ----------------------- | --------------- | ----------------------- |
+| Red Hot Chili Peppers   | Rock            | États-Unis, Los Angeles |
+| Foo Fighters            | Rock            | États-Unis, Seattle     |
+| Oasis                   | Britpop         | Royaume-Uni, Manchester |
+| AC/DC                   | Hard rock       | Australie, Sydney       |
+| Guns N' Roses           | Hard rock       | États-Unis, Los Angeles |
+| Pearl Jam               | Grunge          | États-Unis, Seattle     |
+| Muse                    | Rock alternatif | Royaume-Uni, Teignmouth |
+| Arctic Monkeys          | Indie rock      | Royaume-Uni, Sheffield  |
+| Queens of the Stone Age | Hard rock       | États-Unis, Palm Desert |
+| The Strokes             | Indie rock      | États-Unis, New York    |
 
 ---
 
@@ -224,15 +224,15 @@ Insère 10 artistes rock avec biographies complètes, chemins d'images locaux et
 
 Insère 10 concerts planifiés sur 2 jours (`NOW() + 1 day` et `NOW() + 2 days`), répartis équitablement sur 2 scènes. Chaque créneau dure 1 heure. Les `artist_id` sont résolus par `SELECT id FROM artists WHERE name = '...'`.
 
-| Artiste                 | Scène          | Créneau           |
-| ----------------------- | -------------- | ----------------- |
-| Red Hot Chili Peppers   | `main-stage`   | J+1, heure 0      |
-| Foo Fighters            | `second-stage` | J+1, heure 0      |
-| Oasis                   | `main-stage`   | J+1, heure +1     |
-| Guns N' Roses           | `second-stage` | J+1, heure +1     |
-| AC/DC                   | `main-stage`   | J+1, heure +2     |
-| Pearl Jam               | `second-stage` | J+1, heure +2     |
-| Muse                    | `main-stage`   | J+2, heure 0      |
-| Queens of the Stone Age | `second-stage` | J+2, heure 0      |
-| Arctic Monkeys          | `main-stage`   | J+2, heure +1     |
-| The Strokes             | `second-stage` | J+2, heure +1     |
+| Artiste                 | Scène          | Créneau       |
+| ----------------------- | -------------- | ------------- |
+| Red Hot Chili Peppers   | `main-stage`   | J+1, heure 0  |
+| Foo Fighters            | `second-stage` | J+1, heure 0  |
+| Oasis                   | `main-stage`   | J+1, heure +1 |
+| Guns N' Roses           | `second-stage` | J+1, heure +1 |
+| AC/DC                   | `main-stage`   | J+1, heure +2 |
+| Pearl Jam               | `second-stage` | J+1, heure +2 |
+| Muse                    | `main-stage`   | J+2, heure 0  |
+| Queens of the Stone Age | `second-stage` | J+2, heure 0  |
+| Arctic Monkeys          | `main-stage`   | J+2, heure +1 |
+| The Strokes             | `second-stage` | J+2, heure +1 |

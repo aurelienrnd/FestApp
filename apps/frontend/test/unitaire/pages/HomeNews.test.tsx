@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import HomeNews from "../../../src/app/(public)/HomeNews";
-import type { HomeArticleRow } from "../../../src/types";
+import type { HomeNews as HomeNewsItem } from "../../../src/type";
 
 vi.mock("next/image", () => ({
   // eslint-disable-next-line @next/next/no-img-element
@@ -14,18 +14,18 @@ vi.mock("../../../src/components/SectionCta", () => ({
   ),
 }));
 
-const mockArticles: HomeArticleRow[] = [
+const mockNewsList: HomeNewsItem[] = [
   {
-    id: "article-1",
+    id: "news-1",
     title: "Ouverture de la billetterie",
-    url_media: "/uploads/articles/article-1.webp",
+    url_media: "/uploads/news/news-1.webp",
     description_media: "Photo billetterie",
     created_at: "2025-06-01T10:00:00.000Z",
   },
   {
-    id: "article-2",
+    id: "news-2",
     title: "Programmation complète dévoilée",
-    url_media: "/uploads/articles/article-2.webp",
+    url_media: "/uploads/news/news-2.webp",
     description_media: "Photo programmation",
     created_at: "2025-06-05T10:00:00.000Z",
   },
@@ -36,14 +36,14 @@ describe("HomeNews", () => {
     cleanup();
   });
 
-  it("affiche le titre de chaque article", () => {
-    render(<HomeNews articles={mockArticles} />);
+  it("affiche le titre de chaque news", () => {
+    render(<HomeNews newsList={mockNewsList} />);
     expect(screen.getByText("Ouverture de la billetterie")).toBeInTheDocument();
     expect(screen.getByText("Programmation complète dévoilée")).toBeInTheDocument();
   });
 
-  it("n'affiche rien si articles est un tableau vide", () => {
-    const { container } = render(<HomeNews articles={[]} />);
+  it("n'affiche rien si newsList est un tableau vide", () => {
+    const { container } = render(<HomeNews newsList={[]} />);
     expect(container.firstChild).toBeNull();
   });
 });

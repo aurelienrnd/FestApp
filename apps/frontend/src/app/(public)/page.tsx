@@ -1,4 +1,4 @@
-import type { HomeArtist, HomeArticle } from "../../type";
+import type { HomeArtist, HomeNews } from "../../type";
 import HomeHero from "./HomeHero";
 import HomeInfosPratiques from "./HomeInfosPratiques";
 import HomeNews from "./HomeNews";
@@ -11,15 +11,15 @@ import { fetchPublic } from "../../functions/fetchPublic";
  * @function fetchPublic Effectue un fetch GET côté serveur avec revalidation ISR.
  */
 export default async function Home() {
-  const data = await fetchPublic<{ artists: HomeArtist[]; articles: HomeArticle[] }>(
+  const data = await fetchPublic<{ artists: HomeArtist[]; newsList: HomeNews[] }>(
     "/public/home",
-  ) ?? { artists: [], articles: [] };
+  ) ?? { artists: [], newsList: [] };
 
   return (
     <>
       <HomeHero />
       <HomeProgrammation artists={data.artists} />
-      <HomeNews articles={data.articles} />
+      <HomeNews newsList={data.newsList ?? []} />
       <HomeInfosPratiques />
       <HomePartenaires />
     </>

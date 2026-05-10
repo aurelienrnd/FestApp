@@ -6,21 +6,21 @@ import sharp from "sharp";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import type { ArticleItem } from "../../../type";
+import type { NewsItem } from "../../../type";
 
-const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/articles");
+const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/news");
 
-/** Cree un article avec une image convertie en WebP via sharp.
+/** Cree une news avec une image convertie en WebP via sharp.
  * Verifie la presence du fichier image, le convertit en WebP (qualite 80),
- * l'ecrit sur le disque puis insere l'article en base de donnees.
- * Retourne l'article cree avec le display_name de l'auteur via JOIN users.
+ * l'ecrit sur le disque puis insere la news en base de donnees.
+ * Retourne la news creee avec le display_name de l'auteur via JOIN users.
  * @param {Request} req requete Express contenant les champs dans le body et le fichier dans req.file
  * @param {Response} res reponse Express
  */
-export async function createArticle(req: Request, res: Response) {
+export async function createNews(req: Request, res: Response) {
   // verifie que le fichier image est present dans la requete
   if (!req.file) {
-    throw new AppError(ERRORS.ARTICLE_FILE_REQUIRED, 400);
+    throw new AppError(ERRORS.NEWS_FILE_REQUIRED, 400);
   }
 
   // extrait les champs de la requete
@@ -33,7 +33,7 @@ export async function createArticle(req: Request, res: Response) {
   const uuid = randomUUID();
   const filename = `${uuid}.webp`;
   const filepath = path.join(UPLOADS_DIR, filename);
-  const url_media = `/uploads/articles/${filename}`;
+  const url_media = `/uploads/news/${filename}`;
 
   // ouvre une transaction SQL
   await query("BEGIN");
@@ -41,10 +41,10 @@ export async function createArticle(req: Request, res: Response) {
   let fileWritten = false;
 
   try {
-    // insere l'article et retourne les donnees avec le display_name de l'auteur via JOIN users
-    const createdArticles = await query<ArticleItem>(
+    // insere la news et retourne les donnees avec le display_name de l'auteur via JOIN users
+    const createdNews = await query<NewsItem>(
       `WITH inserted AS (
-         INSERT INTO articles (title, content, is_published, url_media, description_media, user_id)
+         INSERT INTO news (title, content, is_published, url_media, description_media, user_id)
          VALUES ($1, $2, $3, $4, $5, $6)
          RETURNING *
        )
@@ -61,8 +61,8 @@ export async function createArticle(req: Request, res: Response) {
       ],
     );
 
-    const article = createdArticles[0];
-    if (!article) {
+    const news = createdNews[0];
+    if (!news) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
     }
 
@@ -74,7 +74,7 @@ export async function createArticle(req: Request, res: Response) {
     // valide la transaction
     await query("COMMIT");
 
-    return res.status(201).json({ message: "Article cree", article });
+    return res.status(201).json({ message: "News creee", news });
   } catch (error) {
     // annule la transaction en cas d'erreur, supprime le fichier si deja ecrit, puis relance pour le middleware
     await query("ROLLBACK");

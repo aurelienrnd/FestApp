@@ -4,7 +4,7 @@ import { query } from "./db";
 
 // Importation des routes
 import adminArtists from "./routes/admin.artists.routes";
-import adminArticles from "./routes/admin.articles.routes";
+import adminNews from "./routes/admin.news.routes";
 import adminAuth from "./routes/admin.auth.routes";
 import adminUser from "./routes/admin.users.routes";
 import contact from "./routes/contact.routes";
@@ -83,7 +83,7 @@ export function createApp() {
 
   // Routes API (auth, admin, public, etc.)
   app.use("/admin", adminArtists);
-  app.use("/admin", adminArticles);
+  app.use("/admin", adminNews);
   app.use("/admin", adminAuth);
   app.use("/admin", adminUser);
   app.use("/contact", contact);

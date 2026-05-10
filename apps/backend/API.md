@@ -2,31 +2,31 @@
 
 ## Résumé des endpoints
 
-| Méthode | Route                           | Accès                | Description                                                                     |
-| -------- | ------------------------------- | --------------------- | ------------------------------------------------------------------------------- |
-| POST     | `/admin/articles`             | admin, news           | Créer un article (multipart/form-data)                                         |
-| PATCH    | `/admin/articles/:id`         | admin, news           | Modifier un article (multipart/form-data)                                       |
-| DELETE   | `/admin/articles/:id`         | admin, news           | Supprimer un article et son fichier image                                       |
-| POST     | `/admin/artists`              | admin, lineup         | Créer un artiste (multipart/form-data)                                         |
-| PATCH    | `/admin/artists/:id`          | admin, lineup         | Modifier un artiste (multipart/form-data)                                       |
-| DELETE   | `/admin/artists/:id`          | admin, lineup         | Supprimer un artiste et son concert associé                                    |
-| POST     | `/admin/auth/login`           | Public                | Connexion administrateur                                                        |
-| POST     | `/admin/auth/logout`          | Authentifié          | Déconnexion                                                                    |
-| GET      | `/admin/auth/me`              | Authentifié          | Informations utilisateur + renouvellement token                                 |
-| PATCH    | `/admin/auth/password`        | Authentifié          | Modifier le mot de passe de l'utilisateur connecte                              |
-| POST     | `/admin/auth/forgot-password` | Public                | Reinitialiser le mot de passe et envoyer un nouveau par email                   |
-| GET      | `/admin/users`                | admin                 | Liste des utilisateurs                                                          |
-| POST     | `/admin/users`                | admin                 | Créer un utilisateur                                                           |
-| PATCH    | `/admin/users/:id`            | admin                 | Modifier un utilisateur                                                         |
-| DELETE   | `/admin/users/:id`            | admin                 | Supprimer un utilisateur                                                        |
-| POST     | `/contact/submit`             | Public                | Soumettre le formulaire de contact                                              |
-| GET      | `/public/home`                | Public                | Données agrégées pour la page d'accueil (artistes mis en avant + 2 articles) |
-| GET      | `/public/lineup`              | Public                | Liste des artistes de la programmation                                          |
-| GET      | `/public/lineup/:id`          | Public                | Détail d'un artiste                                                            |
-| GET      | `/public/news`                | Public / Privilégié | Liste des articles (tous si admin/news, publiés sinon)                         |
-| GET      | `/public/news/:id`            | Public / Privilégié | Détail d'un article (brouillons accessibles si admin/news)                     |
-| GET      | `/health`                     | Public                | Santé du serveur (diagnostic)                                                  |
-| GET      | `/debug/db`                   | Public                | Connexion à la base de données (diagnostic)                                   |
+| Méthode | Route                         | Accès               | Description                                                              |
+| ------- | ----------------------------- | ------------------- | ------------------------------------------------------------------------ |
+| POST    | `/admin/news`                 | admin, news         | Créer une news (multipart/form-data)                                     |
+| PATCH   | `/admin/news/:id`             | admin, news         | Modifier une news (multipart/form-data)                                  |
+| DELETE  | `/admin/news/:id`             | admin, news         | Supprimer une news et son fichier image                                  |
+| POST    | `/admin/artists`              | admin, lineup       | Créer un artiste (multipart/form-data)                                   |
+| PATCH   | `/admin/artists/:id`          | admin, lineup       | Modifier un artiste (multipart/form-data)                                |
+| DELETE  | `/admin/artists/:id`          | admin, lineup       | Supprimer un artiste et son concert associé                              |
+| POST    | `/admin/auth/login`           | Public              | Connexion administrateur                                                 |
+| POST    | `/admin/auth/logout`          | Authentifié         | Déconnexion                                                              |
+| GET     | `/admin/auth/me`              | Authentifié         | Informations utilisateur + renouvellement token                          |
+| PATCH   | `/admin/auth/password`        | Authentifié         | Modifier le mot de passe de l'utilisateur connecte                       |
+| POST    | `/admin/auth/forgot-password` | Public              | Reinitialiser le mot de passe et envoyer un nouveau par email            |
+| GET     | `/admin/users`                | admin               | Liste des utilisateurs                                                   |
+| POST    | `/admin/users`                | admin               | Créer un utilisateur                                                     |
+| PATCH   | `/admin/users/:id`            | admin               | Modifier un utilisateur                                                  |
+| DELETE  | `/admin/users/:id`            | admin               | Supprimer un utilisateur                                                 |
+| POST    | `/contact/submit`             | Public              | Soumettre le formulaire de contact                                       |
+| GET     | `/public/home`                | Public              | Données agrégées pour la page d'accueil (artistes mis en avant + 2 news) |
+| GET     | `/public/lineup`              | Public              | Liste des artistes de la programmation                                   |
+| GET     | `/public/lineup/:id`          | Public              | Détail d'un artiste                                                      |
+| GET     | `/public/news`                | Public / Privilégié | Liste des news (tous si admin/news, publiés sinon)                       |
+| GET     | `/public/news/:id`            | Public / Privilégié | Détail d'un news (brouillons accessibles si admin/news)                  |
+| GET     | `/health`                     | Public              | Santé du serveur (diagnostic)                                            |
+| GET     | `/debug/db`                   | Public              | Connexion à la base de données (diagnostic)                              |
 
 ---
 
@@ -34,7 +34,7 @@
 
 ### GET `/public/home`
 
-Retourne les artistes avec `is_featured = TRUE` et les 2 derniers articles publiés. Les deux requêtes sont exécutées en parallèle via `Promise.all`.
+Retourne les artistes avec `is_featured = TRUE` et les 2 dernières news publiées. Les deux requêtes sont exécutées en parallèle via `Promise.all`.
 
 Authentification :
 
@@ -58,19 +58,19 @@ Réponse en succès :
       "end_time": "2025-06-21T21:30:00.000Z"
     }
   ],
-  "articles": [
+  "newsList": [
     {
       "id": "uuid",
       "title": "Ouverture de la billetterie",
-      "url_media": "/uploads/articles/uuid.webp",
-      "description_media": "Photo article",
+      "url_media": "/uploads/news/uuid.webp",
+      "description_media": "Photo news",
       "created_at": "2025-06-01T10:00:00.000Z"
     }
   ]
 }
 ```
 
-> `artists` contient uniquement les artistes dont `is_featured = TRUE` — au maximum 2 (limite appliquée par trigger en base). `articles` est vide s'il n'y a aucun article publié.
+> `artists` contient uniquement les artistes dont `is_featured = TRUE` — au maximum 2 (limite appliquée par trigger en base). `newsList` est vide s'il n'y a aucune news publiée.
 
 Réponses d'erreur :
 
@@ -164,9 +164,9 @@ Reponses d'erreur:
 
 ### GET `/public/news`
 
-Retourne la liste des articles tries par date de creation decroissante.
+Retourne la liste des news triees par date de creation decroissante.
 
-Middleware: `optionalAuth` — si l'utilisateur est authentifie avec le role `admin` ou `news`, tous les articles sont retournes (y compris les brouillons). Sinon, seuls les articles avec `is_published = TRUE` sont retournes.
+Middleware: `optionalAuth` — si l'utilisateur est authentifie avec le role `admin` ou `news`, toutes les news sont retournees (y compris les brouillons). Sinon, seules les news avec `is_published = TRUE` sont retournees.
 
 Authentification:
 
@@ -179,13 +179,13 @@ Reponse en succes:
 
 ```json
 {
-  "articles": [
+  "newsList": [
     {
       "id": "uuid",
       "title": "Ouverture de la billetterie",
       "is_published": true,
       "created_at": "2026-04-06T10:00:00.000Z",
-      "url_media": "/uploads/articles/uuid.webp",
+      "url_media": "/uploads/news/uuid.webp",
       "description_media": "Photo de la billetterie",
       "author_name": "Admin"
     }
@@ -193,7 +193,7 @@ Reponse en succes:
 }
 ```
 
-> `content` et `user_id` ne sont pas retournés dans la liste — utiliser `GET /public/news/:id` pour récupérer l'article complet.
+> `content` et `user_id` ne sont pas retournés dans la liste — utiliser `GET /public/news/:id` pour récupérer la news complète.
 > `author_name` est `null` si l'utilisateur auteur a ete supprime.
 
 Reponses d'erreur:
@@ -204,7 +204,7 @@ Reponses d'erreur:
 
 ### GET `/public/news/:id`
 
-Retourne un article complet par son identifiant.
+Retourne une news complète par son identifiant.
 
 Middleware: `optionalAuth` — si l'utilisateur est authentifie avec le role `admin` ou `news`, les brouillons (`is_published = FALSE`) sont accessibles (previsualisation). Sinon, un brouillon retourne `404`.
 
@@ -214,7 +214,7 @@ Authentification:
 
 Parametre d'URL:
 
-- `id`: UUID de l'article.
+- `id`: UUID de la news.
 
 Reponse en succes:
 
@@ -223,13 +223,13 @@ Reponse en succes:
 
 ```json
 {
-  "article": {
+  "news": {
     "id": "uuid",
     "title": "Ouverture de la billetterie",
     "content": "La billetterie du Vindhellfest ouvre officiellement ses portes.",
     "is_published": true,
     "created_at": "2026-04-06T10:00:00.000Z",
-    "url_media": "/uploads/articles/uuid.webp",
+    "url_media": "/uploads/news/uuid.webp",
     "description_media": "Photo de la billetterie",
     "user_id": "uuid",
     "author_name": "Admin"
@@ -241,7 +241,7 @@ Reponse en succes:
 
 Reponses d'erreur:
 
-- `404` `{ "error": "Article introuvable" }` — article inexistant ou brouillon non accessible
+- `404` `{ "error": "News introuvable" }` — news inexistante ou brouillon non accessible
 
 ## Authentification
 
@@ -631,13 +631,13 @@ Reponses d'erreur:
 - `401` `{ "error": "Session manquante" }`
 - `404` `{ "error": "Utilisateur introuvable" }`
 
-## Articles
+## News
 
 > Routes admin réservées aux rôles `admin` et `news`.
 
-### POST `/admin/articles`
+### POST `/admin/news`
 
-Creer un article avec une image uploadée.
+Creer une news avec une image uploadée.
 
 Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "news")`, `upload.single("image")`, `validateBody`
 
@@ -663,14 +663,14 @@ Reponse en succes:
 
 ```json
 {
-  "message": "Article cree",
-  "article": {
+  "message": "News creee",
+  "news": {
     "id": "uuid",
     "title": "Ouverture de la billetterie",
     "content": "La billetterie du Vindhellfest ouvre officiellement ses portes.",
     "is_published": true,
     "created_at": "2026-04-06T10:00:00.000Z",
-    "url_media": "/uploads/articles/uuid.webp",
+    "url_media": "/uploads/news/uuid.webp",
     "description_media": "Photo de la billetterie",
     "user_id": "uuid",
     "author_name": "Admin"
@@ -688,15 +688,15 @@ Reponses d'erreur:
 
 ---
 
-### PATCH `/admin/articles/:id`
+### PATCH `/admin/news/:id`
 
-Modifier un article existant.
+Modifier une news existante.
 
 Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "news")`, `upload.single("image")`, `validateBody`
 
 Parametre d'URL:
 
-- `id`: UUID de l'article a modifier.
+- `id`: UUID de la news a modifier.
 
 Corps de requete:
 
@@ -718,14 +718,14 @@ Reponse en succes:
 
 ```json
 {
-  "message": "Article modifie",
-  "article": {
+  "message": "News modifiee",
+  "news": {
     "id": "uuid",
     "title": "Ouverture de la billetterie",
     "content": "Contenu mis a jour.",
     "is_published": true,
     "created_at": "2026-04-06T10:00:00.000Z",
-    "url_media": "/uploads/articles/uuid.webp",
+    "url_media": "/uploads/news/uuid.webp",
     "description_media": "Photo de la billetterie",
     "user_id": "uuid",
     "author_name": "Admin"
@@ -739,19 +739,19 @@ Reponses d'erreur:
 - `400` `{ "error": "Type de fichier non autorise (jpeg, png ou webp uniquement)" }`
 - `401` `{ "error": "Cookie d'authentification manquant" }`
 - `403` `{ "error": "Acces refuse" }`
-- `404` `{ "error": "Article introuvable" }`
+- `404` `{ "error": "News introuvable" }`
 
 ---
 
-### DELETE `/admin/articles/:id`
+### DELETE `/admin/news/:id`
 
-Supprime definitivement un article et son fichier image.
+Supprime definitivement une news et son fichier image.
 
 Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "news")`
 
 Parametre d'URL:
 
-- `id`: UUID de l'article a supprimer.
+- `id`: UUID de la news a supprimer.
 
 Reponse en succes:
 
@@ -760,7 +760,7 @@ Reponse en succes:
 
 ```json
 {
-  "message": "Article supprime"
+  "message": "News supprimee"
 }
 ```
 
@@ -769,7 +769,7 @@ Reponses d'erreur:
 - `400` `{ "error": "Donnees invalides" }` (id invalide)
 - `401` `{ "error": "Cookie d'authentification manquant" }`
 - `403` `{ "error": "Acces refuse" }`
-- `404` `{ "error": "Article introuvable" }`
+- `404` `{ "error": "News introuvable" }`
 
 ---
 

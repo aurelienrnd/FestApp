@@ -27,10 +27,10 @@ Règle unique :
 ```
 
 - **`*Row`** : type interne backend, jamais envoyé au client (`UserCredentialsRow`, `AuthUserRow`, `SessionRow`...)
-- **Sans suffixe** : type partagé, même nom et même structure côté front et côté back (`ArtistDetail`, `UserItem`, `ArticleItem`...)
+- **Sans suffixe** : type partagé, même nom et même structure côté front et côté back (`ArtistDetail`, `UserItem`, `NewsItem`...)
 
 ### Suffixes des types partagés
 
-- **`*Item`** : forme complète d'une entité telle qu'exposée par l'API — par opposition aux variantes allégées (`UserItem`, `ArticleItem`...)
+- **`*Item`** : forme complète d'une entité telle qu'exposée par l'API — par opposition aux variantes allégées (`UserItem`, `NewsItem`...)
 
 > Un type nommé `*Row` ne doit jamais apparaître directement dans un `res.json()`.

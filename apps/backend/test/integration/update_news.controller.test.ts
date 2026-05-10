@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import request from "supertest";
 import express from "express";
 import multer from "multer";
-import { updateArticle } from "../../src/controllers/admin/articles/update_article.controller";
+import { updateNews } from "../../src/controllers/admin/news/update_news.controller";
 import { query } from "../../src/db";
 import { unlink } from "fs/promises";
 import { ERRORS } from "../../src/errors/errorMessages";
@@ -34,15 +34,15 @@ function createApp() {
   const app = express();
   const upload = multer({ storage: multer.memoryStorage() });
   app.patch(
-    "/articles/:id",
+    "/news/:id",
     upload.single("image"),
-    asyncHandler(updateArticle),
+    asyncHandler(updateNews),
   );
   app.use(errorHandler);
   return app;
 }
 
-const ARTICLE_ID = "7bcf77a4-f4c0-4fbe-ab4b-f470dce2eef0";
+const NEWS_ID = "7bcf77a4-f4c0-4fbe-ab4b-f470dce2eef0";
 
 const validFields = {
   title: "Ouverture de la billetterie",
@@ -51,63 +51,63 @@ const validFields = {
   description_media: "Photo de la billetterie",
 };
 
-const mockExistingArticle = {
-  id: ARTICLE_ID,
-  url_media: `/uploads/articles/${ARTICLE_ID}.webp`,
+const mockExistingNews = {
+  id: NEWS_ID,
+  url_media: `/uploads/news/${NEWS_ID}.webp`,
 };
 
-const mockUpdatedArticle = {
-  id: ARTICLE_ID,
+const mockUpdatedNews = {
+  id: NEWS_ID,
   title: "Ouverture de la billetterie",
   content: "Contenu mis a jour.",
   is_published: true,
   created_at: "2025-06-01T10:00:00.000Z",
-  url_media: `/uploads/articles/${ARTICLE_ID}.webp`,
+  url_media: `/uploads/news/${NEWS_ID}.webp`,
   description_media: "Photo de la billetterie",
   user_id: "user-uuid",
 };
 
-const mockArticleWithAuthor = { ...mockUpdatedArticle, author_name: "Admin" };
+const mockNewsWithAuthor = { ...mockUpdatedNews, author_name: "Admin" };
 
-describe("updateArticle controller (integration)", () => {
+describe("updateNews controller (integration)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should return 200 with updated article on success (sans nouvelle image)", async () => {
+  it("should return 200 with updated news on success (sans nouvelle image)", async () => {
     mockQuery
-      .mockResolvedValueOnce([mockExistingArticle]) // SELECT article existant
+      .mockResolvedValueOnce([mockExistingNews]) // SELECT news existante
       .mockResolvedValueOnce([]) // BEGIN
-      .mockResolvedValueOnce([mockUpdatedArticle]) // UPDATE articles
-      .mockResolvedValueOnce([mockArticleWithAuthor]) // SELECT avec JOIN author
+      .mockResolvedValueOnce([mockUpdatedNews]) // UPDATE news
+      .mockResolvedValueOnce([mockNewsWithAuthor]) // SELECT avec JOIN author
       .mockResolvedValueOnce([]); // COMMIT
 
     const app = createApp();
     const res = await request(app)
-      .patch(`/articles/${ARTICLE_ID}`)
+      .patch(`/news/${NEWS_ID}`)
       .field(validFields);
 
     expect(res.status).toBe(200);
-    expect(res.body.message).toBe("Article modifie");
-    expect(res.body.article).toMatchObject({
-      id: ARTICLE_ID,
+    expect(res.body.message).toBe("News modifiee");
+    expect(res.body.news).toMatchObject({
+      id: NEWS_ID,
       author_name: "Admin",
     });
     expect(mockQuery).toHaveBeenCalledWith("COMMIT");
   });
 
   it("should return 200 and use new image url when image is provided", async () => {
-    const newUrl = "/uploads/articles/new-uuid.webp";
+    const newUrl = "/uploads/news/new-uuid.webp";
     mockQuery
-      .mockResolvedValueOnce([mockExistingArticle]) // SELECT article existant
+      .mockResolvedValueOnce([mockExistingNews]) // SELECT news existante
       .mockResolvedValueOnce([]) // BEGIN
-      .mockResolvedValueOnce([{ ...mockUpdatedArticle, url_media: newUrl }]) // UPDATE articles
-      .mockResolvedValueOnce([{ ...mockArticleWithAuthor, url_media: newUrl }]) // SELECT avec JOIN
+      .mockResolvedValueOnce([{ ...mockUpdatedNews, url_media: newUrl }]) // UPDATE news
+      .mockResolvedValueOnce([{ ...mockNewsWithAuthor, url_media: newUrl }]) // SELECT avec JOIN
       .mockResolvedValueOnce([]); // COMMIT
 
     const app = createApp();
     const res = await request(app)
-      .patch(`/articles/${ARTICLE_ID}`)
+      .patch(`/news/${NEWS_ID}`)
       .field(validFields)
       .attach("image", Buffer.from("fake-image"), {
         filename: "photo.jpg",
@@ -115,13 +115,13 @@ describe("updateArticle controller (integration)", () => {
       });
 
     expect(res.status).toBe(200);
-    expect(res.body.article.url_media).toBe(newUrl);
+    expect(res.body.news.url_media).toBe(newUrl);
   });
 
-  it("should return 400 when article id is invalid", async () => {
+  it("should return 400 when news id is invalid", async () => {
     const app = createApp();
     const res = await request(app)
-      .patch("/articles/not-a-uuid")
+      .patch("/news/not-a-uuid")
       .field(validFields);
 
     expect(res.status).toBe(400);
@@ -129,28 +129,28 @@ describe("updateArticle controller (integration)", () => {
     expect(mockQuery).not.toHaveBeenCalled();
   });
 
-  it("should return 404 when article does not exist", async () => {
+  it("should return 404 when news does not exist", async () => {
     mockQuery.mockResolvedValueOnce([]);
 
     const app = createApp();
     const res = await request(app)
-      .patch(`/articles/${ARTICLE_ID}`)
+      .patch(`/news/${NEWS_ID}`)
       .field(validFields);
 
     expect(res.status).toBe(404);
-    expect(res.body.error).toBe(ERRORS.ARTICLE_NOT_FOUND);
+    expect(res.body.error).toBe(ERRORS.NEWS_NOT_FOUND);
   });
 
   it("should rollback and return 500 when update fails", async () => {
     mockQuery
-      .mockResolvedValueOnce([mockExistingArticle]) // SELECT article existant
+      .mockResolvedValueOnce([mockExistingNews]) // SELECT news existante
       .mockResolvedValueOnce([]) // BEGIN
-      .mockRejectedValueOnce(new Error("db fail")) // UPDATE articles
+      .mockRejectedValueOnce(new Error("db fail")) // UPDATE news
       .mockResolvedValueOnce([]); // ROLLBACK
 
     const app = createApp();
     const res = await request(app)
-      .patch(`/articles/${ARTICLE_ID}`)
+      .patch(`/news/${NEWS_ID}`)
       .field(validFields);
 
     expect(res.status).toBe(500);
@@ -159,16 +159,16 @@ describe("updateArticle controller (integration)", () => {
 
   it("should rollback and unlink new file when COMMIT fails after sharp wrote the file", async () => {
     mockQuery
-      .mockResolvedValueOnce([mockExistingArticle]) // SELECT article existant
+      .mockResolvedValueOnce([mockExistingNews]) // SELECT news existante
       .mockResolvedValueOnce([]) // BEGIN
-      .mockResolvedValueOnce([mockUpdatedArticle]) // UPDATE articles
-      .mockResolvedValueOnce([mockArticleWithAuthor]) // SELECT avec JOIN
+      .mockResolvedValueOnce([mockUpdatedNews]) // UPDATE news
+      .mockResolvedValueOnce([mockNewsWithAuthor]) // SELECT avec JOIN
       .mockRejectedValueOnce(new Error("commit fail")) // COMMIT
       .mockResolvedValueOnce([]); // ROLLBACK
 
     const app = createApp();
     const res = await request(app)
-      .patch(`/articles/${ARTICLE_ID}`)
+      .patch(`/news/${NEWS_ID}`)
       .field(validFields)
       .attach("image", Buffer.from("fake-image"), {
         filename: "photo.jpg",

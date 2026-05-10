@@ -3,12 +3,12 @@ import { Router } from "express";
 import { optionalAuth } from "../middlewares/auth";
 import { asyncHandler } from "../middlewares/asyncHandler";
 // controllers
-import { getArticles } from "../controllers/public/news/get_articles.controller";
-import { getArticle } from "../controllers/public/news/get_article.controller";
+import { getNewsList } from "../controllers/public/news/get_news_list.controller";
+import { getNews } from "../controllers/public/news/get_news.controller";
 
 const router = Router();
 
-router.get("/news", asyncHandler(optionalAuth), asyncHandler(getArticles)); // Lister les articles (tous si admin/news, publies uniquement sinon)
-router.get("/news/:id", asyncHandler(optionalAuth), asyncHandler(getArticle)); // Retourner un article par son id (brouillons accessibles si admin/news)
+router.get("/news", asyncHandler(optionalAuth), asyncHandler(getNewsList)); // Lister les news (toutes si admin/news, publiees uniquement sinon)
+router.get("/news/:id", asyncHandler(optionalAuth), asyncHandler(getNews)); // Retourner une news par son id (brouillons accessibles si admin/news)
 
 export default router;

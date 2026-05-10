@@ -7,40 +7,40 @@ import { asyncHandler } from "../middlewares/asyncHandler";
 import { validateBody } from "../middlewares/validateBody";
 import { upload } from "../middlewares/upload";
 // controllers
-import { createArticle } from "../controllers/admin/articles/create_article.controller";
-import { updateArticle } from "../controllers/admin/articles/update_article.controller";
-import { deleteArticle } from "../controllers/admin/articles/delete_article.controller";
+import { createNews } from "../controllers/admin/news/create_news.controller";
+import { updateNews } from "../controllers/admin/news/update_news.controller";
+import { deleteNews } from "../controllers/admin/news/delete_news.controller";
 // schema
-import { createArticleSchema } from "../schemas/schema";
+import { createNewsSchema } from "../schemas/schema";
 
 const router = Router();
 
 router.post(
-  "/articles",
+  "/news",
   asyncHandler(auth),
   asyncHandler(sessionIsOpen),
   requireRole("admin", "news"),
   upload.single("image"),
-  validateBody(createArticleSchema),
-  asyncHandler(createArticle),
-); // Creer un article
+  validateBody(createNewsSchema),
+  asyncHandler(createNews),
+); // Creer une news
 
 router.patch(
-  "/articles/:id",
+  "/news/:id",
   asyncHandler(auth),
   asyncHandler(sessionIsOpen),
   requireRole("admin", "news"),
   upload.single("image"),
-  validateBody(createArticleSchema),
-  asyncHandler(updateArticle),
-); // Modifier un article
+  validateBody(createNewsSchema),
+  asyncHandler(updateNews),
+); // Modifier une news
 
 router.delete(
-  "/articles/:id",
+  "/news/:id",
   asyncHandler(auth),
   asyncHandler(sessionIsOpen),
   requireRole("admin", "news"),
-  asyncHandler(deleteArticle),
-); // Supprimer un article
+  asyncHandler(deleteNews),
+); // Supprimer une news
 
 export default router;

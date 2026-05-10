@@ -1,25 +1,25 @@
 import Image from "next/image";
-import type { HomeArticle } from "../../type";
+import type { HomeNews as HomeNewsItem } from "../../type";
 import SectionCta from "../../components/SectionCta";
 
-/** Affiche la section news de la page d'accueil — 2 derniers articles publiés.
- * @param {HomeArticle[]} props.articles Liste des articles à afficher.
+/** Affiche la section news de la page d'accueil — 2 dernières news publiées.
+ * @param {HomeNewsItem[]} props.newsList Liste des news à afficher.
  */
-export default function HomeNews({ articles }: { articles: HomeArticle[] }) {
-  // si aucun article n'est publié, on n'affiche pas la section
-  if (articles.length === 0) return null;
+export default function HomeNews({ newsList }: { newsList: HomeNewsItem[] }) {
+  // si aucune news n'est publiée, on n'affiche pas la section
+  if (newsList.length === 0) return null;
 
   return (
     <section className="home-section home-section-vh">
       <h2 className="home-section-title">News</h2>
 
       <div className="home-cards">
-        {articles.map((article) => (
-          <div key={article.id} className="home-card">
+        {newsList.map((news) => (
+          <div key={news.id} className="home-card">
             <div className="home-card-img">
               <Image
-                src={article.url_media}
-                alt={article.description_media}
+                src={news.url_media}
+                alt={news.description_media}
                 fill
                 className="object-cover"
                 sizes="(min-width: 768px) 50vw, 160px"
@@ -27,7 +27,7 @@ export default function HomeNews({ articles }: { articles: HomeArticle[] }) {
             </div>
             <div className="home-card-content">
               <span className="font-black uppercase text-xl leading-tight">
-                {article.title}
+                {news.title}
               </span>
             </div>
           </div>

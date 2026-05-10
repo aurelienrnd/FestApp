@@ -1,5 +1,5 @@
 -- //NOTE : Utiliser uniquement en phase de developpement.
-INSERT INTO articles (title, content, is_published, created_at, url_media, description_media, user_id)
+INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
   'Ouverture de la billetterie',
   'La billetterie du Vindhellfest ouvre officiellement ses portes aujourd hui, et avec elle, une nouvelle page s ecrit pour le festival de metal le plus attendu de la region. Les pass week-end sont disponibles en quantite strictement limitee, et au vu de l engouement suscite par la programmation de cette edition, nous vous conseillons vivement de ne pas attendre.
@@ -11,11 +11,11 @@ La billetterie en ligne est disponible sur notre site officiel. Une file d atten
 Pour les groupes de dix personnes ou plus, un tarif degressif est applicable sur demande aupres de notre equipe. Les scolaires et les demandeurs d emploi beneficient egalement d un tarif reduit sur presentation d un justificatif valide. N hesitez pas a consulter notre FAQ pour toutes les questions relatives aux remboursements et aux echanges.',
   TRUE,
   now() - INTERVAL '5 days',
-  '/uploads/articles/36991bf8-0c09-4ddf-8f62-bfd6f81f58d7.webp',
+  '/uploads/news/36991bf8-0c09-4ddf-8f62-bfd6f81f58d7.webp',
   'Billets de concert Vindhellfest',
   id FROM users WHERE email = 'admin@example.com';
 
-INSERT INTO articles (title, content, is_published, created_at, url_media, description_media, user_id)
+INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
   'Nouvelle tete d affiche',
   'Nous sommes heureux de vous annoncer l ajout d un nouvel artiste exceptionnel a la programmation du festival. Plus d informations a venir tres prochainement sur son identite et son creneau exact dans le programme.
@@ -27,11 +27,11 @@ La revelation officielle aura lieu dans les prochains jours via nos canaux habit
 Nous profitons de cette annonce pour remercier l ensemble de notre communaute pour son soutien et sa patience. Construire une programmation de cette qualite demande du temps, des negociations complexes et parfois des rebondissements de derniere minute. Votre enthousiasme est notre moteur.',
   FALSE,
   now() - INTERVAL '1 day',
-  '/uploads/articles/d61a5775-c160-45ce-b922-7d8d1f2344d8.webp',
+  '/uploads/news/d61a5775-c160-45ce-b922-7d8d1f2344d8.webp',
   'Photo promo du nouvel artiste invite au Vindhellfest',
   id FROM users WHERE email = 'admin@example.com';
 
-INSERT INTO articles (title, content, is_published, created_at, url_media, description_media, user_id)
+INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
   'Le programme complet est devoile',
   'Vindhellfest est fier de devoiler sa programmation complete pour cette nouvelle edition. Dix groupes d exception se succederont sur deux scenes pendant deux jours intenses, offrant un voyage musical sans equivalent dans la region. Du grunge de Seattle au hard rock australien, en passant par la Britpop manchesterienne et l indie rock new-yorkais, cette edition s annonce comme la plus ambitieuse de l histoire du festival.
@@ -43,11 +43,11 @@ Les horaires definitifs seront publies dans les prochains jours. Un effort parti
 L application officielle du festival sera mise a jour avec le programme complet et la carte du site avant la fin de la semaine. Vous pourrez y construire votre programme personnalise, activer des rappels et partager votre planning avec vos amis. Telechargez-la des maintenant sur les stores pour ne rien manquer.',
   TRUE,
   now() - INTERVAL '4 days',
-  '/uploads/articles/72eb723b-6810-4156-ba3f-045b84bdc4b6.webp',
+  '/uploads/news/72eb723b-6810-4156-ba3f-045b84bdc4b6.webp',
   'Vue de la scene principale du Vindhellfest',
   id FROM users WHERE email = 'admin@example.com';
 
-INSERT INTO articles (title, content, is_published, created_at, url_media, description_media, user_id)
+INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
   'Infos pratiques : acces et stationnement',
   'Le site du Vindhellfest est accessible en transports en commun depuis le centre-ville en moins de vingt minutes. Deux lignes de bus desservent directement l entree principale du festival : la ligne 12 depuis la gare centrale et la ligne 7 depuis la place de la Republique. Les frequences seront renforcees les deux jours du festival avec un passage toutes les dix minutes a partir de seize heures.
@@ -59,11 +59,11 @@ Pour les festivaliers venant en voiture, un parking gratuit d une capacite de de
 Les cyclistes disposeront d un parking velo securise et gratuit a proximite immediate de l entree. Des bornes de recharge pour velos electriques seront disponibles sur place. Concernant l accessibilite, le site est entierement amenage pour les personnes a mobilite reduite. Des places de parking reservees PMR sont disponibles sur demande prealable a notre equipe. Un espace d accueil specifique sera mis en place a l entree pour orienter et accompagner les festivaliers ayant des besoins particuliers.',
   TRUE,
   now() - INTERVAL '3 days',
-  '/uploads/articles/3359a403-b41f-46cd-a2c5-257989945aec.webp',
+  '/uploads/news/3359a403-b41f-46cd-a2c5-257989945aec.webp',
   'Acces et transports pour le Vindhellfest',
   id FROM users WHERE email = 'admin@example.com';
 
-INSERT INTO articles (title, content, is_published, created_at, url_media, description_media, user_id)
+INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
   'Oasis de retour : une exclusivite Vindhellfest',
   'C est officiel et definitif : Oasis fouleront la scene principale du Vindhellfest pour l une de leurs rarissimes dates europeennes de cette annee. Liam et Noel Gallagher, reunis apres quinze ans de silence et d une brouille qui semblait irreparable, promettent un set exceptionnel construit autour des classiques qui ont marque au fer rouge toute une generation de fans de rock britannique.
@@ -75,11 +75,11 @@ Vindhellfest est l un des rares festivals europeens a avoir obtenu une date dans
 Wonderwall, Champagne Supernova, Don t Look Back in Anger, Live Forever, Some Might Say — la setlist probable, telle qu elle a ete jouee lors des premieres dates de la tournee, fait deja frissonner les plus blasés des spectateurs. Les pass sont encore disponibles mais partent a un rythme soutenu. Ne remettez pas votre decision a demain.',
   TRUE,
   now() - INTERVAL '10 days',
-  '/uploads/articles/8d68c3de-45e3-409a-ab4e-a9e09c51a033.webp',
+  '/uploads/news/8d68c3de-45e3-409a-ab4e-a9e09c51a033.webp',
   'Photo de scene du groupe Oasis',
   id FROM users WHERE email = 'admin@example.com';
 
-INSERT INTO articles (title, content, is_published, created_at, url_media, description_media, user_id)
+INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
   'Les coulisses du festival : rencontre avec l equipe',
   'Derriere chaque edition de Vindhellfest se cache une equipe passionnee qui travaille toute l annee pour offrir une experience inoubliable a des milliers de festivaliers. Nous sommes alles a la rencontre des equipes scene, securite et restauration pour comprendre l envers du decor d un evenement de cette envergure, souvent invisible aux yeux du public.
@@ -93,11 +93,11 @@ Cote restauration, c est une veritable organisation logistique. Les vingt-deux s
 Rencontrer ces hommes et ces femmes, c est comprendre que Vindhellfest n est pas seulement une affiche musicale mais une veritable entreprise humaine, construite sur la passion et le professionnalisme d une communaute entiere.',
   TRUE,
   now() - INTERVAL '8 days',
-  '/uploads/articles/f2b70de1-3dcb-4fed-abe1-9ca10d4fa901.webp',
+  '/uploads/news/f2b70de1-3dcb-4fed-abe1-9ca10d4fa901.webp',
   'Equipe backstage du Vindhellfest',
   id FROM users WHERE email = 'admin@example.com';
 
-INSERT INTO articles (title, content, is_published, created_at, url_media, description_media, user_id)
+INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
   'Restauration : les meilleurs stands du festival',
   'Cette annee, Vindhellfest mise sur une offre gastronomique a la hauteur de sa programmation musicale. Fini le temps des hot-dogs insipides et des frites molles servies dans des barquettes en plastique : cette edition voit debarquer vingt-deux stands de qualite, selectionnees apres un appel a candidatures rigoureux aupres de producteurs et restaurateurs locaux.
@@ -111,11 +111,11 @@ Les boissons ne sont pas en reste : une brasserie artisanale locale sera present
 Voici notre selection des cinq incontournables a ne pas manquer : le burger Black Sabbath du stand Forge & Braise, les gyozas frits du stand Tokyo District, le tiramisu maison du stand Dolce Vita, le curry de pois chiches du stand Bombay Street, et le plateau de charcuterie locale du stand Terroir. Bonne degustation.',
   FALSE,
   now() - INTERVAL '2 days',
-  '/uploads/articles/5fc9d873-86c0-45e7-b83a-96869b3e89f5.webp',
+  '/uploads/news/5fc9d873-86c0-45e7-b83a-96869b3e89f5.webp',
   'Stands de restauration du festival',
   id FROM users WHERE email = 'admin@example.com';
 
-INSERT INTO articles (title, content, is_published, created_at, url_media, description_media, user_id)
+INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
   'Retour sur la premiere edition de Vindhellfest',
   'Il y a un an, Vindhellfest ouvrait ses portes pour la premiere fois, et avec elles, une vision : celle d un festival de rock et de metal ancre dans son territoire, exigeant sur la qualite de sa programmation, et attentif au confort de ses festivaliers. Un an apres, il est temps de faire le bilan de cette edition fondatrice qui a pose les bases d un evenement appele, nous en sommes convaincus, a grandir encore.
@@ -129,11 +129,11 @@ Les couacs, il y en a eu, comme dans toute premiere edition. Une file d attente 
 Cette premiere edition restera dans nos memoires comme un moment de grace collective. Une poignee de passionnes qui ont decide de creer quelque chose, et des milliers de personnes qui ont dit oui. Merci a vous tous.',
   TRUE,
   now() - INTERVAL '365 days',
-  '/uploads/articles/0c327982-c511-4861-9d51-7b71e9eca8a9.webp',
+  '/uploads/news/0c327982-c511-4861-9d51-7b71e9eca8a9.webp',
   'Foule lors de la premiere edition du Vindhellfest',
   id FROM users WHERE email = 'admin@example.com';
 
-INSERT INTO articles (title, content, is_published, created_at, url_media, description_media, user_id)
+INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
   'Developpement durable : nos engagements pour cette edition',
   'Vindhellfest s engage concretement et publiquement pour reduire son empreinte ecologique lors de cette edition. Organiser un festival de cette envergure a un cout environnemental reel, que nous ne cherchons pas a minimiser. Notre demarche consiste a le mesurer avec precision, a le reduire la ou c est possible, et a compenser ce qui ne peut pas l etre.
@@ -147,11 +147,11 @@ Cote approvisionnement, plus de soixante pour cent des denrees servies sur le fe
 Enfin, un partenariat a ete conclu avec une association de reforestation locale pour planter un arbre par tranche de cinquante billets vendus. Au rythme des ventes actuelles, ce sont plus de deux cents arbres qui seront plantes dans les forets regionales au cours des prochains mois. Un petit geste, mais un geste reel.',
   TRUE,
   now() - INTERVAL '6 days',
-  '/uploads/articles/ffd7451f-c59e-43fb-b8c1-4984cba2fc6a.webp',
+  '/uploads/news/ffd7451f-c59e-43fb-b8c1-4984cba2fc6a.webp',
   'Initiatives eco-responsables du Vindhellfest',
   id FROM users WHERE email = 'admin@example.com';
 
-INSERT INTO articles (title, content, is_published, created_at, url_media, description_media, user_id)
+INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
   'Concours : gagnez vos pass VIP pour le festival',
   'Pour celebrer l ouverture imminente du festival et remercier notre communaute pour son soutien sans faille, Vindhellfest offre trois paires de pass VIP a ses fans les plus fideles. Ces pass donnent acces a l ensemble du site pendant les deux jours du festival, incluant les zones backstage, la restauration premium, le salon VIP et une rencontre organisee avec deux artistes de la programmation.
@@ -165,6 +165,6 @@ Une seule participation par compte est autorisee. Les comptes crees apres la pub
 Bonne chance a tous, et que les meilleurs gagnent. Ou plutot : que les plus chanceux gagnent, puisque c est un tirage au sort. Mais soyons honnetes — vous meritez tous de venir.',
   FALSE,
   now() - INTERVAL '12 hours',
-  '/uploads/articles/51e7de18-c3de-4b1e-a730-f0e899872289.webp',
+  '/uploads/news/51e7de18-c3de-4b1e-a730-f0e899872289.webp',
   'Pass VIP Vindhellfest a gagner',
   id FROM users WHERE email = 'admin@example.com';

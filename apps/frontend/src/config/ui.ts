@@ -4,7 +4,7 @@ import type { NavItem } from "../type";
 export const navVisitorItems: NavItem[] = [
   { label: "Accueil", path: "/" },
   { label: "Programmation", path: "/lineup" },
-  { label: "Articles", path: "/news" },
+  { label: "News", path: "/news" },
   { label: "Information", path: "/practical-info" },
 ];
 
@@ -16,7 +16,7 @@ export const navAdminItem: NavItem[] = [
     role: "admin, lineup, news",
   },
   { label: "Programation", path: "/admin/lineup", role: "admin, lineup", desc: "Gérer la programmation artistique" },
-  { label: "Articles", path: "/admin/news", role: "admin, news", desc: "Gérer les articles et actualités" },
+  { label: "News", path: "/admin/news", role: "admin, news", desc: "Gérer les news et actualités" },
   { label: "Utilisateurs", path: "/admin/users", role: "admin", desc: "Gérer les comptes utilisateurs" },
   { labelBtn: "Logout", active: false },
 ];

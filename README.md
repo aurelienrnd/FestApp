@@ -86,7 +86,6 @@ vindhellfest/
 
 ---
 
-
 ## `.github/workflows/`
 
 ### `ci.yml`
@@ -132,22 +131,22 @@ Ce dossier inclut :
 
 **Pages publiques :**
 
-| Route | Description |
-| --- | --- |
-| `/` | Page d'accueil |
-| `/lineup` | Programmation — liste des artistes du festival |
-| `/news` | Actualités de l'événement |
-| `/practical-info` | Informations pratiques |
-| `/login` | Connexion à l'interface d'administration |
+| Route             | Description                                    |
+| ----------------- | ---------------------------------------------- |
+| `/`               | Page d'accueil                                 |
+| `/lineup`         | Programmation — liste des artistes du festival |
+| `/news`           | Actualités de l'événement                      |
+| `/practical-info` | Informations pratiques                         |
+| `/login`          | Connexion à l'interface d'administration       |
 
 **Pages d'administration (accès protégé) :**
 
-| Route | Description |
-| --- | --- |
-| `/admin/dashboard` | Tableau de bord |
-| `/admin/lineup` | Gestion de la programmation |
-| `/admin/users` | Gestion des utilisateurs |
-| `/admin/news` | Gestion des actualités |
+| Route              | Description                 |
+| ------------------ | --------------------------- |
+| `/admin/dashboard` | Tableau de bord             |
+| `/admin/lineup`    | Gestion de la programmation |
+| `/admin/users`     | Gestion des utilisateurs    |
+| `/admin/news`      | Gestion des actualités      |
 
 ### `apps/backend/`
 
@@ -162,26 +161,26 @@ Ce dossier inclut :
 
 **Endpoints disponibles :**
 
-| Méthode | Route | Accès | Description |
-| --- | --- | --- | --- |
-| GET | `/public/lineup` | Public | Liste tous les artistes avec leur concert associé |
-| GET | `/public/news` | Public / Privilégié | Liste des articles (tous si admin/news, publiés sinon) |
-| POST | `/admin/auth/login` | Public | Connexion (rate limité) |
-| POST | `/admin/auth/logout` | Authentifié | Déconnexion |
-| GET | `/admin/auth/me` | Authentifié | Infos utilisateur connecté + renouvellement du token |
-| PATCH | `/admin/auth/password` | Authentifié | Modifier son mot de passe |
-| POST | `/admin/auth/forgot-password` | Public | Réinitialiser son mot de passe (rate limité) |
-| POST | `/admin/articles` | Authentifié (admin, news) | Créer un article avec upload image |
-| PATCH | `/admin/articles/:id` | Authentifié (admin, news) | Modifier un article (image optionnelle) |
-| DELETE | `/admin/articles/:id` | Authentifié (admin, news) | Supprimer un article et son image |
-| POST | `/admin/artists` | Authentifié (admin, lineup) | Créer un artiste avec upload image et concert associé |
-| PATCH | `/admin/artists/:id` | Authentifié (admin, lineup) | Modifier un artiste (image optionnelle) et son concert |
-| DELETE | `/admin/artists/:id` | Authentifié (admin, lineup) | Supprimer un artiste, son concert et son image |
-| GET | `/admin/users` | Authentifié (admin) | Liste des utilisateurs admin |
-| POST | `/admin/users` | Authentifié (admin) | Créer un utilisateur admin |
-| PATCH | `/admin/users/:id` | Authentifié (admin) | Modifier un utilisateur |
-| DELETE | `/admin/users/:id` | Authentifié (admin) | Supprimer un utilisateur — redirige vers `/login` si l'utilisateur se supprime lui-même |
-| POST | `/contact/submit` | Public | Envoyer un message de contact |
+| Méthode | Route                         | Accès                       | Description                                                                             |
+| ------- | ----------------------------- | --------------------------- | --------------------------------------------------------------------------------------- |
+| GET     | `/public/lineup`              | Public                      | Liste tous les artistes avec leur concert associé                                       |
+| GET     | `/public/news`                | Public / Privilégié         | Liste des news (tous si admin/news, publiés sinon)                                      |
+| POST    | `/admin/auth/login`           | Public                      | Connexion (rate limité)                                                                 |
+| POST    | `/admin/auth/logout`          | Authentifié                 | Déconnexion                                                                             |
+| GET     | `/admin/auth/me`              | Authentifié                 | Infos utilisateur connecté + renouvellement du token                                    |
+| PATCH   | `/admin/auth/password`        | Authentifié                 | Modifier son mot de passe                                                               |
+| POST    | `/admin/auth/forgot-password` | Public                      | Réinitialiser son mot de passe (rate limité)                                            |
+| POST    | `/admin/news`                 | Authentifié (admin, news)   | Créer un news avec upload image                                                         |
+| PATCH   | `/admin/news/:id`             | Authentifié (admin, news)   | Modifier un news (image optionnelle)                                                    |
+| DELETE  | `/admin/news/:id`             | Authentifié (admin, news)   | Supprimer un news et son image                                                          |
+| POST    | `/admin/artists`              | Authentifié (admin, lineup) | Créer un artiste avec upload image et concert associé                                   |
+| PATCH   | `/admin/artists/:id`          | Authentifié (admin, lineup) | Modifier un artiste (image optionnelle) et son concert                                  |
+| DELETE  | `/admin/artists/:id`          | Authentifié (admin, lineup) | Supprimer un artiste, son concert et son image                                          |
+| GET     | `/admin/users`                | Authentifié (admin)         | Liste des utilisateurs admin                                                            |
+| POST    | `/admin/users`                | Authentifié (admin)         | Créer un utilisateur admin                                                              |
+| PATCH   | `/admin/users/:id`            | Authentifié (admin)         | Modifier un utilisateur                                                                 |
+| DELETE  | `/admin/users/:id`            | Authentifié (admin)         | Supprimer un utilisateur — redirige vers `/login` si l'utilisateur se supprime lui-même |
+| POST    | `/contact/submit`             | Public                      | Envoyer un message de contact                                                           |
 
 > La documentation complète des endpoints est disponible dans [`apps/backend/API.md`](apps/backend/API.md).
 
@@ -202,7 +201,7 @@ Le modèle s'articule autour de plusieurs entités principales représentant les
 
 - La table `users` centralise les informations liées aux comptes utilisateurs (identité, authentification, rôles).
 - La table `sessions` est liée aux utilisateurs et permet de gérer la persistance des connexions et la sécurité des accès, notamment dans le cadre de l'authentification par JWT.
-- La table `articles` stocke le contenu éditorial (actualités, annonces, informations liées à l'événement). Elle est reliée aux utilisateurs via `user_id` (nullable) — si un utilisateur est supprimé, `user_id` passe à `NULL` et l'article est conservé (auteur affiché comme "Auteur inconnu"). Chaque article dispose d'un flag `is_published` pour distinguer brouillons et articles publiés.
+- La table `news` stocke le contenu éditorial (actualités, annonces, informations liées à l'événement). Elle est reliée aux utilisateurs via `user_id` (nullable) — si un utilisateur est supprimé, `user_id` passe à `NULL` et l'news est conservé (auteur affiché comme "Auteur inconnu"). Chaque news dispose d'un flag `is_published` pour distinguer brouillons et news publiés.
 - La table `artists` représente les groupes ou artistes programmés pour le festival.
 - La table `concerts` décrit les événements musicaux et est associée aux artistes, ce qui permet de modéliser la programmation et la planification des prestations.
 
@@ -300,7 +299,7 @@ Le service utilise l'image officielle PostgreSQL 16 (version alpine, plus légè
   - Les informations sensibles (nom de base, utilisateur, mot de passe) sont chargées depuis un fichier `.env`.
 - Volumes et initialisation :
   - `pgdata` permet de conserver les données même si le conteneur est supprimé.
-  - Le dossier `bd/init` contient les scripts SQL (`01_user_schema.sql`, `02_sessions_schema.sql`, `03_article_schema.sql`, `04_artist_schema.sql`, `05_concert_schema.sql`) qui seront exécutés automatiquement à la création de la base.
+  - Le dossier `bd/init` contient les scripts SQL (`01_user_schema.sql`, `02_sessions_schema.sql`, `03_news_schema.sql`, `04_artist_schema.sql`, `05_concert_schema.sql`) qui seront exécutés automatiquement à la création de la base.
 - Healthcheck :
   - Le healthcheck vérifie régulièrement que la base est bien opérationnelle. Cela permet au backend de démarrer uniquement lorsque PostgreSQL est prêt.
 

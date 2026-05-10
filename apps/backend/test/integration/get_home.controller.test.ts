@@ -26,7 +26,7 @@ describe("getHomeController (integration)", () => {
     vi.clearAllMocks();
   });
 
-  it("should return 200 with artists and articles when both queries return data", async () => {
+  it("should return 200 with artists and newsList when both queries return data", async () => {
     mockQuery
       .mockResolvedValueOnce([
         {
@@ -41,10 +41,10 @@ describe("getHomeController (integration)", () => {
       ])
       .mockResolvedValueOnce([
         {
-          id: "article-1",
+          id: "news-1",
           title: "News A",
           url_media: "https://example.com/news.jpg",
-          description_media: "Photo article",
+          description_media: "Photo news",
           created_at: "2025-06-01T10:00:00.000Z",
         },
       ]);
@@ -53,9 +53,9 @@ describe("getHomeController (integration)", () => {
 
     expect(res.status).toBe(200);
     expect(res.body.artists).toHaveLength(1);
-    expect(res.body.articles).toHaveLength(1);
+    expect(res.body.newsList).toHaveLength(1);
     expect(res.body.artists[0].name).toBe("Band A");
-    expect(res.body.articles[0].title).toBe("News A");
+    expect(res.body.newsList[0].title).toBe("News A");
   });
 
   it("should return 200 with empty arrays when both tables are empty", async () => {
@@ -65,16 +65,16 @@ describe("getHomeController (integration)", () => {
 
     expect(res.status).toBe(200);
     expect(res.body.artists).toHaveLength(0);
-    expect(res.body.articles).toHaveLength(0);
+    expect(res.body.newsList).toHaveLength(0);
   });
 
   it("should return 200 with empty artists when no artist has a concert", async () => {
     mockQuery.mockResolvedValueOnce([]).mockResolvedValueOnce([
       {
-        id: "article-1",
+        id: "news-1",
         title: "News A",
         url_media: "https://example.com/news.jpg",
-        description_media: "Photo article",
+        description_media: "Photo news",
         created_at: "2025-06-01T10:00:00.000Z",
       },
     ]);
@@ -83,7 +83,7 @@ describe("getHomeController (integration)", () => {
 
     expect(res.status).toBe(200);
     expect(res.body.artists).toHaveLength(0);
-    expect(res.body.articles).toHaveLength(1);
+    expect(res.body.newsList).toHaveLength(1);
   });
 
   it("should return 500 when the artists query throws", async () => {
@@ -95,7 +95,7 @@ describe("getHomeController (integration)", () => {
     expect(res.body.error).toBe(ERRORS.INTERNAL_SERVER_ERROR);
   });
 
-  it("should return 500 when the articles query throws", async () => {
+  it("should return 500 when the news query throws", async () => {
     mockQuery
       .mockResolvedValueOnce([])
       .mockRejectedValueOnce(new Error("db fail"));

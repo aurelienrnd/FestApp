@@ -96,10 +96,10 @@ apps/backend/
 │   │   │   │   ├── login.controller.ts
 │   │   │   │   ├── logout.controller.ts
 │   │   │   │   └── userInfo.controller.ts
-│   │   │   ├── articles/
-│   │   │   │   ├── create_article.controller.ts
-│   │   │   │   ├── delete_article.controller.ts
-│   │   │   │   └── update_article.controller.ts
+│   │   │   ├── news/
+│   │   │   │   ├── create_news.controller.ts
+│   │   │   │   ├── delete_news.controller.ts
+│   │   │   │   └── update_news.controller.ts
 │   │   │   └── users/
 │   │   │       ├── create_user.controller.ts
 │   │   │       ├── delete_user.controller.ts
@@ -113,8 +113,8 @@ apps/backend/
 │   │       ├── lineup/
 │   │       │   └── list_lineup.controller.ts
 │   │       └── news/
-│   │           ├── get_articles.controller.ts
-│   │           └── get_article.controller.ts
+│   │           ├── get_news_list.controller.ts
+│   │           └── get_news.controller.ts
 │   ├── middlewares/
 │   │   ├── asyncHandler.ts
 │   │   ├── auth.ts
@@ -129,7 +129,7 @@ apps/backend/
 │   │   ├── AppError.ts
 │   │   └── errorMessages.ts
 │   ├── routes/
-│   │   ├── admin.articles.routes.ts
+│   │   ├── admin.news.routes.ts
 │   │   ├── admin.artists.routes.ts
 │   │   ├── admin.auth.routes.ts
 │   │   ├── admin.users.routes.ts
@@ -150,10 +150,10 @@ apps/backend/
 ├── test/
 │   ├── integration/
 │   │   ├── auth.test.ts
-│   │   ├── create_article.controller.test.ts
-│   │   ├── update_article.controller.test.ts
-│   │   ├── delete_article.controller.test.ts
-│   │   ├── get_articles.controller.test.ts
+│   │   ├── create_news.controller.test.ts
+│   │   ├── update_news.controller.test.ts
+│   │   ├── delete_news.controller.test.ts
+│   │   ├── get_news_list.controller.test.ts
 │   │   ├── create_artist.controller.test.ts
 │   │   ├── delete_artist.controller.test.ts
 │   │   ├── update_artist.controller.test.ts
@@ -259,9 +259,9 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 | `admin/auth/login.controller.ts`              | POST `/admin/auth/login`           | Vérifie les identifiants, crée une session, retourne un cookie JWT                                                                            |
 | `admin/auth/logout.controller.ts`             | POST `/admin/auth/logout`          | Révoque la session en base                                                                                                                     |
 | `admin/auth/userInfo.controller.ts`           | GET `/admin/auth/me`               | Retourne les infos de l'utilisateur connecté,`mustChangePassword` et renouvelle le token                                                     |
-| `admin/articles/create_article.controller.ts` | POST `/admin/articles`             | Cree un article avec upload image (sharp → WebP) et insere en base avec `author_name` via CTE                                                |
-| `admin/articles/delete_article.controller.ts` | DELETE `/admin/articles/:id`       | Supprime un article et son image du disque                                                                                                      |
-| `admin/articles/update_article.controller.ts` | PATCH `/admin/articles/:id`        | Modifie un article — remplace l'image (sharp → WebP) si une nouvelle est fournie                                                              |
+| `admin/news/create_news.controller.ts` | POST `/admin/news`                 | Cree une news avec upload image (sharp → WebP) et insere en base avec `author_name` via CTE                                                  |
+| `admin/news/delete_news.controller.ts` | DELETE `/admin/news/:id`       | Supprime une news et son image du disque                                                                                                        |
+| `admin/news/update_news.controller.ts` | PATCH `/admin/news/:id`        | Modifie une news — remplace l'image (sharp → WebP) si une nouvelle est fournie                                                                |
 | `admin/artists/create_artist.controller.ts`   | POST `/admin/artists`              | Cree un artiste avec upload image (sharp → WebP) et insere le concert associe en transaction                                                   |
 | `admin/artists/delete_artist.controller.ts`   | DELETE `/admin/artists/:id`        | Supprime un artiste, son concert associe (CASCADE) et son image du disque                                                                       |
 | `admin/artists/update_artist.controller.ts`   | PATCH `/admin/artists/:id`         | Modifie un artiste et son concert en transaction — remplace l'image (sharp → WebP) si une nouvelle est fournie                                |
@@ -269,10 +269,10 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 | `admin/users/create_user.controller.ts`       | POST `/admin/users`                | Crée un utilisateur et envoie le mot de passe provisoire par email                                                                             |
 | `admin/users/update_user.controller.ts`       | PATCH `/admin/users/:id`           | Modifie les informations d'un utilisateur                                                                                                       |
 | `admin/users/delete_user.controller.ts`       | DELETE `/admin/users/:id`          | Supprime définitivement un utilisateur                                                                                                         |
-| `public/home/get_home.controller.ts`          | GET `/public/home`                 | Retourne les artistes avec `is_featured = TRUE` et les 2 derniers articles publiés (Promise.all)                                             |
+| `public/home/get_home.controller.ts`          | GET `/public/home`                 | Retourne les artistes avec `is_featured = TRUE` et les 2 dernières news publiées (Promise.all)                                              |
 | `public/lineup/list_lineup.controller.ts`     | GET `/public/lineup`               | Liste tous les artistes avec leur concert associe (LEFT JOIN concerts)                                                                          |
-| `public/news/get_articles.controller.ts`      | GET `/public/news`                 | Liste les articles — tous si admin/news, publiés uniquement sinon (via `optionalAuth`)                                                      |
-| `public/news/get_article.controller.ts`       | GET `/public/news/:id`             | Retourne un article par son id — brouillons accessibles si admin/news (via `optionalAuth`)                                                   |
+| `public/news/get_news_list.controller.ts`     | GET `/public/news`                 | Liste les news — toutes si admin/news, publiées uniquement sinon (via `optionalAuth`)                                                       |
+| `public/news/get_news.controller.ts`          | GET `/public/news/:id`             | Retourne une news par son id — brouillons accessibles si admin/news (via `optionalAuth`)                                                    |
 | `contact/submit_contact.controller.ts`        | POST `/contact/submit`             | Transmet le message du formulaire de contact par email a l'organisation                                                                         |
 
 ### `routes/`
@@ -283,7 +283,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 
 | Fichier                      | Endpoints actifs                                                                                                                                      |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `admin.articles.routes.ts` | POST `/admin/articles`, PATCH `/admin/articles/:id`, DELETE `/admin/articles/:id`                                                               |
+| `admin.news.routes.ts` | POST `/admin/news`, PATCH `/admin/news/:id`, DELETE `/admin/news/:id`                                                                     |
 | `admin.artists.routes.ts`  | POST `/admin/artists`, PATCH `/admin/artists/:id`, DELETE `/admin/artists/:id`                                                                  |
 | `admin.auth.routes.ts`     | POST `/admin/auth/login`, POST `/admin/auth/logout`, GET `/admin/auth/me`, PATCH `/admin/auth/password`, POST `/admin/auth/forgot-password` |
 | `admin.users.routes.ts`    | GET `/admin/users`, POST `/admin/users`, PATCH `/admin/users/:id`, DELETE `/admin/users/:id`                                                  |
@@ -340,7 +340,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 | `loginSchema`          | POST `/admin/auth/login`           |
 | `forgotPasswordSchema` | POST `/admin/auth/forgot-password` |
 | `contactSchema`        | POST `/contact/submit`             |
-| `createArticleSchema`  | POST et PATCH `/admin/articles`    |
+| `createNewsSchema`     | POST et PATCH `/admin/news`        |
 | `createArtistSchema`   | POST et PATCH `/admin/artists`     |
 
 ---
@@ -385,14 +385,14 @@ Vitest exécute les tests, Supertest simule les appels HTTP sur l'API Express.
 | `validateBody.test.ts`               | Middleware `validateBody` (`createUserSchema`, `loginSchema`, `createArtistSchema`)                            |
 | `errorHandler.test.ts`               | Middleware `errorHandler` et `notFoundHandler`                                                                     |
 | `health.test.ts`                     | Route `/health`                                                                                                      |
-| `create_article.controller.test.ts`  | Contrôleur `createArticle` — upload image, insertion en base, rollback                                             |
-| `update_article.controller.test.ts`  | Contrôleur `updateArticle` — modification sans/avec image, UUID invalide, article introuvable                      |
-| `delete_article.controller.test.ts`  | Contrôleur `deleteArticle` — suppression, UUID invalide, article introuvable                                       |
-| `get_articles.controller.test.ts`    | Contrôleur `getArticles` — liste tous (admin/news), publiés uniquement (visiteur), `optionalAuth`               |
+| `create_news.controller.test.ts`  | Contrôleur `createNews` — upload image, insertion en base, rollback                                                |
+| `update_news.controller.test.ts`  | Contrôleur `updateNews` — modification sans/avec image, UUID invalide, news introuvable                            |
+| `delete_news.controller.test.ts`  | Contrôleur `deleteNews` — suppression, UUID invalide, news introuvable                                             |
+| `get_news_list.controller.test.ts`    | Contrôleur `getNewsList` — liste tous (admin/news), publiés uniquement (visiteur), `optionalAuth`               |
 | `create_artist.controller.test.ts`   | Contrôleur `createArtist` — upload image, transaction SQL, rollback                                                |
 | `delete_artist.controller.test.ts`   | Contrôleur `deleteArtist` — suppression, UUID invalide, artiste introuvable, erreur DB                             |
 | `update_artist.controller.test.ts`   | Contrôleur `updateArtist` — modification sans/avec image, UUID invalide, artiste introuvable, rollback transaction |
-| `get_home.controller.test.ts`        | Contrôleur `getHomeController` — artistes featured + articles publiés, tableaux vides, erreur DB                  |
+| `get_home.controller.test.ts`        | Contrôleur `getHomeController` — artistes featured + news publiées, tableaux vides, erreur DB                     |
 | `list_lineup.controller.test.ts`     | Contrôleur `listLineup` — liste artistes avec concerts (LEFT JOIN)                                                 |
 | `login.controller.test.ts`           | Contrôleur `login`                                                                                                  |
 | `logout.controller.test.ts`          | Contrôleur `logout`                                                                                                 |

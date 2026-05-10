@@ -48,10 +48,10 @@ export type SessionRow = {
   expires_at: Date;
 };
 
-/* === ARTICLES === */
+/* === NEWS === */
 
-/** Type representant les donnees completes d'un article — partage avec le front. */
-export type ArticleItem = {
+/** Type representant les donnees completes d'une news — partage avec le front. */
+export type NewsItem = {
   id: string;
   title: string;
   content: string | null;
@@ -63,8 +63,8 @@ export type ArticleItem = {
   author_name: string | null;
 };
 
-/** Type representant les champs article necessaires pour la gestion du fichier image. */
-export type ArticleMediaRow = Pick<ArticleItem, "id" | "url_media">;
+/** Type representant les champs news necessaires pour la gestion du fichier image. */
+export type NewsMediaRow = Pick<NewsItem, "id" | "url_media">;
 
 /* === ARTISTS === */
 

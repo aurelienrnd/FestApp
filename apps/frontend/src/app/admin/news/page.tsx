@@ -10,13 +10,13 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import NewsContent from "../../../components/NewsContent";
 import { useRoleGuard } from "../../../hooks/useRoleGuard";
 
-/** Page admin de gestion des articles.
- * Affiche les filtres et la liste des articles.
+/** Page admin de gestion des news.
+ * Affiche les filtres et la liste des news.
  * Gere le filtre actif (tri) et le transmet a NewsContent.
- * Ouvre une modale permettant d'ajouter un article.
+ * Ouvre une modale permettant d'ajouter une news.
  * @children SideBarTool Affiche une navigation sticky sur desktop.
  * @children AddButton Affiche la navigation des filtres sur mobile.
- * @children NewsContent Affiche la liste des articles filtree.
+ * @children NewsContent Affiche la liste des news filtree.
  */
 export default function Page() {
   useRoleGuard();
@@ -41,7 +41,7 @@ export default function Page() {
         <button
           type="button"
           className="mb-(--ctx-title-mb)"
-          aria-label="Ajouter un article"
+          aria-label="Ajouter une news"
           onClick={() => open()}
         >
           <FontAwesomeIcon icon={faPlus} />

@@ -22,10 +22,10 @@ export type AdminAuthMeResponse = {
   mustChangePassword: boolean;
 };
 
-/* === ARTICLES === */
+/* === NEWS === */
 
-/** Type representant une ligne article retournee par l'API. */
-export type ArticleItem = {
+/** Type representant une ligne news retournee par l'API. */
+export type NewsItem = {
   id: string;
   title: string;
   content: string | null;
@@ -36,9 +36,9 @@ export type ArticleItem = {
   author_name: string | null;
 };
 
-/** Type representant les donnees article retournees par l'endpoint home. */
-export type HomeArticle = Pick<
-  ArticleItem,
+/** Type representant les donnees news retournees par l'endpoint home. */
+export type HomeNews = Pick<
+  NewsItem,
   "id" | "title" | "url_media" | "description_media" | "created_at"
 >;
 

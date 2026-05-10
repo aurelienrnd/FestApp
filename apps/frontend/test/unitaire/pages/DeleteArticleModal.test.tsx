@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import DeleteArticleModal from "../../../src/app/admin/news/DeleteArticleModal";
+import DeleteModal from "../../../src/components/modals/DeleteModal";
 import { ApiRequestError } from "../../../src/functions/apiRequest";
 
 // Mock de react-modal — affiche le contenu si isOpen est true
@@ -28,31 +28,34 @@ vi.mock("../../../src/functions/apiRequest", async () => {
 });
 
 const mockOnClose = vi.fn();
-const mockHandleArticle = vi.fn();
+const mockOnDeleted = vi.fn();
 
-const mockArticle = {
-  id: "article-1",
+const mockNews = {
+  id: "news-1",
   title: "Ouverture de la billetterie",
   content: "La billetterie ouvre.",
   is_published: true,
   created_at: "2026-04-06T10:00:00.000Z",
-  url_media: "/uploads/articles/uuid.webp",
+  url_media: "/uploads/news/uuid.webp",
   description_media: "Photo de la billetterie",
   author_name: "Admin",
 };
 
 const defaultProps = {
   isOpen: true,
-  selectedArticle: mockArticle,
+  item: mockNews,
   onClose: mockOnClose,
-  handleArticle: mockHandleArticle,
+  onDeleted: mockOnDeleted,
+  endpoint: "/admin/news",
+  entityName: "news",
+  getLabel: (a: typeof mockNews) => a.title,
 };
 
-describe("DeleteArticleModal", () => {
+describe("DeleteModal (news)", () => {
   beforeEach(() => {
     mockApiRequest.mockReset();
     mockOnClose.mockReset();
-    mockHandleArticle.mockReset();
+    mockOnDeleted.mockReset();
   });
 
   afterEach(() => {
@@ -60,8 +63,8 @@ describe("DeleteArticleModal", () => {
     vi.restoreAllMocks();
   });
 
-  it("affiche le titre de l'article dans le message de confirmation", () => {
-    render(<DeleteArticleModal {...defaultProps} />);
+  it("affiche le titre de la news dans le message de confirmation", () => {
+    render(<DeleteModal {...defaultProps} />);
 
     expect(
       screen.getByText(/Voulez-vous confirmer la suppression de/),
@@ -69,21 +72,21 @@ describe("DeleteArticleModal", () => {
     expect(screen.getByText("Ouverture de la billetterie")).toBeInTheDocument();
   });
 
-  it("appelle handleArticle et affiche le succes apres confirmation", async () => {
+  it("appelle onDeleted et affiche le succes apres confirmation", async () => {
     const user = userEvent.setup();
     mockApiRequest.mockResolvedValueOnce({
-      data: { message: "Article supprime" },
+      data: { message: "News supprimee" },
       error: null,
     });
 
-    render(<DeleteArticleModal {...defaultProps} />);
+    render(<DeleteModal {...defaultProps} />);
     await user.click(screen.getByRole("button", { name: "Confirmer" }));
 
     expect(
-      await screen.findByText("L'article a ete supprime."),
+      await screen.findByText("L'news a ete supprime."),
     ).toBeInTheDocument();
-    expect(mockHandleArticle).toHaveBeenCalledWith("article-1");
-    expect(mockApiRequest).toHaveBeenCalledWith("/admin/articles/article-1", {
+    expect(mockOnDeleted).toHaveBeenCalledWith("news-1");
+    expect(mockApiRequest).toHaveBeenCalledWith("/admin/news/news-1", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
@@ -96,25 +99,25 @@ describe("DeleteArticleModal", () => {
       error: new ApiRequestError(undefined, 500),
     });
 
-    render(<DeleteArticleModal {...defaultProps} />);
+    render(<DeleteModal {...defaultProps} />);
     await user.click(screen.getByRole("button", { name: "Confirmer" }));
 
     expect(
       await screen.findByText("Erreur serveur, reessayez plus tard."),
     ).toBeInTheDocument();
-    expect(mockHandleArticle).not.toHaveBeenCalled();
+    expect(mockOnDeleted).not.toHaveBeenCalled();
   });
 
   it("appelle onClose au clic sur Fermer apres suppression", async () => {
     const user = userEvent.setup();
     mockApiRequest.mockResolvedValueOnce({
-      data: { message: "Article supprime" },
+      data: { message: "News supprimee" },
       error: null,
     });
 
-    render(<DeleteArticleModal {...defaultProps} />);
+    render(<DeleteModal {...defaultProps} />);
     await user.click(screen.getByRole("button", { name: "Confirmer" }));
-    await screen.findByText("L'article a ete supprime.");
+    await screen.findByText("L'news a ete supprime.");
     await user.click(screen.getByRole("button", { name: "Fermer" }));
 
     expect(mockOnClose).toHaveBeenCalled();

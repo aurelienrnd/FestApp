@@ -36,11 +36,11 @@ export const contactSchema = z.object({
   message: z.string().min(10).max(2000).trim(),
 });
 
-/** Schema Zod de creation et modification d'un article — valide les champs texte uniquement (l'image arrive via req.file).
+/** Schema Zod de creation et modification d'une news — valide les champs texte uniquement (l'image arrive via req.file).
  * Le champ is_published est envoye en string via multipart/form-data.
  * Utilise pour la creation (POST) et la modification (PATCH).
  */
-export const createArticleSchema = z.object({
+export const createNewsSchema = z.object({
   title: z.string().min(2).max(150).trim(),
   content: z.string().trim().optional().or(z.literal("")),
   is_published: z.enum(["true", "false"]).optional(),

@@ -109,10 +109,8 @@ apps/frontend/
 │   │   │   ├── news/
 │   │   │   │   ├── page.tsx
 │   │   │   │   ├── NewsContent.tsx
-│   │   │   │   ├── ArticleDetailContent.tsx
-│   │   │   │   ├── ArticleEditButton.tsx
-│   │   │   │   ├── AddArticleModal.tsx
-│   │   │   │   ├── DeleteArticleModal.tsx
+│   │   │   │   ├── newsDetailContent.tsx
+│   │   │   │   ├── newsEditButton.tsx
 │   │   │   │   └── [id]/
 │   │   │   │       └── page.tsx
 │   │   │   └── users/
@@ -168,12 +166,12 @@ apps/frontend/
 │       │   ├── apiRequest.test.ts
 │       │   └── getApiErrorMessage.test.ts
 │       └── pages/
-│           ├── AddArticleModal.test.tsx
+│           ├── AddnewsModal.test.tsx
 │           ├── AddArtistModal.test.tsx
 │           ├── AddUserModal.test.tsx
 │           ├── ChangePasswordModal.test.tsx
 │           ├── DashboardContent.test.tsx
-│           ├── DeleteArticleModal.test.tsx
+│           ├── DeletenewsModal.test.tsx
 │           ├── DeleteArtistModal.test.tsx
 │           ├── HomeHero.test.tsx
 │           ├── HomeInfosPratiques.test.tsx
@@ -235,8 +233,8 @@ Le groupe de routes `(public)` est transparent pour les URLs (n'affecte pas les 
 | `(public)/page.tsx` | `/` | Page d'accueil — composant serveur async avec ISR (`revalidate: 60`). Fetche `GET /public/home` via `API_URL_SERVER` et assemble les 5 sections : `HomeHero`, `HomeProgrammation`, `HomeNews`, `HomeInfosPratiques`, `HomePartenaires` |
 | `(public)/lineup/` | `/lineup` | Programmation du festival — liste les artistes depuis l'API publique. Chaque carte navigue vers `/lineup/[id]` |
 | `(public)/lineup/[id]/` | `/lineup/:id` | Détail d'un artiste — server component avec ISR (`revalidate: 60`). Fetche `GET /public/lineup/:id` et passe l'artiste à `ArtistDetailContent`. Redirige vers `/lineup` via `notFound()` si l'artiste n'existe pas |
-| `(public)/news/` | `/news` | Actualités du festival — liste les articles publiés depuis `GET /public/news` avec image, titre, auteur et date. Chaque carte navigue vers `/news/[id]` |
-| `(public)/news/[id]/` | `/news/:id` | Détail d'un article — server component avec ISR (`revalidate: 60`). Fetche `GET /public/news/:id` et passe l'article à `ArticleDetailContent`. Redirige vers `/news` via `notFound()` si l'article n'existe pas ou n'est pas publié |
+| `(public)/news/` | `/news` | Actualités du festival — liste les news publiées depuis `GET /public/news` avec image, titre, auteur et date. Chaque carte navigue vers `/news/[id]` |
+| `(public)/news/[id]/` | `/news/:id` | Détail d'une news — server component avec ISR (`revalidate: 60`). Fetche `GET /public/news/:id` et passe la news à `newsDetailContent`. Redirige vers `/news` via `notFound()` si la news n'existe pas ou n'est pas publiée |
 | `(public)/practical-info/` | `/practical-info` | Informations pratiques |
 
 **Zone authentification — `(auth)/`**
@@ -255,8 +253,8 @@ Le groupe de routes `(auth)` est transparent pour les URLs. Son layout est ident
 | `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe si `mustChangePassword` est vrai. Affiche dynamiquement les dates du festival depuis `FESTIVAL_DAYS` |
 | `admin/lineup/` | `/admin/lineup` | Programmation — liste les artistes avec leur concert (`LineupContent.tsx`), modale d'ajout 3 étapes (`AddArtistModal.tsx`), modale de suppression (`DeleteArtistModal.tsx`) — accès restreint aux rôles `admin` et `lineup` via `useRoleGuard`. Le champ date est un `<select>` limité aux jours de `FESTIVAL_DAYS`. Les concerts à cheval sur minuit sont gérés (end_time automatiquement décalé au lendemain). Chaque carte navigue vers `/admin/lineup/[id]` |
 | `admin/lineup/[id]/` | `/admin/lineup/:id` | Détail et édition d'un artiste — client component, fetche `GET /public/lineup/:id` via `apiRequest`. Affiche `ArtistDetailContent` (rendu statique partagé avec la page publique) et `ArtistEditButton` (`"use client"` — bouton + `AddArtistModal` en mode édition). Hérite des restrictions de rôle de `/admin/lineup` via `useRoleGuard` avec correspondance préfixe |
-| `admin/news/` | `/admin/news` | Gestion des actualités (`NewsContent.tsx`, `AddArticleModal.tsx`, `DeleteArticleModal.tsx`) — accès restreint aux rôles `admin` et `news` via `useRoleGuard`. Les brouillons (`is_published = false`) sont visibles uniquement en admin. Le tri Croissant/Décroissant est géré côté client. L'édition d'un article se fait depuis la page de détail |
-| `admin/news/[id]/` | `/admin/news/:id` | Détail et édition d'un article — client component, fetche `GET /public/news/:id` via `apiRequest` (cookies d'auth pour l'accès aux brouillons). Affiche `ArticleDetailContent` (rendu statique partagé avec la page publique) et `ArticleEditButton` (`"use client"` — bouton + `AddArticleModal` en mode édition). Hérite des restrictions de rôle de `/admin/news` via `useRoleGuard` avec correspondance préfixe |
+| `admin/news/` | `/admin/news` | Gestion des actualités (`NewsContent.tsx`, `AddnewsModal.tsx`) — accès restreint aux rôles `admin` et `news` via `useRoleGuard`. Les brouillons (`is_published = false`) sont visibles uniquement en admin. Le tri Croissant/Décroissant est géré côté client. L'édition d'une news se fait depuis la page de détail |
+| `admin/news/[id]/` | `/admin/news/:id` | Détail et édition d'une news — client component, fetche `GET /public/news/:id` via `apiRequest` (cookies d'auth pour l'accès aux brouillons). Affiche `newsDetailContent` et `newsEditButton` (`"use client"` — bouton + `AddnewsModal` en mode édition). Hérite des restrictions de rôle de `/admin/news` via `useRoleGuard` avec correspondance préfixe |
 | `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) — accès restreint au rôle `admin` via `useRoleGuard`. `AddUserModal` gère l'ajout et la modification via une seule instance (prop `userToEdit`). Si l'utilisateur connecté se supprime lui-même, il est redirigé vers `/login` |
 
 ### `components/`
@@ -312,7 +310,7 @@ Types TypeScript partagés entre plusieurs composants.
 
 | Fichier | Description |
 | --- | --- |
-| `index.ts` | Centralise les types métier réutilisables : `UserRole` (union des rôles valides), `UserListRow` (données utilisateur API), `ArtistListRow` (artiste complet — retourné par `GET /public/lineup/:id`, les endpoints admin POST/PATCH, et consommé par `ArtistEditButton` et `ArtistDetailContent`), `ArtistSummary` (sous-ensemble de `ArtistListRow` sans les champs détail — retourné par `GET /public/lineup` et utilisé dans `LineupContent`), `ArticleRow` (données article API avec `author_name` nullable via JOIN users), `ArticleSummaryRow` (sous-ensemble de `ArticleRow` sans `content` — retourné par `GET /public/news`), `HomeArtistRow` (sous-ensemble de `ArtistListRow` pour la home), `HomeArticleRow` (sous-ensemble de `ArticleRow` pour la home), `HomeData` (type agrégé retourné par `GET /public/home`) |
+| `type.ts` | Centralise les types métier réutilisables : `UserRole`, `UserItem`, `AdminUser`, `AdminAuthMeResponse`, `NewsItem`, `HomeNews`, `ArtistItem`, `HomeArtist`, `NavItem`, `ApiMessageResponse`, `CreateApiResponse` |
 
 ---
 
@@ -362,17 +360,16 @@ Tests unitaires des pages et de leurs flux principaux.
 
 | Fichier | Description |
 | --- | --- |
-| `AddArticleModal.test.tsx` | Vérifie la modale d'ajout/modification article — navigation 2 étapes, validation (titre min 2 chars, description + image obligatoires en création), soumission POST et PATCH, mode édition pré-rempli (image optionnelle), erreur API |
+| `AddnewsModal.test.tsx` | Vérifie la modale d'ajout/modification news — navigation 2 étapes, validation (titre min 2 chars, description + image obligatoires en création), soumission POST et PATCH, mode édition pré-rempli (image optionnelle), erreur API |
 | `AddArtistModal.test.tsx` | Vérifie la modale d'ajout/modification artiste — navigation entre les 3 étapes, validation des champs obligatoires, champs YouTube/Spotify optionnels, soumission réussie (POST et PATCH), mode édition pré-rempli et gestion des erreurs API |
-| `DeleteArticleModal.test.tsx` | Vérifie la modale de suppression article — confirmation avec titre, succès (appel handleArticle), erreur API, fermeture après suppression |
+| `DeletenewsModal.test.tsx` | Vérifie `DeleteModal` dans le contexte news — confirmation avec titre, succès (appel onDeleted), erreur API, fermeture après suppression |
 | `DeleteArtistModal.test.tsx` | Vérifie la modale de suppression artiste — confirmation, succès, erreur API et fermeture après suppression |
-| `NewsContent.test.tsx` | Vérifie la liste des articles — chargement, affichage titre/auteur, fallback "Auteur inconnu", badge "Brouillon" (admin uniquement), filtre brouillons sur page publique, bouton Supprimer en admin, lien "Voir plus" vers `basePath/[id]`, tri Croissant, suppression et ajout |
-| `NewsContent.test.tsx` (mis à jour) | Vérifie que chaque carte contient un lien `Voir plus` vers `basePath/[id]` au lieu d'ouvrir une modale |
+| `NewsContent.test.tsx` | Vérifie la liste des news — chargement, affichage titre/auteur, fallback "Auteur inconnu", badge "Brouillon" (admin uniquement), filtre brouillons sur page publique, bouton Supprimer en admin, lien "Voir plus" vers `basePath/[id]`, tri Croissant, suppression et modification |
 | `ChangePasswordModal.test.tsx` | Vérifie la modale de changement de mot de passe — validation des saisies, gestion des erreurs API et mode forcé (sans bouton de fermeture) |
 | `DashboardContent.test.tsx` | Vérifie le tableau de bord — ouverture automatique de la modale si `mustChangePassword` est vrai et affichage des informations utilisateur |
 | `HomeHero.test.tsx` | Vérifie le logo (alt) |
 | `HomeInfosPratiques.test.tsx` | Vérifie l'affichage du nom, adresse, ville et le lien vers `/practical-info` |
-| `HomeNews.test.tsx` | Vérifie l'affichage des titres d'articles et le retour null si tableau vide |
+| `HomeNews.test.tsx` | Vérifie l'affichage des titres de news et le retour null si tableau vide |
 | `HomePartenaires.test.tsx` | Vérifie le nombre de logos, la présence d'un alt non vide et le lien vers `/practical-info` |
 | `HomeProgrammation.test.tsx` | Vérifie l'affichage des noms d'artistes, scènes, dates formatées et le retour null si tableau vide |
 | `LineupContent.test.tsx` | Vérifie la liste des artistes — chargement, affichage avec données concert, fallbacks null (scène/date non définies), liste vide, erreur API, suppression et ajout d'un artiste |

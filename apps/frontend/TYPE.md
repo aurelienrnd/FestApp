@@ -25,7 +25,7 @@ Règle unique :
 [Domaine][Usage]     →  réponse API, partagée front/back (même nom des deux côtés)
 ```
 
-- **Sans suffixe** : type partagé, même nom et même structure que le back (`ArtistDetail`, `UserItem`, `ArticleItem`...)
-- **`*Item`** : forme complète d'une entité telle qu'exposée par l'API — par opposition aux variantes allégées (`UserItem`, `ArticleItem`...)
+- **Sans suffixe** : type partagé, même nom et même structure que le back (`ArtistDetail`, `UserItem`, `NewsItem`...)
+- **`*Item`** : forme complète d'une entité telle qu'exposée par l'API — par opposition aux variantes allégées (`UserItem`, `NewsItem`...)
 
 > Un type partagé ne doit jamais contenir un champ absent de la réponse API.

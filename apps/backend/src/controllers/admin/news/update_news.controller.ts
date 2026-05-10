@@ -7,16 +7,16 @@ import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import type { ArticleItem, ArticleMediaRow } from "../../../type";
+import type { NewsItem, NewsMediaRow } from "../../../type";
 
-const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/articles");
+const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/news");
 
-/** Modifie un article existant.
+/** Modifie une news existante.
  * Si une nouvelle image est fournie, elle remplace l'ancienne (conversion WebP, suppression de l'ancienne).
  * @param {Request} req requete Express contenant l'id en parametre d'URL et les champs dans le body
  * @param {Response} res reponse Express
  */
-export async function updateArticle(req: Request, res: Response) {
+export async function updateNews(req: Request, res: Response) {
   // valide que l'identifiant fourni est un UUID valide
   const paramsSchema = z.object({ id: z.uuid() });
   const parsedParams = paramsSchema.safeParse(req.params);
@@ -24,16 +24,16 @@ export async function updateArticle(req: Request, res: Response) {
     throw new AppError(ERRORS.VALIDATION_INVALID_BODY, 400);
   }
 
-  const articleId = parsedParams.data.id;
+  const newsId = parsedParams.data.id;
 
-  // verifie que l'article existe et recupere son url_media actuelle
-  const existingArticles = await query<ArticleMediaRow>(
-    "SELECT id, url_media FROM articles WHERE id = $1 LIMIT 1",
-    [articleId],
+  // verifie que la news existe et recupere son url_media actuelle
+  const existingNews = await query<NewsMediaRow>(
+    "SELECT id, url_media FROM news WHERE id = $1 LIMIT 1",
+    [newsId],
   );
-  const existingArticle = existingArticles[0];
-  if (!existingArticle) {
-    throw new AppError(ERRORS.ARTICLE_NOT_FOUND, 404);
+  const existingItem = existingNews[0];
+  if (!existingItem) {
+    throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
   }
 
   // extrait les champs texte de la requete
@@ -43,14 +43,14 @@ export async function updateArticle(req: Request, res: Response) {
   const isPublished = is_published === "true";
 
   // determine l'url_media finale : nouvelle image ou conservation de l'existante
-  let url_media = existingArticle.url_media;
+  let url_media = existingItem.url_media;
   let newFilepath: string | null = null;
 
   if (req.file) {
     const uuid = randomUUID();
     const filename = `${uuid}.webp`;
     newFilepath = path.join(UPLOADS_DIR, filename);
-    url_media = `/uploads/articles/${filename}`;
+    url_media = `/uploads/news/${filename}`;
   }
 
   // ouvre une transaction SQL
@@ -59,9 +59,9 @@ export async function updateArticle(req: Request, res: Response) {
   let newFileWritten = false;
 
   try {
-    // met a jour l'article et retourne les donnees avec le display_name de l'auteur via JOIN users
-    const updatedArticles = await query<ArticleItem>(
-      `UPDATE articles
+    // met a jour la news
+    const updatedNews = await query<NewsItem>(
+      `UPDATE news
        SET title = $1, content = $2, is_published = $3, url_media = $4, description_media = $5
        WHERE id = $6
        RETURNING *`,
@@ -71,26 +71,26 @@ export async function updateArticle(req: Request, res: Response) {
         isPublished,
         url_media,
         description_media,
-        articleId,
+        newsId,
       ],
     );
 
-    const updatedArticle = updatedArticles[0];
-    if (!updatedArticle) {
+    const updatedItem = updatedNews[0];
+    if (!updatedItem) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
     }
 
     // recupere le display_name de l'auteur via JOIN users
-    const articlesWithAuthor = await query<ArticleItem>(
+    const newsWithAuthor = await query<NewsItem>(
       `SELECT a.*, u.display_name AS author_name
-       FROM articles a
+       FROM news a
        LEFT JOIN users u ON u.id = a.user_id
        WHERE a.id = $1`,
-      [articleId],
+      [newsId],
     );
 
-    const article = articlesWithAuthor[0];
-    if (!article) {
+    const news = newsWithAuthor[0];
+    if (!news) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
     }
 
@@ -106,12 +106,12 @@ export async function updateArticle(req: Request, res: Response) {
 
     // supprime l'ancienne image du disque si une nouvelle a ete uploadee (echec silencieux si absente)
     if (req.file) {
-      const oldFilename = path.basename(existingArticle.url_media);
+      const oldFilename = path.basename(existingItem.url_media);
       const oldFilepath = path.join(UPLOADS_DIR, oldFilename);
       await unlink(oldFilepath).catch(() => undefined);
     }
 
-    return res.status(200).json({ message: "Article modifie", article });
+    return res.status(200).json({ message: "News modifiee", news });
   } catch (error) {
     // annule la transaction, supprime le nouveau fichier si deja ecrit, puis relance pour le middleware
     await query("ROLLBACK");

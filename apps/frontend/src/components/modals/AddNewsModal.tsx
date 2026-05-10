@@ -5,20 +5,20 @@ import Image from "next/image";
 import Modal from "react-modal";
 import ModalCloseButton from "../ModalCloseButton";
 import { useMutation } from "../../hooks/useMutation";
-import type { ArticleItem, CreateApiResponse } from "../../type";
+import type { NewsItem, CreateApiResponse } from "../../type";
 import { isEmpty } from "../../functions/validation";
 
-type AddArticleModalProps = {
+type AddNewsModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  handleArticle: (article: ArticleItem) => void;
-  articleToEdit?: ArticleItem | null;
+  handleNews: (news: NewsItem) => void;
+  newsToEdit?: NewsItem | null;
 };
 
 
 /** Verifie si le formulaire de l'etape 1 est incomplet.
  * Retourne `true` si le titre est vide.
- * @param {string} title Titre de l'article
+ * @param {string} title Titre de la news
  */
 function isStep1Invalid(title: string) {
   return title.trim().length < 2;
@@ -40,26 +40,26 @@ function isStep2Invalid(
   return false;
 }
 
-/** Affiche la modale d'ajout ou de modification d'un article en deux etapes.
+/** Affiche la modale d'ajout ou de modification d'une news en deux etapes.
  * Etape 1 : titre, contenu (optionnel), case is_published.
  * Etape 2 : description image, fichier image.
- * Soumet les donnees en multipart/form-data a POST /admin/articles ou PATCH /admin/articles/:id.
- * En mode edition (articleToEdit defini), pre-remplit les champs et conserve l'image existante si aucune nouvelle n'est choisie.
- * @param {AddArticleModalProps} props Proprietes de controle de la modale.
+ * Soumet les donnees en multipart/form-data a POST /admin/news ou PATCH /admin/news/:id.
+ * En mode edition (newsToEdit defini), pre-remplit les champs et conserve l'image existante si aucune nouvelle n'est choisie.
+ * @param {AddNewsModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
  * @param {() => void} props.onClose Ferme la modale.
- * @param {(article: ArticleItem) => void} props.handleArticle Met a jour la liste des articles et ferme la modale.
- * @param {ArticleItem | null} props.articleToEdit Article a modifier — pre-remplit le formulaire si defini.
+ * @param {(news: NewsItem) => void} props.handleNews Met a jour la liste des news et ferme la modale.
+ * @param {NewsItem | null} props.newsToEdit News a modifier — pre-remplit le formulaire si defini.
  * @children ModalCloseButton Ferme la modale.
  */
-export default function AddArticleModal({
+export default function AddNewsModal({
   isOpen,
   onClose,
-  handleArticle,
-  articleToEdit = null,
-}: AddArticleModalProps) {
-  // Determine si on est en mode edition (articleToEdit defini) ou en mode creation (articleToEdit null)
-  const isEditMode = articleToEdit !== null;
+  handleNews,
+  newsToEdit = null,
+}: AddNewsModalProps) {
+  // Determine si on est en mode edition (newsToEdit defini) ou en mode creation (newsToEdit null)
+  const isEditMode = newsToEdit !== null;
 
   // Controle de l'etape actuelle du formulaire (1 ou 2)
   const [step, setStep] = useState<1 | 2>(1);
@@ -74,20 +74,20 @@ export default function AddArticleModal({
   const [image, setImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  // Reinitialise les champs avec les valeurs de l'article a modifier a chaque ouverture de la modale
+  // Reinitialise les champs avec les valeurs de la news a modifier a chaque ouverture de la modale
   useEffect(() => {
     if (!isOpen) return;
     setStep(1);
-    setTitle(articleToEdit?.title ?? "");
-    setContent(articleToEdit?.content ?? "");
-    setIsPublished(articleToEdit?.is_published ?? false);
-    setDescriptionMedia(articleToEdit?.description_media ?? "");
+    setTitle(newsToEdit?.title ?? "");
+    setContent(newsToEdit?.content ?? "");
+    setIsPublished(newsToEdit?.is_published ?? false);
+    setDescriptionMedia(newsToEdit?.description_media ?? "");
     setImage(null);
-    setPreviewUrl(articleToEdit?.url_media ?? null);
-  }, [isOpen, articleToEdit]);
+    setPreviewUrl(newsToEdit?.url_media ?? null);
+  }, [isOpen, newsToEdit]);
 
-  const { mutate, isLoading, error, reset } = useMutation<CreateApiResponse<{ article: ArticleItem }>>(
-    isEditMode ? `/admin/articles/${articleToEdit!.id}` : "/admin/articles",
+  const { mutate, isLoading, error, reset } = useMutation<CreateApiResponse<{ news: NewsItem }>>(
+    isEditMode ? `/admin/news/${newsToEdit!.id}` : "/admin/news",
     isEditMode ? "PATCH" : "POST",
   );
 
@@ -103,7 +103,7 @@ export default function AddArticleModal({
     setIsPublished(false);
     setDescriptionMedia("");
     setImage(null);
-    if (previewUrl && !articleToEdit) URL.revokeObjectURL(previewUrl);
+    if (previewUrl && !newsToEdit) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(null);
   };
 
@@ -118,7 +118,7 @@ export default function AddArticleModal({
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
     setImage(file);
-    if (previewUrl && !articleToEdit) URL.revokeObjectURL(previewUrl);
+    if (previewUrl && !newsToEdit) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(file ? URL.createObjectURL(file) : null);
   };
 
@@ -138,7 +138,7 @@ export default function AddArticleModal({
 
     mutate(formData, (data) => {
       resetForm();
-      handleArticle(data.article);
+      handleNews(data.news);
     });
   };
 
@@ -146,25 +146,25 @@ export default function AddArticleModal({
     <Modal
       isOpen={isOpen}
       onRequestClose={handleClose}
-      contentLabel="Ajout article"
+      contentLabel="Ajout news"
       className="modal"
       overlayClassName="modal-overlay"
     >
       <ModalCloseButton onClose={handleClose} />
-      <h2 className="title-modal">Article</h2>
+      <h2 className="title-modal">News</h2>
 
       <div className="m-6">
         {step === 1 ? (
           <div key="step-1" className="form-modal">
             <div>
-              <label htmlFor="articleTitle" className="sr-only">
-                Titre de l&apos;article
+              <label htmlFor="newsTitle" className="sr-only">
+                Titre de la news
               </label>
               <input
-                id="articleTitle"
+                id="newsTitle"
                 name="title"
                 type="text"
-                placeholder="Titre de l'article"
+                placeholder="Titre de la news"
                 className="input"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -172,11 +172,11 @@ export default function AddArticleModal({
             </div>
 
             <div>
-              <label htmlFor="articleContent" className="sr-only">
+              <label htmlFor="newsContent" className="sr-only">
                 Contenu
               </label>
               <textarea
-                id="articleContent"
+                id="newsContent"
                 name="content"
                 placeholder="Contenu (optionnel)"
                 className="input"
@@ -188,13 +188,13 @@ export default function AddArticleModal({
 
             <div className="flex items-center gap-2">
               <input
-                id="articleIsPublished"
+                id="newsIsPublished"
                 name="is_published"
                 type="checkbox"
                 checked={isPublished}
                 onChange={(e) => setIsPublished(e.target.checked)}
               />
-              <label htmlFor="articleIsPublished">Publier l&apos;article</label>
+              <label htmlFor="newsIsPublished">Publier la news</label>
             </div>
 
             <div className="submit-modal-area">
@@ -211,11 +211,11 @@ export default function AddArticleModal({
         ) : (
           <form key="step-2" className="form-modal" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="articleDescriptionMedia" className="sr-only">
+              <label htmlFor="newsDescriptionMedia" className="sr-only">
                 Description de l&apos;image
               </label>
               <input
-                id="articleDescriptionMedia"
+                id="newsDescriptionMedia"
                 name="description_media"
                 type="text"
                 placeholder="Description de l'image (texte alternatif)"
@@ -255,15 +255,15 @@ export default function AddArticleModal({
                 </svg>
               )}
               <input
-                id="articleImage"
+                id="newsImage"
                 name="image"
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 className="sr-only"
-                aria-label="Image de l'article"
+                aria-label="Image de la news"
                 onChange={handleImageChange}
               />
-              <label htmlFor="articleImage" className="upload-btn">
+              <label htmlFor="newsImage" className="upload-btn">
                 + Ajouter photo
               </label>
               <p className="text-xs text-(--color-text-input)">

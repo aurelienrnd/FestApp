@@ -3,7 +3,7 @@ import request from "supertest";
 import express from "express";
 import multer from "multer";
 
-import { createArticle } from "../../src/controllers/admin/articles/create_article.controller";
+import { createNews } from "../../src/controllers/admin/news/create_news.controller";
 import { query } from "../../src/db";
 import { unlink } from "fs/promises";
 import { ERRORS } from "../../src/errors/errorMessages";
@@ -34,7 +34,7 @@ const mockQuery = vi.mocked(query);
 function createApp() {
   const app = express();
   const upload = multer({ storage: multer.memoryStorage() });
-  app.post("/articles", upload.single("image"), asyncHandler(createArticle));
+  app.post("/news", upload.single("image"), asyncHandler(createNews));
   app.use(errorHandler);
   return app;
 }
@@ -46,13 +46,13 @@ const validFields = {
   description_media: "Photo de la billetterie",
 };
 
-const mockArticle = {
-  id: "article-uuid",
+const mockNews = {
+  id: "news-uuid",
   title: "Ouverture de la billetterie",
   content: "Le festival ouvre sa billetterie.",
   is_published: true,
   created_at: "2025-06-01T10:00:00.000Z",
-  url_media: "/uploads/articles/test-uuid.webp",
+  url_media: "/uploads/news/test-uuid.webp",
   description_media: "Photo de la billetterie",
   user_id: "user-uuid",
   author_name: "Admin",
@@ -60,20 +60,20 @@ const mockArticle = {
 
 const fakeImage = Buffer.from("fake-image-data");
 
-describe("createArticle controller (integration)", () => {
+describe("createNews controller (integration)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should return 201 with article data on success", async () => {
+  it("should return 201 with news data on success", async () => {
     mockQuery
       .mockResolvedValueOnce([]) // BEGIN
-      .mockResolvedValueOnce([mockArticle]) // CTE INSERT + SELECT JOIN
+      .mockResolvedValueOnce([mockNews]) // CTE INSERT + SELECT JOIN
       .mockResolvedValueOnce([]); // COMMIT
 
     const app = createApp();
     const res = await request(app)
-      .post("/articles")
+      .post("/news")
       .field(validFields)
       .attach("image", fakeImage, {
         filename: "photo.jpg",
@@ -81,9 +81,9 @@ describe("createArticle controller (integration)", () => {
       });
 
     expect(res.status).toBe(201);
-    expect(res.body.message).toBe("Article cree");
-    expect(res.body.article).toMatchObject({
-      id: "article-uuid",
+    expect(res.body.message).toBe("News creee");
+    expect(res.body.news).toMatchObject({
+      id: "news-uuid",
       title: "Ouverture de la billetterie",
       author_name: "Admin",
     });
@@ -92,10 +92,10 @@ describe("createArticle controller (integration)", () => {
 
   it("should return 400 when no image file is provided", async () => {
     const app = createApp();
-    const res = await request(app).post("/articles").field(validFields);
+    const res = await request(app).post("/news").field(validFields);
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe(ERRORS.ARTICLE_FILE_REQUIRED);
+    expect(res.body.error).toBe(ERRORS.NEWS_FILE_REQUIRED);
   });
 
   it("should rollback and return 500 when insert fails", async () => {
@@ -106,7 +106,7 @@ describe("createArticle controller (integration)", () => {
 
     const app = createApp();
     const res = await request(app)
-      .post("/articles")
+      .post("/news")
       .field(validFields)
       .attach("image", fakeImage, {
         filename: "photo.jpg",
@@ -120,13 +120,13 @@ describe("createArticle controller (integration)", () => {
   it("should rollback and unlink file when COMMIT fails after sharp wrote the file", async () => {
     mockQuery
       .mockResolvedValueOnce([]) // BEGIN
-      .mockResolvedValueOnce([mockArticle]) // CTE INSERT
+      .mockResolvedValueOnce([mockNews]) // CTE INSERT
       .mockRejectedValueOnce(new Error("commit fail")) // COMMIT
       .mockResolvedValueOnce([]); // ROLLBACK
 
     const app = createApp();
     const res = await request(app)
-      .post("/articles")
+      .post("/news")
       .field(validFields)
       .attach("image", fakeImage, {
         filename: "photo.jpg",

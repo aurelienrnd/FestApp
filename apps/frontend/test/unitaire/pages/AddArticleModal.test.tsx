@@ -1,7 +1,7 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import AddArticleModal from "../../../src/app/admin/news/AddArticleModal";
+import AddNewsModal from "../../../src/components/modals/AddNewsModal";
 import { ApiRequestError } from "../../../src/functions/apiRequest";
 
 // Mock de next/image pour eviter les erreurs de rendu dans jsdom
@@ -38,21 +38,21 @@ global.URL.createObjectURL = vi.fn().mockReturnValue("blob:mock-url");
 global.URL.revokeObjectURL = vi.fn();
 
 const mockOnClose = vi.fn();
-const mockHandleArticle = vi.fn();
+const mockHandleNews = vi.fn();
 
 const defaultProps = {
   isOpen: true,
   onClose: mockOnClose,
-  handleArticle: mockHandleArticle,
+  handleNews: mockHandleNews,
 };
 
-const mockArticle = {
-  id: "article-1",
+const mockNews = {
+  id: "news-1",
   title: "Ouverture de la billetterie",
   content: "La billetterie ouvre.",
   is_published: true,
   created_at: "2026-04-06T10:00:00.000Z",
-  url_media: "/uploads/articles/uuid.webp",
+  url_media: "/uploads/news/uuid.webp",
   description_media: "Photo de la billetterie",
   author_name: "Admin",
 };
@@ -62,15 +62,15 @@ async function goToStep2(
   user: ReturnType<typeof userEvent.setup>,
   title = "Ouverture de la billetterie",
 ) {
-  await user.type(screen.getByPlaceholderText("Titre de l'article"), title);
+  await user.type(screen.getByPlaceholderText("Titre de la news"), title);
   await user.click(screen.getByRole("button", { name: "Suivant" }));
 }
 
-describe("AddArticleModal", () => {
+describe("AddNewsModal", () => {
   beforeEach(() => {
     mockApiRequest.mockReset();
     mockOnClose.mockReset();
-    mockHandleArticle.mockReset();
+    mockHandleNews.mockReset();
   });
 
   afterEach(() => {
@@ -79,23 +79,23 @@ describe("AddArticleModal", () => {
   });
 
   it("desactive le bouton Suivant quand le titre est vide", () => {
-    render(<AddArticleModal {...defaultProps} />);
+    render(<AddNewsModal {...defaultProps} />);
 
     expect(screen.getByRole("button", { name: "Suivant" })).toBeDisabled();
   });
 
   it("active le bouton Suivant quand le titre est rempli", async () => {
     const user = userEvent.setup();
-    render(<AddArticleModal {...defaultProps} />);
+    render(<AddNewsModal {...defaultProps} />);
 
-    await user.type(screen.getByPlaceholderText("Titre de l'article"), "Mon article");
+    await user.type(screen.getByPlaceholderText("Titre de la news"), "Ma news");
 
     expect(screen.getByRole("button", { name: "Suivant" })).toBeEnabled();
   });
 
   it("passe a l'etape 2 apres clic sur Suivant", async () => {
     const user = userEvent.setup();
-    render(<AddArticleModal {...defaultProps} />);
+    render(<AddNewsModal {...defaultProps} />);
 
     await goToStep2(user);
 
@@ -106,33 +106,33 @@ describe("AddArticleModal", () => {
 
   it("revient a l'etape 1 apres clic sur Retour", async () => {
     const user = userEvent.setup();
-    render(<AddArticleModal {...defaultProps} />);
+    render(<AddNewsModal {...defaultProps} />);
 
     await goToStep2(user);
     await user.click(screen.getByRole("button", { name: "Retour" }));
 
     expect(
-      screen.getByPlaceholderText("Titre de l'article"),
+      screen.getByPlaceholderText("Titre de la news"),
     ).toBeInTheDocument();
   });
 
   it("desactive le bouton Ajouter quand la description est vide et aucune image", async () => {
     const user = userEvent.setup();
-    render(<AddArticleModal {...defaultProps} />);
+    render(<AddNewsModal {...defaultProps} />);
 
     await goToStep2(user);
 
     expect(screen.getByRole("button", { name: "Ajouter" })).toBeDisabled();
   });
 
-  it("soumet le formulaire en POST et appelle handleArticle", async () => {
+  it("soumet le formulaire en POST et appelle handleNews", async () => {
     const user = userEvent.setup();
     mockApiRequest.mockResolvedValueOnce({
-      data: { message: "Article cree", article: mockArticle },
+      data: { message: "News creee", news: mockNews },
       error: null,
     });
 
-    render(<AddArticleModal {...defaultProps} />);
+    render(<AddNewsModal {...defaultProps} />);
 
     await goToStep2(user);
 
@@ -141,15 +141,15 @@ describe("AddArticleModal", () => {
       "Photo de la billetterie",
     );
     const file = new File(["image"], "photo.webp", { type: "image/webp" });
-    await user.upload(screen.getByLabelText("Image de l'article"), file);
+    await user.upload(screen.getByLabelText("Image de la news"), file);
 
     await user.click(screen.getByRole("button", { name: "Ajouter" }));
 
     await waitFor(() => {
-      expect(mockHandleArticle).toHaveBeenCalledWith(mockArticle);
+      expect(mockHandleNews).toHaveBeenCalledWith(mockNews);
     });
     expect(mockApiRequest).toHaveBeenCalledWith(
-      "/admin/articles",
+      "/admin/news",
       expect.objectContaining({ method: "POST" }),
     );
   });
@@ -161,7 +161,7 @@ describe("AddArticleModal", () => {
       error: new ApiRequestError("Image requise", 400),
     });
 
-    render(<AddArticleModal {...defaultProps} />);
+    render(<AddNewsModal {...defaultProps} />);
 
     await goToStep2(user);
     await user.type(
@@ -169,16 +169,16 @@ describe("AddArticleModal", () => {
       "Photo de la billetterie",
     );
     const file = new File(["image"], "photo.webp", { type: "image/webp" });
-    await user.upload(screen.getByLabelText("Image de l'article"), file);
+    await user.upload(screen.getByLabelText("Image de la news"), file);
     await user.click(screen.getByRole("button", { name: "Ajouter" }));
 
     expect(await screen.findByText("Image requise")).toBeInTheDocument();
-    expect(mockHandleArticle).not.toHaveBeenCalled();
+    expect(mockHandleNews).not.toHaveBeenCalled();
   });
 
   it("pre-remplit les champs en mode edition", () => {
     render(
-      <AddArticleModal {...defaultProps} articleToEdit={mockArticle} />,
+      <AddNewsModal {...defaultProps} newsToEdit={mockNews} />,
     );
 
     expect(screen.getByDisplayValue("Ouverture de la billetterie")).toBeInTheDocument();
@@ -188,14 +188,14 @@ describe("AddArticleModal", () => {
 
   it("soumet en PATCH en mode edition", async () => {
     const user = userEvent.setup();
-    const updatedArticle = { ...mockArticle, title: "Titre modifie" };
+    const updatedNews = { ...mockNews, title: "Titre modifie" };
     mockApiRequest.mockResolvedValueOnce({
-      data: { message: "Article modifie", article: updatedArticle },
+      data: { message: "News modifiee", news: updatedNews },
       error: null,
     });
 
     render(
-      <AddArticleModal {...defaultProps} articleToEdit={mockArticle} />,
+      <AddNewsModal {...defaultProps} newsToEdit={mockNews} />,
     );
 
     // Les champs sont pre-remplis — passe directement a l'etape 2
@@ -204,10 +204,10 @@ describe("AddArticleModal", () => {
     await user.click(screen.getByRole("button", { name: "Modifier" }));
 
     await waitFor(() => {
-      expect(mockHandleArticle).toHaveBeenCalledWith(updatedArticle);
+      expect(mockHandleNews).toHaveBeenCalledWith(updatedNews);
     });
     expect(mockApiRequest).toHaveBeenCalledWith(
-      `/admin/articles/${mockArticle.id}`,
+      `/admin/news/${mockNews.id}`,
       expect.objectContaining({ method: "PATCH" }),
     );
   });
@@ -215,7 +215,7 @@ describe("AddArticleModal", () => {
   it("en mode edition, le bouton Modifier est actif sans nouvelle image", async () => {
     const user = userEvent.setup();
     render(
-      <AddArticleModal {...defaultProps} articleToEdit={mockArticle} />,
+      <AddNewsModal {...defaultProps} newsToEdit={mockNews} />,
     );
 
     await user.click(screen.getByRole("button", { name: "Suivant" }));
