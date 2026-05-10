@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useFetch } from "../hooks/useFetch";
@@ -73,11 +73,15 @@ export default function LineupContent({
   };
 
   // Filtre par date selectionnee puis trie par heure decroissante (plus tardif en haut)
-  const visibleArtists = (
-    activeFilter
-      ? artists.filter((a) => a.start_time?.startsWith(activeFilter))
-      : artists
-  ).sort((a, b) => toMinutes(b.start_time) - toMinutes(a.start_time));
+  // Memoïse pour eviter de recalculer lors des re-renders sans rapport (ouverture modale, etc.)
+  const visibleArtists = useMemo(
+    () =>
+      (activeFilter
+        ? artists.filter((a) => a.start_time?.startsWith(activeFilter))
+        : artists
+      ).sort((a, b) => toMinutes(b.start_time) - toMinutes(a.start_time)),
+    [artists, activeFilter],
+  );
 
   return (
     <div className="admin-content-wrapper">

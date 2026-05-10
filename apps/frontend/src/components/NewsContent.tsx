@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useFetch } from "../hooks/useFetch";
 import { useModal } from "../hooks/useModal";
@@ -62,16 +62,14 @@ export default function NewsContent({
     onCloseAddModal();
   };
 
-  // Sur la page publique, masque les brouillons meme si l'API les retourne (admin connecte)
-  const publishedArticles = isAdminPath
-    ? articles
-    : articles.filter((a) => a.is_published);
-
-  // Tri cote client — "Croissant" inverse l'ordre DESC retourne par l'API (plus ancien en premier)
-  const visibleArticles =
-    activeFilter === "Croissant"
-      ? [...publishedArticles].reverse()
-      : publishedArticles;
+  // Filtre les brouillons et applique le tri — memoïse pour eviter de recalculer
+  // lors des re-renders sans rapport (ouverture modale, etc.)
+  const visibleArticles = useMemo(() => {
+    const published = isAdminPath
+      ? articles
+      : articles.filter((a) => a.is_published);
+    return activeFilter === "Croissant" ? [...published].reverse() : published;
+  }, [articles, activeFilter, isAdminPath]);
 
   return (
     <div className="admin-content-wrapper">
