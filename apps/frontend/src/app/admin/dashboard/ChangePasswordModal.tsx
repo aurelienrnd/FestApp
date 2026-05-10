@@ -5,6 +5,7 @@ import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import type { ApiMessageResponse } from "../../../type";
 import { useMutation } from "../../../hooks/useMutation";
+import { isEmpty } from "../../../functions/validation";
 
 type ChangePasswordModalProps = {
   isOpen: boolean;
@@ -40,9 +41,7 @@ export default function ChangePasswordModal({
 
   // Verifie si le formulaire de changement de mot de passe est incomplet
   const isFormInvalid =
-    oldPassword.trim() === "" ||
-    newPassword.trim() === "" ||
-    confirmPassword.trim() === "";
+    isEmpty(oldPassword) || isEmpty(newPassword) || isEmpty(confirmPassword);
 
   // Gere la soumission du formulaire de changement de mot de passe
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {

@@ -6,6 +6,7 @@ import Modal from "react-modal";
 import ModalCloseButton from "./ModalCloseButton";
 import { useMutation } from "../hooks/useMutation";
 import type { ArticleItem, CreateApiResponse } from "../type";
+import { isEmpty } from "../functions/validation";
 
 type AddArticleModalProps = {
   isOpen: boolean;
@@ -34,7 +35,7 @@ function isStep2Invalid(
   image: File | null,
   isEditMode: boolean,
 ) {
-  if (descriptionMedia.trim() === "") return true;
+  if (isEmpty(descriptionMedia)) return true;
   if (!isEditMode && image === null) return true;
   return false;
 }

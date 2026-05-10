@@ -8,6 +8,7 @@ import { useMutation } from "../hooks/useMutation";
 import type { ArtistItem, CreateApiResponse } from "../type";
 import { FESTIVAL_DAYS } from "../config/festival";
 import { formatDateLong } from "../functions/formatDate";
+import { isEmpty } from "../functions/validation";
 
 type AddArtistModalProps = {
   isOpen: boolean;
@@ -33,12 +34,7 @@ function isStep1Invalid(
   origin: string,
   bio: string,
 ) {
-  return (
-    name.trim() === "" ||
-    genre.trim() === "" ||
-    origin.trim() === "" ||
-    bio.trim() === ""
-  );
+  return isEmpty(name) || isEmpty(genre) || isEmpty(origin) || isEmpty(bio);
 }
 
 /** Verifie si le formulaire de l'etape 2 est incomplet.
@@ -47,7 +43,7 @@ function isStep1Invalid(
  * @param {File | null} image Fichier image
  */
 function isStep2Invalid(descriptionMedia: string, image: File | null) {
-  return descriptionMedia.trim() === "" || image === null;
+  return isEmpty(descriptionMedia) || image === null;
 }
 
 /** Verifie si le formulaire de l'etape 3 est incomplet.
@@ -64,7 +60,7 @@ function isStep3Invalid(
   endTime: string,
 ) {
   return (
-    stage.trim() === "" || date === "" || startTime === "" || endTime === ""
+    isEmpty(stage) || date === "" || startTime === "" || endTime === ""
   );
 }
 
@@ -154,7 +150,7 @@ export default function AddArtistModal({
   const step1Invalid = isStep1Invalid(name, genre, origin, bio);
   // En mode edition, l'image est optionnelle (on conserve l'existante si aucune nouvelle n'est choisie)
   const step2Invalid = isEditMode
-    ? descriptionMedia.trim() === ""
+    ? isEmpty(descriptionMedia)
     : isStep2Invalid(descriptionMedia, image);
   const step3Invalid = isStep3Invalid(stage, date, startTime, endTime);
 

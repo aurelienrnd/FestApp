@@ -7,6 +7,7 @@ import ModalCloseButton from "../../../components/ModalCloseButton";
 import ForgotPassword from "../../../components/ForgotPassword";
 import type { ApiMessageResponse } from "../../../type";
 import { useMutation } from "../../../hooks/useMutation";
+import { isEmpty } from "../../../functions/validation";
 
 /** Affiche la page de connexion admin avec un formulaire email/mot de passe.
  * Envoie la requete de connexion via `apiRequest` avec les credentials inclus.
@@ -29,7 +30,7 @@ export default function Page() {
     useState(false);
 
   // Valide le contenu du formulaire.
-  const isFormInvalid = email.trim() === "" || password.trim() === "";
+  const isFormInvalid = isEmpty(email) || isEmpty(password);
 
   // Gere l'envoi du login et affiche l'erreur si echec
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {

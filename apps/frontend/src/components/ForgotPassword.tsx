@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import type { ApiMessageResponse } from "../type";
 import { useMutation } from "../hooks/useMutation";
+import { isEmpty } from "../functions/validation";
 
 /** Affiche le formulaire "Mot de passe oublié".
  * Permet à l'utilisateur de saisir son email pour demander la réinitialisation du mot de passe.
@@ -17,7 +18,7 @@ export default function ForgotPassword() {
   const [success, setSuccess] = useState(false);
 
   // verifie que le champ email n'est pas vide (après suppression des espaces) pour activer le bouton d'envoi
-  const isFormInvalid = email.trim() === "";
+  const isFormInvalid = isEmpty(email);
 
   // envoie une requete à l'API pour demander la réinitialisation du mot de passe, en fournissant l'email saisi par l'utilisateur
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {

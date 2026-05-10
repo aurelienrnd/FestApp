@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import type { ApiMessageResponse } from "../type";
 import { useMutation } from "../hooks/useMutation";
+import { isEmpty } from "../functions/validation";
 /** Affiche un formulaire de contact avec les champs nom, email, sujet et message */
 export default function ContactUs() {
   // Champs du formulaire
@@ -16,10 +17,7 @@ export default function ContactUs() {
 
   // Verifie que tous les champs contiennent du texte valide
   const isFormInvalid =
-    name.trim() === "" ||
-    email.trim() === "" ||
-    subject.trim() === "" ||
-    message.trim() === "";
+    isEmpty(name) || isEmpty(email) || isEmpty(subject) || isEmpty(message);
 
   // Empeche le rechargement, valide le formulaire puis reinitialise les champs
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
