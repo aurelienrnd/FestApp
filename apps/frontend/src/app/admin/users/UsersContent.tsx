@@ -108,11 +108,7 @@ export default function UsersContent({
     if (filterBy === "all") {
       return true;
     }
-    // On normalise le rôle de l'utilisateur et aussi le filtre pour être sûr que la comparaison soit cohérente
-    const normalizedRole = user.role.toLowerCase().replace(/\s+/g, "");
-    const normalizedFilter = filterBy.toLowerCase();
-
-    return normalizedRole === normalizedFilter;
+    return user.role === filterBy;
   });
 
   return (
