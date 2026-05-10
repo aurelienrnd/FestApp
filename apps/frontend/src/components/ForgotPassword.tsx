@@ -30,7 +30,7 @@ export default function ForgotPassword() {
   return (
     <div className="m-6">
       {success ? (
-        <p className="mt-(--ctx-paragraph-gap) text-center">
+        <p className="success-message mt-(--ctx-paragraph-gap)">
           Un nouveau mot de passe vous a ete envoye par email.
         </p>
       ) : (

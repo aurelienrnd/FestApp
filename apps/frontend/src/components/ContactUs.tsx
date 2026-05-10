@@ -38,7 +38,7 @@ export default function ContactUs() {
   return (
     <div className="m-6">
       {success ? (
-        <p className="mt-(--ctx-paragraph-gap) text-center">
+        <p className="success-message mt-(--ctx-paragraph-gap)">
           votre message est envoye
         </p>
       ) : (

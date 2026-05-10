@@ -17,7 +17,7 @@
   --color-3: #0ea5e9;
 
   /* === COULEURS UI ===
-     Couleurs fonctionnelles de l'interface — inputs, overlay.
+     Couleurs fonctionnelles de l'interface — inputs, overlay, feedback.
   */
   --color-text-input: #47474f;
   --color-overlay: rgba(156, 163, 175, 0.3);

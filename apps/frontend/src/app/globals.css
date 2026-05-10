@@ -43,6 +43,9 @@
   .error-message {
     @apply text-center text-(--color-1);
   }
+  .success-message {
+    @apply text-center text-(--color-text);
+  }
   .form-grid {
     @apply grid grid-cols-1 gap-6 md:grid-cols-2;
   }

@@ -83,7 +83,7 @@ export default function ChangePasswordModal({
       <div className="m-6">
         {success ? (
           <div className="flex flex-col items-center gap-3">
-            <p className="error-message">
+            <p className="success-message">
               Votre mot de passe a ete modifie avec succes.
             </p>
             {forced && (

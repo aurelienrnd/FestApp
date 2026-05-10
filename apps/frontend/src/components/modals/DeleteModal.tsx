@@ -65,7 +65,7 @@ export default function DeleteModal<T extends { id: string }>({
       <div className="m-6">
         {isDeleted ? (
           <div className="form-modal">
-            <p className="text-center">L&apos;{entityName} a ete supprime.</p>
+            <p className="success-message">L&apos;{entityName} a ete supprime.</p>
             <div className="submit-modal-area">
               <button type="button" className="btn-cta" onClick={handleClose}>
                 Fermer
