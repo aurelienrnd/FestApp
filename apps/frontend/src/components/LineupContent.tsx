@@ -9,9 +9,10 @@ import AddArtistModal from "./AddArtistModal";
 import DeleteModal from "./DeleteModal";
 import { useNavPath } from "../hooks/useNavPath";
 import type { ArtistItem } from "../type";
+import LoadingLine from "./LoadingLine";
+import { formatConcertDatetime } from "../functions/formatDate";
 
 type ArtistSummary = Omit<ArtistItem, "bio" | "genre" | "origin" | "youtube_url" | "spotify_url" | "end_time">;
-import LoadingLine from "./LoadingLine";
 
 /** Affiche la liste des artistes filtrée par jour si activeFilter est defini.
  * Recupere les artistes via l'API puis affiche un etat de chargement/erreur.
@@ -118,22 +119,17 @@ export default function LineupContent({
                   </div>
 
                   <div className="flex flex-col gap-1 card-secondary">
-                    <span>
-                      {artist.start_time
-                        ? new Date(artist.start_time).toLocaleDateString(
-                            "fr-FR",
-                            { weekday: "long", day: "numeric", month: "long" },
-                          )
-                        : "Date non définie"}
-                    </span>
-                    <span>
-                      {artist.start_time
-                        ? new Date(artist.start_time).toLocaleTimeString(
-                            "fr-FR",
-                            { hour: "2-digit", minute: "2-digit" },
-                          )
-                        : ""}
-                    </span>
+                    {(() => {
+                      const concert = artist.start_time
+                        ? formatConcertDatetime(artist.start_time)
+                        : null;
+                      return (
+                        <>
+                          <span>{concert ? concert.date : "Date non définie"}</span>
+                          <span>{concert ? concert.time : ""}</span>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
 

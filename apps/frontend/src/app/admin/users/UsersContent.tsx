@@ -9,13 +9,7 @@ import AddUserModal from "./AddUserModal";
 import DeleteModal from "../../../components/DeleteModal";
 import type { UserItem } from "../../../type";
 import LoadingLine from "../../../components/LoadingLine";
-
-const formatDateFr = (value: string) =>
-  new Date(value).toLocaleDateString("fr-FR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+import { formatDateLong } from "../../../functions/formatDate";
 
 /** Affiche la liste des utilisateurs.
  * Recupere les utilisateurs via l'API puis affiche un etat de chargement/erreur.
@@ -156,11 +150,11 @@ export default function UsersContent({
                       </p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-1 sm:gap-4 text-xs uppercase text-(--color-text-input)">
-                      <span>Créé le {formatDateFr(user.created_at)}</span>
+                      <span>Créé le {formatDateLong(user.created_at)}</span>
                       <span>
                         Mot de passe{" "}
                         {user.password_changed_at
-                          ? `modifié le ${formatDateFr(user.password_changed_at)}`
+                          ? `modifié le ${formatDateLong(user.password_changed_at)}`
                           : "provisoire"}
                       </span>
                     </div>
