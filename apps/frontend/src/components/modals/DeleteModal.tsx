@@ -1,8 +1,8 @@
 "use client";
 
 import Modal from "react-modal";
-import ModalCloseButton from "./ModalCloseButton";
-import { useDelete } from "../hooks/useDelete";
+import ModalCloseButton from "../ModalCloseButton";
+import { useDelete } from "../../hooks/useDelete";
 
 type DeleteModalProps<T extends { id: string }> = {
   isOpen: boolean;

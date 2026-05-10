@@ -2,7 +2,7 @@
 
 import type { ArtistItem } from "../../../type";
 import { useModal } from "../../../hooks/useModal";
-import AddArtistModal from "../../../components/AddArtistModal";
+import AddArtistModal from "../../../components/modals/AddArtistModal";
 
 /** Bouton d'édition et modale d'édition pour la page de détail artiste.
  * @param {ArtistItem} props.artist Artiste à modifier.

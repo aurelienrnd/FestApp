@@ -3,12 +3,12 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
 import Image from "next/image";
 import Modal from "react-modal";
-import ModalCloseButton from "./ModalCloseButton";
-import { useMutation } from "../hooks/useMutation";
-import type { ArtistItem, CreateApiResponse } from "../type";
-import { FESTIVAL_DAYS } from "../config/festival";
-import { formatDateLong } from "../functions/formatDate";
-import { isEmpty } from "../functions/validation";
+import ModalCloseButton from "../ModalCloseButton";
+import { useMutation } from "../../hooks/useMutation";
+import type { ArtistItem, CreateApiResponse } from "../../type";
+import { FESTIVAL_DAYS } from "../../config/festival";
+import { formatDateLong } from "../../functions/formatDate";
+import { isEmpty } from "../../functions/validation";
 
 type AddArtistModalProps = {
   isOpen: boolean;

@@ -2,7 +2,7 @@
 
 import type { ArticleItem } from "../../../type";
 import { useModal } from "../../../hooks/useModal";
-import AddArticleModal from "../../../components/AddArticleModal";
+import AddArticleModal from "../../../components/modals/AddArticleModal";
 
 /** Bouton d'édition et modale d'édition pour la page de détail article.
  * @param {ArticleItem} props.article Article à modifier.

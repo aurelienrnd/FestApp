@@ -11,8 +11,8 @@ import type { ArticleItem } from "../type";
 type ArticleSummary = Omit<ArticleItem, "content">;
 import LoadingLine from "./LoadingLine";
 import { formatDateLong } from "../functions/formatDate";
-import AddArticleModal from "./AddArticleModal";
-import DeleteModal from "./DeleteModal";
+import AddArticleModal from "./modals/AddArticleModal";
+import DeleteModal from "./modals/DeleteModal";
 
 /** Affiche la liste des articles avec tri client-side selon activeFilter.
  * Recupere les articles via GET /public/news.

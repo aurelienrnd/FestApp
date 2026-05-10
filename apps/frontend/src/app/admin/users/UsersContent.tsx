@@ -6,7 +6,7 @@ import { useFetch } from "../../../hooks/useFetch";
 import { useModal } from "../../../hooks/useModal";
 import { useAdminUser } from "../../../components/AdminUserProvider";
 import AddUserModal from "./AddUserModal";
-import DeleteModal from "../../../components/DeleteModal";
+import DeleteModal from "../../../components/modals/DeleteModal";
 import type { UserItem } from "../../../type";
 import LoadingLine from "../../../components/LoadingLine";
 import { formatDateLong } from "../../../functions/formatDate";
