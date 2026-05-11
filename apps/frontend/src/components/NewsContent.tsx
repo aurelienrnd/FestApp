@@ -36,14 +36,14 @@ export default function NewsContent({
   const { isAdminPath } = useNavPath();
   const basePath = isAdminPath ? "/admin/news" : "/news";
 
-  const { data, isLoading, error } = useFetch<{ newsList: NewsSummary[] }>(
+  const { data, isLoading, error } = useFetch<{ news: NewsSummary[] }>(
     "/public/news",
   );
 
   // Liste mutable pour les ajouts et suppressions locaux
   const [newsList, setNewsList] = useState<NewsSummary[]>([]);
   useEffect(() => {
-    setNewsList(data?.newsList ?? []);
+    setNewsList(data?.news ?? []);
   }, [data]);
 
   const {
@@ -55,7 +55,7 @@ export default function NewsContent({
 
   // Supprime la news de la liste après confirmation de suppression
   const handleNewsDeleted = (newsId: string) => {
-    setNewsList((current) => current.filter((n) => n.id !== newsId));
+    setNewsList((current) => current.filter((news) => news.id !== newsId));
   };
 
   // Ajoute la nouvelle news à la liste après ajout réussi
@@ -66,10 +66,10 @@ export default function NewsContent({
 
   // Filtre les brouillons et applique le tri — memoïse pour eviter de recalculer
   // lors des re-renders sans rapport (ouverture modale, etc.)
-  const visibleNewsList = useMemo(() => {
+  const filteredNews = useMemo(() => {
     const published = isAdminPath
-      ? newsList
-      : newsList.filter((n) => n.is_published);
+      ? newsList.filter((n) => n.is_published)
+      : newsList;
     return activeFilter === "Croissant" ? [...published].reverse() : published;
   }, [newsList, activeFilter, isAdminPath]);
 
@@ -80,13 +80,13 @@ export default function NewsContent({
           <LoadingLine />
         ) : error ? (
           <p className="error-message">{error}</p>
-        ) : visibleNewsList.length === 0 ? (
+        ) : filteredNews.length === 0 ? (
           <div className="content-centered">
             <p>Aucune news.</p>
           </div>
         ) : (
           <ul className="flex w-full flex-col items-center gap-6">
-            {visibleNewsList.map((news, index) => (
+            {filteredNews.map((news, index) => (
               <li key={news.id} className="card-row">
                 <div className="card-media-img-wrapper">
                   <Image

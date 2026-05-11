@@ -5,7 +5,7 @@ import type { ArtistItem, NewsItem } from "../../../type";
 
 /** Retourne les 2 artistes les plus recents et les 2 dernieres news publiees pour la page d'accueil. */
 export async function getHomeController(_req: Request, res: Response) {
-  const [artists, newsList] = await Promise.all([
+  const [artists, news] = await Promise.all([
     query<Pick<ArtistItem, "id" | "name" | "stage" | "start_time" | "end_time" | "url_media" | "description_media">>(
       `SELECT a.id, a.name, a.url_media, a.description_media,
               c.stage, c.start_time, c.end_time
@@ -22,5 +22,5 @@ export async function getHomeController(_req: Request, res: Response) {
     ),
   ]);
 
-  return res.status(200).json({ artists, newsList });
+  return res.status(200).json({ artists, news });
 }

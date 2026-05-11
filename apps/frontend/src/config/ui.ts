@@ -57,7 +57,7 @@ import { FESTIVAL_DAYS } from "./festival";
 /** Filtres affiches dans la navigation de la page artists et admin/artists.
  * Genere un bouton par jour du festival depuis FESTIVAL_DAYS.
  */
-export const filterartistsItems: NavItem[] = [
+export const filterArtistsItems: NavItem[] = [
   { labelBtn: "Toutes les dates", active: true },
   ...FESTIVAL_DAYS.map((d) => ({
     labelBtn: new Date(d).toLocaleDateString("fr-FR", {

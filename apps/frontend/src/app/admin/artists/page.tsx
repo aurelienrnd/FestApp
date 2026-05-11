@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useModal } from "../../../hooks/useModal";
 import SideBarTool from "../../../components/SideBarTool";
-import { filterartistsItems } from "../../../config/ui";
+import { filterArtistsItems } from "../../../config/ui";
 import AddButton from "../../../components/AddButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -26,7 +26,7 @@ export default function Page() {
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   // Mappe les items de filtre pour ajouter la logique d'activation et de clic
-  const items = filterartistsItems.map((item) => ({
+  const items = filterArtistsItems.map((item) => ({
     ...item,
     active:
       item.value === activeFilter ||
@@ -51,7 +51,6 @@ export default function Page() {
 
       <SideBarTool items={items}>
         <ArtistsContent
-          basePath="/admin/artists"
           isAddModalOpen={isOpen}
           onCloseAddModal={close}
           activeFilter={activeFilter}

@@ -34,13 +34,14 @@ export default function UsersContent({
   const router = useRouter();
   const currentUser = useAdminUser();
 
-  // Initialise la liste des utilisateurs
-  const [users, setUsers] = useState<UserItem[]>([]);
   const { data, isLoading, error } = useFetch<{ users: UserItem[] }>(
     "/admin/users",
   );
+
+  // Liste mutable pour les ajouts et suppressions locaux
+  const [userList, setUserList] = useState<UserItem[]>([]);
   useEffect(() => {
-    setUsers(data?.users ?? []);
+    setUserList(data?.users ?? []);
   }, [data]);
 
   const {
@@ -58,7 +59,7 @@ export default function UsersContent({
   } = useModal<UserItem>();
 
   // Met a jour la liste des utilisateurs apres suppression en retirant l'utilisateur correspondant a l'id fourni
-  const handleUserDeleted = (userId: string) => {
+  const handleUserSavedDeleted = (userId: string) => {
     // Redirige vers /login si l'utilisateur supprime est l'utilisateur connecte
     if (userId === currentUser?.user.id) {
       router.push("/login");
@@ -66,14 +67,14 @@ export default function UsersContent({
     }
 
     // Filtre la liste des utilisateurs pour retirer l'utilisateur supprime
-    setUsers((currentUsers) =>
+    setUserList((currentUsers) =>
       currentUsers.filter((user) => user.id !== userId),
     );
   };
 
   // Ajoute ou met a jour un utilisateur dans la liste locale
   const upsertUser = (savedUser: UserItem) => {
-    setUsers((currentUsers) => {
+    setUserList((currentUsers) => {
       // Vérifie si un utilisateur avec le même id existe déjà
       const userAlreadyExists = currentUsers.some(
         (currentUser) => currentUser.id === savedUser.id,
@@ -91,19 +92,19 @@ export default function UsersContent({
   };
 
   // Ferme la modale (ajout ou edition) et reinitialise l'utilisateur selectionne
-  const closeModal = () => {
+  const closeUserModal = () => {
     closeEditModal();
     onCloseAddModal();
   };
 
   // Met a jour la liste apres ajout ou modification puis ferme la modale
-  const handleUser = (savedUser: UserItem) => {
+  const handleUserSaved = (savedUser: UserItem) => {
     upsertUser(savedUser);
-    closeModal();
+    closeUserModal();
   };
 
   // On crée un nouveau tableau contenant uniquement les utilisateurs correspondant au filtre sélectionné
-  const filteredUsers = users.filter((user) => {
+  const filteredUsers = userList.filter((user) => {
     // Si le filtre est "all", on retourne tous les utilisateurs
     if (filterBy === "all") {
       return true;
@@ -184,7 +185,7 @@ export default function UsersContent({
         isOpen={isDeleteModalOpen}
         item={selectedUserToDelete}
         onClose={closeDeleteModal}
-        onDeleted={handleUserDeleted}
+        onDeleted={handleUserSavedDeleted}
         endpoint="/admin/users"
         entityName="utilisateur"
         getLabel={(u) => u.display_name}
@@ -192,8 +193,8 @@ export default function UsersContent({
       <AddUserModal
         key={userToEdit?.id ?? "new"}
         isOpen={isAddModalOpen || isEditModalOpen}
-        onClose={closeModal}
-        handleUser={handleUser}
+        onClose={closeUserModal}
+        handleUserSaved={handleUserSaved}
         userToEdit={userToEdit}
       />
     </div>

@@ -80,7 +80,7 @@ describe("ArtistsContent", () => {
   it("shows loading state while fetching", () => {
     mockApiRequest.mockReturnValue(new Promise(() => {}));
 
-    render(<ArtistsContent basePath="/admin/artists" />);
+    render(<ArtistsContent />);
 
     expect(screen.getByText("Chargement")).toBeInTheDocument();
   });
@@ -91,7 +91,7 @@ describe("ArtistsContent", () => {
       error: new ApiRequestError(undefined, 500),
     });
 
-    render(<ArtistsContent basePath="/admin/artists" />);
+    render(<ArtistsContent />);
 
     expect(
       await screen.findByText("Erreur serveur, reessayez plus tard."),
@@ -104,7 +104,7 @@ describe("ArtistsContent", () => {
       error: null,
     });
 
-    render(<ArtistsContent basePath="/admin/artists" />);
+    render(<ArtistsContent />);
 
     expect(await screen.findByText("Aucun artiste.")).toBeInTheDocument();
   });
@@ -115,7 +115,7 @@ describe("ArtistsContent", () => {
       error: null,
     });
 
-    render(<ArtistsContent basePath="/admin/artists" />);
+    render(<ArtistsContent />);
 
     expect(await screen.findByText("Band A")).toBeInTheDocument();
     expect(screen.getByText("Grande Scene")).toBeInTheDocument();
@@ -131,7 +131,7 @@ describe("ArtistsContent", () => {
       error: null,
     });
 
-    render(<ArtistsContent basePath="/admin/artists" />);
+    render(<ArtistsContent />);
 
     expect(await screen.findByText("Scène non définie")).toBeInTheDocument();
     expect(screen.getByText("Date non définie")).toBeInTheDocument();
@@ -157,7 +157,7 @@ describe("ArtistsContent", () => {
         error: null,
       });
 
-    render(<ArtistsContent basePath="/admin/artists" />);
+    render(<ArtistsContent />);
 
     await screen.findByText("Band A");
     await user.click(screen.getAllByRole("button", { name: "Supprimer" })[0]);
@@ -194,7 +194,7 @@ describe("ArtistsContent", () => {
         error: null,
       });
 
-    render(<ArtistsContent basePath="/admin/artists" />);
+    render(<ArtistsContent />);
 
     await screen.findByText("Band A");
     await user.click(screen.getByRole("button", { name: "Modifier" }));
@@ -225,7 +225,7 @@ describe("ArtistsContent", () => {
       error: null,
     });
 
-    render(<ArtistsContent basePath="/admin/artists" isAddModalOpen={true} />);
+    render(<ArtistsContent isAddModalOpen={true} />);
 
     expect(await screen.findByTestId("modal")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Nom de l'artiste")).toBeInTheDocument();
@@ -242,7 +242,7 @@ describe("ArtistsContent", () => {
         error: null,
       });
 
-    render(<ArtistsContent basePath="/admin/artists" isAddModalOpen={true} />);
+    render(<ArtistsContent isAddModalOpen={true} />);
 
     await screen.findByTestId("modal");
 
@@ -303,7 +303,7 @@ describe("ArtistsContent", () => {
       error: null,
     });
 
-    render(<ArtistsContent basePath="/artists" />);
+    render(<ArtistsContent />);
 
     await screen.findByText("Band A");
     expect(
@@ -328,7 +328,7 @@ describe("ArtistsContent", () => {
       error: null,
     });
 
-    render(<ArtistsContent basePath="/admin/artists" />);
+    render(<ArtistsContent />);
 
     expect(await screen.findByText("Band A")).toBeInTheDocument();
     expect(screen.getByText("Band B")).toBeInTheDocument();

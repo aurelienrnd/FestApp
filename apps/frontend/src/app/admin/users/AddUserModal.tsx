@@ -11,7 +11,7 @@ import { isEmpty } from "../../../functions/validation";
 type AddUserModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  handleUser: (user: UserItem) => void;
+  handleUserSaved: (user: UserItem) => void;
   userToEdit?: UserItem | null;
 };
 
@@ -38,14 +38,14 @@ function isAddUserFormInvalid(
  * @param {AddUserModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
  * @param {() => void} props.onClose Ferme la modale.
- * @param {(user) => void} props.handleUser Met a jour la liste des users et ferme la modale.
+ * @param {(user) => void} props.handleUserSaved Met a jour la liste des users et ferme la modale.
  * @param {UserItem | null} props.userToEdit Utilisateur a modifier — pre-remplit le formulaire si defini.
  * @children ModalCloseButton Ferme la modale.
  */
 export default function AddUserModal({
   isOpen,
   onClose,
-  handleUser,
+  handleUserSaved,
   userToEdit = null,
 }: AddUserModalProps) {
   const isEditMode = userToEdit !== null;
@@ -83,7 +83,7 @@ export default function AddUserModal({
     if (isFormInvalid) return;
 
     mutate({ email, first_name: firstName, last_name: lastName, role }, (data) => {
-      handleUser(data.user);
+      handleUserSaved(data.user);
       resetForm();
     });
   };

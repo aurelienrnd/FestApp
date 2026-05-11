@@ -11,15 +11,15 @@ import { fetchPublic } from "../../functions/fetchPublic";
  * @function fetchPublic Effectue un fetch GET côté serveur avec revalidation ISR.
  */
 export default async function Home() {
-  const data = await fetchPublic<{ artists: HomeArtist[]; newsList: HomeNews[] }>(
+  const data = await fetchPublic<{ artists: HomeArtist[]; news: HomeNews[] }>(
     "/public/home",
-  ) ?? { artists: [], newsList: [] };
+  ) ?? { artists: [], news: [] };
 
   return (
     <>
       <HomeHero />
       <HomeProgrammation artists={data.artists} />
-      <HomeNews newsList={data.newsList ?? []} />
+      <HomeNews newsList={data.news ?? []} />
       <HomeInfosPratiques />
       <HomePartenaires />
     </>

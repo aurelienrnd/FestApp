@@ -21,7 +21,6 @@ type ArtistSummary = Omit<
  * Recupere les artistes via l'API puis affiche un etat de chargement/erreur.
  * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
  * @function getApiErrorMessage Definit un message a retourner selon le statut de l'erreur
- * @param {string} props.basePath Prefixe de route pour les liens de detail artiste (ex : "/artists" ou "/admin/artists").
  * @param {boolean} props.isAddModalOpen Ouvre la modale d'ajout artiste.
  * @param {() => void} props.onCloseAddModal Ferme la modale d'ajout artiste.
  * @param {string | null} props.activeFilter utilisee pour filtrer les artistes par jour — null affiche tous les artistes.
@@ -29,27 +28,26 @@ type ArtistSummary = Omit<
  * @function handleArtistAdded Ajoute l'artiste cree a la liste locale et ferme la modale.
  */
 export default function ArtistsContent({
-  basePath,
   isAddModalOpen = false,
   onCloseAddModal = () => {},
   activeFilter = null,
 }: {
-  basePath: string;
   isAddModalOpen?: boolean;
   onCloseAddModal?: () => void;
   activeFilter?: string | null;
 }) {
   // Verifie si le chemin d'acces contient "/admin" pour afficher les boutons de suppression
   const { isAdminPath } = useNavPath();
+  const basePath = isAdminPath ? "/admin/artists" : "/artists";
 
   const { data, isLoading, error } = useFetch<{ artists: ArtistSummary[] }>(
     "/public/artists",
   );
 
   // Liste mutable pour les ajouts et suppressions locaux
-  const [artists, setArtists] = useState<ArtistSummary[]>([]);
+  const [artistList, setArtistList] = useState<ArtistSummary[]>([]);
   useEffect(() => {
-    setArtists(data?.artists ?? []);
+    setArtistList(data?.artists ?? []);
   }, [data]);
 
   const {
@@ -59,14 +57,16 @@ export default function ArtistsContent({
     close: closeDeleteModal,
   } = useModal<ArtistSummary>();
 
-  // Retire l'artiste supprime de la liste locale
+  // Supprime l'artiste  de la liste après confirmation de suppression
   const handleArtistDeleted = (artistId: string) => {
-    setArtists((current) => current.filter((a) => a.id !== artistId));
+    setArtistList((current) =>
+      current.filter((artist) => artist.id !== artistId),
+    );
   };
 
   // Ajoute l'artiste cree a la liste locale puis ferme la modale
   const handleArtistAdded = (artist: ArtistItem) => {
-    setArtists((current) => [...current, artist]);
+    setArtistList((current) => [...current, artist]);
     onCloseAddModal();
   };
 
@@ -79,13 +79,13 @@ export default function ArtistsContent({
 
   // Filtre par date selectionnee puis trie par heure decroissante (plus tardif en haut)
   // Memoïse pour eviter de recalculer lors des re-renders sans rapport (ouverture modale, etc.)
-  const visibleArtists = useMemo(
+  const filteredArtists = useMemo(
     () =>
       (activeFilter
-        ? artists.filter((a) => a.start_time?.startsWith(activeFilter))
-        : artists
+        ? artistList.filter((a) => a.start_time?.startsWith(activeFilter))
+        : artistList
       ).sort((a, b) => toMinutes(b.start_time) - toMinutes(a.start_time)),
-    [artists, activeFilter],
+    [artistList, activeFilter],
   );
 
   return (
@@ -95,13 +95,13 @@ export default function ArtistsContent({
           <LoadingLine />
         ) : error ? (
           <p className="error-message">{error}</p>
-        ) : visibleArtists.length === 0 ? (
+        ) : filteredArtists.length === 0 ? (
           <div className="content-centered">
             <p>Aucun artiste.</p>
           </div>
         ) : (
           <ul className="flex w-full flex-col items-center gap-6">
-            {visibleArtists.map((artist, index) => (
+            {filteredArtists.map((artist, index) => (
               <li key={artist.id} className="card-row">
                 <div className="card-media-img-wrapper">
                   <Image

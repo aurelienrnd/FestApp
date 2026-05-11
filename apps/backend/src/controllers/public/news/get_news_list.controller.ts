@@ -13,7 +13,7 @@ export async function getNewsList(_req: Request, res: Response) {
   const isPrivileged =
     res.locals.userRole === "admin" || res.locals.userRole === "news";
 
-  const newsList = await query<Omit<NewsItem, "content" | "user_id">>(
+  const news = await query<Omit<NewsItem, "content" | "user_id">>(
     `SELECT a.id, a.title, a.is_published, a.created_at,
             a.url_media, a.description_media,
             u.display_name AS author_name
@@ -23,5 +23,5 @@ export async function getNewsList(_req: Request, res: Response) {
      ORDER BY a.created_at DESC`,
   );
 
-  return res.status(200).json({ newsList });
+  return res.status(200).json({ news });
 }

@@ -36,7 +36,7 @@ const mockHandleUser = vi.fn();
 const defaultProps = {
   isOpen: true,
   onClose: mockOnClose,
-  handleUser: mockHandleUser,
+  handleUserSaved: mockHandleUser,
 };
 
 // Donnees de test simulant la reponse de l'API apres creation

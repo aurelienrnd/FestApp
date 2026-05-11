@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import SideBarTool from "../../../components/SideBarTool";
-import { filterartistsItems } from "../../../config/ui";
+import { filterArtistsItems } from "../../../config/ui";
 import AddButton from "../../../components/AddButton";
 import ArtistsContent from "../../../components/ArtistsContent";
 
@@ -15,7 +15,7 @@ import ArtistsContent from "../../../components/ArtistsContent";
 export default function Page() {
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
-  const items = filterartistsItems.map((item) => ({
+  const items = filterArtistsItems.map((item) => ({
     ...item,
     active:
       item.value === activeFilter ||
@@ -30,7 +30,7 @@ export default function Page() {
         <h1 className="title1">Programmation</h1>
       </div>
       <SideBarTool items={items}>
-        <ArtistsContent basePath="/artists" activeFilter={activeFilter} />
+        <ArtistsContent activeFilter={activeFilter} />
       </SideBarTool>
     </section>
   );
