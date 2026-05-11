@@ -71,9 +71,8 @@ export const filterArtistsItems: NavItem[] = [
 
 /** Filtres affiches dans la navigation de la page News et admin/News. */
 export const filterNewsItems: NavItem[] = [
-  { labelBtn: "Toutes les news", active: true },
-  { labelBtn: "Croissant", active: false },
-  { labelBtn: "Decroissant", active: false },
+  { labelBtn: "Plus récent", active: true },
+  { labelBtn: "Plus ancien", active: false },
 ];
 
 /** Roles utilisateurs disponibles — source de vérité unique. */

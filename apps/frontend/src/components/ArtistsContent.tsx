@@ -19,8 +19,7 @@ type ArtistSummary = Omit<
 
 /** Affiche la liste des artistes filtrée par jour si activeFilter est defini.
  * Recupere les artistes via l'API puis affiche un etat de chargement/erreur.
- * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
- * @function getApiErrorMessage Definit un message a retourner selon le statut de l'erreur
+ * @function useFetch Recupere les artistes depuis l'API et gere les etats loading/error
  * @param {boolean} props.isAddModalOpen Ouvre la modale d'ajout artiste.
  * @param {() => void} props.onCloseAddModal Ferme la modale d'ajout artiste.
  * @param {string | null} props.activeFilter utilisee pour filtrer les artistes par jour — null affiche tous les artistes.
@@ -121,7 +120,7 @@ export default function ArtistsContent({
                       {artist.stage ?? "Scène non définie"}
                     </span>
                     {isAdminPath && artist.is_featured && (
-                      <span className="inline-flex items-center rounded-full bg-(--color-1) px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-white">
+                      <span className="inline-flex self-start items-center rounded-full bg-(--color-1) px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-white">
                         Page d&apos;accueil
                       </span>
                     )}

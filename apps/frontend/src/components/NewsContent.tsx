@@ -70,7 +70,7 @@ export default function NewsContent({
     const published = isAdminPath
       ? newsList.filter((n) => n.is_published)
       : newsList;
-    return activeFilter === "Croissant" ? [...published].reverse() : published;
+    return activeFilter === "Plus ancien" ? [...published].reverse() : published;
   }, [newsList, activeFilter, isAdminPath]);
 
   return (

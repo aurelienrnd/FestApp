@@ -22,15 +22,12 @@ export default function Page() {
   useRoleGuard();
 
   const { isOpen, open, close } = useModal();
-  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState("Plus récent");
 
   const items = filterNewsItems.map((item) => ({
     ...item,
-    active:
-      item.labelBtn === activeFilter ||
-      (item.labelBtn === "Toutes les news" && activeFilter === null),
-    onClick: () =>
-      setActiveFilter(item.labelBtn === "Toutes les news" ? null : (item.labelBtn ?? null)),
+    active: item.labelBtn === activeFilter,
+    onClick: () => setActiveFilter(item.labelBtn ?? "Plus récent"),
   }));
 
   return (

@@ -13,8 +13,7 @@ import { formatDateLong } from "../../../functions/formatDate";
 
 /** Affiche la liste des utilisateurs.
  * Recupere les utilisateurs via l'API puis affiche un etat de chargement/erreur.
- * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
- * @function getApiErrorMessage Definit un message a retourner selon le statut de l'erreur
+ * @function useFetch Recupere les utilisateurs depuis l'API et gere les etats loading/error
  * @param isAddModalOpen Ouvre la modale d'ajout utilisateur.
  * @param onCloseAddModal Ferme la modale d'ajout utilisateur.
  * @param filterBy filtre les utilisateurs

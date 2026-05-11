@@ -10,12 +10,11 @@ import { useMutation } from "../../../hooks/useMutation";
 import { isEmpty } from "../../../functions/validation";
 
 /** Affiche la page de connexion admin avec un formulaire email/mot de passe.
- * Envoie la requete de connexion via `apiRequest` avec les credentials inclus.
+ * Envoie la requete de connexion via `useMutation` avec les credentials inclus.
  * Affiche le message d'erreur API au-dessus du bouton en cas d'echec.
  * Redirige vers `/admin/dashboard` si la connexion reussit.
  * Ouvre une modale "Mot de passe oublie" au clic sur le bouton dedie.
- * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
- * @function getApiErrorMessage Definit un message a retourner a l'utilisateur selon le statut de l'erreur
+ * @function useMutation Envoie la requete POST de connexion et gere les etats loading/error
  * @children ForgotPassword Affiche le formulaire d'initialisation de reinitialisation du mot de passe.
  */
 export default function Page() {

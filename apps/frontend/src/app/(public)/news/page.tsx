@@ -13,15 +13,12 @@ import NewsContent from "../../../components/NewsContent";
  * @children NewsContent Affiche la liste des news filtree.
  */
 export default function Page() {
-  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState("Plus récent");
 
   const items = filterNewsItems.map((item) => ({
     ...item,
-    active:
-      item.labelBtn === activeFilter ||
-      (item.labelBtn === "Toutes les news" && activeFilter === null),
-    onClick: () =>
-      setActiveFilter(item.labelBtn === "Toutes les news" ? null : (item.labelBtn ?? null)),
+    active: item.labelBtn === activeFilter,
+    onClick: () => setActiveFilter(item.labelBtn ?? "Plus récent"),
   }));
 
   return (
