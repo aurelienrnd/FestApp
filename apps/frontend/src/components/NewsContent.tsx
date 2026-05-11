@@ -60,7 +60,9 @@ export default function NewsContent({
 
   // Ajoute la nouvelle news à la liste après ajout réussi
   const handleNewsAdded = (news: NewsItem) => {
-    setNewsList((current) => [...current, news]);
+    setNewsList((current) =>
+      activeFilter === "Plus ancien" ? [...current, news] : [news, ...current],
+    );
     onCloseAddModal();
   };
 
@@ -68,8 +70,8 @@ export default function NewsContent({
   // lors des re-renders sans rapport (ouverture modale, etc.)
   const filteredNews = useMemo(() => {
     const published = isAdminPath
-      ? newsList.filter((n) => n.is_published)
-      : newsList;
+      ? newsList
+      : newsList.filter((news) => news.is_published);
     return activeFilter === "Plus ancien" ? [...published].reverse() : published;
   }, [newsList, activeFilter, isAdminPath]);
 
