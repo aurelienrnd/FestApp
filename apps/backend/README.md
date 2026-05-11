@@ -110,8 +110,8 @@ apps/backend/
 │   │   └── public/
 │   │       ├── home/
 │   │       │   └── get_home.controller.ts
-│   │       ├── lineup/
-│   │       │   └── list_lineup.controller.ts
+│   │       ├── artists/
+│   │       │   └── list_artists.controller.ts
 │   │       └── news/
 │   │           ├── get_news_list.controller.ts
 │   │           └── get_news.controller.ts
@@ -135,7 +135,7 @@ apps/backend/
 │   │   ├── admin.users.routes.ts
 │   │   ├── contact.routes.ts
 │   │   ├── home.routes.ts
-│   │   ├── lineup.routes.ts
+│   │   ├── artists.routes.ts
 │   │   └── news.routes.ts
 │   ├── schemas/
 │   │   └── schema.ts
@@ -165,7 +165,7 @@ apps/backend/
 │   │   ├── get_home.controller.test.ts
 │   │   ├── hashPassword.test.ts
 │   │   ├── health.test.ts
-│   │   ├── list_lineup.controller.test.ts
+│   │   ├── list_artists.controller.test.ts
 │   │   ├── list_users.controller.test.ts
 │   │   ├── login.controller.test.ts
 │   │   ├── logout.controller.test.ts
@@ -270,7 +270,7 @@ Contient la logique métier des endpoints, organisée en deux espaces :
 | `admin/users/update_user.controller.ts`       | PATCH `/admin/users/:id`           | Modifie les informations d'un utilisateur                                                                                                       |
 | `admin/users/delete_user.controller.ts`       | DELETE `/admin/users/:id`          | Supprime définitivement un utilisateur                                                                                                         |
 | `public/home/get_home.controller.ts`          | GET `/public/home`                 | Retourne les artistes avec `is_featured = TRUE` et les 2 dernières news publiées (Promise.all)                                              |
-| `public/lineup/list_lineup.controller.ts`     | GET `/public/lineup`               | Liste tous les artistes avec leur concert associe (LEFT JOIN concerts)                                                                          |
+| `public/artists/list_artists.controller.ts`     | GET `/public/artists`               | Liste tous les artistes avec leur concert associe (LEFT JOIN concerts)                                                                          |
 | `public/news/get_news_list.controller.ts`     | GET `/public/news`                 | Liste les news — toutes si admin/news, publiées uniquement sinon (via `optionalAuth`)                                                       |
 | `public/news/get_news.controller.ts`          | GET `/public/news/:id`             | Retourne une news par son id — brouillons accessibles si admin/news (via `optionalAuth`)                                                    |
 | `contact/submit_contact.controller.ts`        | POST `/contact/submit`             | Transmet le message du formulaire de contact par email a l'organisation                                                                         |
@@ -289,7 +289,7 @@ Déclare les routes HTTP et connecte chaque endpoint à ses middlewares et son c
 | `admin.users.routes.ts`    | GET `/admin/users`, POST `/admin/users`, PATCH `/admin/users/:id`, DELETE `/admin/users/:id`                                                  |
 | `contact.routes.ts`        | POST `/contact/submit`                                                                                                                              |
 | `home.routes.ts`           | GET `/public/home`                                                                                                                                  |
-| `lineup.routes.ts`         | GET `/public/lineup`                                                                                                                                |
+| `artists.routes.ts`         | GET `/public/artists`                                                                                                                                |
 | `news.routes.ts`           | GET `/public/news`, GET `/public/news/:id`                                                                                                        |
 
 **Ordre des middlewares sur les routes protégées :**
@@ -393,7 +393,7 @@ Vitest exécute les tests, Supertest simule les appels HTTP sur l'API Express.
 | `delete_artist.controller.test.ts`   | Contrôleur `deleteArtist` — suppression, UUID invalide, artiste introuvable, erreur DB                             |
 | `update_artist.controller.test.ts`   | Contrôleur `updateArtist` — modification sans/avec image, UUID invalide, artiste introuvable, rollback transaction |
 | `get_home.controller.test.ts`        | Contrôleur `getHomeController` — artistes featured + news publiées, tableaux vides, erreur DB                     |
-| `list_lineup.controller.test.ts`     | Contrôleur `listLineup` — liste artistes avec concerts (LEFT JOIN)                                                 |
+| `list_artists.controller.test.ts`     | Contrôleur `listartists` — liste artistes avec concerts (LEFT JOIN)                                                 |
 | `login.controller.test.ts`           | Contrôleur `login`                                                                                                  |
 | `logout.controller.test.ts`          | Contrôleur `logout`                                                                                                 |
 | `change_password.controller.test.ts` | Contrôleur `changePassword` — vérification ancien mot de passe, mise à jour hash et `password_changed_at`      |

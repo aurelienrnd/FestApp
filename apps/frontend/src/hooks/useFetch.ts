@@ -4,7 +4,7 @@ import { apiRequest } from "../functions/apiRequest";
 import { getApiErrorMessage } from "../functions/getApiErrorMessage";
 
 /** Charge des données depuis l'API au montage du composant.
- * @param {string} endpoint Chemin de l'endpoint (ex : "/public/lineup").
+ * @param {string} endpoint Chemin de l'endpoint (ex : "/public/artists").
  * @returns { data: T | null, isLoading: boolean, error: string | null } - Les données chargées, l'état de chargement et l'erreur éventuelle.
  */
 export function useFetch<T>(endpoint: string): {

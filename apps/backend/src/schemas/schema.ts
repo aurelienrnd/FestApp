@@ -8,7 +8,7 @@ export const createUserSchema = z.object({
   email: z.email(), // pas de trim() ici car zod cree deja une regex qui prend en compte les espaces
   first_name: z.string().min(2).max(30).trim(),
   last_name: z.string().min(2).max(30).trim(),
-  role: z.enum(["admin", "lineup", "news"]),
+  role: z.enum(["admin", "artists", "news"]),
 });
 
 /** Schema Zod de changement de mot de passe — valide le mot de passe actuel et le nouveau (min 8 caracteres). */

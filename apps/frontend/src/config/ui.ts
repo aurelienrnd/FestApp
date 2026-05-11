@@ -3,7 +3,7 @@ import type { NavItem } from "../type";
 /** Liens affiches dans la navigation publique (visiteur non connecte). */
 export const navVisitorItems: NavItem[] = [
   { label: "Accueil", path: "/" },
-  { label: "Programmation", path: "/lineup" },
+  { label: "Programmation", path: "/artists" },
   { label: "News", path: "/news" },
   { label: "Information", path: "/practical-info" },
 ];
@@ -13,14 +13,28 @@ export const navAdminItem: NavItem[] = [
   {
     label: "Dashboard",
     path: "/admin/dashboard",
-    role: "admin, lineup, news",
+    role: "admin, artists, news",
   },
-  { label: "Programation", path: "/admin/lineup", role: "admin, lineup", desc: "Gérer la programmation artistique" },
-  { label: "News", path: "/admin/news", role: "admin, news", desc: "Gérer les news et actualités" },
-  { label: "Utilisateurs", path: "/admin/users", role: "admin", desc: "Gérer les comptes utilisateurs" },
+  {
+    label: "Programation",
+    path: "/admin/artists",
+    role: "admin, artists",
+    desc: "Gérer la programmation artistique",
+  },
+  {
+    label: "News",
+    path: "/admin/news",
+    role: "admin, news",
+    desc: "Gérer les news et actualités",
+  },
+  {
+    label: "Utilisateurs",
+    path: "/admin/users",
+    role: "admin",
+    desc: "Gérer les comptes utilisateurs",
+  },
   { labelBtn: "Logout", active: false },
 ];
-
 
 /** Items de navigation admin sans Dashboard ni Logout — utilisés pour les raccourcis du dashboard. */
 export const navAdminQuickLinks = navAdminItem.filter(
@@ -40,10 +54,10 @@ export function filterNavByRole(items: NavItem[], role: string): NavItem[] {
 
 import { FESTIVAL_DAYS } from "./festival";
 
-/** Filtres affiches dans la navigation de la page LineUp et admin/Lineup.
+/** Filtres affiches dans la navigation de la page artists et admin/artists.
  * Genere un bouton par jour du festival depuis FESTIVAL_DAYS.
  */
-export const filterLineUpItems: NavItem[] = [
+export const filterartistsItems: NavItem[] = [
   { labelBtn: "Toutes les dates", active: true },
   ...FESTIVAL_DAYS.map((d) => ({
     labelBtn: new Date(d).toLocaleDateString("fr-FR", {
@@ -65,12 +79,16 @@ export const filterNewsItems: NavItem[] = [
 /** Roles utilisateurs disponibles — source de vérité unique. */
 export const USER_ROLES = [
   { value: "admin", label: "Admin" },
-  { value: "lineup", label: "Line up" },
+  { value: "artists", label: "Line up" },
   { value: "news", label: "News" },
 ] as const;
 
 /** Filtres affiches dans la navigation de la admin/Users. */
 export const filterUsersItems: NavItem[] = [
   { labelBtn: "Tout", active: true, value: "all" },
-  ...USER_ROLES.map((r) => ({ labelBtn: r.label, active: false, value: r.value })),
+  ...USER_ROLES.map((r) => ({
+    labelBtn: r.label,
+    active: false,
+    value: r.value,
+  })),
 ];

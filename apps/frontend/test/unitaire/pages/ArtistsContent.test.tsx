@@ -1,7 +1,14 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import LineupContent from "../../../src/app/admin/lineup/LineupContent";
+import ArtistsContent from "../../../src/components/ArtistsContent";
 import { ApiRequestError } from "../../../src/functions/apiRequest";
 
 // Mock de FESTIVAL_DAYS avec des dates fixes pour eviter les valeurs dynamiques en production
@@ -59,7 +66,7 @@ const mockArtist = {
   end_time: "2025-06-20T19:30:00.000Z",
 };
 
-describe("LineupContent", () => {
+describe("ArtistsContent", () => {
   beforeEach(() => {
     mockApiRequest.mockReset();
     mockUseNavPath.mockReturnValue({ isAdminPath: true });
@@ -73,7 +80,7 @@ describe("LineupContent", () => {
   it("shows loading state while fetching", () => {
     mockApiRequest.mockReturnValue(new Promise(() => {}));
 
-    render(<LineupContent />);
+    render(<ArtistsContent basePath="/admin/artists" />);
 
     expect(screen.getByText("Chargement")).toBeInTheDocument();
   });
@@ -84,7 +91,7 @@ describe("LineupContent", () => {
       error: new ApiRequestError(undefined, 500),
     });
 
-    render(<LineupContent />);
+    render(<ArtistsContent basePath="/admin/artists" />);
 
     expect(
       await screen.findByText("Erreur serveur, reessayez plus tard."),
@@ -97,7 +104,7 @@ describe("LineupContent", () => {
       error: null,
     });
 
-    render(<LineupContent />);
+    render(<ArtistsContent basePath="/admin/artists" />);
 
     expect(await screen.findByText("Aucun artiste.")).toBeInTheDocument();
   });
@@ -108,7 +115,7 @@ describe("LineupContent", () => {
       error: null,
     });
 
-    render(<LineupContent />);
+    render(<ArtistsContent basePath="/admin/artists" />);
 
     expect(await screen.findByText("Band A")).toBeInTheDocument();
     expect(screen.getByText("Grande Scene")).toBeInTheDocument();
@@ -124,7 +131,7 @@ describe("LineupContent", () => {
       error: null,
     });
 
-    render(<LineupContent />);
+    render(<ArtistsContent basePath="/admin/artists" />);
 
     expect(await screen.findByText("Scène non définie")).toBeInTheDocument();
     expect(screen.getByText("Date non définie")).toBeInTheDocument();
@@ -150,7 +157,7 @@ describe("LineupContent", () => {
         error: null,
       });
 
-    render(<LineupContent />);
+    render(<ArtistsContent basePath="/admin/artists" />);
 
     await screen.findByText("Band A");
     await user.click(screen.getAllByRole("button", { name: "Supprimer" })[0]);
@@ -161,10 +168,14 @@ describe("LineupContent", () => {
       expect(screen.queryByText("Band A")).not.toBeInTheDocument();
     });
     expect(screen.getByText("Band B")).toBeInTheDocument();
-    expect(mockApiRequest).toHaveBeenNthCalledWith(2, "/admin/artists/artist-1", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-    });
+    expect(mockApiRequest).toHaveBeenNthCalledWith(
+      2,
+      "/admin/artists/artist-1",
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   });
 
   it("edits an artist and updates it in the list", async () => {
@@ -183,7 +194,7 @@ describe("LineupContent", () => {
         error: null,
       });
 
-    render(<LineupContent />);
+    render(<ArtistsContent basePath="/admin/artists" />);
 
     await screen.findByText("Band A");
     await user.click(screen.getByRole("button", { name: "Modifier" }));
@@ -191,7 +202,11 @@ describe("LineupContent", () => {
     // les champs sont pre-remplis, on navigue jusqu'a l'etape 3 et on soumet
     await user.click(screen.getByRole("button", { name: "Suivant" }));
     await user.click(screen.getByRole("button", { name: "Suivant" }));
-    await user.click(within(screen.getByTestId("modal")).getByRole("button", { name: "Modifier" }));
+    await user.click(
+      within(screen.getByTestId("modal")).getByRole("button", {
+        name: "Modifier",
+      }),
+    );
 
     await waitFor(() => {
       expect(screen.queryByText("Band A")).not.toBeInTheDocument();
@@ -210,12 +225,10 @@ describe("LineupContent", () => {
       error: null,
     });
 
-    render(<LineupContent isAddModalOpen={true} />);
+    render(<ArtistsContent basePath="/admin/artists" isAddModalOpen={true} />);
 
     expect(await screen.findByTestId("modal")).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText("Nom de l'artiste"),
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Nom de l'artiste")).toBeInTheDocument();
   });
 
   it("adds an artist and appends it to the list", async () => {
@@ -229,14 +242,20 @@ describe("LineupContent", () => {
         error: null,
       });
 
-    render(<LineupContent isAddModalOpen={true} />);
+    render(<ArtistsContent basePath="/admin/artists" isAddModalOpen={true} />);
 
     await screen.findByTestId("modal");
 
     // Etape 1 — infos textuelles
-    await user.type(screen.getByPlaceholderText("Nom de l'artiste"), "New Band");
+    await user.type(
+      screen.getByPlaceholderText("Nom de l'artiste"),
+      "New Band",
+    );
     await user.type(screen.getByPlaceholderText("Genre musical"), "Rock");
-    await user.type(screen.getByPlaceholderText("Origine (pays / ville)"), "France");
+    await user.type(
+      screen.getByPlaceholderText("Origine (pays / ville)"),
+      "France",
+    );
     await user.type(screen.getByPlaceholderText("Biographie"), "Une bio");
     await user.click(screen.getByRole("button", { name: "Suivant" }));
 
@@ -250,7 +269,10 @@ describe("LineupContent", () => {
     await user.click(screen.getByRole("button", { name: "Suivant" }));
 
     // Etape 3 — scene et horaires
-    await user.type(screen.getByPlaceholderText("Nom de la scène"), "Grande Scene");
+    await user.type(
+      screen.getByPlaceholderText("Nom de la scène"),
+      "Grande Scene",
+    );
     fireEvent.change(screen.getByLabelText("Date du concert"), {
       target: { value: "2025-06-20" },
     });
@@ -261,7 +283,9 @@ describe("LineupContent", () => {
       target: { value: "19:30" },
     });
     await user.click(
-      within(screen.getByTestId("modal")).getByRole("button", { name: "Ajouter" }),
+      within(screen.getByTestId("modal")).getByRole("button", {
+        name: "Ajouter",
+      }),
     );
 
     expect(await screen.findByText("New Band")).toBeInTheDocument();
@@ -279,7 +303,7 @@ describe("LineupContent", () => {
       error: null,
     });
 
-    render(<LineupContent />);
+    render(<ArtistsContent basePath="/artists" />);
 
     await screen.findByText("Band A");
     expect(
@@ -288,7 +312,9 @@ describe("LineupContent", () => {
     expect(
       screen.queryByRole("button", { name: "Supprimer" }),
     ).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Voir plus" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Voir plus" }),
+    ).toBeInTheDocument();
   });
 
   it("displays multiple artists", async () => {
@@ -302,7 +328,7 @@ describe("LineupContent", () => {
       error: null,
     });
 
-    render(<LineupContent />);
+    render(<ArtistsContent basePath="/admin/artists" />);
 
     expect(await screen.findByText("Band A")).toBeInTheDocument();
     expect(screen.getByText("Band B")).toBeInTheDocument();

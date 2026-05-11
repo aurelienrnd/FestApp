@@ -21,11 +21,11 @@ function formatConcertDateTime(isoString: string): string {
 /** Affiche le detail complet d'un artiste : image hero pleine largeur avec nom en overlay,
  * barre de date, biographie et liens sociaux.
  * @param {ArtistItem} props.artist Artiste a afficher.
- * @param {string} props.backPath Chemin du lien retour (defaut : "/lineup").
+ * @param {string} props.backPath Chemin du lien retour (defaut : "/artists").
  */
 export default function ArtistDetailContent({
   artist,
-  backPath = "/lineup",
+  backPath = "/artists",
 }: {
   artist: ArtistItem;
   backPath?: string;

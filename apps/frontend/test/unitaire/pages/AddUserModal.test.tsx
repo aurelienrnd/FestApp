@@ -44,7 +44,7 @@ const mockCreatedUser = {
   id: "user-1",
   email: "john@test.fr",
   display_name: "John Doe",
-  role: "lineup" as UserRole,
+  role: "artists" as UserRole,
   created_at: "2026-01-01T00:00:00.000Z",
 };
 
@@ -72,7 +72,7 @@ describe("AddUserModal", () => {
     await user.type(screen.getByPlaceholderText("Prenom"), "John");
     await user.type(screen.getByPlaceholderText("Nom"), "Doe");
     await user.type(screen.getByPlaceholderText("Email"), "john@test.fr");
-    await user.selectOptions(screen.getByRole("combobox"), "lineup");
+    await user.selectOptions(screen.getByRole("combobox"), "artists");
 
     expect(screen.getByRole("button", { name: "Ajouter" })).toBeEnabled();
   });
@@ -88,7 +88,7 @@ describe("AddUserModal", () => {
     await user.type(screen.getByPlaceholderText("Prenom"), "John");
     await user.type(screen.getByPlaceholderText("Nom"), "Doe");
     await user.type(screen.getByPlaceholderText("Email"), "john@test.fr");
-    await user.selectOptions(screen.getByRole("combobox"), "lineup");
+    await user.selectOptions(screen.getByRole("combobox"), "artists");
     await user.click(screen.getByRole("button", { name: "Ajouter" }));
 
     expect(mockApiRequest).toHaveBeenCalledWith("/admin/users", {
@@ -98,7 +98,7 @@ describe("AddUserModal", () => {
         email: "john@test.fr",
         first_name: "John",
         last_name: "Doe",
-        role: "lineup",
+        role: "artists",
       }),
     });
     expect(mockHandleUser).toHaveBeenCalledWith(mockCreatedUser);
@@ -142,7 +142,7 @@ describe("AddUserModal", () => {
     await user.type(screen.getByPlaceholderText("Prenom"), "John");
     await user.type(screen.getByPlaceholderText("Nom"), "Doe");
     await user.type(screen.getByPlaceholderText("Email"), "john@test.fr");
-    await user.selectOptions(screen.getByRole("combobox"), "lineup");
+    await user.selectOptions(screen.getByRole("combobox"), "artists");
     await user.click(screen.getByRole("button", { name: "Ajouter" }));
 
     expect(
@@ -156,7 +156,7 @@ describe("AddUserModal", () => {
       id: "user-42",
       email: "john@test.fr",
       display_name: "John Doe",
-      role: "lineup" as UserRole,
+      role: "artists" as UserRole,
       created_at: "2026-01-01T00:00:00.000Z",
     };
 
@@ -165,6 +165,8 @@ describe("AddUserModal", () => {
     expect(screen.getByPlaceholderText("Prenom")).toHaveValue("John");
     expect(screen.getByPlaceholderText("Nom")).toHaveValue("Doe");
     expect(screen.getByPlaceholderText("Email")).toHaveValue("john@test.fr");
-    expect(screen.getByRole("button", { name: "Modifier" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Modifier" }),
+    ).toBeInTheDocument();
   });
 });

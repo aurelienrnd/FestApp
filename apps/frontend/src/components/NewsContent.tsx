@@ -36,7 +36,9 @@ export default function NewsContent({
   const { isAdminPath } = useNavPath();
   const basePath = isAdminPath ? "/admin/news" : "/news";
 
-  const { data, isLoading, error } = useFetch<{ newsList: NewsSummary[] }>("/public/news");
+  const { data, isLoading, error } = useFetch<{ newsList: NewsSummary[] }>(
+    "/public/news",
+  );
 
   // Liste mutable pour les ajouts et suppressions locaux
   const [newsList, setNewsList] = useState<NewsSummary[]>([]);
@@ -97,7 +99,7 @@ export default function NewsContent({
                   />
                 </div>
 
-                <div className="card-lineup-content">
+                <div className="card-artists-content">
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
                       <span className="card-primary">{news.title}</span>
@@ -117,7 +119,7 @@ export default function NewsContent({
                   </span>
                 </div>
 
-                <div className="card-lineup-actions">
+                <div className="card-artists-actions">
                   <Link href={`${basePath}/${news.id}`} className="btn-cta">
                     Voir plus
                   </Link>

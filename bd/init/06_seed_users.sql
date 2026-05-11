@@ -10,10 +10,10 @@ VALUES (
 
 INSERT INTO users (email, password_hash, display_name, role, password_changed_at)
 VALUES (
-  'lineup@example.com',
+  'artists@example.com',
   '$2b$10$3Br0yYg6p5EclXJaHT/mpO0qq6A5niWuCpT8hM2FXlkl2YjOx.A7.', -- Hash bcrypt du mot de passe 'MyPassword'
-  'Lineup Manager',
-  'lineup',
+  'artists Manager',
+  'artists',
   NOW()
 );
 

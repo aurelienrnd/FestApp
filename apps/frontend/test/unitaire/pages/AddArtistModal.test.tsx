@@ -7,7 +7,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import AddArtistModal from "../../../src/app/admin/lineup/AddArtistModal";
+import AddArtistModal from "../../../src/app/admin/artists/AddArtistModal";
 import { ApiRequestError } from "../../../src/functions/apiRequest";
 
 // Mock de FESTIVAL_DAYS avec des dates fixes pour eviter les valeurs dynamiques en production
@@ -76,7 +76,10 @@ const mockArtist = {
 async function fillStep1(user: ReturnType<typeof userEvent.setup>) {
   await user.type(screen.getByPlaceholderText("Nom de l'artiste"), "Band A");
   await user.type(screen.getByPlaceholderText("Genre musical"), "Metal");
-  await user.type(screen.getByPlaceholderText("Origine (pays / ville)"), "France");
+  await user.type(
+    screen.getByPlaceholderText("Origine (pays / ville)"),
+    "France",
+  );
   await user.type(screen.getByPlaceholderText("Biographie"), "Une bio");
 }
 
@@ -131,7 +134,9 @@ describe("AddArtistModal", () => {
 
     expect(screen.getByPlaceholderText("Nom de l'artiste")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Genre musical")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Origine (pays / ville)")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Origine (pays / ville)"),
+    ).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Biographie")).toBeInTheDocument();
   });
 
@@ -235,9 +240,7 @@ describe("AddArtistModal", () => {
       error: null,
     });
 
-    render(
-      <AddArtistModal {...defaultProps} artistToEdit={mockArtist} />,
-    );
+    render(<AddArtistModal {...defaultProps} artistToEdit={mockArtist} />);
 
     // les champs sont pre-remplis, on navigue directement jusqu'a l'etape 3
     await user.click(screen.getByRole("button", { name: "Suivant" }));

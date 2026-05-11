@@ -27,7 +27,7 @@ export type UserCredentialsRow = {
 };
 
 /** Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`. */
-export type UserRole = "admin" | "lineup" | "news";
+export type UserRole = "admin" | "artists" | "news";
 
 /** Type representant les donnees utilisateur retournees par les endpoints de liste/CRUD — partage avec le front. */
 export type UserItem = {

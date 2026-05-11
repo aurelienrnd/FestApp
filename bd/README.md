@@ -41,15 +41,15 @@ Le dossier `init/` regroupe l'ensemble des scripts SQL exécutés automatiquemen
 
 Stocke les comptes des utilisateurs administrateurs de l'application.
 
-| Colonne               | Type               | Contraintes               | Description                                       |
-| --------------------- | ------------------ | ------------------------- | ------------------------------------------------- |
-| `id`                  | `UUID`             | PRIMARY KEY               | Identifiant unique, généré automatiquement        |
-| `email`               | `CITEXT`           | NOT NULL, UNIQUE          | Email insensible à la casse                       |
-| `password_hash`       | `VARCHAR(255)`     | NOT NULL                  | Mot de passe hashé (bcrypt)                       |
-| `display_name`        | `VARCHAR(100)`     | NOT NULL                  | Nom affiché dans l'interface admin                |
-| `role`                | `user_role` (ENUM) | NOT NULL                  | Rôle de l'utilisateur (`admin`, `lineup`, `news`) |
-| `password_changed_at` | `TIMESTAMPTZ`      | NULL                      | Date du dernier changement de mot de passe        |
-| `created_at`          | `TIMESTAMPTZ`      | NOT NULL, DEFAULT `NOW()` | Date de création du compte                        |
+| Colonne               | Type               | Contraintes               | Description                                        |
+| --------------------- | ------------------ | ------------------------- | -------------------------------------------------- |
+| `id`                  | `UUID`             | PRIMARY KEY               | Identifiant unique, généré automatiquement         |
+| `email`               | `CITEXT`           | NOT NULL, UNIQUE          | Email insensible à la casse                        |
+| `password_hash`       | `VARCHAR(255)`     | NOT NULL                  | Mot de passe hashé (bcrypt)                        |
+| `display_name`        | `VARCHAR(100)`     | NOT NULL                  | Nom affiché dans l'interface admin                 |
+| `role`                | `user_role` (ENUM) | NOT NULL                  | Rôle de l'utilisateur (`admin`, `artists`, `news`) |
+| `password_changed_at` | `TIMESTAMPTZ`      | NULL                      | Date du dernier changement de mot de passe         |
+| `created_at`          | `TIMESTAMPTZ`      | NOT NULL, DEFAULT `NOW()` | Date de création du compte                         |
 
 > **Choix de conception :** Le rôle utilisateur est une valeur parmi un ensemble fermé et connu à l'avance. Un type `ENUM` PostgreSQL (`user_role`) garantit la contrainte directement en base — toute valeur invalide est rejetée même en contournant l'API. Une table `ROLE` séparée aurait été possible en Merise strict mais aurait ajouté une jointure inutile.
 
@@ -174,11 +174,11 @@ Les fichiers `06` à `09` sont exécutés après la création des tables. Ils in
 
 Insère 3 utilisateurs couvrant chacun des rôles disponibles.
 
-| Email                | Display name   | Rôle     |
-| -------------------- | -------------- | -------- |
-| `admin@example.com`  | Admin          | `admin`  |
-| `lineup@example.com` | Lineup Manager | `lineup` |
-| `news@example.com`   | News Editor    | `news`   |
+| Email                 | Display name    | Rôle      |
+| --------------------- | --------------- | --------- |
+| `admin@example.com`   | Admin           | `admin`   |
+| `artists@example.com` | artists Manager | `artists` |
+| `news@example.com`    | News Editor     | `news`    |
 
 ---
 

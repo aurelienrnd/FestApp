@@ -60,7 +60,7 @@ export default function HomeProgrammation({
         })}
       </div>
 
-      <SectionCta href="/lineup" label="Voir plus" />
+      <SectionCta href="/artists" label="Voir plus" />
     </section>
   );
 }

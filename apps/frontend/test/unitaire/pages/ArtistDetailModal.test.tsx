@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import ArtistDetailModal from "../../../src/app/admin/lineup/ArtistDetailModal";
+import ArtistDetailModal from "../../../src/app/admin/artists/ArtistDetailModal";
 
 // Mock de react-modal — affiche le contenu si isOpen est true
 vi.mock("react-modal", () => {
@@ -19,7 +19,9 @@ vi.mock("react-modal", () => {
 // next/image n'est pas compatible avec jsdom (environnement de test) — on le remplace par un <img> brut.
 vi.mock("next/image", () => ({
   // eslint-disable-next-line @next/next/no-img-element
-  default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
+  default: ({ src, alt }: { src: string; alt: string }) => (
+    <img src={src} alt={alt} />
+  ),
 }));
 
 // Callback mocke passe en prop onClose a la modale
@@ -124,8 +126,12 @@ describe("ArtistDetailModal", () => {
         artist={mockArtist}
       />,
     );
-    expect(screen.queryByRole("link", { name: "YouTube" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Spotify" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "YouTube" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Spotify" }),
+    ).not.toBeInTheDocument();
   });
 
   it("affiche le lien YouTube quand youtube_url est defini", () => {

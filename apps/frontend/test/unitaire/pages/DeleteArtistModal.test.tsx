@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import DeleteArtistModal from "../../../src/app/admin/lineup/DeleteArtistModal";
+import DeleteArtistModal from "../../../src/app/admin/artists/DeleteArtistModal";
 import { ApiRequestError } from "../../../src/functions/apiRequest";
 
 // Mock de react-modal — affiche le contenu si isOpen est true

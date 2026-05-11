@@ -7,11 +7,11 @@ Il s'appuie sur une architecture frontend / backend / base de données orchestr�
 
 ## Stack technique
 
-| Couche               | Technologie                                      |
-| -------------------- | ------------------------------------------------ |
+| Couche                     | Technologie                                      |
+| -------------------------- | ------------------------------------------------ |
 | **Frontend**         | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
 | **Backend**          | Express.js 5, TypeScript, Node.js 20             |
-| **Base de données**  | PostgreSQL 16 (Alpine)                           |
+| **Base de données** | PostgreSQL 16 (Alpine)                           |
 | **Authentification** | JWT, bcrypt, cookies httpOnly                    |
 | **Validation**       | Zod                                              |
 | **Tests**            | Vitest, Supertest, React Testing Library         |
@@ -131,22 +131,22 @@ Ce dossier inclut :
 
 **Pages publiques :**
 
-| Route             | Description                                    |
-| ----------------- | ---------------------------------------------- |
-| `/`               | Page d'accueil                                 |
-| `/lineup`         | Programmation — liste des artistes du festival |
-| `/news`           | Actualités de l'événement                      |
-| `/practical-info` | Informations pratiques                         |
+| Route               | Description                                     |
+| ------------------- | ----------------------------------------------- |
+| `/`               | Page d'accueil                                  |
+| `/artists`        | Programmation — liste des artistes du festival |
+| `/news`           | Actualités de l'événement                    |
+| `/practical-info` | Informations pratiques                          |
 | `/login`          | Connexion à l'interface d'administration       |
 
 **Pages d'administration (accès protégé) :**
 
-| Route              | Description                 |
-| ------------------ | --------------------------- |
+| Route                | Description                 |
+| -------------------- | --------------------------- |
 | `/admin/dashboard` | Tableau de bord             |
-| `/admin/lineup`    | Gestion de la programmation |
+| `/admin/artists`   | Gestion de la programmation |
 | `/admin/users`     | Gestion des utilisateurs    |
-| `/admin/news`      | Gestion des actualités      |
+| `/admin/news`      | Gestion des actualités     |
 
 ### `apps/backend/`
 
@@ -161,26 +161,26 @@ Ce dossier inclut :
 
 **Endpoints disponibles :**
 
-| Méthode | Route                         | Accès                       | Description                                                                             |
-| ------- | ----------------------------- | --------------------------- | --------------------------------------------------------------------------------------- |
-| GET     | `/public/lineup`              | Public                      | Liste tous les artistes avec leur concert associé                                       |
-| GET     | `/public/news`                | Public / Privilégié         | Liste des news (tous si admin/news, publiés sinon)                                      |
-| POST    | `/admin/auth/login`           | Public                      | Connexion (rate limité)                                                                 |
-| POST    | `/admin/auth/logout`          | Authentifié                 | Déconnexion                                                                             |
-| GET     | `/admin/auth/me`              | Authentifié                 | Infos utilisateur connecté + renouvellement du token                                    |
-| PATCH   | `/admin/auth/password`        | Authentifié                 | Modifier son mot de passe                                                               |
-| POST    | `/admin/auth/forgot-password` | Public                      | Réinitialiser son mot de passe (rate limité)                                            |
-| POST    | `/admin/news`                 | Authentifié (admin, news)   | Créer un news avec upload image                                                         |
-| PATCH   | `/admin/news/:id`             | Authentifié (admin, news)   | Modifier un news (image optionnelle)                                                    |
-| DELETE  | `/admin/news/:id`             | Authentifié (admin, news)   | Supprimer un news et son image                                                          |
-| POST    | `/admin/artists`              | Authentifié (admin, lineup) | Créer un artiste avec upload image et concert associé                                   |
-| PATCH   | `/admin/artists/:id`          | Authentifié (admin, lineup) | Modifier un artiste (image optionnelle) et son concert                                  |
-| DELETE  | `/admin/artists/:id`          | Authentifié (admin, lineup) | Supprimer un artiste, son concert et son image                                          |
-| GET     | `/admin/users`                | Authentifié (admin)         | Liste des utilisateurs admin                                                            |
-| POST    | `/admin/users`                | Authentifié (admin)         | Créer un utilisateur admin                                                              |
-| PATCH   | `/admin/users/:id`            | Authentifié (admin)         | Modifier un utilisateur                                                                 |
-| DELETE  | `/admin/users/:id`            | Authentifié (admin)         | Supprimer un utilisateur — redirige vers `/login` si l'utilisateur se supprime lui-même |
-| POST    | `/contact/submit`             | Public                      | Envoyer un message de contact                                                           |
+| Méthode | Route                           | Accès                        | Description                                                                                 |
+| -------- | ------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------- |
+| GET      | `/public/artists`             | Public                        | Liste tous les artistes avec leur concert associé                                          |
+| GET      | `/public/news`                | Public / Privilégié         | Liste des news (tous si admin/news, publiés sinon)                                         |
+| POST     | `/admin/auth/login`           | Public                        | Connexion (rate limité)                                                                    |
+| POST     | `/admin/auth/logout`          | Authentifié                  | Déconnexion                                                                                |
+| GET      | `/admin/auth/me`              | Authentifié                  | Infos utilisateur connecté + renouvellement du token                                       |
+| PATCH    | `/admin/auth/password`        | Authentifié                  | Modifier son mot de passe                                                                   |
+| POST     | `/admin/auth/forgot-password` | Public                        | Réinitialiser son mot de passe (rate limité)                                              |
+| POST     | `/admin/news`                 | Authentifié (admin, news)    | Créer un news avec upload image                                                            |
+| PATCH    | `/admin/news/:id`             | Authentifié (admin, news)    | Modifier un news (image optionnelle)                                                        |
+| DELETE   | `/admin/news/:id`             | Authentifié (admin, news)    | Supprimer un news et son image                                                              |
+| POST     | `/admin/artists`              | Authentifié (admin, artists) | Créer un artiste avec upload image et concert associé                                     |
+| PATCH    | `/admin/artists/:id`          | Authentifié (admin, artists) | Modifier un artiste (image optionnelle) et son concert                                      |
+| DELETE   | `/admin/artists/:id`          | Authentifié (admin, artists) | Supprimer un artiste, son concert et son image                                              |
+| GET      | `/admin/users`                | Authentifié (admin)          | Liste des utilisateurs admin                                                                |
+| POST     | `/admin/users`                | Authentifié (admin)          | Créer un utilisateur admin                                                                 |
+| PATCH    | `/admin/users/:id`            | Authentifié (admin)          | Modifier un utilisateur                                                                     |
+| DELETE   | `/admin/users/:id`            | Authentifié (admin)          | Supprimer un utilisateur — redirige vers `/login` si l'utilisateur se supprime lui-même |
+| POST     | `/contact/submit`             | Public                        | Envoyer un message de contact                                                               |
 
 > La documentation complète des endpoints est disponible dans [`apps/backend/API.md`](apps/backend/API.md).
 
@@ -189,7 +189,7 @@ Ce dossier inclut :
 Chaque utilisateur admin possède un rôle qui détermine ses droits :
 
 - `admin` — accès complet à toutes les fonctionnalités
-- `lineup` — gestion de la programmation artistique
+- `artists` — gestion de la programmation artistique
 - `news` — gestion des actualités
 
 ---

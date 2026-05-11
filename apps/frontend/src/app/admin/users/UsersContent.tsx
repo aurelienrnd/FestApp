@@ -28,7 +28,7 @@ export default function UsersContent({
 }: {
   isAddModalOpen?: boolean;
   onCloseAddModal?: () => void;
-  filterBy?: "all" | "admin" | "lineup" | "news";
+  filterBy?: "all" | "admin" | "artists" | "news";
 }) {
   // Navigation et contexte utilisateur
   const router = useRouter();

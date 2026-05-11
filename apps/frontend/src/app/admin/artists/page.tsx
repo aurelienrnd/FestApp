@@ -3,20 +3,20 @@
 import { useState } from "react";
 import { useModal } from "../../../hooks/useModal";
 import SideBarTool from "../../../components/SideBarTool";
-import { filterLineUpItems } from "../../../config/ui";
+import { filterartistsItems } from "../../../config/ui";
 import AddButton from "../../../components/AddButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import LineupContent from "../../../components/LineupContent";
+import ArtistsContent from "../../../components/ArtistsContent";
 import { useRoleGuard } from "../../../hooks/useRoleGuard";
 
 /** Page admin de gestion des artistes.
  * Affiche les filtres et la liste des artistes.
- * Gere le filtre actif par jour et le transmet a LineupContent.
+ * Gere le filtre actif par jour et le transmet a ArtistsContent.
  * Ouvre une modale permettant d'ajouter un artiste.
  * @children SideBarTool : Affiche une navigation sticky sur desktop
  * @children AddButton : Affiche la navigation des filtres sur mobile
- * @children LineupContent : Affiche le contenu de la page artistes filtree
+ * @children ArtistsContent : Affiche le contenu de la page artistes filtree
  */
 export default function Page() {
   // Verifie que l'utilisateur a les droits d'accès à la page admin
@@ -26,7 +26,7 @@ export default function Page() {
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   // Mappe les items de filtre pour ajouter la logique d'activation et de clic
-  const items = filterLineUpItems.map((item) => ({
+  const items = filterartistsItems.map((item) => ({
     ...item,
     active:
       item.value === activeFilter ||
@@ -42,7 +42,7 @@ export default function Page() {
         <button
           type="button"
           className="mb-(--ctx-title-mb)"
-          aria-label="Ouvrir les filtres"
+          aria-label="Ajouter un artiste"
           onClick={() => open()}
         >
           <FontAwesomeIcon icon={faPlus} />
@@ -50,8 +50,8 @@ export default function Page() {
       </div>
 
       <SideBarTool items={items}>
-        <LineupContent
-          basePath="/admin/lineup"
+        <ArtistsContent
+          basePath="/admin/artists"
           isAddModalOpen={isOpen}
           onCloseAddModal={close}
           activeFilter={activeFilter}

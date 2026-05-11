@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS users CASCADE;
 DROP TYPE IF EXISTS user_role CASCADE;
 
 -- Type ENUM pour les roles utilisateur -- valeurs autorisees uniquement
-CREATE TYPE user_role AS ENUM ('admin', 'lineup', 'news');
+CREATE TYPE user_role AS ENUM ('admin', 'artists', 'news');
 
 -- Table des utilisateurs administrateurs
 CREATE TABLE users (
@@ -16,7 +16,7 @@ CREATE TABLE users (
   email CITEXT NOT NULL UNIQUE,                         -- Email insensible a la casse, doit etre unique
   password_hash VARCHAR(255) NOT NULL,                  -- Mot de passe chiffre (hashe en backend)
   display_name VARCHAR(100) NOT NULL,                   -- Nom affiche dans l'espace d'administration
-  role user_role NOT NULL,                              -- Role de l'utilisateur (admin, lineup, news)
+  role user_role NOT NULL,                              -- Role de l'utilisateur (admin, artists, news)
   password_changed_at TIMESTAMPTZ NULL,                 -- Date/heure du dernier changement de mot de passe
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()         -- Date de creation
 );

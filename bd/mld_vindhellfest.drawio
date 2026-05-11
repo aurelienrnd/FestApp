@@ -67,7 +67,7 @@
             <mxRectangle height="30" width="50" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="users_role_v" parent="users_role" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="role (ENUM: admin, lineup, news)" vertex="1">
+        <mxCell id="users_role_v" parent="users_role" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="role (ENUM: admin, artists, news)" vertex="1">
           <mxGeometry height="30" width="270" x="50" as="geometry">
             <mxRectangle height="30" width="270" as="alternateBounds" />
           </mxGeometry>

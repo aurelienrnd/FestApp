@@ -95,10 +95,10 @@
   .card-media-img {
     @apply rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none object-cover;
   }
-  .card-lineup-content {
+  .card-artists-content {
     @apply flex flex-1 flex-col lg:flex-row items-start lg:items-center justify-between gap-4 py-3 px-4;
   }
-  .card-lineup-actions {
+  .card-artists-actions {
     @apply flex justify-center items-center gap-3 mb-3 lg:m-3;
   }
 

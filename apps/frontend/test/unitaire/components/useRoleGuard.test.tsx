@@ -57,11 +57,14 @@ describe("useRoleGuard", () => {
     expect(mockReplace).not.toHaveBeenCalled();
   });
 
-  it("redirige vers /admin/dashboard quand le role lineup accede a /admin/users", () => {
+  it("redirige vers /admin/dashboard quand le role artists accede a /admin/users", () => {
     mockPathname = "/admin/users";
     render(
       <AdminUserProvider
-        value={{ user: { ...baseUser, role: "lineup" }, mustChangePassword: false }}
+        value={{
+          user: { ...baseUser, role: "artists" },
+          mustChangePassword: false,
+        }}
       >
         <Consumer />
       </AdminUserProvider>,
@@ -73,7 +76,10 @@ describe("useRoleGuard", () => {
     mockPathname = "/admin/news";
     render(
       <AdminUserProvider
-        value={{ user: { ...baseUser, role: "news" }, mustChangePassword: false }}
+        value={{
+          user: { ...baseUser, role: "news" },
+          mustChangePassword: false,
+        }}
       >
         <Consumer />
       </AdminUserProvider>,
@@ -81,11 +87,14 @@ describe("useRoleGuard", () => {
     expect(mockReplace).not.toHaveBeenCalled();
   });
 
-  it("redirige quand le role news accede a /admin/lineup", () => {
-    mockPathname = "/admin/lineup";
+  it("redirige quand le role news accede a /admin/artists", () => {
+    mockPathname = "/admin/artists";
     render(
       <AdminUserProvider
-        value={{ user: { ...baseUser, role: "news" }, mustChangePassword: false }}
+        value={{
+          user: { ...baseUser, role: "news" },
+          mustChangePassword: false,
+        }}
       >
         <Consumer />
       </AdminUserProvider>,
@@ -97,7 +106,10 @@ describe("useRoleGuard", () => {
     mockPathname = "/une-route-inconnue";
     render(
       <AdminUserProvider
-        value={{ user: { ...baseUser, role: "news" }, mustChangePassword: false }}
+        value={{
+          user: { ...baseUser, role: "news" },
+          mustChangePassword: false,
+        }}
       >
         <Consumer />
       </AdminUserProvider>,

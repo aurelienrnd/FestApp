@@ -12,20 +12,23 @@ import type { ArtistItem } from "../type";
 import LoadingLine from "./LoadingLine";
 import { formatConcertDatetime } from "../functions/formatDate";
 
-type ArtistSummary = Omit<ArtistItem, "bio" | "genre" | "origin" | "youtube_url" | "spotify_url" | "end_time">;
+type ArtistSummary = Omit<
+  ArtistItem,
+  "bio" | "genre" | "origin" | "youtube_url" | "spotify_url" | "end_time"
+>;
 
 /** Affiche la liste des artistes filtrée par jour si activeFilter est defini.
  * Recupere les artistes via l'API puis affiche un etat de chargement/erreur.
  * @function apiRequest Envoie une requete HTTP a l'API avec `fetch`
  * @function getApiErrorMessage Definit un message a retourner selon le statut de l'erreur
- * @param {string} props.basePath Prefixe de route pour les liens de detail artiste (ex : "/lineup" ou "/admin/lineup").
+ * @param {string} props.basePath Prefixe de route pour les liens de detail artiste (ex : "/artists" ou "/admin/artists").
  * @param {boolean} props.isAddModalOpen Ouvre la modale d'ajout artiste.
  * @param {() => void} props.onCloseAddModal Ferme la modale d'ajout artiste.
  * @param {string | null} props.activeFilter utilisee pour filtrer les artistes par jour — null affiche tous les artistes.
  * @children AddArtistModal - Affiche la modale d'ajout d'artiste.
  * @function handleArtistAdded Ajoute l'artiste cree a la liste locale et ferme la modale.
  */
-export default function LineupContent({
+export default function ArtistsContent({
   basePath,
   isAddModalOpen = false,
   onCloseAddModal = () => {},
@@ -39,7 +42,9 @@ export default function LineupContent({
   // Verifie si le chemin d'acces contient "/admin" pour afficher les boutons de suppression
   const { isAdminPath } = useNavPath();
 
-  const { data, isLoading, error } = useFetch<{ artists: ArtistSummary[] }>("/public/lineup");
+  const { data, isLoading, error } = useFetch<{ artists: ArtistSummary[] }>(
+    "/public/artists",
+  );
 
   // Liste mutable pour les ajouts et suppressions locaux
   const [artists, setArtists] = useState<ArtistSummary[]>([]);
@@ -109,7 +114,7 @@ export default function LineupContent({
                   />
                 </div>
 
-                <div className="card-lineup-content">
+                <div className="card-artists-content">
                   <div className="flex flex-col gap-1">
                     <span className="card-primary">{artist.name}</span>
                     <span className="card-secondary uppercase">
@@ -129,7 +134,9 @@ export default function LineupContent({
                         : null;
                       return (
                         <>
-                          <span>{concert ? concert.date : "Date non définie"}</span>
+                          <span>
+                            {concert ? concert.date : "Date non définie"}
+                          </span>
                           <span>{concert ? concert.time : ""}</span>
                         </>
                       );
@@ -137,7 +144,7 @@ export default function LineupContent({
                   </div>
                 </div>
 
-                <div className="card-lineup-actions">
+                <div className="card-artists-actions">
                   <Link href={`${basePath}/${artist.id}`} className="btn-cta">
                     Voir plus
                   </Link>

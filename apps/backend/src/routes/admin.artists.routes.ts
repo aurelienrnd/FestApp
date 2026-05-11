@@ -19,7 +19,7 @@ router.post(
   "/artists",
   asyncHandler(auth),
   asyncHandler(sessionIsOpen),
-  requireRole("admin", "lineup"),
+  requireRole("admin", "artists"),
   upload.single("image"),
   validateBody(createArtistSchema),
   asyncHandler(createArtist),
@@ -29,7 +29,7 @@ router.patch(
   "/artists/:id",
   asyncHandler(auth),
   asyncHandler(sessionIsOpen),
-  requireRole("admin", "lineup"),
+  requireRole("admin", "artists"),
   upload.single("image"),
   validateBody(createArtistSchema),
   asyncHandler(updateArtist),
@@ -39,7 +39,7 @@ router.delete(
   "/artists/:id",
   asyncHandler(auth),
   asyncHandler(sessionIsOpen),
-  requireRole("admin", "lineup"),
+  requireRole("admin", "artists"),
   asyncHandler(deleteArtist),
 ); // Supprimer un artiste
 

@@ -9,7 +9,7 @@ import adminAuth from "./routes/admin.auth.routes";
 import adminUser from "./routes/admin.users.routes";
 import contact from "./routes/contact.routes";
 import publicHome from "./routes/home.routes";
-import publicLineup from "./routes/lineup.routes";
+import publicartists from "./routes/artists.routes";
 import publicNews from "./routes/news.routes";
 import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
 
@@ -88,7 +88,7 @@ export function createApp() {
   app.use("/admin", adminUser);
   app.use("/contact", contact);
   app.use("/public", publicHome);
-  app.use("/public", publicLineup);
+  app.use("/public", publicartists);
   app.use("/public", publicNews);
 
   // Handlers globaux de fin de chaine

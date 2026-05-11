@@ -9,8 +9,8 @@ import ArtistDetailContent from "../../../../components/ArtistDetailContent";
 import ArtistEditButton from "../ArtistEditButton";
 
 /** Page admin de détail d'un artiste.
- * Récupère l'artiste via GET /public/lineup/:id avec les cookies d'auth.
- * Les restrictions de rôle de /admin/lineup s'appliquent automatiquement via useRoleGuard.
+ * Récupère l'artiste via GET /public/artists/:id avec les cookies d'auth.
+ * Les restrictions de rôle de /admin/artists s'appliquent automatiquement via useRoleGuard.
  * @children ArtistDetailContent Affiche les informations complètes de l'artiste.
  * @children ArtistEditButton Bouton d'édition réservé à l'interface admin.
  */
@@ -18,7 +18,9 @@ export default function AdminArtistPage() {
   useRoleGuard();
 
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading, error } = useFetch<{ artist: ArtistItem }>(`/public/lineup/${id}`);
+  const { data, isLoading, error } = useFetch<{ artist: ArtistItem }>(
+    `/public/artists/${id}`,
+  );
 
   // État mutable pour les mises à jour locales après édition
   const [artist, setArtist] = useState<ArtistItem | null>(null);
@@ -31,7 +33,7 @@ export default function AdminArtistPage() {
 
   return (
     <>
-      <ArtistDetailContent artist={artist} backPath="/admin/lineup" />
+      <ArtistDetailContent artist={artist} backPath="/admin/artists" />
       <ArtistEditButton
         artist={artist}
         onArtistEdited={(updated) => setArtist(updated)}

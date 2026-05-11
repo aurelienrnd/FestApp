@@ -7,9 +7,9 @@
 | POST    | `/admin/news`                 | admin, news         | Créer une news (multipart/form-data)                                     |
 | PATCH   | `/admin/news/:id`             | admin, news         | Modifier une news (multipart/form-data)                                  |
 | DELETE  | `/admin/news/:id`             | admin, news         | Supprimer une news et son fichier image                                  |
-| POST    | `/admin/artists`              | admin, lineup       | Créer un artiste (multipart/form-data)                                   |
-| PATCH   | `/admin/artists/:id`          | admin, lineup       | Modifier un artiste (multipart/form-data)                                |
-| DELETE  | `/admin/artists/:id`          | admin, lineup       | Supprimer un artiste et son concert associé                              |
+| POST    | `/admin/artists`              | admin, artists      | Créer un artiste (multipart/form-data)                                   |
+| PATCH   | `/admin/artists/:id`          | admin, artists      | Modifier un artiste (multipart/form-data)                                |
+| DELETE  | `/admin/artists/:id`          | admin, artists      | Supprimer un artiste et son concert associé                              |
 | POST    | `/admin/auth/login`           | Public              | Connexion administrateur                                                 |
 | POST    | `/admin/auth/logout`          | Authentifié         | Déconnexion                                                              |
 | GET     | `/admin/auth/me`              | Authentifié         | Informations utilisateur + renouvellement token                          |
@@ -21,8 +21,8 @@
 | DELETE  | `/admin/users/:id`            | admin               | Supprimer un utilisateur                                                 |
 | POST    | `/contact/submit`             | Public              | Soumettre le formulaire de contact                                       |
 | GET     | `/public/home`                | Public              | Données agrégées pour la page d'accueil (artistes mis en avant + 2 news) |
-| GET     | `/public/lineup`              | Public              | Liste des artistes de la programmation                                   |
-| GET     | `/public/lineup/:id`          | Public              | Détail d'un artiste                                                      |
+| GET     | `/public/artists`             | Public              | Liste des artistes de la programmation                                   |
+| GET     | `/public/artists/:id`         | Public              | Détail d'un artiste                                                      |
 | GET     | `/public/news`                | Public / Privilégié | Liste des news (tous si admin/news, publiés sinon)                       |
 | GET     | `/public/news/:id`            | Public / Privilégié | Détail d'un news (brouillons accessibles si admin/news)                  |
 | GET     | `/health`                     | Public              | Santé du serveur (diagnostic)                                            |
@@ -78,9 +78,9 @@ Réponses d'erreur :
 
 ---
 
-Base path: `/public/lineup`
+Base path: `/public/artists`
 
-### GET `/public/lineup`
+### GET `/public/artists`
 
 Afficher la programmation (liste des artistes).
 
@@ -110,13 +110,13 @@ Reponse en succes:
 ```
 
 > `stage` et `start_time` sont `null` si aucun concert n'est encore associe a l'artiste (LEFT JOIN).
-> `bio`, `genre`, `origin`, `youtube_url`, `spotify_url` et `end_time` ne sont pas retournes dans la liste — utiliser `GET /public/lineup/:id` pour recuperer l'artiste complet.
+> `bio`, `genre`, `origin`, `youtube_url`, `spotify_url` et `end_time` ne sont pas retournes dans la liste — utiliser `GET /public/artists/:id` pour recuperer l'artiste complet.
 
 Reponses d'erreur:
 
 - `500` `{ "error": "Erreur serveur" }`
 
-### GET `/public/lineup/:id`
+### GET `/public/artists/:id`
 
 Retourne le detail d'un artiste par son identifiant, avec son concert associe si existant.
 
@@ -429,7 +429,7 @@ Reponses d'erreur:
 
 Base path: `/admin/users`
 
-> Toutes les routes de cette section sont réservées au rôle `admin`. Un rôle `lineup` ou `news` recevra une réponse `403`.
+> Toutes les routes de cette section sont réservées au rôle `admin`. Un rôle `artists` ou `news` recevra une réponse `403`.
 
 ### GET `/admin/users`
 
@@ -490,7 +490,7 @@ Authentification:
 
 Corps de requete:
 
-- `role` accepte: `admin`, `lineup`, `news`.
+- `role` accepte: `admin`, `artists`, `news`.
 
 ```json
 {
@@ -550,14 +550,14 @@ Parametre d'URL:
 
 Corps de requete:
 
-- `role` accepte: `admin`, `lineup`, `news`.
+- `role` accepte: `admin`, `artists`, `news`.
 
 ```json
 {
   "email": "modifie@test.fr",
   "first_name": "Modifie",
   "last_name": "User",
-  "role": "lineup"
+  "role": "artists"
 }
 ```
 
@@ -573,7 +573,7 @@ Reponse en succes:
     "id": "uuid",
     "email": "modifie@test.fr",
     "display_name": "Modifie User",
-    "role": "lineup",
+    "role": "artists",
 
     "created_at": "2026-03-12T10:15:30.000Z"
   }
@@ -779,7 +779,7 @@ Reponses d'erreur:
 
 Creer un artiste avec une image uploadée.
 
-Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "lineup")`, `upload.single("image")`, `validateBody`
+Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "artists")`, `upload.single("image")`, `validateBody`
 
 Corps de requete:
 
@@ -842,7 +842,7 @@ Reponses d'erreur:
 
 Modifier un artiste existant et son concert associe.
 
-Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "lineup")`, `upload.single("image")`, `validateBody`
+Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "artists")`, `upload.single("image")`, `validateBody`
 
 Authentification:
 
@@ -924,7 +924,7 @@ Supprime definitivement un artiste, son concert associe et son fichier image.
 
 > Le concert est supprime automatiquement en cascade par la base de donnees (`ON DELETE CASCADE`). Le fichier image est supprime du disque apres la suppression en base.
 
-Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "lineup")`
+Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "artists")`
 
 Authentification:
 

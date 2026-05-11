@@ -19,15 +19,33 @@ export default function HomeInfosPratiques() {
           <div className="w-full h-1 bg-(--color-1) rounded-t-md" />
           <div className="flex flex-col gap-4 p-6">
             <div>
-              <h3 className="text-xl font-black uppercase">{FESTIVAL_LOCATION.name}</h3>
-              <p className="text-sm opacity-70 uppercase mt-1">{FESTIVAL_LOCATION.address}</p>
-              <p className="text-sm opacity-70 uppercase">{FESTIVAL_LOCATION.city}</p>
+              <h3 className="text-xl font-black uppercase">
+                {FESTIVAL_LOCATION.name}
+              </h3>
+              <p className="text-sm opacity-70 uppercase mt-1">
+                {FESTIVAL_LOCATION.address}
+              </p>
+              <p className="text-sm opacity-70 uppercase">
+                {FESTIVAL_LOCATION.city}
+              </p>
             </div>
             <ul className="flex flex-col gap-3 text-sm">
               {INFOS.map((info) => (
                 <li key={info} className="flex items-center gap-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 shrink-0 text-(--color-1)" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 h-5 shrink-0 text-(--color-1)"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                   <span>{info}</span>
                 </li>

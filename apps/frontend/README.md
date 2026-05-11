@@ -76,7 +76,7 @@ apps/frontend/
 │   │   │   ├── HomeNews.tsx
 │   │   │   ├── HomeInfosPratiques.tsx
 │   │   │   ├── HomePartenaires.tsx
-│   │   │   ├── lineup/
+│   │   │   ├── artists/
 │   │   │   │   ├── page.tsx
 │   │   │   │   └── [id]/
 │   │   │   │       └── page.tsx
@@ -97,13 +97,13 @@ apps/frontend/
 │   │   │   │   ├── page.tsx
 │   │   │   │   ├── DashboardContent.tsx
 │   │   │   │   └── ChangePasswordModal.tsx
-│   │   │   ├── lineup/
+│   │   │   ├── artists/
 │   │   │   │   ├── page.tsx
 │   │   │   │   ├── AddArtistModal.tsx
 │   │   │   │   ├── ArtistDetailContent.tsx
 │   │   │   │   ├── ArtistEditButton.tsx
 │   │   │   │   ├── DeleteArtistModal.tsx
-│   │   │   │   ├── LineupContent.tsx
+│   │   │   │   ├── artistsContent.tsx
 │   │   │   │   └── [id]/
 │   │   │   │       └── page.tsx
 │   │   │   ├── news/
@@ -178,7 +178,7 @@ apps/frontend/
 │           ├── HomeNews.test.tsx
 │           ├── HomePartenaires.test.tsx
 │           ├── HomeProgrammation.test.tsx
-│           ├── LineupContent.test.tsx
+│           ├── artistsContent.test.tsx
 │           ├── LoginPage.test.tsx
 │           ├── NewsContent.test.tsx
 │           ├── NewsDetailModal.test.tsx
@@ -231,8 +231,8 @@ Le groupe de routes `(public)` est transparent pour les URLs (n'affecte pas les 
 | Dossier | Route | Description |
 | --- | --- | --- |
 | `(public)/page.tsx` | `/` | Page d'accueil — composant serveur async avec ISR (`revalidate: 60`). Fetche `GET /public/home` via `API_URL_SERVER` et assemble les 5 sections : `HomeHero`, `HomeProgrammation`, `HomeNews`, `HomeInfosPratiques`, `HomePartenaires` |
-| `(public)/lineup/` | `/lineup` | Programmation du festival — liste les artistes depuis l'API publique. Chaque carte navigue vers `/lineup/[id]` |
-| `(public)/lineup/[id]/` | `/lineup/:id` | Détail d'un artiste — server component avec ISR (`revalidate: 60`). Fetche `GET /public/lineup/:id` et passe l'artiste à `ArtistDetailContent`. Redirige vers `/lineup` via `notFound()` si l'artiste n'existe pas |
+| `(public)/artists/` | `/artists` | Programmation du festival — liste les artistes depuis l'API publique. Chaque carte navigue vers `/artists/[id]` |
+| `(public)/artists/[id]/` | `/artists/:id` | Détail d'un artiste — server component avec ISR (`revalidate: 60`). Fetche `GET /public/artists/:id` et passe l'artiste à `ArtistDetailContent`. Redirige vers `/artists` via `notFound()` si l'artiste n'existe pas |
 | `(public)/news/` | `/news` | Actualités du festival — liste les news publiées depuis `GET /public/news` avec image, titre, auteur et date. Chaque carte navigue vers `/news/[id]` |
 | `(public)/news/[id]/` | `/news/:id` | Détail d'une news — server component avec ISR (`revalidate: 60`). Fetche `GET /public/news/:id` et passe la news à `newsDetailContent`. Redirige vers `/news` via `notFound()` si la news n'existe pas ou n'est pas publiée |
 | `(public)/practical-info/` | `/practical-info` | Informations pratiques |
@@ -251,8 +251,8 @@ Le groupe de routes `(auth)` est transparent pour les URLs. Son layout est ident
 | --- | --- | --- |
 | `admin/layout.tsx` | — | Vérifie la session via `/admin/auth/me`, redirige vers `/login` si non authentifié. Fournit `AdminUserProvider`, `Banner` et `Footer` — `Banner` a accès aux données utilisateur pour filtrer les liens par rôle |
 | `admin/dashboard/` | `/admin/dashboard` | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe si `mustChangePassword` est vrai. Affiche dynamiquement les dates du festival depuis `FESTIVAL_DAYS` |
-| `admin/lineup/` | `/admin/lineup` | Programmation — liste les artistes avec leur concert (`LineupContent.tsx`), modale d'ajout 3 étapes (`AddArtistModal.tsx`), modale de suppression (`DeleteArtistModal.tsx`) — accès restreint aux rôles `admin` et `lineup` via `useRoleGuard`. Le champ date est un `<select>` limité aux jours de `FESTIVAL_DAYS`. Les concerts à cheval sur minuit sont gérés (end_time automatiquement décalé au lendemain). Chaque carte navigue vers `/admin/lineup/[id]` |
-| `admin/lineup/[id]/` | `/admin/lineup/:id` | Détail et édition d'un artiste — client component, fetche `GET /public/lineup/:id` via `apiRequest`. Affiche `ArtistDetailContent` (rendu statique partagé avec la page publique) et `ArtistEditButton` (`"use client"` — bouton + `AddArtistModal` en mode édition). Hérite des restrictions de rôle de `/admin/lineup` via `useRoleGuard` avec correspondance préfixe |
+| `admin/artists/` | `/admin/artists` | Programmation — liste les artistes avec leur concert (`artistsContent.tsx`), modale d'ajout 3 étapes (`AddArtistModal.tsx`), modale de suppression (`DeleteArtistModal.tsx`) — accès restreint aux rôles `admin` et `artists` via `useRoleGuard`. Le champ date est un `<select>` limité aux jours de `FESTIVAL_DAYS`. Les concerts à cheval sur minuit sont gérés (end_time automatiquement décalé au lendemain). Chaque carte navigue vers `/admin/artists/[id]` |
+| `admin/artists/[id]/` | `/admin/artists/:id` | Détail et édition d'un artiste — client component, fetche `GET /public/artists/:id` via `apiRequest`. Affiche `ArtistDetailContent` (rendu statique partagé avec la page publique) et `ArtistEditButton` (`"use client"` — bouton + `AddArtistModal` en mode édition). Hérite des restrictions de rôle de `/admin/artists` via `useRoleGuard` avec correspondance préfixe |
 | `admin/news/` | `/admin/news` | Gestion des actualités (`NewsContent.tsx`, `AddnewsModal.tsx`) — accès restreint aux rôles `admin` et `news` via `useRoleGuard`. Les brouillons (`is_published = false`) sont visibles uniquement en admin. Le tri Croissant/Décroissant est géré côté client. L'édition d'une news se fait depuis la page de détail |
 | `admin/news/[id]/` | `/admin/news/:id` | Détail et édition d'une news — client component, fetche `GET /public/news/:id` via `apiRequest` (cookies d'auth pour l'accès aux brouillons). Affiche `newsDetailContent` et `newsEditButton` (`"use client"` — bouton + `AddnewsModal` en mode édition). Hérite des restrictions de rôle de `/admin/news` via `useRoleGuard` avec correspondance préfixe |
 | `admin/users/` | `/admin/users` | Gestion des utilisateurs (`UsersContent.tsx`, `AddUserModal.tsx`, `DelateUserModal.tsx`) — accès restreint au rôle `admin` via `useRoleGuard`. `AddUserModal` gère l'ajout et la modification via une seule instance (prop `userToEdit`). Si l'utilisateur connecté se supprime lui-même, il est redirigé vers `/login` |
@@ -264,18 +264,18 @@ Composants UI réutilisables à travers l'application.
 | Fichier | Description |
 | --- | --- |
 | `AdminUserProvider.tsx` | Context React qui expose les données de l'utilisateur admin connecté (`AdminUser`, `mustChangePassword`) — retourne `null` hors provider |
-| `AddButton.tsx` | Bouton hamburger visible uniquement sur mobile — ouvre une modale `Navigation` pour afficher les filtres de la page (lineup ou news). Utilisé dans `(public)/lineup/page.tsx` et `(public)/news/page.tsx` |
+| `AddButton.tsx` | Bouton hamburger visible uniquement sur mobile — ouvre une modale `Navigation` pour afficher les filtres de la page (artists ou news). Utilisé dans `(public)/artists/page.tsx` et `(public)/news/page.tsx` |
 | `Banner.tsx` | Bannière de navigation principale — sticky header, transparent sur la page d'accueil tant que l'utilisateur n'a pas scrollé (opaque dès le premier pixel de défilement via scroll listener), filtre les liens admin par rôle via `filterNavByRole`, gère aussi le logout |
 | `ContactUs.tsx` | Formulaire de contact (modale) |
 | `Footer.tsx` | Pied de page avec liens réseaux sociaux et liens légaux |
 | `ForgotPassword.tsx` | Modale mot de passe oublié |
 | `LegalMention.tsx` | Modale mentions légales |
-| `LoadingLine.tsx` | Indicateur de chargement — texte "Chargement" centré avec une ligne bleue (`--color-3`) animée en pulsation via `line-expand`. Utilisé dans `LineupContent` et `NewsContent` |
+| `LoadingLine.tsx` | Indicateur de chargement — texte "Chargement" centré avec une ligne bleue (`--color-3`) animée en pulsation via `line-expand`. Utilisé dans `artistsContent` et `NewsContent` |
 | `ModalCloseButton.tsx` | Bouton de fermeture générique pour les modales |
 | `ModalSetup.tsx` | Initialise `Modal.setAppElement("#app-root")` une seule fois au niveau du layout racine |
 | `Navigation.tsx` | Barre de navigation — adapte les liens selon le contexte (visiteur / admin) et les filtres de page |
 | `SectionCta.tsx` | Séparateur CTA réutilisable — bouton "Voir plus" centré entre deux lignes horizontales, navigue vers le `href` passé en prop |
-| `SideBarTool.tsx` | Layout avec navigation sticky sur desktop et contenu principal à droite — sur mobile, n'affiche que les enfants. Utilisé dans les pages publiques lineup et news, et les pages admin correspondantes |
+| `SideBarTool.tsx` | Layout avec navigation sticky sur desktop et contenu principal à droite — sur mobile, n'affiche que les enfants. Utilisé dans les pages publiques artists et news, et les pages admin correspondantes |
 
 ### `hooks/`
 
@@ -293,7 +293,7 @@ Centralise les constantes de configuration du frontend.
 | Fichier | Description |
 | --- | --- |
 | `festival.ts` | Source de vérité unique pour les données du festival — exporte `FESTIVAL_DAYS`, `FESTIVAL_LOCATION` et `TICKETING_URL`. Consommé par `DashboardContent`, `ui.ts`, `AddArtistModal`, `HomeInfosPratiques`, `Banner` et `HomeHero` |
-| `ui.ts` | Définit les items de navigation et de filtrage — liens visiteur (`navVisitorItems`), liens admin (`navAdminItem`, `navAdminQuickLinks`), filtres lineup/news/users, rôles utilisateurs (`USER_ROLES`). Expose `filterNavByRole` pour filtrer les liens selon le rôle de l'utilisateur |
+| `ui.ts` | Définit les items de navigation et de filtrage — liens visiteur (`navVisitorItems`), liens admin (`navAdminItem`, `navAdminQuickLinks`), filtres artists/news/users, rôles utilisateurs (`USER_ROLES`). Expose `filterNavByRole` pour filtrer les liens selon le rôle de l'utilisateur |
 
 ### `functions/`
 
@@ -372,7 +372,7 @@ Tests unitaires des pages et de leurs flux principaux.
 | `HomeNews.test.tsx` | Vérifie l'affichage des titres de news et le retour null si tableau vide |
 | `HomePartenaires.test.tsx` | Vérifie le nombre de logos, la présence d'un alt non vide et le lien vers `/practical-info` |
 | `HomeProgrammation.test.tsx` | Vérifie l'affichage des noms d'artistes, scènes, dates formatées et le retour null si tableau vide |
-| `LineupContent.test.tsx` | Vérifie la liste des artistes — chargement, affichage avec données concert, fallbacks null (scène/date non définies), liste vide, erreur API, suppression et ajout d'un artiste |
+| `artistsContent.test.tsx` | Vérifie la liste des artistes — chargement, affichage avec données concert, fallbacks null (scène/date non définies), liste vide, erreur API, suppression et ajout d'un artiste |
 | `LoginPage.test.tsx` | Vérifie le formulaire de connexion — gestion des erreurs (401, 429, 500) et redirection en cas de succès |
 | `UsersContent.test.tsx` | Vérifie le CRUD utilisateurs — chargement de la liste, ajout, modification, suppression, gestion des erreurs et redirection vers `/login` si l'utilisateur connecté se supprime lui-même |
 

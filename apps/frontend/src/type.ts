@@ -1,7 +1,7 @@
 /* === USERS === */
 
 /** Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`. */
-export type UserRole = "admin" | "lineup" | "news";
+export type UserRole = "admin" | "artists" | "news";
 
 /** Type representant une ligne utilisateur retournee par l'API. */
 export type UserItem = {

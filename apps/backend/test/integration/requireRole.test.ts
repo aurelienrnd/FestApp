@@ -33,14 +33,14 @@ describe("requireRole middleware", () => {
   });
 
   it("should allow access when role is one of multiple allowed roles", async () => {
-    const app = createApp("lineup", "admin", "lineup");
+    const app = createApp("artists", "admin", "artists");
     const res = await request(app).get("/protected");
 
     expect(res.status).toBe(200);
   });
 
   it("should return 403 when role is not allowed", async () => {
-    const app = createApp("lineup", "admin");
+    const app = createApp("artists", "admin");
     const res = await request(app).get("/protected");
 
     expect(res.status).toBe(403);

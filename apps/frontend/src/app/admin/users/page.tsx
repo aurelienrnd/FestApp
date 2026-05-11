@@ -22,9 +22,9 @@ export default function Page() {
 
   const { isOpen, open, close } = useModal();
 
-  // Etat du filtre utilisateurs (tout / admin / lineup / news)
+  // Etat du filtre utilisateurs (tout / admin / artists / news)
   const [userFilter, setUserFilter] = useState<
-    "all" | "admin" | "lineup" | "news"
+    "all" | "admin" | "artists" | "news"
   >("all");
 
   //Determine quelle option est utilisé
@@ -36,7 +36,7 @@ export default function Page() {
 
     // Si l'item possède une valeur on définit une fonction onClick qui met à jour le filtre
     onClick: item.value
-      ? () => setUserFilter(item.value as "all" | "admin" | "lineup" | "news")
+      ? () => setUserFilter(item.value as "all" | "admin" | "artists" | "news")
       : undefined,
   }));
 

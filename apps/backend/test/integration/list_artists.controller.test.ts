@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import request from "supertest";
 import express from "express";
 
-import { listLineup } from "../../src/controllers/public/lineup/list_lineup.controller";
+import { listArtists } from "../../src/controllers/public/artists/list_artists.controller";
 import { query } from "../../src/db";
 import { ERRORS } from "../../src/errors/errorMessages";
 import { asyncHandler } from "../../src/middlewares/asyncHandler";
@@ -20,12 +20,12 @@ const mockQuery = vi.mocked(query);
 function createApp() {
   const app = express();
   app.use(express.json());
-  app.get("/lineup", asyncHandler(listLineup));
+  app.get("/artists", asyncHandler(listArtists));
   app.use(errorHandler);
   return app;
 }
 
-describe("listLineup controller (integration)", () => {
+describe("listArtists controller (integration)", () => {
   // Reinitialise les mocks avant chaque test
   beforeEach(() => {
     vi.clearAllMocks();
@@ -56,7 +56,7 @@ describe("listLineup controller (integration)", () => {
 
     // Creation de l'application et envoi de la requete
     const app = createApp();
-    const res = await request(app).get("/lineup");
+    const res = await request(app).get("/artists");
 
     expect(res.status).toBe(200);
     expect(res.body.artists).toHaveLength(2);
@@ -89,7 +89,7 @@ describe("listLineup controller (integration)", () => {
     ]);
 
     const app = createApp();
-    const res = await request(app).get("/lineup");
+    const res = await request(app).get("/artists");
 
     expect(res.status).toBe(200);
     expect(res.body.artists[0].stage).toBeNull();
@@ -102,7 +102,7 @@ describe("listLineup controller (integration)", () => {
 
     // Creation de l'application et envoi de la requete
     const app = createApp();
-    const res = await request(app).get("/lineup");
+    const res = await request(app).get("/artists");
 
     expect(res.status).toBe(200);
     expect(res.body.artists).toHaveLength(0);
@@ -114,7 +114,7 @@ describe("listLineup controller (integration)", () => {
 
     // Creation de l'application et envoi de la requete
     const app = createApp();
-    const res = await request(app).get("/lineup");
+    const res = await request(app).get("/artists");
 
     expect(res.status).toBe(500);
     expect(res.body.error).toBe(ERRORS.INTERNAL_SERVER_ERROR);
