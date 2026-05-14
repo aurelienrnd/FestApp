@@ -1,9 +1,8 @@
 import type { Request, Response } from "express";
-import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import { saveImage, deleteImage, NEWS_NEWS_UPLOADS_DIR } from "../../../services/imageUpload.service";
+import { saveImage, deleteImage, NEWS_UPLOADS_DIR } from "../../../services/imageUpload.service";
 import type { NewsItem, NewsMediaRow } from "../../../type";
 
 /** Modifie une news existante.
@@ -12,14 +11,7 @@ import type { NewsItem, NewsMediaRow } from "../../../type";
  * @param {Response} res reponse Express
  */
 export async function updateNews(req: Request, res: Response) {
-  // valide que l'identifiant fourni est un UUID valide
-  const paramsSchema = z.object({ id: z.uuid() });
-  const parsedParams = paramsSchema.safeParse(req.params);
-  if (!parsedParams.success) {
-    throw new AppError(ERRORS.VALIDATION_INVALID_BODY, 400);
-  }
-
-  const newsId = parsedParams.data.id;
+  const newsId = req.params.id;
 
   // verifie que la news existe et recupere son url_media actuelle
   const existingNews = await query<NewsMediaRow>(

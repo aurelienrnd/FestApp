@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
-import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
+
 import type { UserItem, IdRow } from "../../../type";
 
 /** Verifie que l'utilisateur existe dans la BDD via son id
@@ -53,20 +53,9 @@ async function existingDisplayName(displayName: string, userId: string) {
  * @function existingDisplayName
  */
 export async function updateUser(req: Request, res: Response) {
-  // Definit un schema Zod pour valider les parametres, en exigeant un identifiant au format UUID
-  const paramsSchema = z.object({
-    id: z.uuid(),
-  });
-
-  // Valide les parametres de la requete et lance une erreur si la validation echoue
-  const parsedParams = paramsSchema.safeParse(req.params);
-  if (!parsedParams.success) {
-    throw new AppError(ERRORS.VALIDATION_INVALID_BODY, 400);
-  }
-
   // Recupere les informations de l'utilisateur dans le body de la requete et cree un display name
   const { email, first_name, last_name, role } = req.body;
-  const userId = parsedParams.data.id;
+  const userId = req.params.id;
   const displayName = `${first_name} ${last_name}`.trim();
 
   // Verifie si l'utilisateur existe et si l'email ou le display name sont deja utilises

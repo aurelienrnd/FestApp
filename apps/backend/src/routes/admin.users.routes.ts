@@ -1,6 +1,7 @@
 import { Router } from "express";
 // middlewares
 import { validateBody } from "../middlewares/validateBody";
+import { validateUuidParam } from "../middlewares/validateUuidParam";
 import { auth } from "../middlewares/auth";
 import { sessionIsOpen } from "../middlewares/sessionIsOpen";
 import { requireRole } from "../middlewares/requireRole";
@@ -37,6 +38,7 @@ router.patch(
   asyncHandler(auth),
   asyncHandler(sessionIsOpen),
   requireRole("admin"),
+  validateUuidParam(),
   validateBody(createUserSchema),
   asyncHandler(updateUser),
 ); // Modifier un utilisateur
@@ -46,6 +48,7 @@ router.delete(
   asyncHandler(auth),
   asyncHandler(sessionIsOpen),
   requireRole("admin"),
+  validateUuidParam(),
   asyncHandler(deleteUser),
 ); // Supprimer definitivement un administrateur
 

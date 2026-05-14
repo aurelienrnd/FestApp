@@ -1,5 +1,4 @@
 import type { Request, Response } from "express";
-import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
@@ -13,17 +12,10 @@ import type { ArtistMediaRow } from "../../../type";
  * @param {Response} res reponse Express
  */
 export async function deleteArtist(req: Request, res: Response) {
-  // valide que l'identifiant fourni est un UUID valide
-  const paramsSchema = z.object({ id: z.uuid() });
-  const parsedParams = paramsSchema.safeParse(req.params);
-  if (!parsedParams.success) {
-    throw new AppError(ERRORS.VALIDATION_INVALID_BODY, 400);
-  }
-
   // supprime l'artiste et retourne son url_media pour supprimer le fichier image
   const deletedArtists = await query<ArtistMediaRow>(
     "DELETE FROM artists WHERE id = $1 RETURNING id, url_media",
-    [parsedParams.data.id],
+    [req.params.id],
   );
 
   if (deletedArtists.length === 0) {

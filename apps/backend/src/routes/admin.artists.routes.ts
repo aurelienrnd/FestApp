@@ -5,6 +5,7 @@ import { sessionIsOpen } from "../middlewares/sessionIsOpen";
 import { requireRole } from "../middlewares/requireRole";
 import { asyncHandler } from "../middlewares/asyncHandler";
 import { validateBody } from "../middlewares/validateBody";
+import { validateUuidParam } from "../middlewares/validateUuidParam";
 import { upload } from "../middlewares/upload";
 // controllers
 import { createArtist } from "../controllers/admin/artists/create_artist.controller";
@@ -30,6 +31,7 @@ router.patch(
   asyncHandler(auth),
   asyncHandler(sessionIsOpen),
   requireRole("admin", "artists"),
+  validateUuidParam(),
   upload.single("image"),
   validateBody(createArtistSchema),
   asyncHandler(updateArtist),
@@ -40,6 +42,7 @@ router.delete(
   asyncHandler(auth),
   asyncHandler(sessionIsOpen),
   requireRole("admin", "artists"),
+  validateUuidParam(),
   asyncHandler(deleteArtist),
 ); // Supprimer un artiste
 
