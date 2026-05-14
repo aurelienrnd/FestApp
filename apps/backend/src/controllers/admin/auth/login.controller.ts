@@ -84,6 +84,6 @@ export async function login(req: Request, res: Response) {
   res.setHeader("Set-Cookie", accessCookie);
 
   return res.status(200).json({
-    message: "Authentification réussie",
+    message: "Authentification reussie",
   });
 }
