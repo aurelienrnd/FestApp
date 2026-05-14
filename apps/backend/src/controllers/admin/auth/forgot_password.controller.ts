@@ -1,16 +1,9 @@
 import type { Request, Response } from "express";
-import bcrypt from "bcrypt";
-import { randomBytes } from "crypto";
-
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
 import { sendPasswordResetEmail } from "../../../services/mailer";
-
-/** Genere un mot de passe temporaire aleatoire */
-function generateTemporaryPassword() {
-  return randomBytes(8).toString("hex");
-}
+import { generateTemporaryPassword, hashPassword } from "../../../services/user.service";
 
 /** Reinitialise le mot de passe d'un utilisateur a partir de son email.
  * Verifie que l'email existe en base, genere un mot de passe temporaire,
@@ -32,7 +25,7 @@ export async function forgotPassword(req: Request, res: Response) {
 
   // Genere un mot de passe temporaire et le hash
   const temporaryPassword = generateTemporaryPassword();
-  const passwordHash = await bcrypt.hash(temporaryPassword, 10);
+  const passwordHash = await hashPassword(temporaryPassword);
 
   // Met a jour le hash et remet password_changed_at a null pour forcer le changement
   await query(

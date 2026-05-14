@@ -1,24 +1,24 @@
 import type { Request, Response } from "express";
-import bcrypt from "bcrypt";
-import { randomBytes } from "crypto";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
 import { sendWelcomeEmail } from "../../../services/mailer";
-import { checkEmailAvailable, checkDisplayNameAvailable } from "../../../services/user.service";
+import {
+  checkEmailAvailable,
+  checkDisplayNameAvailable,
+  generateTemporaryPassword,
+  hashPassword,
+} from "../../../services/user.service";
 import type { UserItem } from "../../../type";
 
-/** Cree un mot de passe temporaire aleatoire */
-function generateTemporaryPassword() {
-  return randomBytes(8).toString("hex");
-}
-
-/** Creation d'un utilisateur dans le service
- * Verifie que l'email n'est pas deja utilise dans la BDD
- * Verifie que le display_name n'est pas deja utilise dans la BDD
- * Renvoie l'utilisateur cree
+/** Creation d'un utilisateur dans le service.
+ * Verifie que l'email n'est pas deja utilise dans la BDD,
+ * verifie que le display_name n'est pas deja utilise dans la BDD,
+ * puis renvoie l'utilisateur cree.
  * @function checkEmailAvailable
  * @function checkDisplayNameAvailable
+ * @function generateTemporaryPassword
+ * @function hashPassword
  */
 export const createUser = async (req: Request, res: Response) => {
   // Recupere les informations de l'utilisateur dans le body de la requete et cree un display name
@@ -31,7 +31,7 @@ export const createUser = async (req: Request, res: Response) => {
 
   // Cree un mot de passe temporaire et le hash
   const temporaryPassword = generateTemporaryPassword();
-  const passwordHash = await bcrypt.hash(temporaryPassword, 10);
+  const passwordHash = await hashPassword(temporaryPassword);
 
   // Enregistre l'utilisateur en base de donnees et le recupere
   const createdUsers = await query<UserItem>(
