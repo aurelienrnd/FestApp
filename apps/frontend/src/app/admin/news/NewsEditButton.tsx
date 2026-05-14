@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { NewsItem } from "../../../type";
 import { useModal } from "../../../hooks/useModal";
 import AddNewsModal from "../../../components/modals/AddNewsModal";
@@ -16,6 +17,7 @@ export default function NewsEditButton({
   onNewsEdited: (news: NewsItem) => void;
 }) {
   const { isOpen, open, close } = useModal();
+  const [editKey, setEditKey] = useState(0);
 
   const handleNewsEdited = (updatedNews: NewsItem) => {
     onNewsEdited(updatedNews);
@@ -28,12 +30,13 @@ export default function NewsEditButton({
         <button
           type="button"
           className="btn-cta"
-          onClick={() => open()}
+          onClick={() => { setEditKey((k) => k + 1); open(); }}
         >
           Modifier
         </button>
       </div>
       <AddNewsModal
+        key={editKey}
         isOpen={isOpen}
         onClose={close}
         handleNews={handleNewsEdited}

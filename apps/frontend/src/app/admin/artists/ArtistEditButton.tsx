@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { ArtistItem } from "../../../type";
 import { useModal } from "../../../hooks/useModal";
 import AddArtistModal from "../../../components/modals/AddArtistModal";
@@ -16,6 +17,7 @@ export default function ArtistEditButton({
   onArtistEdited: (artist: ArtistItem) => void;
 }) {
   const { isOpen, open, close } = useModal();
+  const [editKey, setEditKey] = useState(0);
 
   const handleArtistEdited = (updatedArtist: ArtistItem) => {
     onArtistEdited(updatedArtist);
@@ -28,12 +30,13 @@ export default function ArtistEditButton({
         <button
           type="button"
           className="btn-cta"
-          onClick={() => open()}
+          onClick={() => { setEditKey((k) => k + 1); open(); }}
         >
           Modifier
         </button>
       </div>
       <AddArtistModal
+        key={editKey}
         isOpen={isOpen}
         onClose={close}
         handleArtist={handleArtistEdited}
