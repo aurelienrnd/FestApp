@@ -1,7 +1,13 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useReducer, useEffect } from "react";
 import { apiRequest } from "../functions/apiRequest";
 import { getApiErrorMessage } from "../functions/getApiErrorMessage";
+
+type FetchState<T> = { data: T | null; isLoading: boolean; error: string | null };
+type FetchAction<T> =
+  | { type: "LOADING" }
+  | { type: "SUCCESS"; data: T }
+  | { type: "ERROR"; error: string };
 
 /** Charge des données depuis l'API au montage du composant.
  * @param {string} endpoint Chemin de l'endpoint (ex : "/public/artists").
@@ -12,32 +18,28 @@ export function useFetch<T>(endpoint: string): {
   isLoading: boolean;
   error: string | null;
 } {
-  // initialisation de data, isLoading et error
-  const [data, setData] = useState<T | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(
+    (s: FetchState<T>, action: FetchAction<T>): FetchState<T> => {
+      switch (action.type) {
+        case "LOADING": return { ...s, isLoading: true, error: null };
+        case "SUCCESS": return { data: action.data, isLoading: false, error: null };
+        case "ERROR":   return { ...s, isLoading: false, error: action.error };
+      }
+    },
+    { data: null, isLoading: true, error: null },
+  );
 
-  // A chaque changement d'endpoint
   useEffect(() => {
-    // réinitialisation de isLoading et error
-    setIsLoading(true);
-    setError(null);
+    dispatch({ type: "LOADING" });
 
-    // appel API et gestion de la réponse
     apiRequest<T>(endpoint).then((result) => {
-      // en cas d'erreur, on met à jour error et isLoading, puis on arrête
       if (result.error) {
-        setError(getApiErrorMessage(result.error));
-        setIsLoading(false);
+        dispatch({ type: "ERROR", error: getApiErrorMessage(result.error) });
         return;
       }
-
-      // en cas de succès, on met à jour data et isLoading
-      setData(result.data);
-      setIsLoading(false);
+      dispatch({ type: "SUCCESS", data: result.data as T });
     });
   }, [endpoint]);
 
-  // on retourne les données, l'état de chargement et l'erreur éventuelle
-  return { data, isLoading, error };
+  return state;
 }
