@@ -18,8 +18,8 @@ export async function updateNews(req: Request, res: Response) {
     "SELECT id, url_media FROM news WHERE id = $1 LIMIT 1",
     [newsId],
   );
-  const existingItem = existingNews[0];
-  if (!existingItem) {
+  const existingNews = existingNews[0];
+  if (!existingNews) {
     throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
   }
 
@@ -30,7 +30,7 @@ export async function updateNews(req: Request, res: Response) {
   const isPublished = is_published === "true";
 
   // si une nouvelle image est fournie, la convertit et l'ecrit avant la transaction
-  let url_media = existingItem.url_media;
+  let url_media = existingNews.url_media;
   if (req.file) {
     url_media = await saveImage(req.file.buffer, NEWS_UPLOADS_DIR, "/uploads/news");
   }
@@ -48,8 +48,8 @@ export async function updateNews(req: Request, res: Response) {
       [title, content || null, isPublished, url_media, description_media, newsId],
     );
 
-    const updatedItem = updatedNews[0];
-    if (!updatedItem) {
+    const updatedNews = updatedNews[0];
+    if (!updatedNews) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
     }
 
@@ -72,7 +72,7 @@ export async function updateNews(req: Request, res: Response) {
 
     // supprime l'ancienne image apres le commit pour ne pas la perdre en cas d'erreur SQL
     if (req.file) {
-      await deleteImage(NEWS_UPLOADS_DIR, existingItem.url_media);
+      await deleteImage(NEWS_UPLOADS_DIR, existingNews.url_media);
     }
 
     return res.status(200).json({ message: "News modifiee", news });

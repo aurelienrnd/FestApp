@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import { sendPasswordResetEmail } from "../../../services/mailer";
+import { sendPasswordResetEmail } from "../../../services/mailer.service";
 import { generateTemporaryPassword, hashPassword } from "../../../services/user.service";
 
 /** Reinitialise le mot de passe d'un utilisateur a partir de son email.

@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import { sendWelcomeEmail } from "../../../services/mailer";
+import { sendWelcomeEmail } from "../../../services/mailer.service";
 import {
   checkEmailAvailable,
   checkDisplayNameAvailable,

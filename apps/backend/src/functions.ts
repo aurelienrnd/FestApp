@@ -79,13 +79,13 @@ export function initToken(
  * @return cookie
  */
 export function serializeCookie(
-  EnvName: string,
+  envName: string,
   envSecure: string,
   envSameSite: string,
   token: string,
   time: string,
 ): string {
-  const cookieName = getEnv(EnvName);
+  const cookieName = getEnv(envName);
   const secure = getEnv(envSecure) === "true";
   const sameSite = getEnv(envSameSite) as "lax" | "strict" | "none";
   const timeS = ms(envToStringValue(time)) / 1000;

@@ -8,7 +8,7 @@ import { asyncHandler } from "../middlewares/asyncHandler";
 // controllers
 import { login } from "../controllers/admin/auth/login.controller";
 import { logout } from "../controllers/admin/auth/logout.controller";
-import { userInfo } from "../controllers/admin/auth/userInfo.controller";
+import { userInfo } from "../controllers/admin/auth/user_info.controller";
 import { changePassword } from "../controllers/admin/auth/change_password.controller";
 import { forgotPassword } from "../controllers/admin/auth/forgot_password.controller";
 // schema

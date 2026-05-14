@@ -6,10 +6,10 @@ import { query } from "./db";
 import adminArtists from "./routes/admin.artists.routes";
 import adminNews from "./routes/admin.news.routes";
 import adminAuth from "./routes/admin.auth.routes";
-import adminUser from "./routes/admin.users.routes";
+import adminUsers from "./routes/admin.users.routes";
 import contact from "./routes/contact.routes";
 import publicHome from "./routes/home.routes";
-import publicartists from "./routes/artists.routes";
+import publicArtists from "./routes/artists.routes";
 import publicNews from "./routes/news.routes";
 import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
 
@@ -85,10 +85,10 @@ export function createApp() {
   app.use("/admin", adminArtists);
   app.use("/admin", adminNews);
   app.use("/admin", adminAuth);
-  app.use("/admin", adminUser);
+  app.use("/admin", adminUsers);
   app.use("/contact", contact);
   app.use("/public", publicHome);
-  app.use("/public", publicartists);
+  app.use("/public", publicArtists);
   app.use("/public", publicNews);
 
   // Handlers globaux de fin de chaine
