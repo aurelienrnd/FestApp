@@ -3,7 +3,7 @@ import type { Request, Response } from "express";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import { requireUserId } from "../../../functions";
+import { requireUserId } from "../../../utils";
 import type { UserItem } from "../../../type";
 
 /** Recupere les informations de l'utilisateur connecte

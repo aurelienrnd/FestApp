@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import type { SendMailOptions } from "nodemailer";
-import { getEnv } from "../functions";
+import { getEnv } from "../utils";
 import { AppError } from "../errors/AppError";
 import { ERRORS } from "../errors/errorMessages";
 

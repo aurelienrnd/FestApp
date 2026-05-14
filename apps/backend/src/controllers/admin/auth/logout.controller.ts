@@ -6,7 +6,7 @@ import {
   requireUserId,
   sessionExists,
   sessionRevoked,
-} from "../../../functions";
+} from "../../../utils";
 import { query } from "../../../db";
 
 /** Deconnecte l'utilisateur du service

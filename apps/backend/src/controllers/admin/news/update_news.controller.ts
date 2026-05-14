@@ -14,11 +14,11 @@ export async function updateNews(req: Request, res: Response) {
   const newsId = req.params.id;
 
   // verifie que la news existe et recupere son url_media actuelle
-  const existingNews = await query<NewsMediaRow>(
+  const existingNewsRows = await query<NewsMediaRow>(
     "SELECT id, url_media FROM news WHERE id = $1 LIMIT 1",
     [newsId],
   );
-  const existingNews = existingNews[0];
+  const existingNews = existingNewsRows[0];
   if (!existingNews) {
     throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
   }
@@ -40,7 +40,7 @@ export async function updateNews(req: Request, res: Response) {
 
   try {
     // met a jour la news
-    const updatedNews = await query<NewsItem>(
+    const updatedNewsRows = await query<NewsItem>(
       `UPDATE news
        SET title = $1, content = $2, is_published = $3, url_media = $4, description_media = $5
        WHERE id = $6
@@ -48,7 +48,7 @@ export async function updateNews(req: Request, res: Response) {
       [title, content || null, isPublished, url_media, description_media, newsId],
     );
 
-    const updatedNews = updatedNews[0];
+    const updatedNews = updatedNewsRows[0];
     if (!updatedNews) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
     }

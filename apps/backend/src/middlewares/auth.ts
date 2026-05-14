@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { parse } from "cookie";
-import { getEnv } from "../functions";
+import { getEnv } from "../utils";
 import type { JwtPayload } from "jsonwebtoken";
 import { query } from "../db";
 import { AppError } from "../errors/AppError";

@@ -8,7 +8,7 @@ import {
   serializeCookie,
   sessionExists,
   sessionRevoked,
-} from "../functions";
+} from "../utils";
 
 /** Verifie si la session est valide puis renouvelle le token d'acces. */
 export async function sessionIsOpen(

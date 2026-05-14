@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
 
 import { query } from "../../../db";
-import { requireUserId } from "../../../functions";
+import { requireUserId } from "../../../utils";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
 import type { UserCredentialsRow } from "../../../type";

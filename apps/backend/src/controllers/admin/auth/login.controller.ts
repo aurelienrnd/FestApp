@@ -9,7 +9,7 @@ import {
   passwordIsValid,
   initToken,
   serializeCookie,
-} from "../../../functions";
+} from "../../../utils";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
 
