@@ -1,12 +1,9 @@
 import type { Request, Response } from "express";
-import path from "path";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import { saveImage, deleteImage } from "../../../services/imageUpload.service";
+import { saveImage, deleteImage, ARTISTS_UPLOADS_DIR } from "../../../services/imageUpload.service";
 import type { ArtistItem, ConcertRow } from "../../../type";
-
-const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/artists");
 
 /** Cree un artiste avec une image convertie en WebP via sharp.
  * Verifie la presence du fichier image, le convertit en WebP (qualite 80),
@@ -38,7 +35,7 @@ export async function createArtist(req: Request, res: Response) {
   // convertit et ecrit l'image sur le disque avant la transaction
   const url_media = await saveImage(
     req.file.buffer,
-    UPLOADS_DIR,
+    ARTISTS_UPLOADS_DIR,
     "/uploads/artists",
   );
 
@@ -99,7 +96,7 @@ export async function createArtist(req: Request, res: Response) {
   } catch (error) {
     // annule la transaction, supprime le fichier deja ecrit, puis relance pour le middleware
     await query("ROLLBACK");
-    await deleteImage(UPLOADS_DIR, url_media);
+    await deleteImage(ARTISTS_UPLOADS_DIR, url_media);
     if (error instanceof Error && error.message === "featured_limit_reached") {
       throw new AppError(ERRORS.ARTIST_FEATURED_LIMIT, 409);
     }

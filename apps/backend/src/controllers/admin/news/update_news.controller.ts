@@ -1,13 +1,10 @@
 import type { Request, Response } from "express";
-import path from "path";
 import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import { saveImage, deleteImage } from "../../../services/imageUpload.service";
+import { saveImage, deleteImage, NEWS_NEWS_UPLOADS_DIR } from "../../../services/imageUpload.service";
 import type { NewsItem, NewsMediaRow } from "../../../type";
-
-const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/news");
 
 /** Modifie une news existante.
  * Si une nouvelle image est fournie, elle remplace l'ancienne (conversion WebP, suppression de l'ancienne).
@@ -43,7 +40,7 @@ export async function updateNews(req: Request, res: Response) {
   // si une nouvelle image est fournie, la convertit et l'ecrit avant la transaction
   let url_media = existingItem.url_media;
   if (req.file) {
-    url_media = await saveImage(req.file.buffer, UPLOADS_DIR, "/uploads/news");
+    url_media = await saveImage(req.file.buffer, NEWS_UPLOADS_DIR, "/uploads/news");
   }
 
   // ouvre une transaction SQL
@@ -83,14 +80,14 @@ export async function updateNews(req: Request, res: Response) {
 
     // supprime l'ancienne image apres le commit pour ne pas la perdre en cas d'erreur SQL
     if (req.file) {
-      await deleteImage(UPLOADS_DIR, existingItem.url_media);
+      await deleteImage(NEWS_UPLOADS_DIR, existingItem.url_media);
     }
 
     return res.status(200).json({ message: "News modifiee", news });
   } catch (error) {
     // annule la transaction, supprime la nouvelle image si deja ecrite, puis relance pour le middleware
     await query("ROLLBACK");
-    if (req.file) await deleteImage(UPLOADS_DIR, url_media);
+    if (req.file) await deleteImage(NEWS_UPLOADS_DIR, url_media);
     throw error;
   }
 }

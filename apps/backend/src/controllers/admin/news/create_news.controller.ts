@@ -1,12 +1,9 @@
 import type { Request, Response } from "express";
-import path from "path";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import { saveImage, deleteImage } from "../../../services/imageUpload.service";
+import { saveImage, deleteImage, NEWS_NEWS_UPLOADS_DIR } from "../../../services/imageUpload.service";
 import type { NewsItem } from "../../../type";
-
-const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/news");
 
 /** Cree une news avec une image convertie en WebP via sharp.
  * Verifie la presence du fichier image, le convertit en WebP (qualite 80),
@@ -30,7 +27,7 @@ export async function createNews(req: Request, res: Response) {
   // convertit et ecrit l'image sur le disque avant la transaction
   const url_media = await saveImage(
     req.file.buffer,
-    UPLOADS_DIR,
+    NEWS_UPLOADS_DIR,
     "/uploads/news",
   );
 
@@ -70,7 +67,7 @@ export async function createNews(req: Request, res: Response) {
   } catch (error) {
     // annule la transaction, supprime le fichier deja ecrit, puis relance pour le middleware
     await query("ROLLBACK");
-    await deleteImage(UPLOADS_DIR, url_media);
+    await deleteImage(NEWS_UPLOADS_DIR, url_media);
     throw error;
   }
 }

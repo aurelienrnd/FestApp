@@ -1,13 +1,10 @@
 import type { Request, Response } from "express";
-import { unlink } from "fs/promises";
-import path from "path";
 import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
+import { deleteImage, NEWS_UPLOADS_DIR } from "../../../services/imageUpload.service";
 import type { NewsMediaRow } from "../../../type";
-
-const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/news");
 
 /** Supprime definitivement une news et son fichier image.
  * Le fichier image est supprime du disque apres la suppression en base (echec silencieux si absent).
@@ -32,12 +29,10 @@ export async function deleteNews(req: Request, res: Response) {
     throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
   }
 
-  // supprime le fichier image du disque (echec silencieux si le fichier est absent ou URL externe)
+  // supprime le fichier image du disque (echec silencieux si le fichier est absent)
   const news = deletedNews[0];
   if (news) {
-    const filename = path.basename(news.url_media);
-    const filepath = path.join(UPLOADS_DIR, filename);
-    await unlink(filepath).catch(() => undefined);
+    await deleteImage(NEWS_UPLOADS_DIR, news.url_media);
   }
 
   return res.status(200).json({ message: "News supprimee" });

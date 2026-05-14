@@ -3,6 +3,12 @@ import { mkdir, unlink } from "fs/promises";
 import path from "path";
 import sharp from "sharp";
 
+/** Chemin absolu du dossier de stockage des images artistes. */
+export const ARTISTS_UPLOADS_DIR = path.join(__dirname, "../../uploads/artists");
+
+/** Chemin absolu du dossier de stockage des images news. */
+export const NEWS_UPLOADS_DIR = path.join(__dirname, "../../uploads/news");
+
 /** Genere un nom de fichier unique, cree le dossier si absent, convertit le buffer en WebP (qualite 80) et ecrit le fichier sur le disque.
  * @param {Buffer} buffer contenu brut du fichier image recu dans req.file.buffer
  * @param {string} uploadsDir chemin absolu du dossier de destination
