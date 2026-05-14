@@ -6,7 +6,7 @@ import Modal from "react-modal";
 import ModalCloseButton from "../ModalCloseButton";
 import { useMutation } from "../../hooks/useMutation";
 import type { ArtistItem, CreateApiResponse } from "../../type";
-import { FESTIVAL_DAYS } from "../../config/festival";
+import { FESTIVAL_DAYS, FESTIVAL_STAGES } from "../../config/festival";
 import { formatDateLong } from "../../functions/formatDate";
 import { isEmpty } from "../../functions/validation";
 
@@ -442,15 +442,18 @@ export default function AddArtistModal({
                 <label htmlFor="artistStage" className="sr-only">
                   Scène
                 </label>
-                <input
+                <select
                   id="artistStage"
                   name="stage"
-                  type="text"
-                  placeholder="Nom de la scène"
                   className="input"
                   value={stage}
                   onChange={(e) => setStage(e.target.value)}
-                />
+                >
+                  <option value="">-- Choisir une scène --</option>
+                  {FESTIVAL_STAGES.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
               </div>
 
               <div>
