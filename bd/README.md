@@ -222,17 +222,17 @@ Insère 10 artistes rock avec biographies complètes, chemins d'images locaux et
 
 ### `09_seed_concerts.sql` — Concerts de développement
 
-Insère 10 concerts planifiés sur 2 jours (`NOW() + 1 day` et `NOW() + 2 days`), répartis équitablement sur 2 scènes. Chaque créneau dure 1 heure. Les `artist_id` sont résolus par `SELECT id FROM artists WHERE name = '...'`.
+Insère 10 concerts planifiés sur 3 jours fixes (21, 22, 23 mai 2027), répartis sur 2 scènes. Chaque créneau dure 1 heure à partir de 20h (heure de Paris). Les `artist_id` sont résolus par `SELECT id FROM artists WHERE name = '...'`.
 
-| Artiste                 | Scène          | Créneau       |
-| ----------------------- | -------------- | ------------- |
-| Red Hot Chili Peppers   | `main-stage`   | J+1, heure 0  |
-| Foo Fighters            | `second-stage` | J+1, heure 0  |
-| Oasis                   | `main-stage`   | J+1, heure +1 |
-| Guns N' Roses           | `second-stage` | J+1, heure +1 |
-| AC/DC                   | `main-stage`   | J+1, heure +2 |
-| Pearl Jam               | `second-stage` | J+1, heure +2 |
-| Muse                    | `main-stage`   | J+2, heure 0  |
-| Queens of the Stone Age | `second-stage` | J+2, heure 0  |
-| Arctic Monkeys          | `main-stage`   | J+2, heure +1 |
-| The Strokes             | `second-stage` | J+2, heure +1 |
+| Artiste                 | Scène       | Créneau               |
+| ----------------------- | ----------- | --------------------- |
+| Red Hot Chili Peppers   | `MainStage` | 21 mai, 20h–21h       |
+| Foo Fighters            | `Tremplin`  | 21 mai, 20h–21h       |
+| Oasis                   | `MainStage` | 21 mai, 21h–22h       |
+| Guns N' Roses           | `Tremplin`  | 21 mai, 21h–22h       |
+| AC/DC                   | `MainStage` | 22 mai, 20h–21h       |
+| Pearl Jam               | `Tremplin`  | 22 mai, 20h–21h       |
+| Muse                    | `MainStage` | 22 mai, 21h–22h       |
+| Queens of the Stone Age | `Tremplin`  | 22 mai, 21h–22h       |
+| Arctic Monkeys          | `MainStage` | 23 mai, 20h–21h       |
+| The Strokes             | `Tremplin`  | 23 mai, 20h–21h       |
