@@ -25,7 +25,7 @@ export default function HomeHero() {
   return (
     <section
       id="home-hero"
-      className="-mt-(--header-height) h-(--home-hero-min-height) min-h-(--home-hero-min-height-floor) bg-[url('/hero_bg.webp')] bg-cover bg-center overflow-x-hidden max-h-[1900px]"
+      className="-mt-(--header-height) h-(--home-hero-min-height) min-h-(--home-hero-min-height-floor) bg-[url('/hero_bg.webp')] bg-cover bg-center overflow-x-hidden max-h-475"
     >
       <div className="mt-(--header-height) h-3/4 flex flex-col items-center gap-4 relative lg:gap-10">
         <h1
