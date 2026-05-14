@@ -18,7 +18,7 @@ export async function deleteArtist(req: Request, res: Response) {
     [req.params.id],
   );
 
-  if (deletedArtists.length === 0) {
+  if (!deletedArtists[0]) {
     throw new AppError(ERRORS.ARTIST_NOT_FOUND, 404);
   }
 

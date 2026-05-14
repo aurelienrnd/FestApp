@@ -12,7 +12,7 @@ export async function deleteUser(req: Request, res: Response) {
     "DELETE FROM users WHERE id = $1 RETURNING id",
     [req.params.id],
   );
-  if (deletedUsers.length === 0) {
+  if (!deletedUsers[0]) {
     throw new AppError(ERRORS.USER_NOT_FOUND, 404);
   }
 

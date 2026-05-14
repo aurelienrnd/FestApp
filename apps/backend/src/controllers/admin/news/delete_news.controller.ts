@@ -17,7 +17,7 @@ export async function deleteNews(req: Request, res: Response) {
     [req.params.id],
   );
 
-  if (deletedNews.length === 0) {
+  if (!deletedNews[0]) {
     throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
   }
 

@@ -3,7 +3,7 @@ import { randomBytes } from "crypto";
 import { query } from "../db";
 import { AppError } from "../errors/AppError";
 import { ERRORS } from "../errors/errorMessages";
-import type { IdRow } from "../type";
+import type { IdRow, UserRole } from "../type";
 
 /** Genere un mot de passe temporaire aleatoire de 16 caracteres hexadecimaux. */
 export function generateTemporaryPassword(): string {
