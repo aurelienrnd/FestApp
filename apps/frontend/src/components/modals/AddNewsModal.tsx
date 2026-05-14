@@ -61,30 +61,19 @@ export default function AddNewsModal({
   // Determine si on est en mode edition (newsToEdit defini) ou en mode creation (newsToEdit null)
   const isEditMode = newsToEdit !== null;
 
-  // Controle de l'etape actuelle du formulaire (1 ou 2)
   const [step, setStep] = useState<1 | 2>(1);
-
-  // Champs de l'etape 1
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [isPublished, setIsPublished] = useState(false);
-
-  // Champs de l'etape 2
-  const [descriptionMedia, setDescriptionMedia] = useState("");
+  const [title, setTitle] = useState(newsToEdit?.title ?? "");
+  const [content, setContent] = useState(newsToEdit?.content ?? "");
+  const [isPublished, setIsPublished] = useState(newsToEdit?.is_published ?? false);
+  const [descriptionMedia, setDescriptionMedia] = useState(newsToEdit?.description_media ?? "");
   const [image, setImage] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(newsToEdit?.url_media ?? null);
 
-  // Reinitialise les champs avec les valeurs de la news a modifier a chaque ouverture de la modale
+  // Revoque l'URL blob quand previewUrl change ou que le composant est demonte
   useEffect(() => {
-    if (!isOpen) return;
-    setStep(1);
-    setTitle(newsToEdit?.title ?? "");
-    setContent(newsToEdit?.content ?? "");
-    setIsPublished(newsToEdit?.is_published ?? false);
-    setDescriptionMedia(newsToEdit?.description_media ?? "");
-    setImage(null);
-    setPreviewUrl(newsToEdit?.url_media ?? null);
-  }, [isOpen, newsToEdit]);
+    if (!previewUrl || isEditMode) return;
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [previewUrl, isEditMode]);
 
   const { mutate, isLoading, error, reset } = useMutation<CreateApiResponse<{ news: NewsItem }>>(
     isEditMode ? `/admin/news/${newsToEdit!.id}` : "/admin/news",
@@ -95,30 +84,25 @@ export default function AddNewsModal({
   const step1Invalid = isStep1Invalid(title);
   const step2Invalid = isStep2Invalid(descriptionMedia, image, isEditMode);
 
-  // Reinitialise tous les champs et revient a l'etape 1
   const resetForm = () => {
     setStep(1);
-    setTitle("");
-    setContent("");
-    setIsPublished(false);
-    setDescriptionMedia("");
+    setTitle(newsToEdit?.title ?? "");
+    setContent(newsToEdit?.content ?? "");
+    setIsPublished(newsToEdit?.is_published ?? false);
+    setDescriptionMedia(newsToEdit?.description_media ?? "");
     setImage(null);
-    if (previewUrl && !newsToEdit) URL.revokeObjectURL(previewUrl);
-    setPreviewUrl(null);
+    setPreviewUrl(newsToEdit?.url_media ?? null);
   };
 
-  // Ferme la modale et reinitialise le formulaire
   const handleClose = () => {
     reset();
     resetForm();
     onClose();
   };
 
-  // Gere la selection du fichier image et met a jour la previsualisation
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
     setImage(file);
-    if (previewUrl && !newsToEdit) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(file ? URL.createObjectURL(file) : null);
   };
 

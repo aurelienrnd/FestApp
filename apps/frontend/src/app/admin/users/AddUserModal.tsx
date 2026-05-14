@@ -69,26 +69,25 @@ export default function AddUserModal({
   // Verifie si le formulaire d'ajout utilisateur est incomplet.
   const isFormInvalid = isAddUserFormInvalid(firstName, lastName, email, role);
 
-  // Reinitialise les champs du formulaire
   const resetForm = () => {
-    setFirstName("");
-    setLastName("");
-    setEmail("");
-    setRole("");
+    const name = userToEdit?.display_name?.trim() ?? "";
+    const [first, ...rest] = name.split(/\s+/);
+    setFirstName(first ?? "");
+    setLastName(rest.join(" "));
+    setEmail(userToEdit?.email ?? "");
+    setRole(userToEdit?.role ?? "");
   };
 
-  // Gere la soumission du formulaire d'ajout d'utilisateur
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isFormInvalid) return;
 
     mutate({ email, first_name: firstName, last_name: lastName, role }, (data) => {
-      handleUserSaved(data.user);
       resetForm();
+      handleUserSaved(data.user);
     });
   };
 
-  // Gere la fermeture de la modal et reinitialise les etats associes
   const handleClose = () => {
     reset();
     resetForm();

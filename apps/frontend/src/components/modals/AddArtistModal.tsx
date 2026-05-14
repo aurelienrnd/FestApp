@@ -83,64 +83,32 @@ export default function AddArtistModal({
 }: AddArtistModalProps) {
   const isEditMode = artistToEdit !== null;
 
-  // Etape active de la modal
+  const initialStart = artistToEdit?.start_time ? new Date(artistToEdit.start_time) : null;
+
   const [step, setStep] = useState<1 | 2 | 3>(1);
-
-  // Champs de l'etape 1
-  const [name, setName] = useState("");
-  const [genre, setGenre] = useState("");
-  const [origin, setOrigin] = useState("");
-  const [bio, setBio] = useState("");
-  const [youtubeUrl, setYoutubeUrl] = useState("");
-  const [spotifyUrl, setSpotifyUrl] = useState("");
-  const [isFeatured, setIsFeatured] = useState(false);
-
-  // Champs de l'etape 2
-  const [descriptionMedia, setDescriptionMedia] = useState("");
+  const [name, setName] = useState(artistToEdit?.name ?? "");
+  const [genre, setGenre] = useState(artistToEdit?.genre ?? "");
+  const [origin, setOrigin] = useState(artistToEdit?.origin ?? "");
+  const [bio, setBio] = useState(artistToEdit?.bio ?? "");
+  const [youtubeUrl, setYoutubeUrl] = useState(artistToEdit?.youtube_url ?? "");
+  const [spotifyUrl, setSpotifyUrl] = useState(artistToEdit?.spotify_url ?? "");
+  const [isFeatured, setIsFeatured] = useState(artistToEdit?.is_featured ?? false);
+  const [descriptionMedia, setDescriptionMedia] = useState(artistToEdit?.description_media ?? "");
   const [image, setImage] = useState<File | null>(null);
-
-  // Champs de l'etape 3
-  const [stage, setStage] = useState("");
-  const [date, setDate] = useState("");
-  const [startTime, setStartTime] = useState("");
   // Si l'heure de fin est inferieure a l'heure de debut, le concert passe minuit — endTime est le lendemain du date selectionnee
-  const [endTime, setEndTime] = useState("");
-
-  // URL de previsualisation de l'image selectionnee
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
-  // Erreurs de validation des URLs (etape 1)
+  const [stage, setStage] = useState(artistToEdit?.stage ?? "");
+  const [date, setDate] = useState(initialStart ? initialStart.toISOString().slice(0, 10) : "");
+  const [startTime, setStartTime] = useState(initialStart ? initialStart.toTimeString().slice(0, 5) : "");
+  const [endTime, setEndTime] = useState(artistToEdit?.end_time ? new Date(artistToEdit.end_time).toTimeString().slice(0, 5) : "");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(artistToEdit?.url_media ?? null);
   const [youtubeUrlError, setYoutubeUrlError] = useState<string | null>(null);
   const [spotifyUrlError, setSpotifyUrlError] = useState<string | null>(null);
 
-  // Reinitialise les champs avec les valeurs de l'artiste a modifier a chaque ouverture de la modale
+  // Revoque l'URL blob quand previewUrl change ou que le composant est demonte
   useEffect(() => {
-    if (!isOpen) return;
-    const start = artistToEdit?.start_time
-      ? new Date(artistToEdit.start_time)
-      : null;
-    setStep(1);
-    setName(artistToEdit?.name ?? "");
-    setGenre(artistToEdit?.genre ?? "");
-    setOrigin(artistToEdit?.origin ?? "");
-    setBio(artistToEdit?.bio ?? "");
-    setYoutubeUrl(artistToEdit?.youtube_url ?? "");
-    setSpotifyUrl(artistToEdit?.spotify_url ?? "");
-    setYoutubeUrlError(null);
-    setSpotifyUrlError(null);
-    setIsFeatured(artistToEdit?.is_featured ?? false);
-    setDescriptionMedia(artistToEdit?.description_media ?? "");
-    setStage(artistToEdit?.stage ?? "");
-    setDate(start ? start.toISOString().slice(0, 10) : "");
-    setStartTime(start ? start.toTimeString().slice(0, 5) : "");
-    setEndTime(
-      artistToEdit?.end_time
-        ? new Date(artistToEdit.end_time).toTimeString().slice(0, 5)
-        : "",
-    );
-    setImage(null);
-    setPreviewUrl(artistToEdit?.url_media ?? null);
-  }, [isOpen, artistToEdit]);
+    if (!previewUrl || isEditMode) return;
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [previewUrl, isEditMode]);
 
   const { mutate, isLoading, error, reset } = useMutation<CreateApiResponse<{ artist: ArtistItem }>>(
     isEditMode ? `/admin/artists/${artistToEdit!.id}` : "/admin/artists",
@@ -153,28 +121,6 @@ export default function AddArtistModal({
     ? isEmpty(descriptionMedia)
     : isStep2Invalid(descriptionMedia, image);
   const step3Invalid = isStep3Invalid(stage, date, startTime, endTime);
-
-  // Reinitialise tous les champs et revient a l'etape 1
-  const resetForm = () => {
-    setStep(1);
-    setName("");
-    setGenre("");
-    setOrigin("");
-    setBio("");
-    setYoutubeUrl("");
-    setSpotifyUrl("");
-    setYoutubeUrlError(null);
-    setSpotifyUrlError(null);
-    setDescriptionMedia("");
-    setStage("");
-    setDate("");
-    setStartTime("");
-    setEndTime("");
-    setIsFeatured(false);
-    setImage(null);
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setPreviewUrl(null);
-  };
 
   /** Valide les URLs YouTube et Spotify avant de passer a l'etape 2.
    * Affiche un message d'erreur sous le champ concerne si le domaine est invalide.
@@ -200,18 +146,36 @@ export default function AddArtistModal({
     if (!hasError) setStep(2);
   };
 
-  // Gere la fermeture de la modal et reinitialise les etats associes
+  const resetForm = () => {
+    const start = artistToEdit?.start_time ? new Date(artistToEdit.start_time) : null;
+    setStep(1);
+    setName(artistToEdit?.name ?? "");
+    setGenre(artistToEdit?.genre ?? "");
+    setOrigin(artistToEdit?.origin ?? "");
+    setBio(artistToEdit?.bio ?? "");
+    setYoutubeUrl(artistToEdit?.youtube_url ?? "");
+    setSpotifyUrl(artistToEdit?.spotify_url ?? "");
+    setYoutubeUrlError(null);
+    setSpotifyUrlError(null);
+    setIsFeatured(artistToEdit?.is_featured ?? false);
+    setDescriptionMedia(artistToEdit?.description_media ?? "");
+    setStage(artistToEdit?.stage ?? "");
+    setDate(start ? start.toISOString().slice(0, 10) : "");
+    setStartTime(start ? start.toTimeString().slice(0, 5) : "");
+    setEndTime(artistToEdit?.end_time ? new Date(artistToEdit.end_time).toTimeString().slice(0, 5) : "");
+    setImage(null);
+    setPreviewUrl(artistToEdit?.url_media ?? null);
+  };
+
   const handleClose = () => {
     reset();
     resetForm();
     onClose();
   };
 
-  // Gere la selection du fichier image et met a jour la previsualisation
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
     setImage(file);
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(file ? URL.createObjectURL(file) : null);
   };
 

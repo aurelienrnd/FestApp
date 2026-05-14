@@ -180,7 +180,6 @@ export default function UsersContent({
         getLabel={(u) => u.display_name}
       />
       <AddUserModal
-        key={userToEdit?.id ?? "new"}
         isOpen={isAddModalOpen || isEditModalOpen}
         onClose={closeUserModal}
         handleUserSaved={handleUserSaved}
