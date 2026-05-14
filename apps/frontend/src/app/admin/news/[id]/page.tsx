@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useRoleGuard } from "../../../../hooks/useRoleGuard";
 import { useFetch } from "../../../../hooks/useFetch";
@@ -18,11 +18,9 @@ export default function AdminNewsPage() {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, error } = useFetch<{ news: NewsItem }>(`/public/news/${id}`);
 
-  // État mutable pour les mises à jour locales après édition
-  const [news, setNews] = useState<NewsItem | null>(null);
-  useEffect(() => {
-    setNews(data?.news ?? null);
-  }, [data]);
+  // Stocke uniquement la valeur après édition — null tant que l'utilisateur n'a pas modifié
+  const [editedNews, setEditedNews] = useState<NewsItem | null>(null);
+  const news = editedNews ?? data?.news ?? null;
 
   if (isLoading) return null;
   if (error || !news) return <p className="content-centered">{error}</p>;
@@ -32,7 +30,7 @@ export default function AdminNewsPage() {
       <NewsDetailContent news={news} />
       <NewsEditButton
         news={news}
-        onNewsEdited={(updated) => setNews(updated)}
+        onNewsEdited={(updated) => setEditedNews(updated)}
       />
     </>
   );

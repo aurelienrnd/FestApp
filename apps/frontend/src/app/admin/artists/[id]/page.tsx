@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useRoleGuard } from "../../../../hooks/useRoleGuard";
 import { useFetch } from "../../../../hooks/useFetch";
@@ -22,11 +22,9 @@ export default function AdminArtistPage() {
     `/public/artists/${id}`,
   );
 
-  // État mutable pour les mises à jour locales après édition
-  const [artist, setArtist] = useState<ArtistItem | null>(null);
-  useEffect(() => {
-    setArtist(data?.artist ?? null);
-  }, [data]);
+  // Stocke uniquement la valeur après édition — null tant que l'utilisateur n'a pas modifié
+  const [editedArtist, setEditedArtist] = useState<ArtistItem | null>(null);
+  const artist = editedArtist ?? data?.artist ?? null;
 
   if (isLoading) return null;
   if (error || !artist) return <p className="content-centered">{error}</p>;
@@ -36,7 +34,7 @@ export default function AdminArtistPage() {
       <ArtistDetailContent artist={artist} backPath="/admin/artists" />
       <ArtistEditButton
         artist={artist}
-        onArtistEdited={(updated) => setArtist(updated)}
+        onArtistEdited={(updated) => setEditedArtist(updated)}
       />
     </>
   );
