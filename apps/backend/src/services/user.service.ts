@@ -74,3 +74,10 @@ export async function checkUserExists(userId: string): Promise<void> {
     throw new AppError(ERRORS.USER_NOT_FOUND, 404);
   }
 }
+
+/** Indique si le role de l'utilisateur lui donne acces aux news non publiees.
+ * @param userRole role de l'utilisateur courant
+ */
+export function isNewsPrivileged(userRole?: UserRole): boolean {
+  return userRole === "admin" || userRole === "news";
+}

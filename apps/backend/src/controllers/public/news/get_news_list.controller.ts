@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { query } from "../../../db";
+import { isNewsPrivileged } from "../../../services/user.service";
 import type { NewsItem } from "../../../type";
 
 /** Retourne la liste des news triees par date de creation decroissante.
@@ -10,8 +11,7 @@ import type { NewsItem } from "../../../type";
  * @param {Response} res reponse Express
  */
 export async function getNewsList(_req: Request, res: Response) {
-  const isPrivileged =
-    res.locals.userRole === "admin" || res.locals.userRole === "news";
+  const isPrivileged = isNewsPrivileged(res.locals.userRole);
 
   const news = await query<Omit<NewsItem, "content" | "user_id">>(
     `SELECT a.id, a.title, a.is_published, a.created_at,

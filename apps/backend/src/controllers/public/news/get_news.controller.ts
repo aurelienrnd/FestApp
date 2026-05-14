@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
+import { isNewsPrivileged } from "../../../services/user.service";
 import type { NewsItem } from "../../../type";
 
 /** Retourne une news par son identifiant.
@@ -13,8 +14,7 @@ import type { NewsItem } from "../../../type";
  */
 export async function getNews(req: Request, res: Response) {
   const { id } = req.params;
-  const isPrivileged =
-    res.locals.userRole === "admin" || res.locals.userRole === "news";
+  const isPrivileged = isNewsPrivileged(res.locals.userRole);
 
   const rows = await query<NewsItem>(
     `SELECT a.id, a.title, a.content, a.is_published, a.created_at,
