@@ -76,7 +76,7 @@ export const createArtistSchema = z.object({
     })
     .optional()
     .or(z.literal("")),
-  stage: z.string().min(1).trim(),
+  stage: z.enum(["MainStage", "Tremplin"]),
   start_time: z.iso.datetime(),
   end_time: z.iso.datetime(),
   is_featured: z.enum(["true", "false"]).optional(),
