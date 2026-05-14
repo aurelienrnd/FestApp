@@ -1,11 +1,9 @@
 import { Router } from "express";
 // middlewares
+import { adminAuth } from "../middlewares/authChain";
+import { asyncHandler } from "../middlewares/asyncHandler";
 import { validateBody } from "../middlewares/validateBody";
 import { validateUuidParam } from "../middlewares/validateUuidParam";
-import { auth } from "../middlewares/auth";
-import { sessionIsOpen } from "../middlewares/sessionIsOpen";
-import { requireRole } from "../middlewares/requireRole";
-import { asyncHandler } from "../middlewares/asyncHandler";
 // controllers
 import { createUser } from "../controllers/admin/users/create_user.controller";
 import { deleteUser } from "../controllers/admin/users/delete_user.controller";
@@ -18,26 +16,20 @@ const router = Router();
 
 router.get(
   "/users",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  requireRole("admin"),
+  ...adminAuth("admin"),
   asyncHandler(listUsers),
 ); // Lister les utilisateurs
 
 router.post(
   "/users",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  requireRole("admin"),
+  ...adminAuth("admin"),
   validateBody(createUserSchema),
   asyncHandler(createUser),
 ); // Creer un utilisateur
 
 router.patch(
   "/users/:id",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  requireRole("admin"),
+  ...adminAuth("admin"),
   validateUuidParam(),
   validateBody(createUserSchema),
   asyncHandler(updateUser),
@@ -45,9 +37,7 @@ router.patch(
 
 router.delete(
   "/users/:id",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  requireRole("admin"),
+  ...adminAuth("admin"),
   validateUuidParam(),
   asyncHandler(deleteUser),
 ); // Supprimer definitivement un administrateur

@@ -1,8 +1,6 @@
 import { Router } from "express";
 // middlewares
-import { auth } from "../middlewares/auth";
-import { sessionIsOpen } from "../middlewares/sessionIsOpen";
-import { requireRole } from "../middlewares/requireRole";
+import { adminAuth } from "../middlewares/authChain";
 import { asyncHandler } from "../middlewares/asyncHandler";
 import { validateBody } from "../middlewares/validateBody";
 import { validateUuidParam } from "../middlewares/validateUuidParam";
@@ -18,9 +16,7 @@ const router = Router();
 
 router.post(
   "/news",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  requireRole("admin", "news"),
+  ...adminAuth("admin", "news"),
   upload.single("image"),
   validateBody(createNewsSchema),
   asyncHandler(createNews),
@@ -28,9 +24,7 @@ router.post(
 
 router.patch(
   "/news/:id",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  requireRole("admin", "news"),
+  ...adminAuth("admin", "news"),
   validateUuidParam(),
   upload.single("image"),
   validateBody(createNewsSchema),
@@ -39,9 +33,7 @@ router.patch(
 
 router.delete(
   "/news/:id",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  requireRole("admin", "news"),
+  ...adminAuth("admin", "news"),
   validateUuidParam(),
   asyncHandler(deleteNews),
 ); // Supprimer une news

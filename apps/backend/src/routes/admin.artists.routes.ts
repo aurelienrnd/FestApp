@@ -1,8 +1,6 @@
 import { Router } from "express";
 // middlewares
-import { auth } from "../middlewares/auth";
-import { sessionIsOpen } from "../middlewares/sessionIsOpen";
-import { requireRole } from "../middlewares/requireRole";
+import { adminAuth } from "../middlewares/authChain";
 import { asyncHandler } from "../middlewares/asyncHandler";
 import { validateBody } from "../middlewares/validateBody";
 import { validateUuidParam } from "../middlewares/validateUuidParam";
@@ -18,9 +16,7 @@ const router = Router();
 
 router.post(
   "/artists",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  requireRole("admin", "artists"),
+  ...adminAuth("admin", "artists"),
   upload.single("image"),
   validateBody(createArtistSchema),
   asyncHandler(createArtist),
@@ -28,9 +24,7 @@ router.post(
 
 router.patch(
   "/artists/:id",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  requireRole("admin", "artists"),
+  ...adminAuth("admin", "artists"),
   validateUuidParam(),
   upload.single("image"),
   validateBody(createArtistSchema),
@@ -39,9 +33,7 @@ router.patch(
 
 router.delete(
   "/artists/:id",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  requireRole("admin", "artists"),
+  ...adminAuth("admin", "artists"),
   validateUuidParam(),
   asyncHandler(deleteArtist),
 ); // Supprimer un artiste
