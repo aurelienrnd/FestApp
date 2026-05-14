@@ -76,6 +76,10 @@ jobs:
           echo "Postgres did not become ready in time" >&2
           exit 1
 
+      # Crée la base de données de test
+      - name: Create test database
+        run: docker compose exec -T db psql -U postgres -c "CREATE DATABASE vindhellfest_test;"
+
       # Installe les dépendances npm
       - name: Install dependencies
         run: docker compose run --rm backend npm ci
