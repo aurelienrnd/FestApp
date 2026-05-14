@@ -14,11 +14,7 @@ import { createUserSchema } from "../schemas/schema";
 
 const router = Router();
 
-router.get(
-  "/users",
-  ...adminAuth("admin"),
-  asyncHandler(listUsers),
-); // Lister les utilisateurs
+router.get("/users", ...adminAuth("admin"), asyncHandler(listUsers)); // Lister les utilisateurs
 
 router.post(
   "/users",

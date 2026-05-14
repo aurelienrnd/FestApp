@@ -2,7 +2,11 @@ import type { Request, Response } from "express";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import { saveImage, deleteImage, ARTISTS_UPLOADS_DIR } from "../../../services/imageUpload.service";
+import {
+  saveImage,
+  deleteImage,
+  ARTISTS_UPLOADS_DIR,
+} from "../../../services/imageUpload.service";
 import type { ArtistItem, ArtistMediaRow, ConcertRow } from "../../../type";
 
 /** Modifie un artiste existant et son concert associe.
@@ -44,7 +48,11 @@ export async function updateArtist(req: Request, res: Response) {
   // si une nouvelle image est fournie, la convertit et l'ecrit avant la transaction
   let url_media = existingArtist.url_media;
   if (req.file) {
-    url_media = await saveImage(req.file.buffer, ARTISTS_UPLOADS_DIR, "/uploads/artists");
+    url_media = await saveImage(
+      req.file.buffer,
+      ARTISTS_UPLOADS_DIR,
+      "/uploads/artists",
+    );
   }
 
   // ouvre une transaction SQL

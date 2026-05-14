@@ -2,7 +2,10 @@ import type { Request, Response } from "express";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import { deleteImage, ARTISTS_UPLOADS_DIR } from "../../../services/imageUpload.service";
+import {
+  deleteImage,
+  ARTISTS_UPLOADS_DIR,
+} from "../../../services/imageUpload.service";
 import type { ArtistMediaRow } from "../../../type";
 
 /** Supprime definitivement un artiste, son concert associe et son fichier image.

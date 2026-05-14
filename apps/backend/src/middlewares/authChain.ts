@@ -11,5 +11,9 @@ import type { UserRole } from "../type";
  * @returns tableau de middlewares Express pret a etre spread dans une route
  */
 export function adminAuth(...roles: UserRole[]): RequestHandler[] {
-  return [asyncHandler(auth), asyncHandler(sessionIsOpen), requireRole(...roles)];
+  return [
+    asyncHandler(auth),
+    asyncHandler(sessionIsOpen),
+    requireRole(...roles),
+  ];
 }

@@ -2,7 +2,11 @@ import type { Request, Response } from "express";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import { checkUserExists, checkEmailAvailable, checkDisplayNameAvailable } from "../../../services/user.service";
+import {
+  checkUserExists,
+  checkEmailAvailable,
+  checkDisplayNameAvailable,
+} from "../../../services/user.service";
 import type { UserItem } from "../../../type";
 
 /** Modification d'un utilisateur dans le service

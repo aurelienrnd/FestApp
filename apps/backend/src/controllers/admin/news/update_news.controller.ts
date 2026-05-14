@@ -2,7 +2,11 @@ import type { Request, Response } from "express";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import { saveImage, deleteImage, NEWS_UPLOADS_DIR } from "../../../services/imageUpload.service";
+import {
+  saveImage,
+  deleteImage,
+  NEWS_UPLOADS_DIR,
+} from "../../../services/imageUpload.service";
 import type { NewsItem, NewsMediaRow } from "../../../type";
 
 /** Modifie une news existante.
@@ -32,7 +36,11 @@ export async function updateNews(req: Request, res: Response) {
   // si une nouvelle image est fournie, la convertit et l'ecrit avant la transaction
   let url_media = existingNews.url_media;
   if (req.file) {
-    url_media = await saveImage(req.file.buffer, NEWS_UPLOADS_DIR, "/uploads/news");
+    url_media = await saveImage(
+      req.file.buffer,
+      NEWS_UPLOADS_DIR,
+      "/uploads/news",
+    );
   }
 
   // ouvre une transaction SQL
@@ -45,7 +53,14 @@ export async function updateNews(req: Request, res: Response) {
        SET title = $1, content = $2, is_published = $3, url_media = $4, description_media = $5
        WHERE id = $6
        RETURNING *`,
-      [title, content || null, isPublished, url_media, description_media, newsId],
+      [
+        title,
+        content || null,
+        isPublished,
+        url_media,
+        description_media,
+        newsId,
+      ],
     );
 
     const updatedNews = updatedNewsRows[0];

@@ -2,7 +2,11 @@ import type { Request, Response } from "express";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import { saveImage, deleteImage, NEWS_UPLOADS_DIR } from "../../../services/imageUpload.service";
+import {
+  saveImage,
+  deleteImage,
+  NEWS_UPLOADS_DIR,
+} from "../../../services/imageUpload.service";
 import type { NewsItem } from "../../../type";
 
 /** Cree une news avec une image convertie en WebP via sharp.

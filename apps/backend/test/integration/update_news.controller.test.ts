@@ -33,11 +33,7 @@ const mockQuery = vi.mocked(query);
 function createApp() {
   const app = express();
   const upload = multer({ storage: multer.memoryStorage() });
-  app.patch(
-    "/news/:id",
-    upload.single("image"),
-    asyncHandler(updateNews),
-  );
+  app.patch("/news/:id", upload.single("image"), asyncHandler(updateNews));
   app.use(errorHandler);
   return app;
 }
@@ -83,9 +79,7 @@ describe("updateNews controller (integration)", () => {
       .mockResolvedValueOnce([]); // COMMIT
 
     const app = createApp();
-    const res = await request(app)
-      .patch(`/news/${NEWS_ID}`)
-      .field(validFields);
+    const res = await request(app).patch(`/news/${NEWS_ID}`).field(validFields);
 
     expect(res.status).toBe(200);
     expect(res.body.message).toBe("News modifiee");
@@ -120,9 +114,7 @@ describe("updateNews controller (integration)", () => {
 
   it("should return 400 when news id is invalid", async () => {
     const app = createApp();
-    const res = await request(app)
-      .patch("/news/not-a-uuid")
-      .field(validFields);
+    const res = await request(app).patch("/news/not-a-uuid").field(validFields);
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe(ERRORS.VALIDATION_INVALID_BODY);
@@ -133,9 +125,7 @@ describe("updateNews controller (integration)", () => {
     mockQuery.mockResolvedValueOnce([]);
 
     const app = createApp();
-    const res = await request(app)
-      .patch(`/news/${NEWS_ID}`)
-      .field(validFields);
+    const res = await request(app).patch(`/news/${NEWS_ID}`).field(validFields);
 
     expect(res.status).toBe(404);
     expect(res.body.error).toBe(ERRORS.NEWS_NOT_FOUND);
@@ -149,9 +139,7 @@ describe("updateNews controller (integration)", () => {
       .mockResolvedValueOnce([]); // ROLLBACK
 
     const app = createApp();
-    const res = await request(app)
-      .patch(`/news/${NEWS_ID}`)
-      .field(validFields);
+    const res = await request(app).patch(`/news/${NEWS_ID}`).field(validFields);
 
     expect(res.status).toBe(500);
     expect(mockQuery).toHaveBeenCalledWith("ROLLBACK");

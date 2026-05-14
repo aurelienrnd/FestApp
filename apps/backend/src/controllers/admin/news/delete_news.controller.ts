@@ -2,7 +2,10 @@ import type { Request, Response } from "express";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
-import { deleteImage, NEWS_UPLOADS_DIR } from "../../../services/imageUpload.service";
+import {
+  deleteImage,
+  NEWS_UPLOADS_DIR,
+} from "../../../services/imageUpload.service";
 import type { NewsMediaRow } from "../../../type";
 
 /** Supprime definitivement une news et son fichier image.

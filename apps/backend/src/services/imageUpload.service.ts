@@ -4,7 +4,10 @@ import path from "path";
 import sharp from "sharp";
 
 /** Chemin absolu du dossier de stockage des images artistes. */
-export const ARTISTS_UPLOADS_DIR = path.join(__dirname, "../../uploads/artists");
+export const ARTISTS_UPLOADS_DIR = path.join(
+  __dirname,
+  "../../uploads/artists",
+);
 
 /** Chemin absolu du dossier de stockage des images news. */
 export const NEWS_UPLOADS_DIR = path.join(__dirname, "../../uploads/news");
