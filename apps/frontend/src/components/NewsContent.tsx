@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { useFetch } from "../hooks/useFetch";
 import { useModal } from "../hooks/useModal";
@@ -40,11 +40,9 @@ export default function NewsContent({
     "/public/news",
   );
 
-  // Liste mutable pour les ajouts et suppressions locaux
-  const [newsList, setNewsList] = useState<NewsSummary[]>([]);
-  useEffect(() => {
-    setNewsList(data?.news ?? []);
-  }, [data]);
+  const baseNews = useMemo(() => data?.news ?? [], [data]);
+  const [addedNews, setAddedNews] = useState<NewsSummary[]>([]);
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
   const {
     isOpen: isDeleteModalOpen,
@@ -53,27 +51,25 @@ export default function NewsContent({
     close: closeDeleteModal,
   } = useModal<NewsSummary>();
 
-  // Supprime la news de la liste après confirmation de suppression
   const handleNewsDeleted = (newsId: string) => {
-    setNewsList((current) => current.filter((news) => news.id !== newsId));
+    setDeletedIds((current) => new Set([...current, newsId]));
   };
 
-  // Ajoute la nouvelle news à la liste après ajout réussi
   const handleNewsAdded = (news: NewsItem) => {
-    setNewsList((current) =>
-      activeFilter === "Plus ancien" ? [...current, news] : [news, ...current],
-    );
+    setAddedNews((current) => [...current, news]);
     onCloseAddModal();
   };
 
-  // Filtre les brouillons et applique le tri — memoïse pour eviter de recalculer
-  // lors des re-renders sans rapport (ouverture modale, etc.)
   const filteredNews = useMemo(() => {
+    const merged = [
+      ...addedNews,
+      ...baseNews.filter((news) => !deletedIds.has(news.id)),
+    ];
     const published = isAdminPath
-      ? newsList
-      : newsList.filter((news) => news.is_published);
+      ? merged
+      : merged.filter((news) => news.is_published);
     return activeFilter === "Plus ancien" ? [...published].reverse() : published;
-  }, [newsList, activeFilter, isAdminPath]);
+  }, [baseNews, addedNews, deletedIds, activeFilter, isAdminPath]);
 
   return (
     <div className="admin-content-wrapper">

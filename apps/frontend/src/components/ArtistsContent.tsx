@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useFetch } from "../hooks/useFetch";
@@ -43,11 +43,9 @@ export default function ArtistsContent({
     "/public/artists",
   );
 
-  // Liste mutable pour les ajouts et suppressions locaux
-  const [artistList, setArtistList] = useState<ArtistSummary[]>([]);
-  useEffect(() => {
-    setArtistList(data?.artists ?? []);
-  }, [data]);
+  const baseArtists = useMemo(() => data?.artists ?? [], [data]);
+  const [addedArtists, setAddedArtists] = useState<ArtistSummary[]>([]);
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
   const {
     isOpen: isDeleteModalOpen,
@@ -56,16 +54,12 @@ export default function ArtistsContent({
     close: closeDeleteModal,
   } = useModal<ArtistSummary>();
 
-  // Supprime l'artiste  de la liste après confirmation de suppression
   const handleArtistDeleted = (artistId: string) => {
-    setArtistList((current) =>
-      current.filter((artist) => artist.id !== artistId),
-    );
+    setDeletedIds((current) => new Set([...current, artistId]));
   };
 
-  // Ajoute l'artiste cree a la liste locale puis ferme la modale
   const handleArtistAdded = (artist: ArtistItem) => {
-    setArtistList((current) => [...current, artist]);
+    setAddedArtists((current) => [...current, artist]);
     onCloseAddModal();
   };
 
@@ -76,16 +70,17 @@ export default function ArtistsContent({
     return d.getHours() * 60 + d.getMinutes();
   };
 
-  // Filtre par date selectionnee puis trie par heure decroissante (plus tardif en haut)
-  // Memoïse pour eviter de recalculer lors des re-renders sans rapport (ouverture modale, etc.)
-  const filteredArtists = useMemo(
-    () =>
-      (activeFilter
-        ? artistList.filter((a) => a.start_time?.startsWith(activeFilter))
-        : artistList
-      ).sort((a, b) => toMinutes(b.start_time) - toMinutes(a.start_time)),
-    [artistList, activeFilter],
-  );
+  const filteredArtists = useMemo(() => {
+    const merged = [
+      ...addedArtists,
+      ...baseArtists.filter((a) => !deletedIds.has(a.id)),
+    ];
+    return (
+      activeFilter
+        ? merged.filter((a) => a.start_time?.startsWith(activeFilter))
+        : merged
+    ).sort((a, b) => toMinutes(b.start_time) - toMinutes(a.start_time));
+  }, [baseArtists, addedArtists, deletedIds, activeFilter]);
 
   return (
     <div className="admin-content-wrapper">
