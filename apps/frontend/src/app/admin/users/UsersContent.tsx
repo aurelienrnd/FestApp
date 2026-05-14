@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFetch } from "../../../hooks/useFetch";
 import { useModal } from "../../../hooks/useModal";
@@ -37,11 +37,10 @@ export default function UsersContent({
     "/admin/users",
   );
 
-  // Liste mutable pour les ajouts et suppressions locaux
-  const [userList, setUserList] = useState<UserItem[]>([]);
-  useEffect(() => {
-    setUserList(data?.users ?? []);
-  }, [data]);
+  const baseUsers = useMemo(() => data?.users ?? [], [data]);
+  const [addedUsers, setAddedUsers] = useState<UserItem[]>([]);
+  const [overrides, setOverrides] = useState<Map<string, UserItem>>(new Map());
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
   const {
     isOpen: isDeleteModalOpen,
@@ -57,37 +56,27 @@ export default function UsersContent({
     close: closeEditModal,
   } = useModal<UserItem>();
 
-  // Met a jour la liste des utilisateurs apres suppression en retirant l'utilisateur correspondant a l'id fourni
   const handleUserSavedDeleted = (userId: string) => {
-    // Redirige vers /login si l'utilisateur supprime est l'utilisateur connecte
     if (userId === currentUser?.user.id) {
       router.push("/login");
       return;
     }
-
-    // Filtre la liste des utilisateurs pour retirer l'utilisateur supprime
-    setUserList((currentUsers) =>
-      currentUsers.filter((user) => user.id !== userId),
-    );
+    setDeletedIds((current) => new Set([...current, userId]));
   };
 
-  // Ajoute ou met a jour un utilisateur dans la liste locale
   const upsertUser = (savedUser: UserItem) => {
-    setUserList((currentUsers) => {
-      // Vérifie si un utilisateur avec le même id existe déjà
-      const userAlreadyExists = currentUsers.some(
-        (currentUser) => currentUser.id === savedUser.id,
-      );
+    const existsInBase = baseUsers.some((u) => u.id === savedUser.id);
+    const existsInAdded = addedUsers.some((u) => u.id === savedUser.id);
 
-      // Si l'utilisateur n'existe pas encore on l'ajoute à la liste existante
-      if (!userAlreadyExists) {
-        return [...currentUsers, savedUser];
-      }
-      // Si l'utilisateur existe déjà on parcourt la liste pour remplacer l'ancien utilisateur
-      return currentUsers.map((currentUser) =>
-        currentUser.id === savedUser.id ? savedUser : currentUser,
+    if (existsInBase) {
+      setOverrides((current) => new Map([...current, [savedUser.id, savedUser]]));
+    } else if (existsInAdded) {
+      setAddedUsers((current) =>
+        current.map((u) => (u.id === savedUser.id ? savedUser : u)),
       );
-    });
+    } else {
+      setAddedUsers((current) => [...current, savedUser]);
+    }
   };
 
   // Ferme la modale (ajout ou edition) et reinitialise l'utilisateur selectionne
@@ -102,14 +91,15 @@ export default function UsersContent({
     closeUserModal();
   };
 
-  // On crée un nouveau tableau contenant uniquement les utilisateurs correspondant au filtre sélectionné
-  const filteredUsers = userList.filter((user) => {
-    // Si le filtre est "all", on retourne tous les utilisateurs
-    if (filterBy === "all") {
-      return true;
-    }
-    return user.role === filterBy;
-  });
+  const filteredUsers = useMemo(() => {
+    const merged = [
+      ...baseUsers
+        .filter((u) => !deletedIds.has(u.id))
+        .map((u) => overrides.get(u.id) ?? u),
+      ...addedUsers.filter((u) => !deletedIds.has(u.id)),
+    ];
+    return filterBy === "all" ? merged : merged.filter((u) => u.role === filterBy);
+  }, [baseUsers, addedUsers, overrides, deletedIds, filterBy]);
 
   return (
     <div className="admin-content-wrapper">
