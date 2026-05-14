@@ -1,12 +1,10 @@
 import type { Request, Response } from "express";
-import { randomUUID } from "crypto";
-import { mkdir, unlink } from "fs/promises";
 import path from "path";
-import sharp from "sharp";
 import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
+import { saveImage, deleteImage } from "../../../services/imageUpload.service";
 import type { ArtistItem, ArtistMediaRow, ConcertRow } from "../../../type";
 
 const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/artists");
@@ -19,10 +17,7 @@ const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/artists");
  */
 export async function updateArtist(req: Request, res: Response) {
   // valide que l'identifiant fourni est un UUID valide
-  const paramsSchema = z.object({
-    id: z.uuid(),
-  });
-
+  const paramsSchema = z.object({ id: z.uuid() });
   const parsedParams = paramsSchema.safeParse(req.params);
   if (!parsedParams.success) {
     throw new AppError(ERRORS.VALIDATION_INVALID_BODY, 400);
@@ -57,22 +52,14 @@ export async function updateArtist(req: Request, res: Response) {
 
   const is_featured = is_featured_raw === "true";
 
-  // determine l'url_media finale : nouvelle image ou conservation de l'existante
+  // si une nouvelle image est fournie, la convertit et l'ecrit avant la transaction
   let url_media = existingArtist.url_media;
-  let newFilepath: string | null = null;
-
   if (req.file) {
-    // genere un nom de fichier unique et construit le chemin de destination
-    const uuid = randomUUID();
-    const filename = `${uuid}.webp`;
-    newFilepath = path.join(UPLOADS_DIR, filename);
-    url_media = `/uploads/artists/${filename}`;
+    url_media = await saveImage(req.file.buffer, UPLOADS_DIR, "/uploads/artists");
   }
 
   // ouvre une transaction SQL
   await query("BEGIN");
-
-  let newFileWritten = false;
 
   try {
     // met a jour l'artiste en base de donnees
@@ -114,21 +101,12 @@ export async function updateArtist(req: Request, res: Response) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
     }
 
-    // cree le dossier de destination s'il n'existe pas, convertit l'image en WebP et l'ecrit sur le disque
-    if (req.file && newFilepath) {
-      await mkdir(UPLOADS_DIR, { recursive: true });
-      await sharp(req.file.buffer).webp({ quality: 80 }).toFile(newFilepath);
-      newFileWritten = true;
-    }
-
     // valide la transaction
     await query("COMMIT");
 
-    // supprime l'ancienne image du disque si une nouvelle a ete uploadee
+    // supprime l'ancienne image apres le commit pour ne pas la perdre en cas d'erreur SQL
     if (req.file) {
-      const oldFilename = path.basename(existingArtist.url_media);
-      const oldFilepath = path.join(UPLOADS_DIR, oldFilename);
-      await unlink(oldFilepath).catch(() => undefined);
+      await deleteImage(UPLOADS_DIR, existingArtist.url_media);
     }
 
     return res.status(200).json({
@@ -141,10 +119,9 @@ export async function updateArtist(req: Request, res: Response) {
       },
     });
   } catch (error) {
-    // annule la transaction en cas d'erreur, supprime le nouveau fichier si deja ecrit, puis relance pour le middleware
+    // annule la transaction, supprime la nouvelle image si deja ecrite, puis relance pour le middleware
     await query("ROLLBACK");
-    if (newFileWritten && newFilepath)
-      await unlink(newFilepath).catch(() => undefined);
+    if (req.file) await deleteImage(UPLOADS_DIR, url_media);
     if (error instanceof Error && error.message === "featured_limit_reached") {
       throw new AppError(ERRORS.ARTIST_FEATURED_LIMIT, 409);
     }

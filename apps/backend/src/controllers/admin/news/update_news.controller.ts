@@ -1,12 +1,10 @@
 import type { Request, Response } from "express";
-import { randomUUID } from "crypto";
-import { mkdir, unlink } from "fs/promises";
 import path from "path";
-import sharp from "sharp";
 import { z } from "zod";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
+import { saveImage, deleteImage } from "../../../services/imageUpload.service";
 import type { NewsItem, NewsMediaRow } from "../../../type";
 
 const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/news");
@@ -42,21 +40,14 @@ export async function updateNews(req: Request, res: Response) {
   // convertit is_published de string en boolean (multipart envoie les booleens en string)
   const isPublished = is_published === "true";
 
-  // determine l'url_media finale : nouvelle image ou conservation de l'existante
+  // si une nouvelle image est fournie, la convertit et l'ecrit avant la transaction
   let url_media = existingItem.url_media;
-  let newFilepath: string | null = null;
-
   if (req.file) {
-    const uuid = randomUUID();
-    const filename = `${uuid}.webp`;
-    newFilepath = path.join(UPLOADS_DIR, filename);
-    url_media = `/uploads/news/${filename}`;
+    url_media = await saveImage(req.file.buffer, UPLOADS_DIR, "/uploads/news");
   }
 
   // ouvre une transaction SQL
   await query("BEGIN");
-
-  let newFileWritten = false;
 
   try {
     // met a jour la news
@@ -65,14 +56,7 @@ export async function updateNews(req: Request, res: Response) {
        SET title = $1, content = $2, is_published = $3, url_media = $4, description_media = $5
        WHERE id = $6
        RETURNING *`,
-      [
-        title,
-        content || null,
-        isPublished,
-        url_media,
-        description_media,
-        newsId,
-      ],
+      [title, content || null, isPublished, url_media, description_media, newsId],
     );
 
     const updatedItem = updatedNews[0];
@@ -94,29 +78,19 @@ export async function updateNews(req: Request, res: Response) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
     }
 
-    // cree le dossier, convertit et ecrit la nouvelle image si fournie
-    if (req.file && newFilepath) {
-      await mkdir(UPLOADS_DIR, { recursive: true });
-      await sharp(req.file.buffer).webp({ quality: 80 }).toFile(newFilepath);
-      newFileWritten = true;
-    }
-
     // valide la transaction
     await query("COMMIT");
 
-    // supprime l'ancienne image du disque si une nouvelle a ete uploadee (echec silencieux si absente)
+    // supprime l'ancienne image apres le commit pour ne pas la perdre en cas d'erreur SQL
     if (req.file) {
-      const oldFilename = path.basename(existingItem.url_media);
-      const oldFilepath = path.join(UPLOADS_DIR, oldFilename);
-      await unlink(oldFilepath).catch(() => undefined);
+      await deleteImage(UPLOADS_DIR, existingItem.url_media);
     }
 
     return res.status(200).json({ message: "News modifiee", news });
   } catch (error) {
-    // annule la transaction, supprime le nouveau fichier si deja ecrit, puis relance pour le middleware
+    // annule la transaction, supprime la nouvelle image si deja ecrite, puis relance pour le middleware
     await query("ROLLBACK");
-    if (newFileWritten && newFilepath)
-      await unlink(newFilepath).catch(() => undefined);
+    if (req.file) await deleteImage(UPLOADS_DIR, url_media);
     throw error;
   }
 }

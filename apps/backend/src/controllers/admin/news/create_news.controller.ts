@@ -1,11 +1,9 @@
 import type { Request, Response } from "express";
-import { randomUUID } from "crypto";
-import { mkdir, unlink } from "fs/promises";
 import path from "path";
-import sharp from "sharp";
 import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
+import { saveImage, deleteImage } from "../../../services/imageUpload.service";
 import type { NewsItem } from "../../../type";
 
 const UPLOADS_DIR = path.join(__dirname, "../../../../uploads/news");
@@ -29,16 +27,15 @@ export async function createNews(req: Request, res: Response) {
   // convertit is_published de string en boolean (multipart envoie les booleens en string)
   const isPublished = is_published === "true";
 
-  // genere un nom de fichier unique pour l'image, construit le chemin de destination et l'URL d'acces
-  const uuid = randomUUID();
-  const filename = `${uuid}.webp`;
-  const filepath = path.join(UPLOADS_DIR, filename);
-  const url_media = `/uploads/news/${filename}`;
+  // convertit et ecrit l'image sur le disque avant la transaction
+  const url_media = await saveImage(
+    req.file.buffer,
+    UPLOADS_DIR,
+    "/uploads/news",
+  );
 
   // ouvre une transaction SQL
   await query("BEGIN");
-
-  let fileWritten = false;
 
   try {
     // insere la news et retourne les donnees avec le display_name de l'auteur via JOIN users
@@ -66,19 +63,14 @@ export async function createNews(req: Request, res: Response) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
     }
 
-    // cree le dossier de destination s'il n'existe pas, convertit l'image en WebP et l'ecrit sur le disque
-    await mkdir(UPLOADS_DIR, { recursive: true });
-    await sharp(req.file.buffer).webp({ quality: 80 }).toFile(filepath);
-    fileWritten = true;
-
     // valide la transaction
     await query("COMMIT");
 
     return res.status(201).json({ message: "News creee", news });
   } catch (error) {
-    // annule la transaction en cas d'erreur, supprime le fichier si deja ecrit, puis relance pour le middleware
+    // annule la transaction, supprime le fichier deja ecrit, puis relance pour le middleware
     await query("ROLLBACK");
-    if (fileWritten) await unlink(filepath).catch(() => undefined);
+    await deleteImage(UPLOADS_DIR, url_media);
     throw error;
   }
 }
