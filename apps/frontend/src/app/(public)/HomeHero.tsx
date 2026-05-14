@@ -29,7 +29,7 @@ export default function HomeHero() {
     >
       <div className="mt-(--header-height) h-3/4 flex flex-col items-center gap-4 relative lg:gap-10">
         <h1
-          className="w-[180px] sm:w-[250px] h-auto lg:absolute lg:w-[35%]"
+          className="w-45 sm:w-62.5 h-auto lg:absolute lg:w-[35%]"
           style={{
             animation:
               "blur-in var(--anim-hero-duration) var(--anim-hero-easing) both",
