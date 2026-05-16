@@ -5,21 +5,18 @@ import {
   sendContactEmail,
 } from "../../src/services/mailer.service";
 
-// nodemailer est moque globalement dans setup.ts.
-// mailer.service.ts cree son transporter en singleton au chargement du module (appel #0 a createTransport).
-// Chaque appel a createTransport() retourne un nouvel objet avec un nouveau vi.fn() pour sendMail.
-// On doit donc capturer le sendMail du premier appel (#0), pas en faire un nouveau.
+// Recupere sendMail depuis le transporter cree par le service au chargement du module.
 let sendMailMock: ReturnType<typeof vi.fn>;
-
 beforeAll(() => {
-  // mock.results[0] = retour du 1er appel a createTransport, celui fait par le service
-  sendMailMock = vi.mocked(nodemailer.createTransport).mock.results[0].value.sendMail;
+  sendMailMock = vi.mocked(nodemailer.createTransport).mock.results[0].value
+    .sendMail;
 });
 
 // ---------------------------------------------------------------------------
 
 describe("sendPasswordResetEmail", () => {
   it("appelle sendMail avec le bon destinataire et le mot de passe dans le body", async () => {
+    // Appelle la fonction avec des valeurs de test
     await sendPasswordResetEmail("user@test.com", "Jean Dupont", "tmp123abc");
 
     expect(sendMailMock).toHaveBeenCalledWith(
@@ -32,6 +29,7 @@ describe("sendPasswordResetEmail", () => {
   });
 
   it("inclut le nom de l'utilisateur dans le corps du mail", async () => {
+    // Appelle la fonction avec des valeurs de test
     await sendPasswordResetEmail("user@test.com", "Jean Dupont", "tmp123abc");
 
     expect(sendMailMock).toHaveBeenCalledWith(
@@ -46,6 +44,7 @@ describe("sendPasswordResetEmail", () => {
 
 describe("sendWelcomeEmail", () => {
   it("appelle sendMail avec le bon destinataire et les identifiants dans le body", async () => {
+    // Appelle la fonction avec des valeurs de test
     await sendWelcomeEmail("new@test.com", "Marie Martin", "init456def");
 
     expect(sendMailMock).toHaveBeenCalledWith(
@@ -57,6 +56,7 @@ describe("sendWelcomeEmail", () => {
   });
 
   it("inclut le nom de l'utilisateur dans le corps du mail", async () => {
+    // Appelle la fonction avec des valeurs de test
     await sendWelcomeEmail("new@test.com", "Marie Martin", "init456def");
 
     expect(sendMailMock).toHaveBeenCalledWith(
@@ -67,6 +67,7 @@ describe("sendWelcomeEmail", () => {
   });
 
   it("inclut l'email comme identifiant de connexion dans le corps du mail", async () => {
+    // Appelle la fonction avec des valeurs de test
     await sendWelcomeEmail("new@test.com", "Marie Martin", "init456def");
 
     expect(sendMailMock).toHaveBeenCalledWith(
@@ -81,6 +82,7 @@ describe("sendWelcomeEmail", () => {
 
 describe("sendContactEmail", () => {
   it("appelle sendMail avec le sujet prefixe [Contact]", async () => {
+    // Appelle la fonction avec des valeurs de test
     await sendContactEmail(
       "visiteur@exemple.com",
       "Paul Visiteur",
@@ -96,6 +98,7 @@ describe("sendContactEmail", () => {
   });
 
   it("appelle sendMail avec replyTo egal a l'email de l'expediteur", async () => {
+    // Appelle la fonction avec des valeurs de test
     await sendContactEmail(
       "visiteur@exemple.com",
       "Paul Visiteur",
@@ -111,6 +114,7 @@ describe("sendContactEmail", () => {
   });
 
   it("inclut le nom et l'email de l'expediteur dans le corps du mail", async () => {
+    // Appelle la fonction avec des valeurs de test
     await sendContactEmail(
       "visiteur@exemple.com",
       "Paul Visiteur",

@@ -26,9 +26,7 @@ describe("checkEmailAvailable", () => {
     // simule une reponse vide : aucun utilisateur avec cet email
     queryMock.mockResolvedValueOnce([]);
 
-    await expect(
-      checkEmailAvailable("libre@test.com"),
-    ).resolves.not.toThrow();
+    await expect(checkEmailAvailable("libre@test.com")).resolves.not.toThrow();
   });
 
   it("throw USER_EMAIL_ALREADY_USED si l'email est deja utilise", async () => {
@@ -54,14 +52,14 @@ describe("checkEmailAvailable", () => {
 
 describe("checkDisplayNameAvailable", () => {
   it("ne throw pas si le display_name n'existe pas en base", async () => {
+    // simule une reponse vide : aucun utilisateur avec ce display_name
     queryMock.mockResolvedValueOnce([]);
 
-    await expect(
-      checkDisplayNameAvailable("Nom Libre"),
-    ).resolves.not.toThrow();
+    await expect(checkDisplayNameAvailable("Nom Libre")).resolves.not.toThrow();
   });
 
   it("throw USER_DISPLAY_NAME_ALREADY_USED si le display_name est deja utilise", async () => {
+    // simule une reponse avec un utilisateur existant
     queryMock.mockResolvedValueOnce([{ id: "uuid-existant" }]);
 
     await expect(checkDisplayNameAvailable("Nom Pris")).rejects.toThrow(
@@ -70,6 +68,7 @@ describe("checkDisplayNameAvailable", () => {
   });
 
   it("exclut l'utilisateur courant si excludeId est fourni (cas modification)", async () => {
+    // simule une reponse vide
     queryMock.mockResolvedValueOnce([]);
 
     await expect(
@@ -82,6 +81,7 @@ describe("checkDisplayNameAvailable", () => {
 
 describe("checkUserExists", () => {
   it("ne throw pas si l'utilisateur existe en base", async () => {
+    // simule une reponse avec un utilisateur existant
     queryMock.mockResolvedValueOnce([{ id: "uuid-existant" }]);
 
     await expect(checkUserExists("uuid-existant")).resolves.not.toThrow();
@@ -101,12 +101,14 @@ describe("checkUserExists", () => {
 
 describe("generateTemporaryPassword", () => {
   it("retourne une chaine d'au moins 12 caracteres", () => {
+    // Appelle la fonction pour generer un mot de passe temporaire
     const pwd = generateTemporaryPassword();
 
     expect(pwd.length).toBeGreaterThanOrEqual(12);
   });
 
   it("chaque appel retourne une valeur differente", () => {
+    // Appelle la fonction plusieurs fois pour verifier que les resultats sont differents
     const pwd1 = generateTemporaryPassword();
     const pwd2 = generateTemporaryPassword();
 
@@ -118,14 +120,18 @@ describe("generateTemporaryPassword", () => {
 
 describe("hashPassword", () => {
   it("retourne un hash bcrypt valide verifie par bcrypt.compare", async () => {
+    // Appelle la fonction pour hasher un mot de passe
     const password = "MonMotDePasse123";
     const hash = await hashPassword(password);
 
+    // Verifie que le hash correspond au mot de passe original
     const isValid = await bcrypt.compare(password, hash);
+
     expect(isValid).toBe(true);
   });
 
   it("deux appels avec le meme mot de passe produisent des hashs differents (salt)", async () => {
+    // Appelle la fonction deux fois avec le meme mot de passe
     const password = "MonMotDePasse123";
     const hash1 = await hashPassword(password);
     const hash2 = await hashPassword(password);
