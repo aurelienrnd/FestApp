@@ -1,14 +1,8 @@
 import request from "supertest";
 import { app } from "../helpers/testServer";
 import { createAuthSession } from "../helpers/createAuthSession";
-import { query } from "../../src/db";
+import { MINIMAL_PNG, insertArtist } from "../helpers/fixtures";
 import { ERRORS } from "../../src/errors/errorMessages";
-
-// image minimale PNG valide (1x1 px) encodee en base64
-const MINIMAL_PNG = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
-  "base64",
-);
 
 // champs valides pour la creation d'un artiste (sans image)
 const VALID_ARTIST_FIELDS = {
@@ -21,49 +15,6 @@ const VALID_ARTIST_FIELDS = {
   start_time: "2025-08-01T18:00:00.000Z",
   end_time: "2025-08-01T19:00:00.000Z",
 };
-
-// compteur local pour generer des creneaux uniques et eviter deux concerts au meme moment lors de l'insertion d'artistes en base dans les tests
-let artistCounter = 0;
-
-/** Insere un artiste et son concert directement en base et retourne son id.
- * Chaque appel utilise un creneau de 2h.
- * @param isFeatured si l'artiste est mis en avant sur la home
- */
-async function insertArtist(isFeatured = false): Promise<string> {
-  const slot = artistCounter++;
-  // creneaux de 2h a partir de minuit le 1er aout — pas de modulo, end toujours > start
-  const base = new Date("2025-08-01T00:00:00Z");
-  const start = new Date(base.getTime() + slot * 2 * 60 * 60 * 1000);
-  const end = new Date(start.getTime() + 60 * 60 * 1000);
-  const startTime = start.toISOString();
-  const endTime = end.toISOString();
-
-  // inserer l'artiste en base
-  const artists = await query<{ id: string }>(
-    `INSERT INTO artists (name, genre, origin, bio, url_media, description_media, is_featured)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
-     RETURNING id`,
-    [
-      `Artist DB ${slot}`,
-      "Metal",
-      "France",
-      "Bio",
-      "/uploads/artists/test.webp",
-      "Photo",
-      isFeatured,
-    ],
-  );
-  const artistId = artists[0].id;
-
-  // inserer un concert pour l'artiste en base
-  await query(
-    `INSERT INTO concerts (artist_id, stage, start_time, end_time)
-     VALUES ($1, $2, $3, $4)`,
-    [artistId, "MainStage", startTime, endTime],
-  );
-
-  return artistId;
-}
 
 // ---------------------------------------------------------------------------
 

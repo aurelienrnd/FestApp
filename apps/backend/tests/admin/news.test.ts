@@ -1,14 +1,8 @@
 import request from "supertest";
 import { app } from "../helpers/testServer";
 import { createAuthSession } from "../helpers/createAuthSession";
-import { query } from "../../src/db";
+import { MINIMAL_PNG, insertNews } from "../helpers/fixtures";
 import { ERRORS } from "../../src/errors/errorMessages";
-
-// image minimale PNG valide (1x1 px) encodee en base64
-const MINIMAL_PNG = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
-  "base64",
-);
 
 // champs valides pour la creation d'une news (sans image)
 const VALID_NEWS_FIELDS = {
@@ -16,49 +10,6 @@ const VALID_NEWS_FIELDS = {
   description_media: "Description de l'image",
   is_published: "true",
 };
-
-/** Insere une news directement en base et retourne son id.
- * @param userId id de l'auteur (cree automatiquement si absent)
- * @param isPublished si la news est publiee
- */
-async function insertNews(
-  userId?: string,
-  isPublished = true,
-): Promise<string> {
-  // creer un utilisateur de rattachement si aucun userId n'est fourni
-  let authorId = userId;
-  if (!authorId) {
-    const users = await query<{ id: string }>(
-      `INSERT INTO users (email, password_hash, display_name, role)
-       VALUES ($1, $2, $3, $4)
-       RETURNING id`,
-      [
-        `news-author-${Date.now()}@test.com`,
-        "hashed-password",
-        `Auteur ${Date.now()}`,
-        "news",
-      ],
-    );
-    authorId = users[0].id;
-  }
-
-  // inserer la news en base avec les champs requis
-  const news = await query<{ id: string }>(
-    `INSERT INTO news (title, content, is_published, url_media, description_media, user_id)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING id`,
-    [
-      "News DB",
-      "Contenu de test",
-      isPublished,
-      "/uploads/news/test.webp",
-      "Description",
-      authorId,
-    ],
-  );
-
-  return news[0].id;
-}
 
 // ---------------------------------------------------------------------------
 

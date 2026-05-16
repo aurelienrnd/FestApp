@@ -2,6 +2,7 @@ import request from "supertest";
 import bcrypt from "bcrypt";
 import { app } from "../helpers/testServer";
 import { createAuthSession } from "../helpers/createAuthSession";
+import { insertUser } from "../helpers/fixtures";
 import { query } from "../../src/db";
 import { ERRORS } from "../../src/errors/errorMessages";
 
@@ -14,29 +15,13 @@ beforeAll(async () => {
   passwordHash = await bcrypt.hash(PASSWORD, 10);
 });
 
-/** Insère un utilisateur de test en base et retourne sa ligne.
- * @param email email de l'utilisateur
- * @param role role de l'utilisateur, admin par défaut
- */
-async function insertUser(
-  email: string,
-  role: "admin" | "artists" | "news" = "admin",
-) {
-  const rows = await query<{ id: string }>(
-    `INSERT INTO users (email, password_hash, display_name, role)
-     VALUES ($1, $2, $3, $4) RETURNING id`,
-    [email, passwordHash, "Test User", role],
-  );
-  return rows[0];
-}
-
 // ---------------------------------------------------------------------------
 
 describe("POST /admin/auth/login", () => {
   it("retourne 200 et un cookie avec les bons credentials", async () => {
-    // creer un user de test
+    // creer un user de test avec un vrai hash bcrypt pour que bcrypt.compare retourne true
     const email = "login-ok@test.com";
-    await insertUser(email);
+    await insertUser(email, "Test User", "admin", passwordHash);
 
     // test de ci connecte avec le bon mot de passe
     const res = await request(app)
@@ -48,9 +33,9 @@ describe("POST /admin/auth/login", () => {
   });
 
   it("retourne 401 avec un mauvais mot de passe", async () => {
-    // creer un user de test
+    // creer un user de test avec un vrai hash bcrypt
     const email = "login-badpwd@test.com";
-    await insertUser(email);
+    await insertUser(email, "Test User", "admin", passwordHash);
 
     // test de ci connecte avec le mauvais mot de passe
     const res = await request(app)
@@ -167,9 +152,9 @@ describe("GET /admin/auth/me", () => {
 
 describe("POST /admin/auth/forgot-password", () => {
   it("retourne 200 et envoie un email si l'email existe", async () => {
-    // creer un user de test
+    // creer un user de test (le hash n'est pas verifie par forgot-password)
     const email = "forgot-ok@test.com";
-    await insertUser(email);
+    await insertUser(email, "Test User", "admin");
 
     // test de la route forgot-password avec un email qui existe en base
     const res = await request(app)

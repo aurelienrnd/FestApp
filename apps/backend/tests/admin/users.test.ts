@@ -1,7 +1,7 @@
 import request from "supertest";
 import { app } from "../helpers/testServer";
 import { createAuthSession } from "../helpers/createAuthSession";
-import { query } from "../../src/db";
+import { insertUser } from "../helpers/fixtures";
 import { ERRORS } from "../../src/errors/errorMessages";
 
 // corps valide pour la creation d'un utilisateur
@@ -11,21 +11,6 @@ const VALID_USER_BODY = {
   last_name: "Dupont",
   role: "news" as const,
 };
-
-/** Insere un utilisateur directement en base et retourne son id.
- * @param email email unique de l'utilisateur
- * @param displayName nom affiche de l'utilisateur
- */
-async function insertUser(email: string, displayName: string): Promise<string> {
-  // inserer un utilisateur en base
-  const users = await query<{ id: string }>(
-    `INSERT INTO users (email, password_hash, display_name, role)
-     VALUES ($1, $2, $3, $4)
-     RETURNING id`,
-    [email, "hashed-password", displayName, "news"],
-  );
-  return users[0].id;
-}
 
 // ---------------------------------------------------------------------------
 

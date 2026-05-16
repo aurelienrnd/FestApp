@@ -1,86 +1,8 @@
 import request from "supertest";
 import { app } from "../helpers/testServer";
 import { createAuthSession } from "../helpers/createAuthSession";
-import { query } from "../../src/db";
+import { insertArtist, insertNews } from "../helpers/fixtures";
 import { ERRORS } from "../../src/errors/errorMessages";
-
-// compteur local pour generer des creneaux uniques et eviter la contrainte no_overlap_stage
-let artistCounter = 0;
-
-/** Insere un artiste et son concert directement en base et retourne son id.
- * Chaque appel utilise un creneau de 2h decale du precedent (sans modulo pour eviter minuit).
- * @param isFeatured si l'artiste est mis en avant sur la home
- */
-async function insertArtist(isFeatured = false): Promise<string> {
-  const slot = artistCounter++;
-  // creneaux de 2h a partir de minuit le 1er aout
-  const base = new Date("2025-08-01T00:00:00Z");
-  const start = new Date(base.getTime() + slot * 2 * 60 * 60 * 1000);
-  const end = new Date(start.getTime() + 60 * 60 * 1000);
-  const startTime = start.toISOString();
-  const endTime = end.toISOString();
-
-  // inserer l'artiste en base
-  const artists = await query<{ id: string }>(
-    `INSERT INTO artists (name, genre, origin, bio, url_media, description_media, is_featured)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
-     RETURNING id`,
-    [
-      `Artist ${slot}`,
-      "Metal",
-      "France",
-      "Bio de test",
-      "/uploads/artists/test.webp",
-      "Photo de scene",
-      isFeatured,
-    ],
-  );
-  const artistId = artists[0].id;
-
-  await query(
-    `INSERT INTO concerts (artist_id, stage, start_time, end_time)
-     VALUES ($1, $2, $3, $4)`,
-    [artistId, "MainStage", startTime, endTime],
-  );
-
-  return artistId;
-}
-
-/** Insere une news directement en base et retourne son id.
- * @param isPublished si la news est publiee ou en brouillon
- */
-async function insertNews(isPublished = true): Promise<string> {
-  // creer un utilisateur auteur pour la news
-  const users = await query<{ id: string }>(
-    `INSERT INTO users (email, password_hash, display_name, role)
-     VALUES ($1, $2, $3, $4)
-     RETURNING id`,
-    [
-      `pub-author-${Date.now()}@test.com`,
-      "hashed-password",
-      `Auteur ${Date.now()}`,
-      "news",
-    ],
-  );
-  const authorId = users[0].id;
-
-  // inserer la news en base
-  const news = await query<{ id: string }>(
-    `INSERT INTO news (title, content, is_published, url_media, description_media, user_id)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING id`,
-    [
-      `News ${Date.now()}`,
-      "Contenu de test",
-      isPublished,
-      "/uploads/news/test.webp",
-      "Description",
-      authorId,
-    ],
-  );
-
-  return news[0].id;
-}
 
 // ---------------------------------------------------------------------------
 
