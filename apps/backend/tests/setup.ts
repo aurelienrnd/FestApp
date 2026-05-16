@@ -19,7 +19,7 @@ vi.mock("sharp", () => ({
 
 /** Remplace le module fs/promises par un mock pour les tests.
  * Importe toutes les méthodes réelles de fs/promises via importOriginal.
- * Remplace writeFile et unlink pour ne pas écrire ou supprimer de fichiers sur le disque.
+ * Remplace writeFile, unlink et mkdir pour ne pas toucher le disque pendant les tests.
  */
 vi.mock("fs/promises", async (importOriginal) => {
   const actual = await importOriginal<typeof import("fs/promises")>();
@@ -27,6 +27,7 @@ vi.mock("fs/promises", async (importOriginal) => {
     ...actual,
     writeFile: vi.fn().mockResolvedValue(undefined),
     unlink: vi.fn().mockResolvedValue(undefined),
+    mkdir: vi.fn().mockResolvedValue(undefined),
   };
 });
 
