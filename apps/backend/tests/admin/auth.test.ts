@@ -15,8 +15,8 @@ beforeAll(async () => {
 });
 
 /** Insère un utilisateur de test en base et retourne sa ligne.
- * @param {string} email email de l'utilisateur
- * @param {"admin" | "artists" | "news"} role role de l'utilisateur, admin par défaut
+ * @param email email de l'utilisateur
+ * @param role role de l'utilisateur, admin par défaut
  */
 async function insertUser(
   email: string,
@@ -149,9 +149,9 @@ describe("GET /admin/auth/me", () => {
     // creer une session de test
     const { cookie, userId } = await createAuthSession("admin");
 
-    // expire la session en base en mettant une date d'expiration dans le passé
+    // expire la session en base : created_at recule a -2h pour que expires_at (-1h) reste > created_at
     await query(
-      "UPDATE sessions SET expires_at = NOW() - INTERVAL '1 hour' WHERE user_id = $1",
+      "UPDATE sessions SET created_at = NOW() - INTERVAL '2 hours', expires_at = NOW() - INTERVAL '1 hour' WHERE user_id = $1",
       [userId],
     );
 
@@ -205,7 +205,14 @@ describe("POST /admin/auth/forgot-password", () => {
 describe("PATCH /admin/auth/password", () => {
   it("retourne 200 et met a jour le mot de passe", async () => {
     // creer une session de test
-    const { cookie } = await createAuthSession("admin");
+    const { cookie, userId } = await createAuthSession("admin");
+
+    // createAuthSession insere "hashed-password" (placeholder) — remplacer par un vrai hash bcrypt
+    // pour que bcrypt.compare(PASSWORD, hash) retourne true dans le controleur
+    await query("UPDATE users SET password_hash = $1 WHERE id = $2", [
+      passwordHash,
+      userId,
+    ]);
 
     // test de la route de changement de mot de passe avec le cookie de session et les bons anciens et nouveaux mots de passe
     const res = await request(app)

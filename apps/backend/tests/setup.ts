@@ -6,12 +6,13 @@ import { Pool } from "pg";
 /** Remplace le module sharp par un mock pour les tests.
  * Simule l'appel sharp(file) via l'export default.
  * Simule la conversion en webp.
- * Retourne un buffer vide sans traiter de vraie image.
+ * Mocke toBuffer et toFile pour ne jamais traiter ni ecrire de vraie image.
  */
 vi.mock("sharp", () => ({
   default: vi.fn(() => ({
     webp: vi.fn(() => ({
       toBuffer: vi.fn().mockResolvedValue(Buffer.from("")),
+      toFile: vi.fn().mockResolvedValue(undefined),
     })),
   })),
 }));
