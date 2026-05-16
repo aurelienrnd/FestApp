@@ -1,6 +1,6 @@
 import request from "supertest";
-import { app } from "../helpers/testServer";
-import { ERRORS } from "../../src/errors/errorMessages";
+import { app } from "../../helpers/testServer";
+import { ERRORS } from "../../../src/errors/errorMessages";
 
 // corps valide pour le formulaire de contact
 const VALID_CONTACT_BODY = {

@@ -1,8 +1,8 @@
 import request from "supertest";
-import { app } from "../helpers/testServer";
-import { createAuthSession } from "../helpers/createAuthSession";
-import { insertArtist, insertNews } from "../helpers/fixtures";
-import { ERRORS } from "../../src/errors/errorMessages";
+import { app } from "../../helpers/testServer";
+import { createAuthSession } from "../../helpers/createAuthSession";
+import { insertArtist, insertNews } from "../../helpers/fixtures";
+import { ERRORS } from "../../../src/errors/errorMessages";
 
 // ---------------------------------------------------------------------------
 

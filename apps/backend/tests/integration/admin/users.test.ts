@@ -1,8 +1,8 @@
 import request from "supertest";
-import { app } from "../helpers/testServer";
-import { createAuthSession } from "../helpers/createAuthSession";
-import { insertUser } from "../helpers/fixtures";
-import { ERRORS } from "../../src/errors/errorMessages";
+import { app } from "../../helpers/testServer";
+import { createAuthSession } from "../../helpers/createAuthSession";
+import { insertUser } from "../../helpers/fixtures";
+import { ERRORS } from "../../../src/errors/errorMessages";
 
 // corps valide pour la creation d'un utilisateur
 const VALID_USER_BODY = {

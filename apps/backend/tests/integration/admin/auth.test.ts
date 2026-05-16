@@ -1,10 +1,10 @@
 import request from "supertest";
 import bcrypt from "bcrypt";
-import { app } from "../helpers/testServer";
-import { createAuthSession } from "../helpers/createAuthSession";
-import { insertUser } from "../helpers/fixtures";
-import { query } from "../../src/db";
-import { ERRORS } from "../../src/errors/errorMessages";
+import { app } from "../../helpers/testServer";
+import { createAuthSession } from "../../helpers/createAuthSession";
+import { insertUser } from "../../helpers/fixtures";
+import { query } from "../../../src/db";
+import { ERRORS } from "../../../src/errors/errorMessages";
 
 // definition d'un mot de passe commun pour les tests et son hash
 const PASSWORD = "TestPassword123";
