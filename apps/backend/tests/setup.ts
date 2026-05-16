@@ -29,6 +29,13 @@ vi.mock("fs/promises", async (importOriginal) => {
   };
 });
 
+/** Remplace express-rate-limit par un middleware passthrough pour les tests.
+ * Appelle simplement next() pour laisser passer toutes les requêtes sans appliquer de limitation de taux.
+ */
+vi.mock("express-rate-limit", () => ({
+  default: () => (_req: unknown, _res: unknown, next: () => void) => next(),
+}));
+
 /** Remplace le module nodemailer par un mock pour les tests.
  * Simule l'objet nodemailer.
  * simule la méthode createTransport.
