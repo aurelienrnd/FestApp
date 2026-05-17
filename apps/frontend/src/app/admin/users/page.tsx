@@ -2,7 +2,7 @@
 
 import SideBarTool from "../../../components/SideBarTool";
 import { filterUsersItems } from "../../../config/ui";
-import AddButton from "../../../components/AddButton";
+import MobileFiltersButton from "../../../components/MobileFiltersButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
@@ -14,7 +14,7 @@ import { useRoleGuard } from "../../../hooks/useRoleGuard";
  * Affiche les filtres (sidebar + modal mobile) et la liste des utilisateurs.
  * Ouvre une modale permettant d'ajouter un utilisateur (formulaire).
  * @children SideBarTool : Affiche une navigation sticky sur desktop
- * @children AddButton : Affiche la navigation des filtres sur mobile
+ * @children MobileFiltersButton : Affiche la navigation des filtres sur mobile
  * @children UsersContent : Affiche le contenu de la page utilisateurs
  */
 export default function Page() {
@@ -44,7 +44,7 @@ export default function Page() {
     <>
       <section className="section-page">
         <div className="filter-row">
-          <AddButton items={userFilterItems} />
+          <MobileFiltersButton items={userFilterItems} />
           <h1 className="title1">UTILISATEURS</h1>
           <button
             type="button"

@@ -9,16 +9,13 @@ import { useNavPath } from "../hooks/useNavPath";
 import ModalCloseButton from "./ModalCloseButton";
 import Navigation from "./Navigation";
 
-/** Affiche un bouton "plus" qui ouvre une modale de filtres.
- * @param {Object} props proprietes du composant
+/** Affiche un bouton de filtres (mobile uniquement) qui ouvre une modale de navigation.
  * @param {NavItem[]} props.items elements affiches dans la navigation de la modale
- * @param {string} [props.className] classes CSS additionnelles
  */
-export default function AddButton({
+export default function MobileFiltersButton({
   items,
 }: {
   items: NavItem[];
-  className?: string;
 }) {
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
   const { pathname, isAdminPath } = useNavPath();
