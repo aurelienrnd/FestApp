@@ -18,7 +18,8 @@ const bebasNeue = Bebas_Neue({
 // Métadonnées SEO
 export const metadata: Metadata = {
   title: "Vindellfest",
-  description: "A music festival website built with Next.js", //TODO a modifier
+  description:
+    "Vindhellfest — Le festival de musique en Charente. Programmation, actualités et informations pratiques.",
 };
 
 /** Layout racine — definit uniquement le squelette HTML commun a toutes les pages.
