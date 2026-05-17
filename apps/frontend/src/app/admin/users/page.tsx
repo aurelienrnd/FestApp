@@ -49,7 +49,7 @@ export default function Page() {
           <button
             type="button"
             className="mb-(--ctx-title-mb)"
-            aria-label="Ouvrir les filtres"
+            aria-label="Ajouter un utilisateur"
             onClick={() => open()}
           >
             <FontAwesomeIcon icon={faPlus} />
