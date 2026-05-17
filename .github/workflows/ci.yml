@@ -47,9 +47,9 @@ jobs:
           DB_USER=postgres
           DB_PASSWORD=postgres
           DB_NAME=vindhellfest
-          JWT_ACCESS_SECRET=test-secret
+          JWT_ACCESS_SECRET=un-super-secret-a-changer
           JWT_ACCESS_EXPIRES_IN=1h
-          COOKIE_ACCESS_TOKEN_NAME=access_token
+          COOKIE_ACCESS_TOKEN_NAME=vindhellfest_access_token
           COOKIE_ACCESS_TOKEN_SECURE=false
           COOKIE_ACCESS_TOKEN_SAME_SITE=lax
           SESSION_EXPIRES_IN=1h
