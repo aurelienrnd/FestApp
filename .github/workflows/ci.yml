@@ -53,6 +53,12 @@ jobs:
           COOKIE_ACCESS_TOKEN_SECURE=false
           COOKIE_ACCESS_TOKEN_SAME_SITE=lax
           SESSION_EXPIRES_IN=1h
+          SMTP_HOST=localhost
+          SMTP_PORT=1025
+          SMTP_SECURE=false
+          SMTP_USER=test@test.com
+          SMTP_PASS=test
+          CONTACT_EMAIL=contact@test.com
           EOF
 
           cat > .env.frontend <<'EOF'
