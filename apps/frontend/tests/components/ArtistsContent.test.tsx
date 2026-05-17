@@ -8,6 +8,7 @@ import type { ArtistItem } from "@/type";
 // next/image : balise img standard pour eviter les erreurs Next.js en jsdom
 vi.mock("next/image", () => ({
   default: ({ src, alt }: { src: string; alt: string }) => (
+    // eslint-disable-next-line @next/next/no-img-element
     <img src={src} alt={alt} />
   ),
 }));
@@ -145,5 +146,47 @@ describe("ArtistsContent", () => {
 
     // l'artiste doit avoir disparu de la liste sans refetch
     expect(screen.queryByText("Artiste Existant")).not.toBeInTheDocument();
+  });
+
+  it("masque le bouton 'Supprimer' en vue publique", () => {
+    // en vue publique isAdminPath est false, le bouton Supprimer ne doit pas etre rendu
+    vi.mocked(useNavPath).mockReturnValue({
+      isAdminPath: false,
+      pathname: "/artists",
+    });
+
+    render(<ArtistsContent />);
+
+    expect(screen.queryByRole("button", { name: "Supprimer" })).not.toBeInTheDocument();
+  });
+
+  it("affiche le badge 'Page d'accueil' en vue admin pour un artiste mis en avant", () => {
+    // le badge n'apparait que si isAdminPath est true et is_featured est true
+    vi.mocked(useFetch).mockReturnValue({
+      data: { artists: [{ ...mockArtist, is_featured: true }] },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<ArtistsContent />);
+
+    expect(screen.getByText("Page d'accueil")).toBeInTheDocument();
+  });
+
+  it("masque le badge 'Page d'accueil' en vue publique", () => {
+    // meme si is_featured est true, le badge ne s'affiche pas en vue publique
+    vi.mocked(useFetch).mockReturnValue({
+      data: { artists: [{ ...mockArtist, is_featured: true }] },
+      isLoading: false,
+      error: null,
+    });
+    vi.mocked(useNavPath).mockReturnValue({
+      isAdminPath: false,
+      pathname: "/artists",
+    });
+
+    render(<ArtistsContent />);
+
+    expect(screen.queryByText("Page d'accueil")).not.toBeInTheDocument();
   });
 });
