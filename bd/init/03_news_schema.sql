@@ -8,13 +8,13 @@ DROP TABLE IF EXISTS news CASCADE;
 -- Table des news
 CREATE TABLE news (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),                -- Identifiant unique genere automatiquement
-  title VARCHAR(150) NOT NULL,                                  -- Titre affiche
+  title VARCHAR(150) NOT NULL CHECK (char_length(title) >= 2),  -- Titre affiche
   content TEXT NULL,                                            -- Contenu de la news
   is_published BOOLEAN NOT NULL DEFAULT FALSE,                  -- Statut de publication
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),                -- Date de creation
   url_media VARCHAR(255) NOT NULL,                              -- URL/chemin du media associe
   description_media VARCHAR(255) NOT NULL,                      -- Texte alternatif / description courte
-  user_id UUID NULL REFERENCES users(id) ON DELETE SET NULL -- Reference l'utilisateur createur, NULL si supprime
+  user_id UUID NULL REFERENCES users(id) ON DELETE SET NULL     -- Reference l'utilisateur createur, NULL si supprime
 );
 
 -- Indexes pour optimiser les requetes courantes

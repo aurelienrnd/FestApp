@@ -7,32 +7,32 @@
         <mxCell id="utilisateur" parent="1" style="text;html=1;strokeColor=none;fillColor=#dae8fc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=13;arcSize=0;" value="UTILISATEUR" vertex="1">
           <mxGeometry height="40" width="200" x="590" y="210" as="geometry" />
         </mxCell>
-        <mxCell id="utilisateur_attrs" parent="1" style="text;html=1;strokeColor=#6c8ebf;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="email&#xa;display_name&#xa;role&#xa;password_changed_at&#xa;created_at" vertex="1">
-          <mxGeometry height="120" width="200" x="590" y="250" as="geometry" />
+        <mxCell id="utilisateur_attrs" parent="1" style="text;html=1;strokeColor=#6c8ebf;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="&lt;u&gt;#identifiant&lt;/u&gt;&#xa;email&#xa;password&#xa;display_name&#xa;role&#xa;password_changed_at&#xa;created_at" vertex="1">
+          <mxGeometry height="168" width="200" x="590" y="250" as="geometry" />
         </mxCell>
         <mxCell id="session" parent="1" style="text;html=1;strokeColor=none;fillColor=#dae8fc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=13;" value="SESSION" vertex="1">
           <mxGeometry height="40" width="200" x="130" y="210" as="geometry" />
         </mxCell>
-        <mxCell id="session_attrs" parent="1" style="text;html=1;strokeColor=#6c8ebf;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="expires_at&#xa;created_at&#xa;revoked_at" vertex="1">
-          <mxGeometry height="80" width="200" x="130" y="250" as="geometry" />
+        <mxCell id="session_attrs" parent="1" style="text;html=1;strokeColor=#6c8ebf;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="&lt;u&gt;#identifiant&lt;/u&gt;&#xa;expires_at&#xa;created_at&#xa;revoked_at" vertex="1">
+          <mxGeometry height="104" width="200" x="130" y="250" as="geometry" />
         </mxCell>
-        <mxCell id="news" parent="1" style="text;html=1;strokeColor=none;fillColor=#dae8fc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=13;" value="news" vertex="1">
+        <mxCell id="news" parent="1" style="text;html=1;strokeColor=none;fillColor=#dae8fc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=13;" value="NEWS" vertex="1">
           <mxGeometry height="40" width="200" x="1050" y="210" as="geometry" />
         </mxCell>
-        <mxCell id="news_attrs" parent="1" style="text;html=1;strokeColor=#6c8ebf;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="title&#xa;content&#xa;is_published&#xa;created_at&#xa;url_media&#xa;description_media" vertex="1">
-          <mxGeometry height="140" width="200" x="1050" y="250" as="geometry" />
+        <mxCell id="news_attrs" parent="1" style="text;html=1;strokeColor=#6c8ebf;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="&lt;u&gt;#identifiant&lt;/u&gt;&#xa;title&#xa;content&#xa;is_published&#xa;created_at&#xa;url_media&#xa;description_media" vertex="1">
+          <mxGeometry height="168" width="200" x="1050" y="250" as="geometry" />
         </mxCell>
         <mxCell id="artiste" parent="1" style="text;html=1;strokeColor=none;fillColor=#d5e8d4;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=13;" value="ARTISTE" vertex="1">
           <mxGeometry height="40" width="200" x="230" y="520" as="geometry" />
         </mxCell>
-        <mxCell id="artiste_attrs" parent="1" style="text;html=1;strokeColor=#82b366;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="name&#xa;genre&#xa;origin&#xa;bio&#xa;url_media&#xa;description_media&#xa;youtube_url&#xa;spotify_url" vertex="1">
-          <mxGeometry height="200" width="200" x="230" y="560" as="geometry" />
+        <mxCell id="artiste_attrs" parent="1" style="text;html=1;strokeColor=#82b366;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="&lt;u&gt;#identifiant&lt;/u&gt;&#xa;name&#xa;genre&#xa;origin&#xa;bio&#xa;url_media&#xa;description_media&#xa;youtube_url&#xa;spotify_url&#xa;is_featured" vertex="1">
+          <mxGeometry height="225" width="200" x="230" y="560" as="geometry" />
         </mxCell>
         <mxCell id="concert" parent="1" style="text;html=1;strokeColor=none;fillColor=#d5e8d4;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=13;" value="CONCERT" vertex="1">
           <mxGeometry height="40" width="200" x="910" y="560" as="geometry" />
         </mxCell>
-        <mxCell id="concert_attrs" parent="1" style="text;html=1;strokeColor=#82b366;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="stage&#xa;start_time&#xa;end_time" vertex="1">
-          <mxGeometry height="80" width="200" x="910" y="600" as="geometry" />
+        <mxCell id="concert_attrs" parent="1" style="text;html=1;strokeColor=#82b366;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=10;whiteSpace=wrap;rounded=0;fontSize=12;" value="&lt;u&gt;#identifiant&lt;/u&gt;&#xa;stage&#xa;start_time&#xa;end_time" vertex="1">
+          <mxGeometry height="104" width="200" x="910" y="600" as="geometry" />
         </mxCell>
         <mxCell id="assoc_ouvre" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=13;" value="ouvre" vertex="1">
           <mxGeometry height="50" width="120" x="400" y="255" as="geometry" />

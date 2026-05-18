@@ -8,21 +8,22 @@ DROP TABLE IF EXISTS artists CASCADE;
 
 -- Table des artistes
 CREATE TABLE artists (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),        -- Identifiant unique genere automatiquement
-  name CITEXT NOT NULL CHECK (char_length(name) >= 2),  -- Nom de l'artiste
-  genre VARCHAR(60) NOT NULL,                           -- Genre musical
-  origin VARCHAR(80) NOT NULL,                          -- Origine/pays/ville
-  bio TEXT NOT NULL,                                    -- Biographie
-  url_media VARCHAR(255) NOT NULL,                      -- URL/chemin du media associe
-  description_media VARCHAR(255) NOT NULL,              -- Texte alternatif / description courte
-  youtube_url VARCHAR(255),                             -- Lien YouTube (optionnel)
-  spotify_url VARCHAR(255),                             -- Lien Spotify (optionnel)
-  is_featured BOOLEAN NOT NULL DEFAULT FALSE            -- Mis en avant sur la page d'accueil (max 2)
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),             -- Identifiant unique genere automatiquement
+  name VARCHAR(150) NOT NULL CHECK (char_length(name) >= 2), -- Nom de l'artiste, sensible a la casse
+  genre VARCHAR(60) NOT NULL,                                -- Genre musical
+  origin VARCHAR(80) NOT NULL,                               -- Origine/pays/ville
+  bio TEXT NOT NULL,                                         -- Biographie
+  url_media VARCHAR(255) NOT NULL,                           -- URL/chemin du media associe
+  description_media VARCHAR(255) NOT NULL,                   -- Texte alternatif / description courte
+  youtube_url VARCHAR(255),                                  -- Lien YouTube (optionnel)
+  spotify_url VARCHAR(255),                                  -- Lien Spotify (optionnel)
+  is_featured BOOLEAN NOT NULL DEFAULT FALSE                 -- Mis en avant sur la page d'accueil (max 2)
 );
 
 -- Indexes pour optimiser les requetes courantes
 CREATE INDEX idx_artists_genre ON artists(genre);
 CREATE INDEX idx_artists_name ON artists(name);
+CREATE INDEX idx_artists_is_featured ON artists(is_featured);
 
 -- Trigger : limite a 2 le nombre d'artistes mis en avant simultanement
 CREATE OR REPLACE FUNCTION check_featured_limit()

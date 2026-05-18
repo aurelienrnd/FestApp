@@ -9,13 +9,13 @@ export const MINIMAL_PNG = Buffer.from(
 
 /** Insere un utilisateur directement en base et retourne son id.
  * @param email email unique de l'utilisateur
- * @param displayName nom affiche (defaut : "Test User")
+ * @param displayName nom affiche (defaut : unique via Date.now())
  * @param role role de l'utilisateur (defaut : "admin")
  * @param passwordHash hash bcrypt ou placeholder (defaut : "hashed-password")
  */
 export async function insertUser(
   email: string,
-  displayName = "Test User",
+  displayName = `Test User ${Date.now()}`,
   role: UserRole = "admin",
   passwordHash = "hashed-password",
 ): Promise<string> {
