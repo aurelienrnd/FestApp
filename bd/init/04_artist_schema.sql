@@ -1,6 +1,5 @@
 -- Extensions necessaires
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE EXTENSION IF NOT EXISTS citext;
 
 -- //NOTE : Utiliser uniquement en phase de developpement.
 -- Elle supprime la table si elle existe deja, afin d'eviter des erreurs lors des modifications du schema.
