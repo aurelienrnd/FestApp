@@ -21,7 +21,7 @@ describe("saveImage", () => {
     });
   });
 
-  it("appelle sharp().webp().toFile() avec le bon chemin", async () => {
+  it("appelle sharp().resize().webp().toFile() avec le bon chemin", async () => {
     // simule une reussite de mkdir (dossier deja existant ou cree avec succes)
     const buffer = Buffer.from("fake");
     await saveImage(buffer, "/uploads/artists", "/uploads/artists");
@@ -30,10 +30,18 @@ describe("saveImage", () => {
     expect(sharpMock).toHaveBeenCalledWith(buffer);
 
     // navigation dans la chaine de mocks via .mock.results sans rappeler les fonctions :
-    // sharp(buffer)       → results[0].value    = { webp: vi.fn() }
-    // .webp(...)          → results[0].value    = { toBuffer: vi.fn(), toFile: vi.fn() }
-    // .toFile(chemin)     → la fonction a verifier
+    // sharp(buffer)              → results[0].value = { resize: vi.fn(), webp: vi.fn() }
+    // .resize(...) (mockReturnThis) → retourne le meme sharpInstance
+    // .webp(...)                 → results[0].value = { toBuffer: vi.fn(), toFile: vi.fn() }
+    // .toFile(chemin)            → la fonction a verifier
     const sharpInstance = sharpMock.mock.results[0].value;
+
+    expect(vi.mocked(sharpInstance.resize)).toHaveBeenCalledWith(
+      1600,
+      undefined,
+      { fit: "inside", withoutEnlargement: true },
+    );
+
     const webpInstance = vi.mocked(sharpInstance.webp).mock.results[0].value;
 
     expect(vi.mocked(webpInstance.toFile)).toHaveBeenCalledWith(

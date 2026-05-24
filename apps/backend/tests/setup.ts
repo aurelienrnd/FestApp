@@ -10,6 +10,7 @@ import { Pool } from "pg";
  */
 vi.mock("sharp", () => ({
   default: vi.fn(() => ({
+    resize: vi.fn().mockReturnThis(),
     webp: vi.fn(() => ({
       toBuffer: vi.fn().mockResolvedValue(Buffer.from("")),
       toFile: vi.fn().mockResolvedValue(undefined),

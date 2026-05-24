@@ -12,7 +12,8 @@ export const ARTISTS_UPLOADS_DIR = path.join(
 /** Chemin absolu du dossier de stockage des images news. */
 export const NEWS_UPLOADS_DIR = path.join(__dirname, "../../uploads/news");
 
-/** Genere un nom de fichier unique, cree le dossier si absent, convertit le buffer en WebP (qualite 80) et ecrit le fichier sur le disque.
+/** Genere un nom de fichier unique, cree le dossier si absent, redimensionne a 1600px max,
+ * convertit le buffer en WebP (qualite 80) et ecrit le fichier sur le disque.
  * @param buffer contenu brut du fichier image recu dans req.file.buffer
  * @param uploadsDir chemin absolu du dossier de destination
  * @param urlPrefix prefixe d'URL publique (ex: /uploads/artists)
@@ -28,7 +29,10 @@ export async function saveImage(
   const filepath = path.join(uploadsDir, filename);
   const url_media = `${urlPrefix}/${filename}`;
   await mkdir(uploadsDir, { recursive: true });
-  await sharp(buffer).webp({ quality: 80 }).toFile(filepath);
+  await sharp(buffer)
+    .resize(1600, undefined, { fit: "inside", withoutEnlargement: true })
+    .webp({ quality: 80 })
+    .toFile(filepath);
   return url_media;
 }
 
