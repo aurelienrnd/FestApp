@@ -129,7 +129,6 @@
   .detail-edit-area {
     @apply max-w-3xl mx-auto px-6 md:px-10 pb-10 md:pb-16;
   }
-
   /* === Home PAGES === */
   .home-section {
     @apply w-full py-10 px-6 md:px-20 flex flex-col items-center text-center;

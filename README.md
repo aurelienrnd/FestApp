@@ -207,7 +207,7 @@ npm.cmd --prefix .\apps\backend ci
 
 ---
 
-## `.dockerignore`
+### `.dockerignore`
 
 Le fichier `.dockerignore` sert à indiquer à Docker quels fichiers ou dossiers ne doivent pas être inclus dans le contexte de build.
 Les éléments listés dans ce fichier ne seront donc pas envoyés au moteur Docker lors de la construction de l'image, ce qui permet d'alléger le build et de protéger les fichiers sensibles.
@@ -224,7 +224,9 @@ Il ignore les fichiers suivants :
 
 ---
 
-## `.gitignore`
+## Git
+
+### `.gitignore`
 
 Le fichier `.gitignore` sert à indiquer à Git quels fichiers ou dossiers ne doivent pas être suivis.
 Les éléments listés dans ce fichier ne seront donc pas inclus dans les commits, ni affichés comme modifications non suivies.
@@ -238,9 +240,7 @@ Il ignore notamment les fichiers suivants :
 
 ---
 
-## `.github/workflows/`
-
-### `ci.yml`
+### `.github/workflows/`
 
 #### Déclencheurs
 

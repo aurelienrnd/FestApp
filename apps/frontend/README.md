@@ -1,60 +1,15 @@
 # Frontend — Projet Vindhellfest
 
-## Scripts Docker
+Ce dossier contient l'application frontend du projet Vindhellfest, développée avec **Next.js 16** (App Router) et **TypeScript**.
+Elle couvre l'interface publique du festival (programmation, actualités, informations pratiques) ainsi que l'interface d'administration protégée (gestion des artistes, des news et des utilisateurs).
 
-- `docker compose up -d frontend` : Démarrer le frontend
-- `docker compose restart frontend` : Redémarrer uniquement le frontend
-- `docker compose logs -f frontend` : Consulter les logs
+Trois documents de référence complètent ce README :
 
-Pour exécuter une commande npm dans le conteneur :
-
-```bash
-docker exec -it vindhellfest-frontend npm run lint
-docker exec -it vindhellfest-frontend npm run format
-docker exec -it vindhellfest-frontend npm test
-docker exec -it vindhellfest-frontend npm run test:run
-```
-
----
-
-## Variables d'environnement
-
-- `NEXT_PUBLIC_API_URL` : URL de l'API utilisée côté client (navigateur).
-- `API_URL_SERVER` : URL de l'API utilisée côté serveur (SSR Next.js, via le réseau Docker interne).
-
----
-
-## Stack technique
-
-**Dependencies**
-
-- `next` : Framework React pour le rendu hybride (SSR/SSG).
-- `react` : Bibliothèque UI.
-- `react-dom` : Rendu React dans le navigateur.
-- `react-modal` : Composant de modale accessible.
-- `@fortawesome/react-fontawesome` : Composants Font Awesome pour React.
-- `@fortawesome/fontawesome-svg-core` : Cœur Font Awesome.
-- `@fortawesome/free-solid-svg-icons` : Pack d'icônes solid Font Awesome.
-- `@fortawesome/free-regular-svg-icons` : Pack d'icônes regular Font Awesome.
-- `@fortawesome/free-brands-svg-icons` : Pack d'icônes de marques (YouTube, Spotify…).
-
-**DevDependencies**
-
-- `typescript` : Compilateur TypeScript.
-- `tailwindcss` : Framework CSS utilitaire.
-- `@tailwindcss/postcss` : Intégration Tailwind via PostCSS.
-- `eslint` : Analyse statique du code.
-- `eslint-config-next` : Règles ESLint pour Next.js.
-- `prettier` : Formateur de code automatique.
-- `vitest` : Runner de tests.
-- `@testing-library/react` : Tests de composants React.
-- `@testing-library/jest-dom` : Matchers DOM pour tests.
-- `@testing-library/user-event` : Simulation d'interactions utilisateur.
-- `jsdom` : Environnement DOM pour les tests.
-- `@types/node` : Définitions TypeScript pour Node.js.
-- `@types/react` : Définitions TypeScript pour React.
-- `@types/react-dom` : Définitions TypeScript pour React DOM.
-- `@types/react-modal` : Définitions TypeScript pour React Modal.
+| Fichier           | Description                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------------ |
+| `STYLE.md`      | État réel du système de styles — tokens CSS, classes `@layer components`, animations |
+| `TYPE.md`       | État réel des types TypeScript — types déclarés dans `src/type.ts` et conventions   |
+| `tests/TEST.md` | État réel de la couverture de tests — fichiers, cas testés, outils utilisés           |
 
 ---
 
@@ -121,7 +76,7 @@ apps/frontend/
 │   │   │   ├── AddArtistModal.tsx
 │   │   │   ├── AddNewsModal.tsx
 │   │   │   └── DeleteModal.tsx
-│   │   ├── AddButton.tsx
+│   │   ├── MobileFiltersButton.tsx
 │   │   ├── AdminUserProvider.tsx
 │   │   ├── ArtistDetailContent.tsx
 │   │   ├── ArtistsContent.tsx
@@ -156,41 +111,39 @@ apps/frontend/
 │   │   └── validation.ts
 │   ├── declarations.d.ts
 │   └── type.ts
-├── test/
+├── tests/
+│   ├── TEST.md
 │   ├── setup.ts
-│   ├── integration/
-│   │   └── AdminLayout.test.tsx
-│   └── unitaire/
-│       ├── components/
-│       │   ├── Banner.test.tsx
-│       │   ├── ContactUs.test.tsx
-│       │   ├── Footer.test.tsx
-│       │   ├── ForgotPassword.test.tsx
-│       │   ├── MobilNav.test.tsx
-│       │   ├── SectionCta.test.tsx
-│       │   ├── useNavPath.test.tsx
-│       │   └── useRoleGuard.test.tsx
-│       ├── functions/
-│       │   ├── apiRequest.test.ts
-│       │   └── getApiErrorMessage.test.ts
-│       └── pages/
-│           ├── AddArticleModal.test.tsx
-│           ├── AddArtistModal.test.tsx
-│           ├── AddUserModal.test.tsx
-│           ├── ArtistDetailModal.test.tsx
-│           ├── ArtistsContent.test.tsx
-│           ├── ChangePasswordModal.test.tsx
-│           ├── DashboardContent.test.tsx
-│           ├── DeleteArticleModal.test.tsx
-│           ├── DeleteArtistModal.test.tsx
-│           ├── HomeHero.test.tsx
-│           ├── HomeInfosPratiques.test.tsx
-│           ├── HomeNews.test.tsx
-│           ├── HomePartenaires.test.tsx
-│           ├── HomeProgrammation.test.tsx
-│           ├── LoginPage.test.tsx
-│           ├── NewsContent.test.tsx
-│           └── UsersContent.test.tsx
+│   ├── tsconfig.json
+│   ├── components/
+│   │   ├── AddArtistModal.test.tsx
+│   │   ├── AddNewsModal.test.tsx
+│   │   ├── AddUserModal.test.tsx
+│   │   ├── AdminArtistDetailPage.test.tsx
+│   │   ├── AdminNewsDetailPage.test.tsx
+│   │   ├── ArtistsContent.test.tsx
+│   │   ├── ArtistsPage.test.tsx
+│   │   ├── ChangePasswordModal.test.tsx
+│   │   ├── ContactUs.test.tsx
+│   │   ├── DashboardContent.test.tsx
+│   │   ├── DeleteModal.test.tsx
+│   │   ├── Footer.test.tsx
+│   │   ├── ForgotPassword.test.tsx
+│   │   ├── LoginPage.test.tsx
+│   │   ├── NewsContent.test.tsx
+│   │   ├── NewsPage.test.tsx
+│   │   ├── UsersContent.test.tsx
+│   │   └── UsersPage.test.tsx
+│   ├── functions/
+│   │   ├── filterNavByRole.test.ts
+│   │   ├── formatDate.test.ts
+│   │   ├── getApiErrorMessage.test.ts
+│   │   └── validation.test.ts
+│   └── hooks/
+│       ├── useDelete.test.ts
+│       ├── useFetch.test.ts
+│       ├── useMutation.test.ts
+│       └── useRoleGuard.test.ts
 ├── .dockerignore
 ├── .gitignore
 ├── .prettierignore
@@ -208,123 +161,247 @@ apps/frontend/
 
 ---
 
-## Dockerfile
+## Stack technique
 
-Le projet utilise un Dockerfile multi-stage pour générer deux types d'images à partir du même fichier : une image de développement et une image de production.
-Le frontend bénéficie de 5 stages car il possède plus de dépendances, ce qui optimise la taille et le temps de rebuild.
+**Dependencies**
 
-- Base commune : `node:20-alpine`
-- Stage `deps` : installation des dépendances
-- Stage `builder` : copie des dépendances, copie du code et lancement du build
-- Image de production (`runner`)
-- Image de développement (`dev`)
+- `next` : Framework React pour le rendu hybride (SSR/SSG).
+- `react` : Bibliothèque UI.
+- `react-dom` : Rendu React dans le navigateur.
+- `react-modal` : Composant de modale accessible.
+- `@fortawesome/react-fontawesome` : Composants Font Awesome pour React.
+- `@fortawesome/fontawesome-svg-core` : Cœur Font Awesome.
+- `@fortawesome/free-solid-svg-icons` : Pack d'icônes solid Font Awesome.
+- `@fortawesome/free-regular-svg-icons` : Pack d'icônes regular Font Awesome.
+- `@fortawesome/free-brands-svg-icons` : Pack d'icônes de marques (YouTube, Spotify…).
+
+**DevDependencies**
+
+- `typescript` : Compilateur TypeScript.
+- `tailwindcss` : Framework CSS utilitaire.
+- `@tailwindcss/postcss` : Intégration Tailwind via PostCSS.
+- `eslint` : Analyse statique du code.
+- `eslint-config-next` : Règles ESLint pour Next.js.
+- `prettier` : Formateur de code automatique.
+- `vitest` : Runner de tests.
+- `@testing-library/react` : Tests de composants React.
+- `@testing-library/jest-dom` : Matchers DOM pour tests.
+- `@testing-library/user-event` : Simulation d'interactions utilisateur.
+- `jsdom` : Environnement DOM pour les tests.
+- `@types/node` : Définitions TypeScript pour Node.js.
+- `@types/react` : Définitions TypeScript pour React.
+- `@types/react-dom` : Définitions TypeScript pour React DOM.
+- `@types/react-modal` : Définitions TypeScript pour React Modal.
+
+---
+
+## Configuration Next.js
+
+### `next.config.ts`
+
+Fichier de configuration de Next.js — permet d'étendre et de personnaliser le comportement du framework au-delà des valeurs par défaut.
+Il est chargé au démarrage du serveur et s'applique aussi bien en développement qu'en production.
+
+| Option       | Description                                                                                                                                                       |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rewrites` | Redirige les requêtes `/uploads/:path*` vers le backend (`API_URL_SERVER/uploads/:path*`) — permet au navigateur d'accéder aux images uploadées sans CORS |
+| `images`   | Autorise les images distantes : tout domaine en `https` et `localhost` en `http` — nécessaire pour `next/image` avec des sources externes               |
+
+---
+
+## `.gitignore`
+
+Ce fichier est généré automatiquement par `create-next-app`. Il complète le `.gitignore` racine en couvrant des entrées spécifiques à Next.js absentes de ce dernier : le dossier `.next/` (build et cache), `next-env.d.ts` (fichier TypeScript généré au démarrage) et `*.tsbuildinfo` (cache de compilation TypeScript).
+
+---
+
+## Docker
+
+Le dossier utilise Docker pour conteneuriser l'application et l'intégrer dans l'architecture multi-services du projet.
+Le `Dockerfile` définit comment construire l'image, et Docker Compose orchestre son démarrage en lien avec le backend et la base de données.
+
+---
+
+### `Dockerfile`
+
+Le Dockerfile utilise le **multi-stage build** : un seul fichier produit plusieurs images distinctes selon l'usage (développement ou production). Chaque stage hérite du précédent ou repart de la base, ce qui permet de n'embarquer que le strict nécessaire dans l'image finale.
+
+Image de base commune : `node:20-alpine` — légère, répertoire de travail `/app`, télémétrie Next.js désactivée (`NEXT_TELEMETRY_DISABLED=1`).
+
+| Stage       | Hérite de | Rôle                                                                                                                                                                                                                      |
+| ----------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `base`    | —         | Image de base commune —`node:20-alpine`, `WORKDIR /app`, désactive la télémétrie Next.js                                                                                                                          |
+| `deps`    | `base`   | Copie `package.json` + `package-lock.json` et installe toutes les dépendances via `npm ci`                                                                                                                          |
+| `builder` | `base`   | Copie les `node_modules` depuis `deps`, copie tout le code source, compile l'application (`npm run build`)                                                                                                           |
+| `runner`  | `base`   | **Image de production** — installe uniquement les dépendances de production (`--omit=dev`), copie `.next/`, `public/` et `next.config.ts` depuis `builder`. Lance `npm run start` sur le port `3000` |
+| `dev`     | `base`   | **Image de développement** — installe toutes les dépendances, copie tout le code source. Lance `npm run dev` sur le port `3000`. Utilisé par Docker Compose                                                  |
+
+> Le stage `deps` est isolé pour tirer parti du cache Docker — les dépendances ne sont réinstallées que si `package.json` ou `package-lock.json` changent, même si le code source évolue.
+
+- `docker compose up -d frontend` : Démarrer le frontend
+- `docker compose restart frontend` : Redémarrer uniquement le frontend
+- `docker compose logs -f frontend` : Consulter les logs
+
+Pour exécuter une commande npm dans le conteneur :
+
+```bash
+docker exec -it vindhellfest-frontend npm run lint
+docker exec -it vindhellfest-frontend npm run format
+docker exec -it vindhellfest-frontend npm test
+docker exec -it vindhellfest-frontend npm run test:run
+```
+
+---
+
+## ESLint — `eslint.config.mjs`
+
+Analyse statique du code TypeScript/React — détecte les erreurs de logique, les mauvaises pratiques, les variables inutilisées et les violations de typage.
+
+| Configuration     | Valeur                                              | Description                                           |
+| ----------------- | --------------------------------------------------- | ----------------------------------------------------- |
+| `nextVitals`    | `eslint-config-next/core-web-vitals`              | Règles Next.js strictes incluant les Core Web Vitals |
+| `nextTs`        | `eslint-config-next/typescript`                   | Règles TypeScript pour Next.js                       |
+| Dossiers ignorés | `.next/`, `out/`, `build/`, `next-env.d.ts` | Exclus de l'analyse — générés automatiquement     |
+
+---
+
+## Prettier — `.prettierrc`
+
+Formateur automatique — s'occupe uniquement de la mise en forme, indépendamment de la logique du code.
+
+| Option          | Valeur    | Description                                                        |
+| --------------- | --------- | ------------------------------------------------------------------ |
+| `semi`        | `true`  | Point-virgule en fin d'instruction                                 |
+| `singleQuote` | `false` | Guillemets doubles                                                 |
+| `tabWidth`    | `2`     | Indentation de 2 espaces                                           |
+| `endOfLine`   | `auto`  | Fin de ligne adaptée au système (LF sur Linux, CRLF sur Windows) |
+
+---
+
+### `.prettierignore`
+
+Liste les fichiers et dossiers exclus du formatage automatique.
+
+| Entrée           | Raison                                                                            |
+| ----------------- | --------------------------------------------------------------------------------- |
+| `README.md`     | Fichier de documentation — le formatage Prettier casserait les tableaux Markdown |
+| `STYLE.md`      | Idem                                                                              |
+| `node_modules/` | Dépendances — jamais formatées                                                 |
+| `.next/`        | Build Next.js généré automatiquement                                           |
 
 ---
 
 ## `src/`
 
+Contient l'intégralité du code source de l'application — pages, composants, hooks, fonctions utilitaires, types et styles.
+
+---
+
 ### `app/`
 
-- **`tokens.css`** : Variables CSS uniquement — un seul `:root` structuré en 7 sections (dimensions, couleurs, espacement contextuel, typographie, animation). Importé par `globals.css`.
-- **`animations.css`** : Keyframes uniquement — définit 8 keyframes : `marquee-left`/`marquee-right` (défilement partenaires), `line-reload` (animation hover SectionCta), `line-expand` (pulsation LoadingLine), `slide-in-left`/`slide-in-right`/`blur-in`/`scale-in` (animations hero et sidebar). Jamais référencé dans `globals.css` directement — consommé via `.hero-slide-left` ou inline style dans les composants.
-- **`globals.css`** : Importe `tailwindcss`, `tokens.css` et `animations.css`, déclare les thèmes `admin`/`visitor` et les classes composants Tailwind partagées dans `@layer components` (boutons, formulaires, modales, cartes, layout, pages, marquee).
-- **`layout.tsx`** : Layout racine Next.js — charge la police Google, définit les métadonnées SEO. Ne contient pas de Banner/Footer (délégués aux layouts de section). Inclut un `<div id="app-root">` wrapper à l'intérieur du `<body>` pour permettre à `react-modal` d'appliquer `aria-hidden` correctement sans masquer l'intégralité de l'arbre d'accessibilité.
+Dossier de routage Next.js App Router — chaque sous-dossier correspond à une route, chaque `page.tsx` est une page rendue côté serveur.
 
-L'application est divisée en trois zones distinctes avec chacune leur layout :
+#### routage
 
-**Zone publique — `(public)/`**
+Next.js App Router génère les routes à partir de la structure des dossiers. Chaque `page.tsx` définit une page accessible, chaque `layout.tsx` définit un layout partagé pour toutes ses pages enfants.
 
-Le groupe de routes `(public)` est transparent pour les URLs (n'affecte pas les chemins). Son layout fournit `Banner` et `Footer` aux pages visiteur, avec `data-theme="visitor"` posé côté serveur.
+**Conventions de nommage**
 
-| Dossier                      | Route               | Description                                                                                                                                                                                                                                             |
-| ---------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `(public)/page.tsx`        | `/`               | Page d'accueil — composant serveur async avec ISR (`revalidate: 60`). Fetche `GET /public/home` via `API_URL_SERVER` et assemble les 5 sections : `HomeHero`, `HomeProgrammation`, `HomeNews`, `HomeInfosPratiques`, `HomePartenaires` |
-| `(public)/artists/`        | `/artists`        | Programmation du festival — liste les artistes depuis l'API publique. Chaque carte navigue vers `/artists/[id]`                                                                                                                                      |
-| `(public)/artists/[id]/`   | `/artists/:id`    | Détail d'un artiste — server component avec ISR (`revalidate: 60`). Fetche `GET /public/artists/:id` et passe l'artiste à `ArtistDetailContent`. Redirige vers `/artists` via `notFound()` si l'artiste n'existe pas                       |
-| `(public)/news/`           | `/news`           | Actualités du festival — liste les news publiées depuis `GET /public/news` avec image, titre, auteur et date. Chaque carte navigue vers `/news/[id]`                                                                                             |
-| `(public)/news/[id]/`      | `/news/:id`       | Détail d'une news — server component avec ISR (`revalidate: 60`). Fetche `GET /public/news/:id` et passe la news à `newsDetailContent`. Redirige vers `/news` via `notFound()` si la news n'existe pas ou n'est pas publiée               |
-| `(public)/practical-info/` | `/practical-info` | Informations pratiques                                                                                                                                                                                                                                  |
+| Convention     | Exemple              | Effet                                                                                        |
+| -------------- | -------------------- | -------------------------------------------------------------------------------------------- |
+| `page.tsx`   | `artists/page.tsx` | Définit la page rendue pour cette route                                                     |
+| `layout.tsx` | `admin/layout.tsx` | Layout partagé appliqué à toutes les pages du dossier et de ses sous-dossiers             |
+| `(groupe)/`  | `(public)/`        | Route group — organise les fichiers et partage un layout sans ajouter de segment dans l'URL |
+| `[param]/`   | `[id]/`            | Segment dynamique — la valeur est accessible via `params.id` dans le composant            |
 
-**Zone authentification — `(auth)/`**
+**Routes de l'application**
 
-Le groupe de routes `(auth)` est transparent pour les URLs. Son layout est identique au layout public mais applique `data-theme="admin"` côté serveur, permettant à la page login d'afficher le thème admin sans appartenir à la zone admin.
+| Route                  | Fichier source                       | Zone     |
+| ---------------------- | ------------------------------------ | -------- |
+| `/`                  | `(public)/page.tsx`                | Publique |
+| `/artists`           | `(public)/artists/page.tsx`        | Publique |
+| `/artists/:id`       | `(public)/artists/[id]/page.tsx`   | Publique |
+| `/news`              | `(public)/news/page.tsx`           | Publique |
+| `/news/:id`          | `(public)/news/[id]/page.tsx`      | Publique |
+| `/practical-info`    | `(public)/practical-info/page.tsx` | Publique |
+| `/login`             | `(auth)/login/page.tsx`            | Auth     |
+| `/admin/dashboard`   | `admin/dashboard/page.tsx`         | Admin    |
+| `/admin/artists`     | `admin/artists/page.tsx`           | Admin    |
+| `/admin/artists/:id` | `admin/artists/[id]/page.tsx`      | Admin    |
+| `/admin/news`        | `admin/news/page.tsx`              | Admin    |
+| `/admin/news/:id`    | `admin/news/[id]/page.tsx`         | Admin    |
+| `/admin/users`       | `admin/users/page.tsx`             | Admin    |
 
-| Dossier           | Route      | Description                               |
-| ----------------- | ---------- | ----------------------------------------- |
-| `(auth)/login/` | `/login` | Formulaire de connexion à l'espace admin |
+**Layouts par zone**
 
-**Zone admin — `admin/` (accès protégé)**
+| Zone         | Layout                  | Rôle                                                                                        |
+| ------------ | ----------------------- | -------------------------------------------------------------------------------------------- |
+| Racine       | `app/layout.tsx`      | Police, SEO global, wrapper `#app-root`                                                    |
+| `(public)` | `(public)/layout.tsx` | Ajoute la `Banner` et le `Footer` pour toutes les pages publiques                        |
+| `(auth)`   | `(auth)/layout.tsx`   | Layout minimaliste pour la page de connexion — sans Banner ni Footer                        |
+| `admin`    | `admin/layout.tsx`    | Vérifie la session via `GET /admin/auth/me`, redirige vers `/login` si non authentifié |
 
-| Dossier                 | Route                  | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| ----------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `admin/layout.tsx`    | —                     | Vérifie la session via `/admin/auth/me`, redirige vers `/login` si non authentifié. Fournit `AdminUserProvider`, `Banner` et `Footer` — `Banner` a accès aux données utilisateur pour filtrer les liens par rôle                                                                                                                                                                                                                                                        |
-| `admin/dashboard/`    | `/admin/dashboard`   | Tableau de bord (`DashboardContent.tsx`, `ChangePasswordModal.tsx`) — ouvre automatiquement la modale de changement de mot de passe si `mustChangePassword` est vrai. Affiche dynamiquement les dates du festival depuis `FESTIVAL_DAYS`                                                                                                                                                                                                                                         |
-| `admin/artists/`      | `/admin/artists`     | Programmation — liste les artistes avec leur concert (`ArtistsContent`), modale d'ajout 3 étapes (`AddArtistModal`), modale de suppression générique (`DeleteModal`) — accès restreint aux rôles `admin` et `artists` via `useRoleGuard`. Le champ date est un `<select>` limité aux jours de `FESTIVAL_DAYS`. Les concerts à cheval sur minuit sont gérés (end_time automatiquement décalé au lendemain). Chaque carte navigue vers `/admin/artists/[id]` |
-| `admin/artists/[id]/` | `/admin/artists/:id` | Détail et édition d'un artiste — client component, fetche `GET /public/artists/:id` via `apiRequest`. Affiche `ArtistDetailContent` (rendu statique partagé avec la page publique) et `ArtistEditButton` (`"use client"` — bouton + `AddArtistModal` en mode édition). Hérite des restrictions de rôle de `/admin/artists` via `useRoleGuard` avec correspondance préfixe                                                                                        |
-| `admin/news/`         | `/admin/news`        | Gestion des actualités (`NewsContent`, `AddNewsModal`) — accès restreint aux rôles `admin` et `news` via `useRoleGuard`. Les brouillons (`is_published = false`) sont visibles uniquement en admin avec un badge "Brouillon". Le tri "Plus récent" / "Plus ancien" est géré côté client. L'édition d'une news se fait depuis la page de détail                                                                                                                     |
-| `admin/news/[id]/`    | `/admin/news/:id`    | Détail et édition d'une news — client component, fetche `GET /public/news/:id` via `apiRequest` (cookies d'auth pour l'accès aux brouillons). Affiche `NewsDetailContent` et `NewsEditButton` (`"use client"` — bouton + `AddNewsModal` en mode édition). Hérite des restrictions de rôle de `/admin/news` via `useRoleGuard` avec correspondance préfixe                                                                                                        |
-| `admin/users/`        | `/admin/users`       | Gestion des utilisateurs (`UsersContent`, `AddUserModal`, `DeleteModal`) — accès restreint au rôle `admin` via `useRoleGuard`. `AddUserModal` gère l'ajout et la modification via une seule instance (prop `userToEdit`). Si l'utilisateur connecté se supprime lui-même, il est redirigé vers `/login`                                                                                                                                                            |
+---
 
-### `components/`
+#### `layout.tsx (racine)`
 
-Composants UI réutilisables à travers l'application.
+Layout racine Next.js — point d'entrée de toute l'application. Il regroupe trois configurations globales, enveloppe le contenu dans un `<div id="app-root">` requis par `react-modal`, et délègue Banner et Footer aux layouts de chaque zone.
 
-| Fichier                       | Description                                                                                                                                                                                                                                                                       |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `modals/AddArtistModal.tsx` | Modale d'ajout ou d'édition d'un artiste — formulaire en 3 étapes (infos, image, concert). Partagée entre la page liste et la page détail admin                                                                                                                              |
-| `modals/AddNewsModal.tsx`   | Modale d'ajout ou d'édition d'une news — formulaire titre, contenu, image, statut de publication. Partagée entre la page liste et la page détail admin                                                                                                                        |
-| `modals/DeleteModal.tsx`    | Modale de confirmation de suppression générique — reçoit `endpoint`, `entityName`, `getLabel` et `onDeleted`. Réutilisée pour les artistes, news et utilisateurs                                                                                                    |
-| `AdminUserProvider.tsx`     | Context React qui expose les données de l'utilisateur admin connecté (`AdminUser`, `mustChangePassword`) — retourne `null` hors provider                                                                                                                                 |
-| `AddButton.tsx`             | Bouton hamburger visible uniquement sur mobile — ouvre une modale `Navigation` pour afficher les filtres de la page (artists ou news). Utilisé dans `(public)/artists/page.tsx` et `(public)/news/page.tsx`                                                               |
-| `ArtistDetailContent.tsx`   | Affichage statique du détail d'un artiste — partagé entre la page publique et la page admin                                                                                                                                                                                    |
-| `ArtistsContent.tsx`        | Liste des artistes — fetche `GET /public/artists`, gère les états loading/error/empty, le filtre par jour, le tri par heure, l'ajout et la suppression locale. Affiche les boutons d'action uniquement sur les routes admin via `useNavPath`                               |
-| `Banner.tsx`                | Bannière de navigation principale — sticky header, transparent sur la page d'accueil tant que l'utilisateur n'a pas scrollé (opaque dès le premier pixel de défilement via scroll listener), filtre les liens admin par rôle via `filterNavByRole`, gère aussi le logout |
-| `ContactUs.tsx`             | Formulaire de contact (modale)                                                                                                                                                                                                                                                    |
-| `Footer.tsx`                | Pied de page avec liens réseaux sociaux et liens légaux                                                                                                                                                                                                                         |
-| `ForgotPassword.tsx`        | Modale mot de passe oublié                                                                                                                                                                                                                                                       |
-| `LegalMention.tsx`          | Modale mentions légales                                                                                                                                                                                                                                                          |
-| `LoadingLine.tsx`           | Indicateur de chargement — texte "Chargement" centré avec une ligne bleue (`--color-3`) animée en pulsation via `line-expand`                                                                                                                                              |
-| `ModalCloseButton.tsx`      | Bouton de fermeture générique pour les modales                                                                                                                                                                                                                                  |
-| `ModalSetup.tsx`            | Initialise `Modal.setAppElement("#app-root")` une seule fois au niveau du layout racine                                                                                                                                                                                         |
-| `Navigation.tsx`            | Barre de navigation — adapte les liens selon le contexte (visiteur / admin) et les filtres de page                                                                                                                                                                               |
-| `NewsContent.tsx`           | Liste des news — fetche `GET /public/news`, gère les états loading/error/empty, le tri "Plus récent" / "Plus ancien", l'ajout et la suppression locale. Affiche les brouillons avec badge uniquement en vue admin                                                           |
-| `NewsDetailContent.tsx`     | Affichage statique du détail d'une news — partagé entre la page publique et la page admin                                                                                                                                                                                      |
-| `SectionCta.tsx`            | Séparateur CTA réutilisable — bouton "Voir plus" centré entre deux lignes horizontales, navigue vers le `href` passé en prop                                                                                                                                               |
-| `SideBarTool.tsx`           | Layout avec navigation sticky sur desktop et contenu principal à droite — sur mobile, n'affiche que les enfants. Utilisé dans les pages publiques artists et news, et les pages admin correspondantes                                                                          |
+**Police d'affichage — `next/font/google`**
 
-### `hooks/`
+| Option       | Valeur             | Description                                                                        |
+| ------------ | ------------------ | ---------------------------------------------------------------------------------- |
+| Police       | `Bebas_Neue`     | Police Google chargée via `next/font` — optimisée et auto-hébergée          |
+| `subsets`  | `["latin"]`      | Sous-ensemble de caractères chargé — réduit le poids du fichier de police      |
+| `weight`   | `"400"`          | Grammage unique (Bebas Neue n'existe qu'en regular)                                |
+| `display`  | `"swap"`         | Affiche d'abord la police de substitution, remplace dès que Bebas Neue est prête |
+| `variable` | `--font-display` | Token CSS injecté dans `tokens.css` et référencé dans les composants         |
 
-Hooks React réutilisables découplés des composants.
+**FontAwesome — `config.autoAddCss = false`**
 
-| Fichier             | Description                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `useDelete.ts`    | Envoie une requête `DELETE` via `apiRequest` et gère les états loading/error — utilisé par `DeleteModal`                                                                                                                                                                                                                                                                                                                   |
-| `useFetch.ts`     | Fetche une ressource GET au montage et expose `{ data, isLoading, error }` — utilisé par les composants de liste (`ArtistsContent`, `NewsContent`, `UsersContent`)                                                                                                                                                                                                                                                          |
-| `useModal.ts`     | Gère l'état ouvert/fermé d'une modale et l'item sélectionné — expose `{ isOpen, item, open, close }`. Typé génériquement pour stocker n'importe quel item                                                                                                                                                                                                                                                                  |
-| `useMutation.ts`  | Envoie une requête `POST` ou `PATCH` via `apiRequest` et expose `{ mutate, isLoading, error, reset }` — utilisé par les modales d'ajout/édition                                                                                                                                                                                                                                                                           |
-| `useNavPath.ts`   | Expose `pathname` et `isAdminPath` dérivés de `usePathname()` — consommé par `Banner`, `SideBarTool`, `ArtistsContent` et `NewsContent`                                                                                                                                                                                                                                                                             |
-| `useRoleGuard.ts` | Redirige vers `/admin/dashboard` si le rôle de l'utilisateur ne lui permet pas d'accéder à la route courante — compare le rôle via `useAdminUser()` et la route via `useNavPath()` avec les restrictions définies dans `navAdminItem`. Utilise une correspondance préfixe (`startsWith`) pour que les routes dynamiques (ex : `/admin/news/[id]`) héritent automatiquement des restrictions de leur route parente |
+| Paramètre     | Valeur    | Description                                                                                                                                                                                                   |
+| -------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `autoAddCss` | `false` | Désactive l'injection automatique du CSS FontAwesome dans le `<head>` — le fichier `styles.css` est importé manuellement à la place pour éviter le flash d'icônes non stylées (FOUT) au chargement |
+
+**Métadonnées SEO — `metadata`**
+
+| Champ           | Valeur                                                                                                          |
+| --------------- | --------------------------------------------------------------------------------------------------------------- |
+| `title`       | `"Vindellfest"`                                                                                               |
+| `description` | `"Vindhellfest — Le festival de musique en Charente. Programmation, actualités et informations pratiques."` |
+
+---
+
+#### `icon.png`
+
+Favicon du site — convention de fichier Next.js App Router. Placé directement dans `app/`, il est détecté automatiquement par le framework et injecté dans le `<head>` de toutes les pages sans aucune configuration supplémentaire.
+
+---
+
+### `Components/`
+---
 
 ### `config/`
+---
 
-Centralise les constantes de configuration du frontend.
+### `function/`
+---
 
-| Fichier         | Description                                                                                                                                                                                                                                                                                          |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `festival.ts` | Source de vérité unique pour les données du festival — exporte `FESTIVAL_DAYS`, `FESTIVAL_LOCATION` et `TICKETING_URL`. Consommé par `DashboardContent`, `ui.ts`, `AddArtistModal`, `HomeInfosPratiques`, `Banner` et `HomeHero`                                              |
-| `ui.ts`       | Définit les items de navigation et de filtrage — liens visiteur (`navVisitorItems`), liens admin (`navAdminItem`, `navAdminQuickLinks`), filtres artists/news/users, rôles utilisateurs (`USER_ROLES`). Expose `filterNavByRole` pour filtrer les liens selon le rôle de l'utilisateur |
+### `hooks/`
+---
 
-### `functions/`
+## `public/`
 
-Utilitaires partagés pour les appels API et la gestion des erreurs.
+Contient les assets statiques servis directement par Next.js sans traitement — accessibles depuis la racine `/` de l'application.
 
-| Fichier                   | Description                                                                                                                                                    |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `apiRequest.ts`         | Wrapper `fetch` typé — retourne toujours `{ data, error: null }` en succès ou `{ data: null, error: ApiRequestError }` en échec                      |
-| `fetchPublic.ts`        | Wrapper `fetch` côté serveur (SSR) avec revalidation ISR — utilisé par les server components de la zone publique (`page.tsx` accueil, artiste, news)   |
-| `formatDate.ts`         | Fonctions de formatage de dates —`formatDateLong` (ex : "8 mai 2026") et `formatConcertDatetime` (retourne `{ date, time }` depuis un timestamp ISO)    |
-| `getApiErrorMessage.ts` | Traduit un `ApiRequestError` en message lisible — priorité au message backend, puis fallback par code HTTP (`401`, `403`, `404`, `429`, `>=500`) |
-| `validation.ts`         | Helpers de validation de formulaire — expose `isEmpty` pour vérifier si un champ est vide                                                                  |
+| Fichier / Dossier   | Description                                                                                                                                                               |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `header_logo.png` | Logo affiché dans la bannière de navigation                                                                                                                             |
+| `hero_logo.webp`  | Logo principal affiché dans la section hero de la page d'accueil                                                                                                         |
+| `hero_bg.webp`    | Image de fond de la section hero                                                                                                                                          |
+| `partners/`       | Images des partenaires du festival — 23 fichiers `.webp` (`partenaire-1.webp` à `partenaire-23.webp`) utilisés dans le bandeau défilant `HomePartenaires.tsx` |
+
+---
 
 ## Gestion des erreurs
 
@@ -353,26 +430,3 @@ La gestion des erreurs est centralisée autour de deux helpers :
 - `src/app/(auth)/login/page.tsx` : affiche le message d'erreur formaté.
 - `src/components/Banner.tsx` : ignore silencieusement l'erreur en cas d'échec du logout, puis redirige vers `/login` en cas de succès.
 - `src/app/admin/layout.tsx` : vérifie la session via `/admin/auth/me` et redirige vers `/login` en cas d'échec.
-
----
-
-## ESLint & Prettier
-
-### ESLint — Analyseur de code
-
-Vérifie le code TypeScript/JavaScript pour détecter :
-
-- erreurs de logique
-- mauvaises pratiques
-- variables non utilisées
-- types incorrects
-- règles de style définies par l'équipe
-
-### Prettier — Formateur automatique
-
-S'occupe uniquement de la mise en forme :
-
-- indentation
-- guillemets
-- trailing commas
-- espaces et retours à la ligne

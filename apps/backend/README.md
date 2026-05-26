@@ -34,8 +34,10 @@ docker exec -it vindhellfest-backend npm test
 - `FRONTEND_ORIGIN=http://localhost:3000` : origine autorisée par le middleware CORS.
 - `SMTP_HOST=smtp.gmail.com` : serveur SMTP utilisé pour l'envoi d'emails.
 - `SMTP_PORT=587` : port SMTP (587 pour TLS, standard Gmail et Resend).
+- `SMTP_SECURE=false` : `true` pour SSL/TLS natif (port 465), `false` pour STARTTLS.
 - `SMTP_USER=toncompte@gmail.com` : adresse email utilisée comme expéditeur.
 - `SMTP_PASS=xxxx xxxx xxxx xxxx` : mot de passe d'application SMTP (ne jamais utiliser le mot de passe du compte, générer un mot de passe d'application dédié).
+- `CONTACT_EMAIL=contact@vindhellfest.fr` : adresse de destination des messages du formulaire de contact.
 
 ---
 
@@ -153,20 +155,22 @@ apps/backend/
 │   ├── type.ts
 │   └── utils.ts
 ├── tests/
+│   ├── TEST.md
 │   ├── setup.ts
 │   ├── health.test.ts
 │   ├── helpers/
 │   │   ├── createAuthSession.ts
 │   │   ├── fixtures.ts
 │   │   └── testServer.ts
-│   ├── admin/
-│   │   ├── auth.test.ts
-│   │   ├── artists.test.ts
-│   │   ├── news.test.ts
-│   │   └── users.test.ts
-│   ├── public/
-│   │   ├── contact.test.ts
-│   │   └── public.test.ts
+│   ├── integration/
+│   │   ├── admin/
+│   │   │   ├── auth.test.ts
+│   │   │   ├── artists.test.ts
+│   │   │   ├── news.test.ts
+│   │   │   └── users.test.ts
+│   │   └── public/
+│   │       ├── contact.test.ts
+│   │       └── public.test.ts
 │   └── unit/
 │       ├── auth.middleware.test.ts
 │       ├── imageUpload.service.test.ts
@@ -385,17 +389,17 @@ Vitest exécute les tests. Supertest simule les appels HTTP sur l'API Express po
 | `createAuthSession.ts`   | Insère un user + une session en base et retourne un cookie JWT valide pour Supertest                 |
 | `fixtures.ts`            | Helpers d'insertion rapide en base : `insertUser`, `insertArtist`, `insertNews`, constante `MINIMAL_PNG` |
 
-**Tests d'intégration** (`tests/admin/`, `tests/public/`, `tests/health.test.ts`) — valident routes, middlewares et contrôleurs contre une vraie base PostgreSQL de test :
+**Tests d'intégration** (`tests/integration/`, `tests/health.test.ts`) — valident routes, middlewares et contrôleurs contre une vraie base PostgreSQL de test :
 
-| Fichier                       | Ce qui est testé                                                                                              |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `health.test.ts`              | Route `/health`                                                                                               |
-| `admin/auth.test.ts`          | POST login, POST logout, GET me, POST forgot-password, PATCH password                                        |
-| `admin/artists.test.ts`       | POST, PATCH, DELETE `/admin/artists` — upload image, UUID invalide, rôles                                  |
-| `admin/news.test.ts`          | POST, PATCH, DELETE `/admin/news` — upload image, UUID invalide, rôles                                     |
-| `admin/users.test.ts`         | GET, POST, PATCH, DELETE `/admin/users` — conflits email/display_name, rôles                               |
-| `public/public.test.ts`       | GET `/public/artists`, GET `/public/artists/:id`, GET `/public/news`, GET `/public/news/:id` + optionalAuth |
-| `public/contact.test.ts`      | POST `/contact/submit` — validation du formulaire                                                            |
+| Fichier                                  | Ce qui est testé                                                                                              |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `health.test.ts`                         | Route `/health`                                                                                               |
+| `integration/admin/auth.test.ts`         | POST login, POST logout, GET me, POST forgot-password, PATCH password                                        |
+| `integration/admin/artists.test.ts`      | POST, PATCH, DELETE `/admin/artists` — upload image, UUID invalide, rôles                                  |
+| `integration/admin/news.test.ts`         | POST, PATCH, DELETE `/admin/news` — upload image, UUID invalide, rôles                                     |
+| `integration/admin/users.test.ts`        | GET, POST, PATCH, DELETE `/admin/users` — conflits email/display_name, rôles                               |
+| `integration/public/public.test.ts`      | GET `/public/artists`, GET `/public/artists/:id`, GET `/public/news`, GET `/public/news/:id` + optionalAuth |
+| `integration/public/contact.test.ts`     | POST `/contact/submit` — validation du formulaire                                                            |
 
 **Tests unitaires** (`tests/unit/`) — ciblent des fonctions isolées sans base de données ni serveur :
 

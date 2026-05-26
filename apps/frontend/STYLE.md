@@ -61,7 +61,7 @@ Details :
 | ----------------------- | -------- | ---------------------------------------------------------------------- |
 | `--ctx-paragraph-gap` | `1rem` | `ContactUs.tsx`, `ForgotPassword.tsx`, `LegalMention.tsx`        |
 | `--ctx-form-gap`      | `2rem` | `login/page.tsx`                                                     |
-| `--ctx-title-mb`      | `3rem` | `globals.css` (`.title1`), `AddButton.tsx`, `admin/*/page.tsx` |
+| `--ctx-title-mb`      | `3rem` | `globals.css` (`.title1`), `MobileFiltersButton.tsx`, `admin/*/page.tsx` |
 
 > Pour tout autre espacement, utiliser l'echelle Tailwind directement (`p-4`, `gap-6`, `mt-8`...).
 
@@ -115,6 +115,7 @@ Details :
 | `.upload-zone`       | Zone d'upload — flex colonne centré, fond `--color-2`, arrondi     |
 | `.upload-btn`        | Bouton d'upload — pill, bordure `--color-text-input`, hover opacity |
 | `.error-message`     | Message d'erreur — centré, couleur `--color-1`                     |
+| `.success-message`   | Message de succès — centré, couleur `--color-text`                 |
 | `.form-grid`         | Grille de formulaire — 1 colonne mobile, 2 colonnes desktop           |
 
 ### Modales

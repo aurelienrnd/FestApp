@@ -179,7 +179,7 @@ Reponse en succes:
 
 ```json
 {
-  "newsList": [
+  "news": [
     {
       "id": "uuid",
       "title": "Ouverture de la billetterie",
@@ -193,7 +193,7 @@ Reponse en succes:
 }
 ```
 
-> `content` et `user_id` ne sont pas retournés dans la liste — utiliser `GET /public/news/:id` pour récupérer la news complète.
+> `content` n'est pas retourné dans la liste — utiliser `GET /public/news/:id` pour récupérer la news complète.
 > `author_name` est `null` si l'utilisateur auteur a ete supprime.
 
 Reponses d'erreur:
