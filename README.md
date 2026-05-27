@@ -124,8 +124,7 @@ Volumes montés :
 | `/app/node_modules`    | Isole les dépendances Docker des dépendances locales             |
 | `/app/.next`           | Isole le cache de build Next.js dans le conteneur                |
 
-> **Note Webpack** : Turbopack est désactivé en développement sous Docker sur Windows. Webpack est forcé (`next dev --webpack`) et le polling est activé (`WATCHPACK_POLLING`, `CHOKIDAR_USEPOLLING`) car les volumes Docker ne propagent pas toujours les événements de fichiers natifs sous Windows.
-
+> **Note polling** : Le polling est activé (`WATCHPACK_POLLING`, `CHOKIDAR_USEPOLLING`) car les volumes Docker ne propagent pas toujours les événements de fichiers natifs sous Windows.
 ---
 
 ### Réseau — `app-net`

@@ -24,7 +24,7 @@ services:
     build:
       context: ./apps/backend
       dockerfile: Dockerfile
-      target: dev  
+      target: dev
     container_name: vindhellfest-backend
     restart: always
     env_file:
@@ -38,10 +38,10 @@ services:
     volumes:
       - ./apps/backend:/app
       - /app/node_modules
-      - ./apps/backend/uploads:/app/uploads      # Volume persistant pour les images uploadees
-      - ./bd/init:/app/bd/init                   # Migrations SQL accessibles pour les tests
+      - ./apps/backend/uploads:/app/uploads # Volume persistant pour les images uploadees
+      - ./bd/init:/app/bd/init # Migrations SQL accessibles pour les tests
     networks:
-      - app-net  
+      - app-net
 
   frontend:
     build:
@@ -58,8 +58,7 @@ services:
       - WATCHPACK_POLLING_INTERVAL=1000
       - CHOKIDAR_USEPOLLING=true
       - CHOKIDAR_INTERVAL=1000
-      - NEXT_DISABLE_TURBOPACK=1 # Desactive Turbopack pour Next.js en dev
-    command: ["npm", "run", "dev", "--", "--webpack", "-H", "0.0.0.0", "-p", "3000"] # run dev avec webpack
+    command: ["npm", "run", "dev"] # run dev en mode développement
     depends_on:
       - backend
     ports:
