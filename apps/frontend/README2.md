@@ -662,29 +662,272 @@ Le mode `strict` de TypeScript est activé dans `tsconfig.json`, ce qui rend `an
 
 ## 6. Système de styles
 
+Le système de styles repose sur trois fichiers CSS chargés dans l'ordre suivant par `globals.css` :
+
+```css
+@import "tailwindcss";
+@import "./tokens.css";
+@import "./animations.css";
+```
+
+---
+
 ### 6.1. `tokens.css`
+
+Ce fichier déclare toutes les **variables CSS personnalisées** (custom properties) disponibles dans l'application. Elles sont définies sur `:root` et accessibles globalement. Le fichier est organisé en six sections :
+
+**Dimensions layout** — valeurs structurelles utilisées dans des calculs CSS :
+
+```css
+--header-height: 106px;
+--home-hero-min-height: 100dvh;
+--app-min-width: 320px;
+```
+
+**Couleurs marque** — palette fixe de la marque, indépendante du thème. Nommées par numéro sans sémantique métier :
+
+```css
+--color-1: #cb3346;   /* rouge principal */
+--color-2: #e4e4e7;   /* gris clair */
+--color-3: #0ea5e9;   /* bleu */
+```
+
+**Couleurs UI** — couleurs fonctionnelles pour les éléments d'interface :
+
+```css
+--color-text-input: #47474f;
+--color-overlay: rgba(156, 163, 175, 0.3);
+```
+
+**Couleurs thème** — valeurs statiques par thème. `--color-text` et `--color-bg` sont les seules variables dynamiques — elles sont redéfinies selon le thème actif dans `globals.css` :
+
+```css
+--color-text-visitor: #ffffff;
+--color-bg-visitor: black;
+--color-bg-admin: #ffffff;
+--color-text-admin: black;
+```
+
+**Espacement contextuel** (`--ctx-*`) — uniquement pour les valeurs d'espacement ayant une signification sémantique dans le projet. Pour tout le reste, l'échelle Tailwind standard est utilisée directement (`p-4`, `gap-6`…) :
+
+```css
+--ctx-paragraph-gap: 1rem;
+--ctx-form-gap: 2rem;
+--ctx-title-mb: 3rem;
+```
+
+**Animation** — propriétés de transition et d'animation réutilisables pour les boutons et les effets du hero :
+
+```css
+--anim-btn-transition: transform;
+--anim-btn-duration: 200ms;
+--anim-btn-scale: 1.1;
+--anim-hero-duration: 0.9s;
+--anim-hero-easing: cubic-bezier(0.16, 1, 0.3, 1);
+```
+
+---
 
 ### 6.2. `globals.css`
 
+C'est le fichier d'entrée du système de styles. Il remplit trois rôles distincts.
+
+**1. Imports** — charge Tailwind, les tokens et les animations dans l'ordre :
+
+```css
+@import "tailwindcss";
+@import "./tokens.css";
+@import "./animations.css";
+```
+
+**2. Thèmes** — redéfinit `--color-text` et `--color-bg` selon l'attribut `data-theme` posé par chaque layout. C'est le seul mécanisme de changement de thème dans l'application :
+
+```css
+[data-theme="admin"]   { --color-text: var(--color-text-admin);   --color-bg: var(--color-bg-admin); }
+[data-theme="visitor"] { --color-text: var(--color-text-visitor); --color-bg: var(--color-bg-visitor); }
+```
+
+**3. Classes composants** (`@layer components`) — toutes les classes CSS réutilisables de l'application. Organisées par catégorie via des commentaires :
+
+| Catégorie  | Classes                                                                                                                                                                                                |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Boutons     | `.btn-cta`, `.btn-action`, `.btn-type-2`                                                                                                                                                         |
+| Navigation  | `.nav-list`                                                                                                                                                                                          |
+| Formulaires | `.input`, `.form-modal`, `.form-grid`, `.error-message`, `.success-message`, `.upload-zone`, `.upload-btn`, `.submit-modal-area`                                                       |
+| Modales     | `.modal`, `.modal-overlay`                                                                                                                                                                         |
+| Cartes      | `.card-row`, `.card-primary`, `.card-secondary`, `.card-profile`, `.card-profile-avatar`, `.card-profile-badge`, `.card-media-img`, `.card-artists-content`, `.card-artists-actions` |
+| Layout      | `.app-root`                                                                                                                                                                                          |
+| Pages       | `.title1`, `.title-modal`, `.admin-content-wrapper`, `.content-centered`, `.filter-row`, `.section-page`, `.detail-edit-area`                                                            |
+| Home        | `.home-section`, `.home-section-vh`, `.home-section-title`, `.home-cards`, `.home-card`, `.home-card-img`, `.home-card-content`                                                          |
+| Hero        | `.hero-slide-left`                                                                                                                                                                                   |
+
+---
+
 ### 6.3. `animations.css`
+
+Ce fichier déclare uniquement des `@keyframes` — aucune classe d'application directe. Les animations sont appliquées via des classes composants dans `globals.css` ou via des styles inline pour les cas ponctuels.
+
+| Keyframe                               | Usage                                         |
+| -------------------------------------- | --------------------------------------------- |
+| `marquee-left` / `marquee-right`   | Défilement horizontal du bandeau partenaires |
+| `line-reload`                        | Animation de la ligne dans `SectionCta`     |
+| `line-expand`                        | Animation de chargement dans `LoadingLine`  |
+| `slide-in-left` / `slide-in-right` | Entrée du texte hero depuis les côtés      |
+| `blur-in`                            | Apparition avec flou sur le hero              |
+| `scale-in`                           | Apparition avec zoom sur le hero              |
+
+---
 
 ### 6.4. `declarations.d.ts`
 
+```ts
+declare module "*.css";
+```
+
+Ce fichier d'une seule ligne résout un problème TypeScript : par défaut, TypeScript ne sait pas comment traiter un import de fichier `.css` (`import "./globals.css"`) et génère une erreur de type. La déclaration `declare module "*.css"` indique à TypeScript d'accepter tous les imports de fichiers CSS sans erreur, en les considérant comme des modules valides.
+
+---
+
 ### 6.5. Convention — jamais de valeurs brutes dans les `.tsx`
+
+Toutes les valeurs CSS (couleurs, espacements, animations) passent par les tokens définis dans `tokens.css`. Aucune valeur brute ne doit apparaître dans un fichier `.tsx`.
+
+```tsx
+// ❌ Interdit
+<div style={{ color: "#cb3346" }} />
+<div className="text-[#cb3346]" />
+
+// ✅ Correct
+<div className="text-(--color-1)" />
+```
+
+**Trois exceptions documentées :**
+
+| Exception                                        | Raison                                                                                                                                                                                                                                          |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bg-transparent`                               | Transparence structurelle — utilisé dans `Banner.tsx` pour la navbar au scroll, pas de sémantique métier                                                                                                                                  |
+| `bg-white` / `text-black`                    | Utilisés directement dans les `.tsx` quand le fond blanc et le texte noir sont une intention visuelle explicite et non liée au thème — `HomeHero.tsx` (bandeaux de titre), `Navigation.tsx` (bouton logout), `ModalCloseButton.tsx` |
+| Valeurs Tailwind standard (`p-4`, `gap-6`…) | L'échelle d'espacement Tailwind s'utilise directement — un token `--ctx-*` n'est créé que si la valeur a une signification sémantique réutilisée dans 2+ endroits                                                                      |
 
 ---
 
 ## 7. Couche utilitaire — `src/functions/`
 
+Les fonctions de ce dossier n'ont pas d'état React : pas de hooks, pas de JSX. Certaines sont pures (`formatDate`, `getApiErrorMessage`, `validation`) — même entrée, même sortie, aucun effet de bord. D'autres font des appels réseau (`apiRequest`, `fetchPublic`) et sont asynchrones avec effets de bord, mais restent découplées de React. Elles ne sont pas interchangeables : `apiRequest` est réservée au côté client, `fetchPublic` au côté serveur.
+
+---
+
 ### 7.1. `apiRequest.ts`
+
+Ce fichier est le point central de toutes les communications API côté client. Il expose deux éléments : une classe d'erreur personnalisée et la fonction `apiRequest`.
+
+**`ApiRequestError`**
+
+Classe qui étend `Error` pour transporter à la fois un message et un code HTTP :
+
+```ts
+class ApiRequestError extends Error {
+  status: number;
+}
+```
+
+Elle remplace les erreurs génériques JavaScript par des erreurs applicatives typées, ce qui permet à `getApiErrorMessage` de produire un message adapté selon le statut HTTP.
+
+**`ApiRequestResult<T>`**
+
+Type union discriminant le résultat d'une requête — soit les données, soit une erreur, jamais les deux :
+
+```ts
+type ApiRequestResult<T> =
+  | { data: T; error: null }
+  | { data: null; error: ApiRequestError };
+```
+
+Ce pattern évite les blocs `try/catch` dans les composants appelants — l'erreur est toujours dans `result.error`, pas levée.
+
+**`apiRequest<T>(path, init)`**
+
+Wrapper autour de `fetch` pour tous les appels API authentifiés (côté client uniquement). Son fonctionnement :
+
+1. Préfixe le `path` avec `NEXT_PUBLIC_API_URL`
+2. Inclut les cookies avec `credentials: "include"` — nécessaire pour que le cookie JWT httpOnly soit transmis automatiquement
+3. Parse la réponse JSON et tente d'en extraire un message d'erreur via `extractApiErrorMessage`
+4. Retourne `{ data, error: null }` en succès ou `{ data: null, error }` en échec
+5. Gère trois cas d'erreur : erreur API attendue (`ApiRequestError`), erreur technique (`Error`), et cas limite (valeur non-Error, ex. timeout)
+
+---
 
 ### 7.2. `fetchPublic.ts`
 
+```ts
+export async function fetchPublic<T>(path: string): Promise<T | null>
+```
+
+Fonction de fetch SSR pour les pages publiques, distincte d'`apiRequest` sur trois points :
+
+|             | `apiRequest`                               | `fetchPublic`                                   |
+| ----------- | -------------------------------------------- | ------------------------------------------------- |
+| Contexte    | Côté client (navigateur)                   | Côté serveur (SSR, composants serveur)          |
+| URL de base | `NEXT_PUBLIC_API_URL` (`localhost:4000`) | `API_URL_SERVER` (`backend:4000` dans Docker) |
+| Cookies     | `credentials: "include"`                   | Aucun — endpoints publics, pas d'auth            |
+| Cache       | Aucune stratégie                            | ISR —`revalidate: 60` secondes                 |
+
+L'option `{ next: { revalidate: 60 } }` est spécifique à Next.js : elle indique au serveur de mettre la réponse en cache et de la revalider toutes les 60 secondes (ISR — Incremental Static Regeneration). La page d'accueil l'utilise pour afficher la programmation et les actualités sans recharger l'API à chaque visite.
+
+---
+
 ### 7.3. `getApiErrorMessage.ts`
+
+```ts
+export function getApiErrorMessage(error: ApiRequestError): string
+```
+
+Convertit une `ApiRequestError` en message lisible pour l'utilisateur. La logique est en deux étapes :
+
+1. **Message explicite** — si l'API a retourné un message d'erreur dans son JSON (`{ error: "Email déjà utilisé" }`), il est retourné directement
+2. **Message par défaut** — si l'API n'a pas de message explicite, un message générique est produit selon le code HTTP :
+
+| Status | Message retourné                              |
+| ------ | ---------------------------------------------- |
+| 401    | "Session expirée, merci de vous reconnecter." |
+| 403    | "Accès refusé."                              |
+| 404    | "Ressource introuvable."                       |
+| 429    | "Trop de tentatives, réessayez plus tard."    |
+| 5xx    | "Erreur serveur, réessayez plus tard."        |
+| Autre  | "Une erreur est survenue."                     |
+
+Cette centralisation garantit que tous les messages d'erreur affichés dans l'interface passent par un seul endroit — aucun message brut de l'API n'atteint l'utilisateur sans passer par ce filtre.
+
+---
 
 ### 7.4. `formatDate.ts`
 
+Ce fichier expose deux fonctions de formatage de dates en français, utilisées pour l'affichage dans les composants.
+
+**`formatDateLong(isoString)`**
+
+Formate une date ISO en date longue française : `"9 mai 2026"`. Utilisé pour les dates de publication des actualités.
+
+**`formatConcertDatetime(isoString)`**
+
+Formate une date ISO en deux chaînes séparées pour l'affichage des concerts :
+
+- `date` : `"samedi 23 août"` — jour de la semaine + jour + mois
+- `time` : `"20:00"` — heure de passage
+
+Retourne un objet `{ date, time }` plutôt qu'une chaîne unique, car les deux valeurs sont affichées dans des éléments HTML distincts dans les cartes artistes.
+
+---
+
 ### 7.5. `validation.ts`
+
+```ts
+export function isEmpty(value: string): boolean {
+  return value.trim() === "";
+}
+```
+
+Fonction utilitaire de validation : retourne `true` si la chaîne est vide ou ne contient que des espaces. Utilisée dans les modales de formulaire pour valider les champs obligatoires avant soumission (`isStep1Invalid`, `isStep2Invalid`…).
 
 ---
 
