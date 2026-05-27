@@ -124,7 +124,10 @@ Volumes montés :
 | `/app/node_modules`    | Isole les dépendances Docker des dépendances locales             |
 | `/app/.next`           | Isole le cache de build Next.js dans le conteneur                |
 
-> **Note polling** : Le polling est activé (`WATCHPACK_POLLING`, `CHOKIDAR_USEPOLLING`) car les volumes Docker ne propagent pas toujours les événements de fichiers natifs sous Windows.
+> **Note polling** : Les variables d'environnement `WATCHPACK_POLLING`, `WATCHPACK_POLLING_INTERVAL`, `CHOKIDAR_USEPOLLING` et `CHOKIDAR_INTERVAL` sont nécessaires au **hot reload en développement**.
+> Sous Windows et macOS, Docker tourne dans une VM Linux qui ne reçoit pas les événements de fichiers du système hôte. Sans ces variables, Next.js et le backend ne détectent pas les modifications de fichiers et ne se rechargent pas automatiquement.
+> Le polling force une vérification périodique du système de fichiers en remplacement des événements natifs. **Ne pas supprimer ces variables si vous développez sous Windows ou macOS.**
+
 ---
 
 ### Réseau — `app-net`
