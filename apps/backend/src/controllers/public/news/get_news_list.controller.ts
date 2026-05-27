@@ -13,7 +13,7 @@ import type { NewsItem } from "../../../type";
 export async function getNewsList(_req: Request, res: Response) {
   const isPrivileged = isNewsPrivileged(res.locals.userRole);
 
-  const news = await query<Omit<NewsItem, "content" | "user_id">>(
+  const news = await query<Omit<NewsItem, "content">>(
     `SELECT a.id, a.title, a.is_published, a.created_at,
             a.url_media, a.description_media,
             u.display_name AS author_name

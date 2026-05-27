@@ -59,7 +59,6 @@ export type NewsItem = {
   created_at: string;
   url_media: string;
   description_media: string;
-  user_id: string | null;
   author_name: string | null;
 };
 

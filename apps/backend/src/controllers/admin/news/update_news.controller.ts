@@ -70,7 +70,9 @@ export async function updateNews(req: Request, res: Response) {
 
     // recupere le display_name de l'auteur via JOIN users
     const newsWithAuthor = await query<NewsItem>(
-      `SELECT a.*, u.display_name AS author_name
+      `SELECT a.id, a.title, a.content, a.is_published, a.created_at,
+              a.url_media, a.description_media,
+              u.display_name AS author_name
        FROM news a
        LEFT JOIN users u ON u.id = a.user_id
        WHERE a.id = $1`,

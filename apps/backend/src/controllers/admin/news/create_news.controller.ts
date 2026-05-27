@@ -46,7 +46,9 @@ export async function createNews(req: Request, res: Response) {
          VALUES ($1, $2, $3, $4, $5, $6)
          RETURNING *
        )
-       SELECT i.*, u.display_name AS author_name
+       SELECT i.id, i.title, i.content, i.is_published, i.created_at,
+              i.url_media, i.description_media,
+              u.display_name AS author_name
        FROM inserted i
        LEFT JOIN users u ON u.id = i.user_id`,
       [
