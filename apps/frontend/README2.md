@@ -624,7 +624,7 @@ Type polyvalent utilisé pour tous les éléments de navigation et de filtrage d
 type ApiMessageResponse = { message?: string };
 ```
 
-Type de base pour les réponses API qui ne retournent qu'un message de confirmation (suppressions, actions sans entité en retour).
+Type utilisé pour les réponses API qui ne retournent qu'un message de confirmation sans entité — login, logout, changement de mot de passe, mot de passe oublié, formulaire de contact. Le champ `message` est optionnel car certains endpoints ne retournent pas de message explicite.
 
 **`CreateApiResponse<T>`**
 
@@ -632,7 +632,7 @@ Type de base pour les réponses API qui ne retournent qu'un message de confirmat
 type CreateApiResponse<T> = { message: string } & T;
 ```
 
-Type générique pour les réponses de création ou modification : l'API retourne à la fois un message et l'entité créée/modifiée. L'intersection avec `T` permet de typer précisément le retour selon l'entité concernée (`CreateApiResponse<{ artist: ArtistItem }>` par exemple).
+Type générique pour les réponses de création : l'API retourne à la fois un message et l'entité créée. Utilisé pour l'ajout d'un artiste, d'une actualité et d'un utilisateur. L'intersection avec `T` permet de typer précisément le retour selon l'entité concernée — `CreateApiResponse<{ artist: ArtistItem }>`, `CreateApiResponse<{ news: NewsItem }>`, `CreateApiResponse<{ user: UserItem }>`. En pratique, le frontend n'utilise jamais le champ `message` — seule l'entité retournée est exploitée. Le type reflète fidèlement le contrat de l'API backend sans pour autant consommer tous ses champs.
 
 ---
 
@@ -642,13 +642,13 @@ Type générique pour les réponses de création ou modification : l'API retourn
 
 Tous les types suivent une convention de suffixe qui indique leur nature :
 
-| Suffixe             | Signification                                            | Exemples                                        |
-| ------------------- | -------------------------------------------------------- | ----------------------------------------------- |
-| `Item`            | Entité métier complète telle que retournée par l'API | `ArtistItem`, `NewsItem`, `UserItem`      |
-| `Response`        | Envelope d'une réponse API complète                    | `AdminAuthMeResponse`, `ApiMessageResponse` |
-| `Role`            | Union littérale de valeurs autorisées                  | `UserRole`                                    |
-| Préfixe `Home`   | Sous-ensemble d'une entité pour la page d'accueil       | `HomeArtist`, `HomeNews`                    |
-| `<T>` générique | Type paramétré réutilisable                           | `CreateApiResponse<T>`                        |
+| Suffixe             | Signification                                                                                                                            | Exemples                                   |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| `Item`            | Colonnes de la base de données retournées telles quelles par un `SELECT`                                                             | `ArtistItem`, `NewsItem`, `UserItem` |
+| `Response`        | Envelope retournée par un endpoint — peut contenir des données enrichies par le backend (jointures, calculs) en plus des colonnes BDD | `AdminAuthMeResponse`                    |
+| `Role`            | Union littérale de valeurs autorisées                                                                                                  | `UserRole`                               |
+| Préfixe `Home`   | Sous-ensemble d'une entité pour la page d'accueil                                                                                       | `HomeArtist`, `HomeNews`               |
+| `<T>` générique | Type paramétré réutilisable                                                                                                           | `CreateApiResponse<T>`                   |
 
 **Composition plutôt que duplication**
 
