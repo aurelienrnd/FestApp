@@ -130,6 +130,46 @@ Volumes montés :
 
 ---
 
+### Stages Docker — dev vs production
+
+Chaque Dockerfile est organisé en **stages multi-étapes**. Le `docker-compose.yml` cible le stage `dev` par défaut via `target: dev`.
+
+#### Différences entre les stages
+
+| Aspect               | `dev`                                          | `runner` (production)                          |
+| -------------------- | ---------------------------------------------- | ---------------------------------------------- |
+| Code source          | Monté depuis l'hôte (volume `./apps/xxx:/app`) | Copié dans l'image au moment du build          |
+| Hot reload           | Activé (`tsx watch`, `next dev` + polling)     | Désactivé (`node dist/index.js`, `next start`) |
+| Dépendances          | Toutes (dev incluses)                          | Production uniquement (`--omit=dev`)           |
+| Variables de polling | Présentes (`WATCHPACK_POLLING`, `CHOKIDAR_*`)  | Absentes (inutiles)                            |
+| Taille de l'image    | Plus lourde                                    | Optimisée                                      |
+
+#### Passer en production
+
+Pour builder et lancer les images de production, deux modifications sont nécessaires dans `docker-compose.yml` :
+
+**1. Changer le `target` des services `backend` et `frontend` :**
+
+```yaml
+build:
+  target: runner # remplace : dev
+```
+
+**2. Retirer les volumes de code source et les variables de polling :**
+
+En production, le code est embarqué dans l'image — les volumes qui montaient le code local deviennent inutiles voire dangereux (ils écraseraient le contenu de l'image).
+
+| Service    | Volumes à retirer                                         |
+| ---------- | --------------------------------------------------------- |
+| `backend`  | `./apps/backend:/app`, `/app/node_modules`                |
+| `frontend` | `./apps/frontend:/app`, `/app/node_modules`, `/app/.next` |
+
+Supprimer également le bloc `environment` de polling et la directive `command` du service `frontend`.
+
+> **Bonne pratique** : créer un fichier `docker-compose.prod.yml` qui surcharge uniquement ces différences, et lancer avec `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`.
+
+---
+
 ### Réseau — `app-net`
 
 `app-net` est un **réseau Docker bridge interne** créé automatiquement par Compose.
@@ -242,26 +282,53 @@ Il ignore notamment les fichiers suivants :
 
 ---
 
-### `.github/workflows/`
+## Pipeline CI/CD
 
-#### Déclencheurs
+Le pipeline est défini dans [`.github/workflows/ci.yml`](.github/workflows/ci.yml) et géré par **GitHub Actions**.
 
-Le workflow se déclenche automatiquement dans deux situations :
+### Vue d'ensemble
 
-| Événement      | Condition                         | Description                                                        |
-| -------------- | --------------------------------- | ------------------------------------------------------------------ |
-| `push`         | Sur**toutes** les branches (`**`) | À chaque fois qu'un commit est poussé sur le dépôt                 |
-| `pull_request` | Vers**toutes** les branches       | À l'ouverture, la mise à jour ou la réouverture d'une pull request |
+```
+push / pull_request (toutes branches)
+            │
+            ├─── Job: backend  (ubuntu-latest)
+            │        │
+            │        ├─ 1. Checkout
+            │        ├─ 2. Prépare les fichiers .env
+            │        ├─ 3. Build image Docker (stage dev)
+            │        ├─ 4. Démarre PostgreSQL
+            │        ├─ 5. Attend que la BDD soit prête (pg_isready)
+            │        ├─ 6. Crée la base de test (vindhellfest_test)
+            │        ├─ 7. npm ci
+            │        ├─ 8. Lint (ESLint)
+            │        ├─ 9. Tests (Vitest + Supertest)
+            │        └─ 10. Shutdown (toujours exécuté)
+            │
+            └─── Job: frontend (ubuntu-latest)
+                     │
+                     ├─ 1. Checkout
+                     ├─ 2. Prépare les fichiers .env
+                     ├─ 3. Build image Docker (stage dev)
+                     ├─ 4. npm ci (--no-deps)
+                     ├─ 5. Lint (ESLint + Next.js)
+                     ├─ 6. Tests (Vitest, mode one-shot)
+                     └─ 7. Shutdown (toujours exécuté)
+```
+
+Les deux jobs s'exécutent **en parallèle** sur des VM Ubuntu fraîches — ils sont totalement indépendants.
 
 ---
 
-#### Structure des jobs
+### Déclencheurs
 
-Le workflow est composé de **deux jobs indépendants**, exécutés en parallèle sur des machines virtuelles Ubuntu (`ubuntu-latest`).
+| Événement      | Condition                | Description                                                        |
+| -------------- | ------------------------ | ------------------------------------------------------------------ |
+| `push`         | Sur toutes les branches  | À chaque fois qu'un commit est poussé sur le dépôt                 |
+| `pull_request` | Vers toutes les branches | À l'ouverture, la mise à jour ou la réouverture d'une pull request |
 
 ---
 
-#### Job `backend`
+### Job `backend`
 
 | #   | Étape                    | Commande / Action                                 | Description                                                                                                                                              |
 | --- | ------------------------ | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -274,11 +341,13 @@ Le workflow est composé de **deux jobs indépendants**, exécutés en parallèl
 | 7   | **Install dependencies** | `npm ci`                                          | Installe les dépendances npm de façon déterministe depuis `package-lock.json`                                                                            |
 | 8   | **Lint**                 | `npm run lint`                                    | Analyse statique du code — vérifie les règles ESLint                                                                                                     |
 | 9   | **Test**                 | `npm test`                                        | Exécute tous les tests (unitaires + intégration) via Vitest                                                                                              |
-| 10  | **Shutdown**             | `docker compose down -v`                          | Arrête et supprime les conteneurs, réseaux et volumes —**toujours exécuté**, même en cas d'échec                                                         |
+| 10  | **Shutdown**             | `docker compose down -v`                          | Arrête et supprime les conteneurs, réseaux et volumes — **toujours exécuté**, même en cas d'échec                                                        |
+
+> Le job backend démarre un vrai PostgreSQL via Docker pour que les tests d'intégration (Supertest) s'exécutent contre une base réelle, pas des mocks.
 
 ---
 
-#### Job `frontend`
+### Job `frontend`
 
 | #   | Étape                    | Commande / Action                           | Description                                                                                       |
 | --- | ------------------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------- |
@@ -288,9 +357,9 @@ Le workflow est composé de **deux jobs indépendants**, exécutés en parallèl
 | 4   | **Install dependencies** | `npm ci` (`--no-deps`)                      | Installe les dépendances npm sans démarrer les services liés (backend, db)                        |
 | 5   | **Lint**                 | `npm run lint` (`--no-deps`)                | Analyse statique du code — vérifie les règles ESLint et Next.js                                   |
 | 6   | **Test**                 | `npm run test:run` (`--no-deps`)            | Exécute tous les tests en mode one-shot via Vitest (`test:run` = pas de watch mode, adapté au CI) |
-| 7   | **Shutdown**             | `docker compose down -v`                    | Supprime les conteneurs et ressources Docker —**toujours exécuté**, même en cas d'échec           |
+| 7   | **Shutdown**             | `docker compose down -v`                    | Supprime les conteneurs et ressources Docker — **toujours exécuté**, même en cas d'échec          |
 
-> **`--no-deps`** : le flag indique à Docker Compose de ne pas démarrer les services dont le frontend dépend (`backend`, `db`). Les tests frontend sont purement unitaires et n'ont pas besoin d'une API active.
+> **`--no-deps`** : indique à Docker Compose de ne pas démarrer les services dont le frontend dépend (`backend`, `db`). Les tests frontend sont purement unitaires et n'ont pas besoin d'une API active.
 
 ---
 
@@ -406,19 +475,3 @@ API REST Express.js + TypeScript.
 
 > Pour plus de détails sur les endpoints, voir [`apps/backend/API.md`](apps/backend/API.md).
 > Pour plus de détails sur l'architecture, voir [`apps/backend/README.md`](apps/backend/README.md).
-
----
-
-## `doc/` — Documentation fonctionnelle et technique
-
-Ce dossier regroupe les documents de conception du projet.
-
-| Fichier                                      | Description                                      |
-| -------------------------------------------- | ------------------------------------------------ |
-| `Documentation_Fonctionnel_V2.docx`          | Cahier des charges fonctionnel                   |
-| `api.docx`                                   | Documentation des endpoints API (version Word)   |
-| `table_relationel/Table_relationel.docx`     | Description textuelle du modèle relationnel      |
-| `table_relationel/Table_relationel_MVP.xlsx` | Modèle relationnel version MVP (tableur)         |
-| `table_relationel/MCD-vindhellfest.drawio`   | Modèle Conceptuel de Données (diagramme Draw.io) |
-
----
