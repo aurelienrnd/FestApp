@@ -1,6 +1,9 @@
 import { ApiRequestError } from "./apiRequest";
 
-/** Définit un message à retourner à l'utilisateur selon le statut de l'erreur si celle-ci ne possède pas déjà de message explicite */
+/** Définit un message à retourner à l'utilisateur selon le statut de l'erreur si celle-ci ne possède pas déjà de message explicite
+ * @param error L'erreur de requête API à analyser
+ * @returns Un message d'erreur adapté à afficher à l'utilisateur
+ */
 export function getApiErrorMessage(error: ApiRequestError): string {
   // Vérifie ci le message possaide un message explicite
   const apiMessage = error.message?.trim();
