@@ -21,6 +21,7 @@ export type ApiRequestResult<T> =
  * Vérifie que la valeur retournée est un objet contenant une propriété `error`.
  * Retourne la chaîne si `error` est de type `string`, sinon `undefined`.
  * @param {unknown} data Données JSON de la réponse API.
+ * @returns {string | undefined} Message d'erreur ou `undefined` si non disponible.
  */
 function extractApiErrorMessage(data: unknown): string | undefined {
   // Retourne `undefined` si la valeur retourné est absente, n'est pas un objet, ou ne contient pas la cle `error`.
@@ -57,6 +58,7 @@ export async function apiRequest<T = unknown>(
       ...init,
     });
 
+    // reception de la reponse de l'API, tentative de parsing en JSON. Si le parsing echoue, on retourne `null`.
     const data = (await response.json().catch(() => null)) as T | null;
 
     // Si l'API repond avec une erreur HTTP, on crée une ApiRequestError.
