@@ -901,7 +901,7 @@ L'option `{ next: { revalidate: 60 } }` est spécifique à Next.js : elle indiqu
 
 ### 7.3. `getApiErrorMessage.ts`
 
-`getApiErrorMessage` est appelée par les hooks après un appel `apiRequest` échoué. c'est un filet de sécurité pour des cas ou Express plante avant d'atteindre le gestionnaire d'erreurs et retourne une réponse HTML par défaut au lieu du JSON attendu :
+`getApiErrorMessage` est appelée par les hooks après un appel `apiRequest` échoué. c'est lui qui récupaire le message contenue dans la classe `ApiRequestError` pour l'affiché a l'utilisateur
 
 Elle accepte un seul paramètre :
 
@@ -910,7 +910,7 @@ Elle accepte un seul paramètre :
 La logique est en deux étapes :
 
 1. **Message explicite** — si l'`ApiRequestError` porte un message retourné par le backend (`{ error: "Email déjà utilisé" }`), il est retourné directement.
-2. **Message par défaut** — si le corps de la réponse était vide, mal formé ou ne contenait pas de champ `error`, `extractApiErrorMessage` (dans `apiRequest`) a retourné `undefined` et `ApiRequestError` a reçu le fallback `"Erreur API"`. `getApiErrorMessage` détecte ce fallback et bascule sur le switch par statut HTTP pour retourner un message utile. 
+2. **Message par défaut** — si le corps de la réponse était vide, mal formé ou ne contenait pas de champ `error`, `extractApiErrorMessage` (dans `apiRequest`) a retourné `undefined` et `ApiRequestError` a reçu le fallback `"Erreur API"`. `getApiErrorMessage` détecte ce fallback et bascule sur le switch par statut HTTP pour retourner un message utile.
 
 | Status | Message retourné                              |
 | ------ | ---------------------------------------------- |
@@ -927,20 +927,28 @@ Cette centralisation garantit que tous les messages d'erreur affichés dans l'in
 
 ### 7.4. `formatDate.ts`
 
-Ce fichier expose deux fonctions de formatage de dates en français, utilisées pour l'affichage dans les composants.
+Ce fichier expose deux fonctions de formatage de dates en français. Elles sont utilisées directement dans les composants pour l'affichage.
 
-**`formatDateLong(isoString)`**
+#### `formatDateLong`
 
-Formate une date ISO en date longue française : `"9 mai 2026"`. Utilisé pour les dates de publication des actualités.
+Formate une date ISO en date longue française. Accepte un seul paramètre :
 
-**`formatConcertDatetime(isoString)`**
+- `isoString` — une date au format ISO 8601 (ex : `"2026-05-09T00:00:00.000Z"`)
 
-Formate une date ISO en deux chaînes séparées pour l'affichage des concerts :
+Retourne une `string` au format `"9 mai 2026"`. Utilisée pour les dates de publication des actualités.
+
+#### `formatConcertDatetime`
+
+Formate une date ISO en deux chaînes séparées pour l'affichage des concerts. Accepte un seul paramètre :
+
+- `isoString` — une date au format ISO 8601 incluant l'heure de passage
+
+Retourne un objet `{ date, time }` :
 
 - `date` : `"samedi 23 août"` — jour de la semaine + jour + mois
 - `time` : `"20:00"` — heure de passage
 
-Retourne un objet `{ date, time }` plutôt qu'une chaîne unique, car les deux valeurs sont affichées dans des éléments HTML distincts dans les cartes artistes.
+L'objet retourne deux valeurs séparées plutôt qu'une chaîne unique car elles sont affichées dans des éléments HTML distincts dans les cartes artistes.
 
 ---
 
@@ -958,7 +966,23 @@ Fonction utilitaire de validation : retourne `true` si la chaîne est vide ou ne
 
 ## 8. Hooks personnalisés — `src/hooks/`
 
+Les hooks de ce dossier encapsulent de la logique React réutilisable : état, appels API. Contrairement aux fonctions de `src/functions/`, ils utilisent les import React (`useState`, `useEffect`, `useCallback`…) et ne peuvent être appelés que depuis des composants client (`"use client"`). Ils se divisent en deux catégories : les hooks d'API (`useFetch`, `useMutation`, `useDelete`) qui appellent `apiRequest` et gèrent l'état de chargement et d'erreur, et les hooks utilitaires (`useModal`, `useNavPath`, `useRoleGuard`) qui encapsulent de la logique d'interface sans appel réseau.
+
 ### 8.1. `useFetch.ts`
+
+`useFetch` est le hook de chargement de données. Il effectue un `GET` vers l'API au montage du composant et expose l'état du chargement au composant appelant.
+
+Il accepte un seul paramètre :
+
+- `endpoint` — le chemin de l'endpoint API, par exemple `/public/artists`. Le hook se relance automatiquement si cette valeur change.
+
+Il retourne un objet à trois propriétés :
+
+- `data` — les données typées `T | null` (null tant que le chargement n'est pas terminé)
+- `isLoading` — `true` pendant la requête, `false` une fois terminée
+- `error` — un message d'erreur lisible (`string | null`), produit par la fonction `getApiErrorMessage` qui recupaire le message contenue dans `ApiRequestError`
+
+En interne, l'état est géré par un `useReducer` avec trois actions : `LOADING`, `SUCCESS`, `ERROR`. Ce pattern évite les incohérences d'état qui peuvent survenir avec plusieurs `useState` indépendants — par exemple `isLoading: true` et `error` non null en même temps.
 
 ### 8.2. `useMutation.ts`
 
