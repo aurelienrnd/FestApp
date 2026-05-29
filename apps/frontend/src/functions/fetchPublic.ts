@@ -4,7 +4,17 @@
  */
 export async function fetchPublic<T>(path: string): Promise<T | null> {
   const apiUrl = process.env.API_URL_SERVER || process.env.NEXT_PUBLIC_API_URL;
-  const res = await fetch(`${apiUrl}${path}`, { next: { revalidate: 60 } });
-  if (!res.ok) return null;
-  return res.json() as Promise<T>;
+
+  try {
+    const res = await fetch(`${apiUrl}${path}`, { next: { revalidate: 60 } });
+    if (!res.ok) {
+      console.error(`fetchPublic ${path} — ${res.status}`);
+      return null;
+    }
+
+    return res.json() as Promise<T>;
+  } catch {
+    console.error(`fetchPublic ${path} — erreur réseau`);
+    return null;
+  }
 }
