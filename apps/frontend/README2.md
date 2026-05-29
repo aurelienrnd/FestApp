@@ -901,14 +901,16 @@ L'option `{ next: { revalidate: 60 } }` est spécifique à Next.js : elle indiqu
 
 ### 7.3. `getApiErrorMessage.ts`
 
-```ts
-export function getApiErrorMessage(error: ApiRequestError): string;
-```
+`getApiErrorMessage` est appelée par les hooks après un appel `apiRequest` échoué. c'est un filet de sécurité pour des cas ou Express plante avant d'atteindre le gestionnaire d'erreurs et retourne une réponse HTML par défaut au lieu du JSON attendu :
 
-Convertit une `ApiRequestError` en message lisible pour l'utilisateur. La logique est en deux étapes :
+Elle accepte un seul paramètre :
 
-1. **Message explicite** — si l'API a retourné un message d'erreur dans son JSON (`{ error: "Email déjà utilisé" }`), il est retourné directement
-2. **Message par défaut** — si l'API n'a pas de message explicite, un message générique est produit selon le code HTTP :
+- `error` — une `ApiRequestError` contenant un `message` (retourné par le backend ou fallback `"Erreur API"`) et un `status` HTTP.
+
+La logique est en deux étapes :
+
+1. **Message explicite** — si l'`ApiRequestError` porte un message retourné par le backend (`{ error: "Email déjà utilisé" }`), il est retourné directement.
+2. **Message par défaut** — si le corps de la réponse était vide, mal formé ou ne contenait pas de champ `error`, `extractApiErrorMessage` (dans `apiRequest`) a retourné `undefined` et `ApiRequestError` a reçu le fallback `"Erreur API"`. `getApiErrorMessage` détecte ce fallback et bascule sur le switch par statut HTTP pour retourner un message utile. 
 
 | Status | Message retourné                              |
 | ------ | ---------------------------------------------- |
