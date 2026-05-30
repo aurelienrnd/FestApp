@@ -1022,6 +1022,21 @@ Il retourne un objet à cinq propriétés :
 
 ### 8.4. `useModal.ts`
 
+`useModal` est le hook de gestion de l'état d'ouverture d'une modale. Il est utilisé par les pages d'administration pour contrôler l'affichage des modales de création, modification et suppression.
+
+Il accepte un paramètre optionnel :
+
+- `initialOpen` — `boolean`, `false` par défaut. Si `true`, la modale s'ouvre immédiatement au montage du composant — utilisé pour la modale de changement de mot de passe provisoire.
+
+Il est générique (`useModal<T>`) : `T` est le type de l'élément associé à la modale — par exemple `ArtistItem` pour la modale de suppression d'un artiste. Si aucun type n'est fourni, `T` vaut `undefined`.
+
+Il retourne un objet à quatre propriétés :
+
+- `isOpen` — `true` si la modale est ouverte, `false` sinon
+- `item` — l'élément associé (`T | null`) — `null` pour une création, l'élément cible pour une modification ou suppression
+- `open` — ouvre la modale. Accepte un `item` optionnel : sans argument pour une création, avec l'élément pour une édition ou suppression
+- `close` — ferme la modale et remet `item` à `null`
+
 ### 8.5. `useNavPath.ts`
 
 ### 8.6. `useRoleGuard.ts`
