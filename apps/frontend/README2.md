@@ -1039,6 +1039,13 @@ Il retourne un objet à quatre propriétés :
 
 ### 8.5. `useNavPath.ts`
 
+`useNavPath` est un hook utilitaire qui encapsule `usePathname` de Next.js. Il n'accepte aucun paramètre et retourne un objet à deux propriétés :
+
+- `pathname` — le chemin courant de l'URL, par exemple `/admin/artists`
+- `isAdminPath` — `true` si le chemin contient `/admin`, `false` sinon
+
+Il est utilisé dans les composants de navigation (`Banner`, `Navigation`) pour adapter l'affichage selon que l'utilisateur est dans la zone publique ou la zone d'administration — par exemple afficher un menu différent ou changer le style de la navbar.
+
 ### 8.6. `useRoleGuard.ts`
 
 ---
