@@ -5,6 +5,8 @@ import { getApiErrorMessage } from "../functions/getApiErrorMessage";
 
 /** Gère l'état d'une suppression via l'API.
  * @param {string} endpoint Chemin de base de l'endpoint (ex : "/admin/artists").
+ * @function apiRequest : fonction pour envoyer la requête DELETE.
+ * @function getApiErrorMessage : fonction pour traduire les erreurs API en messages lisibles.
  * @return {Object} Un objet contenant :
  * - handleDelete : fonction pour supprimer un élément par son id, appelle onSuccess en cas de succès.
  * - isSubmitting : booléen indiquant si la requête est en cours.

@@ -1006,6 +1006,20 @@ En interne, `mutate` adapte automatiquement le format du body : si c'est un `For
 
 ### 8.3. `useDelete.ts`
 
+`useDelete` est le hook de suppression. Comme `useMutation`, il n'effectue pas de requête au montage — il expose une fonction `handleDelete` que le composant appelle manuellement.
+
+Il accepte un seul paramètre :
+
+- `endpoint` — le chemin de base de l'endpoint, par exemple `/admin/artists`. L'id de l'élément à supprimer est concaténé dynamiquement : `/admin/artists/42`.
+
+Il retourne un objet à cinq propriétés :
+
+- `handleDelete` — la fonction à appeler pour déclencher la suppression. Elle accepte l'`id` de l'élément à supprimer et un callback `onSuccess` appelé avec cet `id` en cas de succès — le parent s'en sert pour retirer l'élément de sa liste
+- `isSubmitting` — `true` pendant la requête, `false` une fois terminée
+- `isDeleted` — passe à `true` après une suppression réussie — utilisé pour afficher un message de confirmation dans la modale
+- `error` — un message d'erreur lisible (`string | null`), converti par `getApiErrorMessage`
+- `reset` — remet `isDeleted` et `error` à leur valeur initiale à la fermeture de la modale
+
 ### 8.4. `useModal.ts`
 
 ### 8.5. `useNavPath.ts`
