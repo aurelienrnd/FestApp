@@ -1048,6 +1048,14 @@ Il est utilisé dans les composants de navigation (`Banner`, `Navigation`) pour 
 
 ### 8.6. `useRoleGuard.ts`
 
+`useRoleGuard` est un hook de protection de routes côté client. Il vérifie que le rôle de l'utilisateur connecté lui permet d'accéder à la route courante, et le redirige vers `/admin/dashboard` si ce n'est pas le cas.
+
+Il n'accepte aucun paramètre et ne retourne rien — il est appelé uniquement pour son effet de bord.
+
+En interne, il récupère les informations de l'utilisateur connecté via `useAdminUser` — un hook qui lit le contexte exposé par `AdminUserProvider`, présent dans le layout admin. Il compare ensuite le `pathname` courant (via `useNavPath`) avec la configuration des routes admin définie dans `navAdminItem` (`ui.ts`). Si la route courante a une restriction de rôle (`item.role`), il vérifie que le rôle de l'utilisateur est dans la liste des rôles autorisés. Si ce n'est pas le cas, `router.replace("/admin/dashboard")` est appelé.
+
+Ce hook complète la protection côté serveur du `admin/layout.tsx` : le layout vérifie qu'une session existe, `useRoleGuard` vérifie que le rôle est suffisant pour la page spécifique.
+
 ---
 
 ## 9. Configuration applicative — `src/config/`
