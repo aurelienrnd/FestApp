@@ -986,6 +986,24 @@ En interne, l'état est géré par un `useReducer` avec trois actions : `LOADING
 
 ### 8.2. `useMutation.ts`
 
+`useMutation` est le hook de création et de modification. Contrairement à `useFetch`, il n'effectue pas de requête au montage — il expose une fonction `mutate` que le composant appelle manuellement (au clic sur un bouton de formulaire, par exemple).
+
+Il accepte deux paramètres :
+
+- `endpoint` — le chemin de l'endpoint API, par exemple `/admin/artists`
+- `method` — la méthode HTTP : `"POST"` pour une création, `"PATCH"` pour une modification
+
+Il retourne un objet à quatre propriétés :
+
+- `mutate` — la fonction à appeler pour déclencher la requête. Elle accepte un `body` (`FormData`, objet JSON, ou `null`) et un callback `onSuccess` appelé avec les données en cas de succès
+- `isLoading` — `true` pendant la requête, `false` une fois terminée
+- `error` — un message d'erreur lisible (`string | null`), converti par `getApiErrorMessage`
+- `reset` — réinitialise `isLoading` et `error` à leur valeur initiale — utilisé à la fermeture d'une modale pour repartir d'un état propre
+
+En interne, `mutate` adapte automatiquement le format du body : si c'est un `FormData` (upload d'image), il est envoyé tel quel sans `Content-Type` — le navigateur le définit automatiquement. Si c'est un objet JSON, il est sérialisé avec `JSON.stringify` et le header `Content-Type: application/json` est ajouté. Si `body` est `null`, la requête est envoyée sans corps.
+
+`onSuccess` est une fonction définie par le composant parent et passée en paramètre à `mutate`. En cas de succès, `mutate` l'appelle avec les données reçues du backend — c'est le parent qui décide quoi en faire (fermer la modale, mettre à jour la liste, réinitialiser le formulaire…).
+
 ### 8.3. `useDelete.ts`
 
 ### 8.4. `useModal.ts`

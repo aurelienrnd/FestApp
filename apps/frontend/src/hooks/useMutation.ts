@@ -6,6 +6,8 @@ import { getApiErrorMessage } from "../functions/getApiErrorMessage";
 /** Gère l'état d'un appel API de création ou de modification.
  * @param {string} endpoint Chemin de l'endpoint (ex : "/admin/artists").
  * @param {'POST' | 'PATCH'} method Méthode HTTP à utiliser.
+ * @function apiRequest Fonction utilitaire pour faire une requête API, qui retourne un objet { data, error }.
+ * @function getApiErrorMessage Fonction utilitaire pour traduire un code d'erreur API en message lisible.
  * @return {Object} Un objet contenant :
  * - mutate: une fonction pour effectuer la mutation, prenant en paramètre le corps de la requête (null si aucun body) et une fonction de callback à appeler en cas de succès.
  * - isLoading: un booléen indiquant si la requête est en cours.
@@ -68,6 +70,7 @@ export function useMutation<T>(
     setIsLoading(false);
   };
 
+  // Fonction pour réinitialiser l'état de chargement et d'erreur (utile à la fermeture d'une modale)
   const reset = () => {
     setIsLoading(false);
     setError(null);
