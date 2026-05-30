@@ -1098,7 +1098,29 @@ Ce fichier centralise les données statiques du festival.
 
 ## 10. Composants partagés — `src/components/`
 
+Ce dossier regroupe les composants réutilisables entre plusieurs pages. Contrairement aux pages (`src/app/`), ils ne définissent pas de routes — ils sont importés là où on en a besoin. Certains sont des composants serveur (pas de `"use client"`), d'autres sont des composants client qui utilisent des hooks ou des interactions. Le dossier contient également un sous-dossier `modals/` pour les modales d'administration.
+
 ### 10.1. Composants de mise en page
+
+#### `Banner`
+
+`Banner` est le composant de navigation principal. Il détecte si l'URL est une page admin via `useNavPath` et récupère les informations de l'utilisateur connecté via `useAdminUser`. Il filtre ensuite les liens de navigation selon le rôle avec `filterNavByRole` — un admin ne voit que les pages auxquelles il a accès.
+
+Il gère deux comportements visuels : le header devient transparent sur la page d'accueil tant que l'utilisateur n'a pas scrollé (écouté via un event listener `scroll` avec `{ passive: true }` pour ne pas bloquer le défilement), et il bascule entre une navigation desktop et mobile selon la taille de l'écran.
+
+Le logout est géré via `useMutation` sur `POST /admin/auth/logout` — la fonction `handleLogout` encapsule l'appel pour qu'il ne s'exécute qu'au clic et non au rendu.
+
+Le composant se compose de trois sous-composants internes :
+
+- **`DesktopNav`** — navigation horizontale affichée sur grand écran, avec le bouton billetterie masqué en admin
+- **`MobileNav`** — navigation mobile ouverte dans une modale `react-modal`, avec le même comportement de masquage du bouton billetterie en admin
+- **`BtnTicket`** — lien externe vers la billetterie, ouvert dans un nouvel onglet avec `rel="noopener noreferrer"` pour empêcher la page ouverte d'accéder à `window.opener`
+
+#### `Navigation.tsx`
+
+#### `Footer.tsx`
+
+#### `SideBarTool.tsx`
 
 ### 10.2. Composants de contenu
 

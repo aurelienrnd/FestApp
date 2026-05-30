@@ -5,11 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Modal from "react-modal";
-import {
-  navVisitorItems,
-  navAdminItem,
-  filterNavByRole,
-} from "../config/ui";
+import { navVisitorItems, navAdminItem, filterNavByRole } from "../config/ui";
 import type { NavItem } from "../type";
 import { TICKETING_URL } from "../config/festival";
 import { useAdminUser } from "./AdminUserProvider";
@@ -45,7 +41,6 @@ function BtnTicket() {
 /** Affiche le menu de navigation pour l'affichage desktop
  * Compare chaque lien avec l'URL pour determiner lequel est actif et y appliquer un style
  * Affiche le bouton de billetterie uniquement si l'on n'est pas sur une page admin
- * @param {Object} props proprietes du composant
  * @param {NavItem[]} props.items liste des liens de navigation
  * @param {string | null} [props.pathname] URL courante pour determiner le lien actif
  * @param {boolean} props.isAdminPath indique si la page actuelle est une page admin
@@ -94,7 +89,7 @@ function DesktopNav({
             return null;
           }
 
-          // Instruction pour rendre le bouton de billetterie dans la navigation
+          // Rend les autres liens de navigation normalement
           return (
             <li key={`${item.path}-${index}`}>
               <Link
@@ -110,6 +105,7 @@ function DesktopNav({
             </li>
           );
         })}
+
         {/* Affiche le bouton de billetterie uniquement sur les pages publiques */}
         {isAdminPath ? null : <BtnTicket />}
       </ul>
@@ -128,6 +124,7 @@ function DesktopNav({
  * @param {() => void} props.onLogout Fonction Logout
  * @children BtnTicket Affiche un bouton de billetterie
  * @children Navigation Affiche une navigation verticale
+ * @children ModalCloseButton Affiche un bouton pour fermer la modale du menu mobile
  */
 function MobilNav({
   items,
@@ -147,7 +144,11 @@ function MobilNav({
     <nav>
       <ul className="nav-list">
         <li className="inline-flex rounded bg-(--color-1) px-2 py-1 text-white transition-(--anim-btn-transition) duration-(--anim-btn-duration) hover:scale-(--anim-btn-scale)">
-          <button type="button" onClick={() => setIsMenuModalOpen(true)} aria-label="Ouvrir le menu">
+          <button
+            type="button"
+            onClick={() => setIsMenuModalOpen(true)}
+            aria-label="Ouvrir le menu"
+          >
             <FontAwesomeIcon icon={faBars} aria-hidden="true" />
           </button>
         </li>
@@ -180,14 +181,17 @@ function MobilNav({
  * Ecoute les changements de taille d'ecran pour mettre a jour l'etat `isDesktop`
  * Affiche DesktopNav sur ecran large, sinon MobilNav
  * Rend le header transparent sur la page d'accueil tant que l'utilisateur n'a pas scrolle
+ * @function useNavPath Determine si l'URL correspond a une page admin et fournit le pathname
  * @function useMutation Envoie la requete de deconnexion via POST /admin/auth/logout
+ * @function useAdminUser Fournit les informations de l'utilisateur via le contexte AdminUserContext
+ * @function filterNavByRole Filtre les items de navigation selon le role de l'utilisateur admin
  * @children DesktopNav Affiche le menu de navigation pour l'affichage desktop
  * @children MobilNav Affiche le menu de navigation pour l'affichage mobile
  */
 export default function Banner() {
   // Permet de naviguer vers une page apres une action (ex: deconnexion)
-
   const router = useRouter();
+
   // Fournit l'etat UI puis choisit automatiquement la navigation admin ou visiteur.
   const { pathname, isAdminPath } = useNavPath();
   const adminUser = useAdminUser();
@@ -200,13 +204,15 @@ export default function Banner() {
   // Rend le header transparent uniquement sur la home et quand l'utilisateur n'a pas encore scrolle
   const isHome = pathname === "/";
   const [scrollAtTop, setScrollAtTop] = useState<boolean>(true);
-
   // Ecoute le scroll pour rendre le header opaque des le premier pixel de defilement
   useEffect(() => {
+    // si on n'est pas sur la home, inutile d'ecouter le scroll
     if (!isHome) return;
 
+    // Verifie si l'utilisateur est en haut de la page (scrollY === 0) pour rendre le header transparent
     const handleScroll = () => setScrollAtTop(window.scrollY === 0);
 
+    // ecoute le scroll avec une option passive pour de meilleures performances
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
@@ -215,8 +221,10 @@ export default function Banner() {
     };
   }, [isHome]);
 
+  //
   const isOverHero = isHome && scrollAtTop;
 
+  // Envoie la requete de deconnexion via POST /admin/auth/logout
   const { mutate: logout } = useMutation<ApiMessageResponse>(
     "/admin/auth/logout",
     "POST",
