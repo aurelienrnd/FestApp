@@ -53,7 +53,6 @@ export function filterNavByRole(items: NavItem[], role: string): NavItem[] {
 }
 
 import { FESTIVAL_DAYS } from "./festival";
-
 /** Filtres affiches dans la navigation de la page artists et admin/artists.
  * Genere un bouton par jour du festival depuis FESTIVAL_DAYS.
  */
