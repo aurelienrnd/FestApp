@@ -1156,11 +1156,17 @@ Il utilise deux modales : `AddNewsModal`, dédié uniquement à la création et 
 
 #### `ArtistDetailContent.tsx`
 
-`ArtistDetailContent` affiche la fiche complète d'un artiste : image, biographie, genre, origine, concerts programmés avec scène et horaire, et liens YouTube/Spotify. C'est un composant serveur — pas de `"use client"` — il reçoit un `ArtistItem` en prop depuis la page SSR.
+`ArtistDetailContent` est le composant d'affichage de la fiche complète d'un artiste. C'est un composant serveur — pas de `"use client"` — il reçoit un `ArtistItem` en prop depuis la page SSR.
+
+Il affiche trois zones : une image héro pleine largeur avec le nom de l'artiste en overlay et un dégradé, une barre colorée avec la date et l'heure du concert formatées via `formatConcertDateTime` (une fonction locale qui formate en `"SAMEDI 21 MAI 20H30"`), et un corps avec la biographie, un lien retour et les icônes YouTube/Spotify conditionnelles — affichées uniquement si les URLs sont renseignées. Les liens externes utilisent `rel="noopener noreferrer"`.
+
+Il accepte une prop `backPath` optionnelle (`"/artists"` par défaut) — utilisée pour adapter le lien retour selon qu'on vient de la page publique ou de l'admin.
 
 #### `NewsDetailContent.tsx`
 
-`NewsDetailContent` affiche le contenu complet d'une actualité : image héro pleine largeur avec titre en overlay, barre méta auteur/date et corps de la news. C'est également un composant serveur qui reçoit un `NewsItem` en prop.
+`NewsDetailContent` est le composant d'affichage du contenu complet d'une actualité. C'est un composant serveur — pas de `"use client"` — il reçoit un `NewsItem` en prop depuis la page SSR.
+
+Il affiche trois zones : une image héro pleine largeur avec le titre en overlay et un dégradé, une barre colorée avec l'auteur (`author_name ?? "Auteur inconnu"`) et la date formatée via `formatDateLong`, et le corps de la news. Le contenu est découpé par sauts de ligne (`split("\n")`) pour afficher chaque paragraphe dans un `<p>` séparé — les lignes vides sont ignorées.
 
 #### `SectionCta.tsx`
 

@@ -22,6 +22,7 @@ function formatConcertDateTime(isoString: string): string {
  * barre de date, biographie et liens sociaux.
  * @param {ArtistItem} props.artist Artiste a afficher.
  * @param {string} props.backPath Chemin du lien retour (defaut : "/artists").
+ * @function formatConcertDateTime Formate la date de concert pour l'affichage
  */
 export default function ArtistDetailContent({
   artist,
