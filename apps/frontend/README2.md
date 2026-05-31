@@ -1118,6 +1118,12 @@ Le composant se compose de trois sous-composants internes :
 
 #### `Navigation.tsx`
 
+`Navigation` est un composant de liste de liens réutilisable. Malgré son nom, il ne sert pas uniquement à la navigation — il affiche n'importe quelle liste de `NavItem[]`, qu'il s'agisse de liens de navigation ou de filtres. Il est utilisé dans trois contextes : `Banner` pour le menu mobile, `SideBarTool` pour la sidebar admin, et `MobileFiltersButton` pour les filtres en version mobile.
+
+Il compare chaque item avec le `pathname` courant pour appliquer un style actif. Il gère deux types d'items : les liens (`item.path`) rendus avec `<Link>`, et les boutons (`item.labelBtn`) comme Logout ou les filtres. Il accepte une prop `variant` (`"sidebar"` ou `"modal"`) qui adapte les classes CSS selon le contexte d'affichage.
+
+Les boutons utilisent l'appel optionnel `?.()` sur trois callbacks — `item.onClick?.()`, `setmodal?.()` et `onLogout?.()` — ce qui permet à un seul composant de gérer tous les cas selon les props reçues : changer un filtre actif, fermer le menu mobile, ou déclencher le logout.
+
 #### `Footer.tsx`
 
 #### `SideBarTool.tsx`

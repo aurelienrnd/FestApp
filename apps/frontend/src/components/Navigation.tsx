@@ -3,16 +3,14 @@
 import Link from "next/link";
 import type { NavItem } from "../type";
 
-
 /** Affiche une navigation verticale (sidebar ou modal).
  * Compare chaque lien avec l'URL courante pour appliquer le style actif.
  * Gere le cas particulier Logout en declenchant la fermeture du menu mobile (si necessaire) puis la deconnexion.
- * @param {Object} props proprietes du composant
  * @param {NavItem[]} props.items liste des liens de navigation
  * @param {string | null} [props.pathname] URL courante pour determiner le lien actif
  * @param {boolean} props.isAdminPath indique si la page actuelle est une page admin
  * @param {() => void} [props.onLogout] fonction appelee lors du clic sur Logout
- * @param {() => void} [props.setmodal] fonction appelee lors d'un changement de page (utile en mobile)
+ * @param {() => void} [props.setmodal] fonction pour fermer le menu mobile apres le clic sur un lien
  * @param {"sidebar" | "modal"} [props.variant] variante visuelle de la navigation
  */
 export default function Navigation({
@@ -50,9 +48,10 @@ export default function Navigation({
       <ul className="flex flex-col gap-6">
         {items.map((item, index) => {
           const isActive = pathname === item.path || Boolean(item.active);
-          const slideStyle = variant === "sidebar"
-            ? { animationDelay: `${index * 0.15}s` }
-            : undefined;
+          const slideStyle =
+            variant === "sidebar"
+              ? { animationDelay: `${index * 0.15}s` }
+              : undefined;
           const slideClass = variant === "sidebar" ? "hero-slide-left" : "";
 
           if (item.labelBtn) {
