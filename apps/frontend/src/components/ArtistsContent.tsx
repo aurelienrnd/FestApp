@@ -19,12 +19,16 @@ type ArtistSummary = Omit<
 
 /** Affiche la liste des artistes filtrée par jour si activeFilter est defini.
  * Recupere les artistes via l'API puis affiche un etat de chargement/erreur.
- * @function useFetch Recupere les artistes depuis l'API et gere les etats loading/error
  * @param {boolean} props.isAddModalOpen Ouvre la modale d'ajout artiste.
  * @param {() => void} props.onCloseAddModal Ferme la modale d'ajout artiste.
  * @param {string | null} props.activeFilter utilisee pour filtrer les artistes par jour — null affiche tous les artistes.
+ * @function useFetch Recupere les artistes depuis l'API et gere les etats loading/error
+ * @function useModal Gere l'ouverture et la fermeture de la modale de suppression d'artiste
+ * @function useNavPath Verifie si le chemin d'acces contient "/admin" pour afficher les boutons de suppression
+ * @function formatConcertDatetime Formate la date de concert pour l'affichage
+ * @children LoadingLine - Affiche une ligne de chargement pendant la recuperation des artistes.
  * @children AddArtistModal - Affiche la modale d'ajout d'artiste.
- * @function handleArtistAdded Ajoute l'artiste cree a la liste locale et ferme la modale.
+ * @children DeleteModal - Affiche la modale de confirmation de suppression d'artiste
  */
 export default function ArtistsContent({
   isAddModalOpen = false,
@@ -35,10 +39,11 @@ export default function ArtistsContent({
   onCloseAddModal?: () => void;
   activeFilter?: string | null;
 }) {
-  // Verifie si le chemin d'acces contient "/admin" pour afficher les boutons de suppression
+  // Verifie si le chemin d'acces contient "/admin" pour afficher ou non les boutons
   const { isAdminPath } = useNavPath();
   const basePath = isAdminPath ? "/admin/artists" : "/artists";
 
+  // Recupere les artistes depuis l'API et gere les etats loading/error
   const { data, isLoading, error } = useFetch<{ artists: ArtistSummary[] }>(
     "/public/artists",
   );
@@ -47,6 +52,7 @@ export default function ArtistsContent({
   const [addedArtists, setAddedArtists] = useState<ArtistSummary[]>([]);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
+  // Gere l'ouverture et la fermeture de la modale de suppression d'artiste
   const {
     isOpen: isDeleteModalOpen,
     item: selectedArtistToDelete,
@@ -54,27 +60,33 @@ export default function ArtistsContent({
     close: closeDeleteModal,
   } = useModal<ArtistSummary>();
 
+  // Ajoute l'id de l'artiste supprime a la liste des ids supprimes pour le filtrage
   const handleArtistDeleted = (artistId: string) => {
     setDeletedIds((current) => new Set([...current, artistId]));
   };
 
+  // Ajoute l'artiste ajoute a la liste des artistes ajoutes pour le filtrage
   const handleArtistAdded = (artist: ArtistItem) => {
     setAddedArtists((current) => [...current, artist]);
     onCloseAddModal();
   };
 
-  // Convertit un timestamp ISO en minutes depuis minuit (heure seule), -1 si absent
+  // Convertit une date ISO en nombre de minutes depuis minuit pour le tri des artistes par heure de debut
   const toMinutes = (iso: string | null | undefined) => {
     if (!iso) return -1;
     const d = new Date(iso);
     return d.getHours() * 60 + d.getMinutes();
   };
 
+  // filtrage des artistes a afficher
   const filteredArtists = useMemo(() => {
+    // Fusionne les artistes de base, les artistes ajoutes et filtre les artistes supprimes
     const merged = [
       ...addedArtists,
       ...baseArtists.filter((a) => !deletedIds.has(a.id)),
     ];
+
+    // filtre les artistes par jour si activeFilter est defini, sinon affiche tous les artistes et trie les artistes par heure de debut decroissante
     return (
       activeFilter
         ? merged.filter((a) => a.start_time?.startsWith(activeFilter))
