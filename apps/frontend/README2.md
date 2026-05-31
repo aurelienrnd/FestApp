@@ -1184,7 +1184,9 @@ Il affiche trois zones : une image héro pleine largeur avec le titre en overlay
 
 #### `ForgotPassword.tsx`
 
-`ForgotPassword` est le formulaire de réinitialisation de mot de passe — un seul champ email. Il utilise `useMutation` sur `POST /admin/auth/forgot-password`. Même pattern que `ContactUs` : bouton désactivé si le champ est vide, message de confirmation en cas de succès.
+`ForgotPassword` est le formulaire de réinitialisation de mot de passe. Il contient un seul champ email et utilise `useMutation` sur `POST /admin/auth/forgot-password`.
+
+Le bouton d'envoi est désactivé tant que le champ est vide — vérifié via `isEmpty` — ou pendant la requête via `isLoading`. En cas de succès, le callback `onSuccess` set `success` à `true` et le formulaire est remplacé par un message de confirmation. En cas d'erreur, le message retourné par `getApiErrorMessage` est affiché sous le formulaire.
 
 #### `MobileFiltersButton.tsx`
 

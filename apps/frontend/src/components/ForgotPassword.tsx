@@ -11,16 +11,18 @@ import { isEmpty } from "../functions/validation";
  * @returns {JSX.Element} Le contenu du formulaire de récupération de mot de passe.
  */
 export default function ForgotPassword() {
-  // Champ du formulaire
+  // Champ du formulaire et état de succès de la requête
   const [email, setEmail] = useState("");
-
-  const { mutate, isLoading, error } = useMutation<ApiMessageResponse>("/admin/auth/forgot-password", "POST");
   const [success, setSuccess] = useState(false);
 
-  // verifie que le champ email n'est pas vide (après suppression des espaces) pour activer le bouton d'envoi
+  // verifie que le champ email n'est pas vide et initialise la requête
   const isFormInvalid = isEmpty(email);
+  const { mutate, isLoading, error } = useMutation<ApiMessageResponse>(
+    "/admin/auth/forgot-password",
+    "POST",
+  );
 
-  // envoie une requete à l'API pour demander la réinitialisation du mot de passe, en fournissant l'email saisi par l'utilisateur
+  // Gère la soumission du formulaire
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isFormInvalid) return;
@@ -66,9 +68,7 @@ export default function ForgotPassword() {
               </button>
             </div>
 
-            {error ? (
-              <p className="error-message">{error}</p>
-            ) : null}
+            {error ? <p className="error-message">{error}</p> : null}
           </form>
         </>
       )}

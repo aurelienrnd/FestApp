@@ -14,14 +14,14 @@ export default function SectionCta({
   return (
     <div className="flex items-center justify-center gap-6 w-full mt-6 group/cta">
       <span
-        className="flex-1 h-0.5 bg-(--color-3) group-has-[.btn-cta:hover]/cta:[animation:line-reload_1.4s_ease_forwards]"
+        className="flex-1 h-0.5 bg-(--color-3) group-has-[.btn-cta:hover]/cta:animate-[line-reload_1.4s_ease_forwards]"
         style={{ transformOrigin: "right" }}
       />
       <Link href={href} className="btn-cta uppercase">
         {label}
       </Link>
       <span
-        className="flex-1 h-0.5 bg-(--color-3) group-has-[.btn-cta:hover]/cta:[animation:line-reload_1.4s_ease_forwards]"
+        className="flex-1 h-0.5 bg-(--color-3) group-has-[.btn-cta:hover]/cta:animate-[line-reload_1.4s_ease_forwards]"
         style={{ transformOrigin: "left" }}
       />
     </div>
