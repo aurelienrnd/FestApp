@@ -1208,7 +1208,9 @@ Le bouton d'envoi est désactivé tant que le champ email n'est pas valide — v
 
 #### `MobileFiltersButton.tsx`
 
-`MobileFiltersButton` est visible uniquement sur mobile. Il affiche un bouton icône qui ouvre une modale `react-modal` contenant `Navigation` avec la liste des filtres passés en prop. Il utilise `useNavPath` pour passer `pathname` et `isAdminPath` à `Navigation`.
+`MobileFiltersButton` est visible uniquement sur mobile (`md:hidden`). Il affiche un bouton icône qui au clic ouvre une modale `react-modal` contenant `Navigation` avec la liste des filtres passés en prop.
+
+Il reçoit une seule prop `items` — la liste des filtres à afficher. Il utilise `useNavPath` pour passer `pathname` et `isAdminPath` à `Navigation` afin d'appliquer le style actif sur le bon filtre. `setmodal` est passé à `Navigation` pour fermer la modale automatiquement quand l'utilisateur sélectionne un filtre.
 
 #### `modals/AddArtistModal.tsx`
 

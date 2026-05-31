@@ -11,15 +11,14 @@ import Navigation from "./Navigation";
 
 /** Affiche un bouton de filtres (mobile uniquement) qui ouvre une modale de navigation.
  * @param {NavItem[]} props.items elements affiches dans la navigation de la modale
+ * @function useNavPath hook pour recupere le pathname et savoir si on est dans une page admin ou non
+ * @function ModalCloseButton bouton pour fermer la modale
+ * @function Navigation affiche les filtre dans la modale
  */
-export default function MobileFiltersButton({
-  items,
-}: {
-  items: NavItem[];
-}) {
+export default function MobileFiltersButton({ items }: { items: NavItem[] }) {
+  // State pour gérer l'ouverture de la modale
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
   const { pathname, isAdminPath } = useNavPath();
-
 
   return (
     <>
