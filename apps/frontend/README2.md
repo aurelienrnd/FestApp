@@ -1126,7 +1126,15 @@ Les boutons utilisent l'appel optionnel `?.()` sur trois callbacks — `item.onC
 
 #### `Footer.tsx`
 
+`Footer` est le pied de page commun à toutes les pages publiques. Il affiche deux zones : les liens légaux ("Mentions légales", "Nous contacter") et les icônes des réseaux sociaux (Instagram, Facebook, YouTube) avec `rel="noopener noreferrer"` sur chaque lien externe.
+
+Les deux listes — `legalLinks` et `socialLinks` — sont des constantes locales définies dans le fichier. Au clic sur un lien légal, une modale `react-modal` s'ouvre avec le contenu correspondant (`LegalMention` ou `ContactUs`). Un seul état `activeModal` (`"mentions" | "contact" | null`) suffit pour gérer les deux modales — pas besoin de deux `useState` séparés.
+
 #### `SideBarTool.tsx`
+
+`SideBarTool` est un composant de mise en page utilisé dans les pages admin. Il dispose le contenu de la page en deux colonnes : une sidebar sticky à gauche avec `Navigation` et le contenu principal à droite via `children`. Sur mobile, la sidebar est masquée (`hidden md:flex`) — seul le contenu enfant est affiché.
+
+Il reçoit deux props : `items` — la liste des liens à afficher dans la sidebar — et `children` — le contenu spécifique à la page. Il utilise `useNavPath` pour passer `pathname` et `isAdminPath` à `Navigation` afin d'appliquer le style actif sur le bon lien.
 
 ### 10.2. Composants de contenu
 
