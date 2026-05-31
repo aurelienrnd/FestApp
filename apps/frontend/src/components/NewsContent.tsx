@@ -7,12 +7,12 @@ import { useFetch } from "../hooks/useFetch";
 import { useModal } from "../hooks/useModal";
 import { useNavPath } from "../hooks/useNavPath";
 import type { NewsItem } from "../type";
-
-type NewsSummary = Omit<NewsItem, "content">;
 import LoadingLine from "./LoadingLine";
 import { formatDateLong } from "../functions/formatDate";
 import AddNewsModal from "./modals/AddNewsModal";
 import DeleteModal from "./modals/DeleteModal";
+
+type NewsSummary = Omit<NewsItem, "content">;
 
 /** Affiche la liste des news avec tri client-side selon activeFilter.
  * Recupere les news via GET /public/news.
@@ -20,6 +20,11 @@ import DeleteModal from "./modals/DeleteModal";
  * @param {boolean} props.isAddModalOpen Ouvre la modale d'ajout news.
  * @param {() => void} props.onCloseAddModal Ferme la modale d'ajout news.
  * @param {string | null} props.activeFilter Filtre de tri — "Croissant" inverse l'ordre, null ou "Decroissant" conserve l'ordre DESC de l'API.
+ * @function useFetch Récupère les news depuis l'API.
+ * @function useModal Gère l'état de la modale de suppression.
+ * @function useNavPath Détermine si on est sur une page admin pour afficher les actions d'édition/suppression.
+ * @function formatDateLong Formate la date de création des news.
+ * @children LoadingLine - Affiche une ligne de chargement pendant la récupération des données.
  * @children AddNewsModal - Affiche la modale d'ajout ou d'edition de news.
  * @children DeleteModal - Affiche la modale de confirmation de suppression.
  */
@@ -36,6 +41,7 @@ export default function NewsContent({
   const { isAdminPath } = useNavPath();
   const basePath = isAdminPath ? "/admin/news" : "/news";
 
+  // Récupère les news depuis l'API
   const { data, isLoading, error } = useFetch<{ news: NewsSummary[] }>(
     "/public/news",
   );
@@ -44,6 +50,7 @@ export default function NewsContent({
   const [addedNews, setAddedNews] = useState<NewsSummary[]>([]);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
+  // Gère l'ouverture et la fermeture de la modale de suppression de news
   const {
     isOpen: isDeleteModalOpen,
     item: selectedNewsToDelete,
@@ -51,24 +58,34 @@ export default function NewsContent({
     close: closeDeleteModal,
   } = useModal<NewsSummary>();
 
+  // Ajoute l'id de la news supprimée à la liste des ids supprimés pour le filtrage
   const handleNewsDeleted = (newsId: string) => {
     setDeletedIds((current) => new Set([...current, newsId]));
   };
 
+  // Ajoute la news ajoutée à la liste des news ajoutées pour le filtrage
   const handleNewsAdded = (news: NewsItem) => {
     setAddedNews((current) => [...current, news]);
     onCloseAddModal();
   };
 
+  // Filtrage des news à afficher
   const filteredNews = useMemo(() => {
+    // Fusionne les news de base, les news ajoutées et filtre les news supprimées
     const merged = [
       ...addedNews,
       ...baseNews.filter((news) => !deletedIds.has(news.id)),
     ];
+
+    // En vue admin, affiche toutes les news, sinon filtre pour n'afficher que les news publiées
     const published = isAdminPath
       ? merged
       : merged.filter((news) => news.is_published);
-    return activeFilter === "Plus ancien" ? [...published].reverse() : published;
+
+    // Trie les news par date de création, ordre croissant ou décroissant selon activeFilter
+    return activeFilter === "Plus ancien"
+      ? [...published].reverse()
+      : published;
   }, [baseNews, addedNews, deletedIds, activeFilter, isAdminPath]);
 
   return (

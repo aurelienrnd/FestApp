@@ -1148,7 +1148,11 @@ Il utilise deux modales : `AddArtistModal`, dédié uniquement à la création d
 
 #### `NewsContent.tsx`
 
-`NewsContent` affiche la liste des actualités avec tri client-side. Il est également partagé entre la vue publique et l'admin. En vue admin, il affiche un badge "Brouillon" sur les news non publiées et les boutons de modification et suppression. Le tri est géré via `useMemo` selon `activeFilter` — `"Croissant"` inverse l'ordre, `null` conserve l'ordre DESC retourné par l'API.
+`NewsContent` est le composant d'affichage de la liste des actualités. Il est partagé entre la page publique (`/news`) et l'admin (`/admin/news`) — `useNavPath` lui permet de détecter le contexte pour afficher le badge "Brouillon" sur les news non publiées et les boutons de suppression uniquement en admin. En vue publique, les news non publiées sont filtrées côté client et ne sont jamais affichées.
+
+Les données sont chargées via `useFetch` sur `/public/news`. Comme `ArtistsContent`, il maintient trois états locaux — `baseNews`, `addedNews` et `deletedIds` — pour gérer les modifications sans recharger l'API. La liste affichée est recalculée via `useMemo` en fusionnant ces trois sources et en appliquant le tri selon `activeFilter` — `"Plus ancien"` inverse l'ordre, `null` conserve l'ordre DESC retourné par l'API.
+
+Il utilise deux modales : `AddNewsModal`, dédié uniquement à la création et modification de news, et `DeleteModal`, le composant générique partagé entre artistes, news et utilisateurs.
 
 #### `ArtistDetailContent.tsx`
 
