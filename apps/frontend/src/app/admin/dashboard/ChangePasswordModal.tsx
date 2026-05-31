@@ -20,6 +20,8 @@ type ChangePasswordModalProps = {
  * @param {boolean} props.isOpen Definit si la modale est ouverte
  * @param {() => void} props.onClose Ferme la modale
  * @param {boolean} [props.forced] Si vrai, force le changement de mot de passe sans possibilite de fermer
+ * @function useMutation Hook de mutation pour l'appel API de changement de mot de passe
+ * @function isEmpty Fonction de validation pour verifier si un champ est vide
  * @children ModalCloseButton Ferme la modale
  */
 export default function ChangePasswordModal({
@@ -32,16 +34,22 @@ export default function ChangePasswordModal({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const { mutate, isLoading, error: apiError, reset } = useMutation<ApiMessageResponse>("/admin/auth/password", "PATCH");
+  const {
+    mutate,
+    isLoading,
+    error: apiError,
+    reset,
+  } = useMutation<ApiMessageResponse>("/admin/auth/password", "PATCH");
   // Erreur de validation locale (confirmation de mot de passe) — distincte de l'erreur API
   const [localError, setLocalError] = useState<string | null>(null);
   const error = localError ?? apiError;
   const [success, setSuccess] = useState(false);
 
-
   // Verifie si le formulaire de changement de mot de passe est incomplet
   const isFormInvalid =
-    isEmpty(oldPassword) || isEmpty(newPassword) || isEmpty(confirmPassword);
+    oldPassword.trim().length < 8 ||
+    newPassword.trim().length < 8 ||
+    isEmpty(confirmPassword);
 
   // Gere la soumission du formulaire de changement de mot de passe
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -152,9 +160,7 @@ export default function ChangePasswordModal({
               </button>
             </div>
 
-            {error ? (
-              <p className="error-message">{error}</p>
-            ) : null}
+            {error ? <p className="error-message">{error}</p> : null}
           </form>
         )}
       </div>

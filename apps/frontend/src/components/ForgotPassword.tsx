@@ -3,11 +3,13 @@
 import { useState, type FormEvent } from "react";
 import type { ApiMessageResponse } from "../type";
 import { useMutation } from "../hooks/useMutation";
-import { isEmpty } from "../functions/validation";
+import { isEmail } from "../functions/validation";
 
 /** Affiche le formulaire "Mot de passe oublié".
  * Permet à l'utilisateur de saisir son email pour demander la réinitialisation du mot de passe.
  * Bloque l'envoi si le champ email est vide (après suppression des espaces).
+ * @function isEmail pour valider le format de l'email
+ * @function useMutation pour envoyer la requête de réinitialisation au backend
  * @returns {JSX.Element} Le contenu du formulaire de récupération de mot de passe.
  */
 export default function ForgotPassword() {
@@ -15,8 +17,8 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [success, setSuccess] = useState(false);
 
-  // verifie que le champ email n'est pas vide et initialise la requête
-  const isFormInvalid = isEmpty(email);
+  // verifie que le champ email est valide et initialise la requête
+  const isFormInvalid = !isEmail(email);
   const { mutate, isLoading, error } = useMutation<ApiMessageResponse>(
     "/admin/auth/forgot-password",
     "POST",

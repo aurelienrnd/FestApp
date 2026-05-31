@@ -6,7 +6,7 @@ import ModalCloseButton from "../../../components/ModalCloseButton";
 import { useMutation } from "../../../hooks/useMutation";
 import type { UserItem, CreateApiResponse } from "../../../type";
 import { USER_ROLES } from "../../../config/ui";
-import { isEmpty } from "../../../functions/validation";
+import { isEmail, isEmpty, isMaxLength } from "../../../functions/validation";
 
 type AddUserModalProps = {
   isOpen: boolean;
@@ -29,7 +29,12 @@ function isAddUserFormInvalid(
   email: string,
   role: string,
 ) {
-  return isEmpty(firstName) || isEmpty(lastName) || isEmpty(email) || isEmpty(role);
+  return (
+    firstName.trim().length < 2 || isMaxLength(firstName, 30) ||
+    lastName.trim().length < 2 || isMaxLength(lastName, 30) ||
+    !isEmail(email) ||
+    isEmpty(role)
+  );
 }
 
 /** Affiche la modale d'ajout ou de modification d'un utilisateur.

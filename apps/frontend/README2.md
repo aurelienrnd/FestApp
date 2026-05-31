@@ -954,13 +954,29 @@ L'objet retourne deux valeurs séparées plutôt qu'une chaîne unique car elles
 
 ### 7.5. `validation.ts`
 
+Ce fichier expose trois fonctions utilitaires de validation utilisées dans tous les formulaires de l'application pour bloquer la soumission avant que les données ne soient envoyées au backend.
+
 ```ts
 export function isEmpty(value: string): boolean {
   return value.trim() === "";
 }
+
+export function isEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+export function isMaxLength(value: string, max: number): boolean {
+  return value.trim().length > max;
+}
 ```
 
-Fonction utilitaire de validation : retourne `true` si la chaîne est vide ou ne contient que des espaces. Utilisée dans les modales de formulaire pour valider les champs obligatoires avant soumission (`isStep1Invalid`, `isStep2Invalid`…).
+**`isEmpty`** — retourne `true` si la chaîne est vide ou ne contient que des espaces. Utilisée pour valider les champs obligatoires sans contrainte de format.
+
+**`isEmail`** — retourne `true` si la valeur respecte le format email. Utilisée dans les formulaires login, mot de passe oublié, contact et ajout d'utilisateur.
+
+**`isMaxLength`** — retourne `true` si la valeur dépasse la longueur maximale autorisée (après trim). Utilisée pour aligner les contraintes frontend sur les `max()` des schémas Zod du backend — sans dupliquer les schémas.
+
+Ces trois fonctions forment la couche de validation frontend alignée sur les schémas Zod du backend. Elles ne remplacent pas la validation serveur — elles la complètent en bloquant les soumissions invalides côté client pour améliorer l'expérience utilisateur.
 
 ---
 
@@ -1182,13 +1198,13 @@ Il affiche trois zones : une image héro pleine largeur avec le titre en overlay
 
 `ContactUs` est le formulaire de contact affiché dans une modale depuis `Footer`. Il contient quatre champs : nom, email, sujet et message. Il utilise `useMutation` sur `POST /contact/submit`.
 
-Le bouton d'envoi est désactivé tant que l'un des champs est vide — vérifié via `isEmpty` sur chacun — ou pendant la requête via `isLoading`. En cas de succès, le callback `onSuccess` réinitialise tous les champs, set `success` à `true` et le formulaire est remplacé par un message de confirmation. En cas d'erreur, le message est affiché sous le bouton.
+Le bouton d'envoi est désactivé tant que le formulaire est invalide ou pendant la requête via `isLoading`. La validation s'appuie sur `isEmail` pour le champ email, `isMaxLength` pour les longueurs maximales (100 pour le nom, 150 pour le sujet, 2000 pour le message) et des vérifications de longueur minimale pour les autres champs — alignées sur le schéma Zod `contactSchema` du backend. En cas de succès, le callback `onSuccess` réinitialise tous les champs, set `success` à `true` et le formulaire est remplacé par un message de confirmation. En cas d'erreur, le message est affiché sous le bouton.
 
 #### `ForgotPassword.tsx`
 
 `ForgotPassword` est le formulaire de réinitialisation de mot de passe. Il contient un seul champ email et utilise `useMutation` sur `POST /admin/auth/forgot-password`.
 
-Le bouton d'envoi est désactivé tant que le champ est vide — vérifié via `isEmpty` — ou pendant la requête via `isLoading`. En cas de succès, le callback `onSuccess` set `success` à `true` et le formulaire est remplacé par un message de confirmation. En cas d'erreur, le message retourné par `getApiErrorMessage` est affiché sous le formulaire.
+Le bouton d'envoi est désactivé tant que le champ email n'est pas valide — vérifié via `isEmail` — ou pendant la requête via `isLoading`. En cas de succès, le callback `onSuccess` set `success` à `true` et le formulaire est remplacé par un message de confirmation. En cas d'erreur, le message retourné par `getApiErrorMessage` est affiché sous le formulaire.
 
 #### `MobileFiltersButton.tsx`
 

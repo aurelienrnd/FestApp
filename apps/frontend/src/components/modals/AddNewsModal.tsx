@@ -6,7 +6,7 @@ import Modal from "react-modal";
 import ModalCloseButton from "../ModalCloseButton";
 import { useMutation } from "../../hooks/useMutation";
 import type { NewsItem, CreateApiResponse } from "../../type";
-import { isEmpty } from "../../functions/validation";
+import { isEmpty, isMaxLength } from "../../functions/validation";
 
 type AddNewsModalProps = {
   isOpen: boolean;
@@ -17,11 +17,11 @@ type AddNewsModalProps = {
 
 
 /** Verifie si le formulaire de l'etape 1 est incomplet.
- * Retourne `true` si le titre est vide.
+ * Retourne `true` si le titre est vide ou depasse 150 caracteres.
  * @param {string} title Titre de la news
  */
 function isStep1Invalid(title: string) {
-  return title.trim().length < 2;
+  return title.trim().length < 2 || isMaxLength(title, 150);
 }
 
 /** Verifie si le formulaire de l'etape 2 est incomplet.
@@ -35,7 +35,7 @@ function isStep2Invalid(
   image: File | null,
   isEditMode: boolean,
 ) {
-  if (isEmpty(descriptionMedia)) return true;
+  if (isEmpty(descriptionMedia) || isMaxLength(descriptionMedia, 255)) return true;
   if (!isEditMode && image === null) return true;
   return false;
 }

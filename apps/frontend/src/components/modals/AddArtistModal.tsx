@@ -8,7 +8,7 @@ import { useMutation } from "../../hooks/useMutation";
 import type { ArtistItem, CreateApiResponse } from "../../type";
 import { FESTIVAL_DAYS, FESTIVAL_STAGES } from "../../config/festival";
 import { formatDateLong } from "../../functions/formatDate";
-import { isEmpty } from "../../functions/validation";
+import { isEmpty, isMaxLength } from "../../functions/validation";
 
 type AddArtistModalProps = {
   isOpen: boolean;
@@ -22,7 +22,7 @@ const YOUTUBE_REGEX = /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//;
 const SPOTIFY_REGEX = /^https?:\/\/open\.spotify\.com\//;
 
 /** Verifie si le formulaire de l'etape 1 est incomplet.
- * Retourne `true` si au moins un champ requis est vide.
+ * Retourne `true` si au moins un champ requis est vide ou depasse sa longueur maximale.
  * @param {string} name Nom de l'artiste
  * @param {string} genre Genre musical
  * @param {string} origin Origine geographique
@@ -34,16 +34,21 @@ function isStep1Invalid(
   origin: string,
   bio: string,
 ) {
-  return isEmpty(name) || isEmpty(genre) || isEmpty(origin) || isEmpty(bio);
+  return (
+    name.trim().length < 2 || isMaxLength(name, 100) ||
+    isEmpty(genre) || isMaxLength(genre, 60) ||
+    isEmpty(origin) || isMaxLength(origin, 80) ||
+    isEmpty(bio)
+  );
 }
 
 /** Verifie si le formulaire de l'etape 2 est incomplet.
- * Retourne `true` si au moins un champ requis est vide ou absent.
+ * Retourne `true` si au moins un champ requis est vide, absent ou depasse sa longueur maximale.
  * @param {string} descriptionMedia Texte alternatif de l'image
  * @param {File | null} image Fichier image
  */
 function isStep2Invalid(descriptionMedia: string, image: File | null) {
-  return isEmpty(descriptionMedia) || image === null;
+  return isEmpty(descriptionMedia) || isMaxLength(descriptionMedia, 255) || image === null;
 }
 
 /** Verifie si le formulaire de l'etape 3 est incomplet.

@@ -3,11 +3,12 @@
 import { useState, type FormEvent } from "react";
 import type { ApiMessageResponse } from "../type";
 import { useMutation } from "../hooks/useMutation";
-import { isEmpty } from "../functions/validation";
+import { isEmail, isMaxLength } from "../functions/validation";
 
 /** Affiche un formulaire de contact avec les champs nom, email, sujet et message
  * @function useMutation pour envoyer les données du formulaire au backend
- * @function isEmpty pour valider que les champs ne sont pas vides
+ * @function isEmail pour valider le format de l'email
+ * @function isMaxLength pour valider la longueur des champs
  */
 export default function ContactUs() {
   // Champs du formulaire
@@ -22,12 +23,14 @@ export default function ContactUs() {
     "POST",
   );
   const [success, setSuccess] = useState(false);
-  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const isFormInvalid =
     name.trim().length < 2 ||
-    !isEmailValid ||
+    isMaxLength(name, 100) ||
+    !isEmail(email) ||
     subject.trim().length < 2 ||
-    message.trim().length < 10;
+    isMaxLength(subject, 150) ||
+    message.trim().length < 10 ||
+    isMaxLength(message, 2000);
 
   // Gère la soumission du formulaire
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
