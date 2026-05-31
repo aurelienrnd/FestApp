@@ -4,7 +4,11 @@ import { useState, type FormEvent } from "react";
 import type { ApiMessageResponse } from "../type";
 import { useMutation } from "../hooks/useMutation";
 import { isEmpty } from "../functions/validation";
-/** Affiche un formulaire de contact avec les champs nom, email, sujet et message */
+
+/** Affiche un formulaire de contact avec les champs nom, email, sujet et message
+ * @function useMutation pour envoyer les données du formulaire au backend
+ * @function isEmpty pour valider que les champs ne sont pas vides
+ */
 export default function ContactUs() {
   // Champs du formulaire
   const [name, setName] = useState("");
@@ -12,19 +16,30 @@ export default function ContactUs() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
 
-  const { mutate, isLoading, error } = useMutation<ApiMessageResponse>("/contact/submit", "POST");
+  // initialise la requete et verifie que tous les champs contiennent du texte valide
+  const { mutate, isLoading, error } = useMutation<ApiMessageResponse>(
+    "/contact/submit",
+    "POST",
+  );
   const [success, setSuccess] = useState(false);
-
-  // Verifie que tous les champs contiennent du texte valide
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const isFormInvalid =
-    isEmpty(name) || isEmpty(email) || isEmpty(subject) || isEmpty(message);
+    name.trim().length < 2 ||
+    !isEmailValid ||
+    subject.trim().length < 2 ||
+    message.trim().length < 10;
 
-  // Empeche le rechargement, valide le formulaire puis reinitialise les champs
+  // Gère la soumission du formulaire
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isFormInvalid) return;
     mutate(
-      { email: email.trim(), name: name.trim(), subject: subject.trim(), message: message.trim() },
+      {
+        email: email.trim(),
+        name: name.trim(),
+        subject: subject.trim(),
+        message: message.trim(),
+      },
       () => {
         setName("");
         setEmail("");
@@ -112,9 +127,7 @@ export default function ContactUs() {
               Envoyer
             </button>
           </div>
-          {error ? (
-            <p className="error-message">{error}</p>
-          ) : null}
+          {error ? <p className="error-message">{error}</p> : null}
         </form>
       )}
     </div>

@@ -1180,7 +1180,9 @@ Il affiche trois zones : une image héro pleine largeur avec le titre en overlay
 
 #### `ContactUs.tsx`
 
-`ContactUs` est un formulaire de contact avec quatre champs (nom, email, sujet, message). Il utilise `useMutation` sur `POST /contact/submit`. Le bouton d'envoi est désactivé tant que l'un des champs est vide, validé via `isEmpty`. En cas de succès, un message de confirmation s'affiche à la place du formulaire.
+`ContactUs` est le formulaire de contact affiché dans une modale depuis `Footer`. Il contient quatre champs : nom, email, sujet et message. Il utilise `useMutation` sur `POST /contact/submit`.
+
+Le bouton d'envoi est désactivé tant que l'un des champs est vide — vérifié via `isEmpty` sur chacun — ou pendant la requête via `isLoading`. En cas de succès, le callback `onSuccess` réinitialise tous les champs, set `success` à `true` et le formulaire est remplacé par un message de confirmation. En cas d'erreur, le message est affiché sous le bouton.
 
 #### `ForgotPassword.tsx`
 
