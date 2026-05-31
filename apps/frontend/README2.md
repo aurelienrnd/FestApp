@@ -1214,7 +1214,15 @@ Il reçoit une seule prop `items` — la liste des filtres à afficher. Il utili
 
 #### `modals/AddArtistModal.tsx`
 
-`AddArtistModal` est une modale de création d'artiste en trois étapes : informations générales, concerts, image. Chaque étape valide ses champs avant de permettre le passage à la suivante. L'upload d'image est géré via `FormData` passé à `useMutation`.
+`AddArtistModal` est la modale de création et de modification d'artiste. Elle fonctionne en deux modes : création (`POST /admin/artists`) et édition (`PATCH /admin/artists/:id`) — le mode est détecté via la prop `artistToEdit`. En mode édition, les champs sont pré-remplis et l'image est optionnelle (on conserve l'existante si aucune nouvelle n'est choisie).
+
+Le formulaire est découpé en trois étapes :
+
+- **Étape 1** — nom, genre, origine, biographie, liens YouTube et Spotify (optionnels). Les URLs sont validées via regex (`YOUTUBE_REGEX`, `SPOTIFY_REGEX`) avant de passer à l'étape suivante.
+- **Étape 2** — description alt de l'image et upload du fichier. Une prévisualisation est générée via `URL.createObjectURL` et révoquée via `useEffect` pour éviter les fuites mémoire.
+- **Étape 3** — scène (depuis `FESTIVAL_STAGES`), date (depuis `FESTIVAL_DAYS`), heure de début et de fin, case "Publier sur la page d'accueil".
+
+Chaque étape a sa propre fonction de validation (`isStep1Invalid`, `isStep2Invalid`, `isStep3Invalid`) qui bloque le passage à l'étape suivante si les champs sont invalides. Les données sont soumises en `multipart/form-data` via `useMutation` pour permettre l'upload d'image via multer côté backend.
 
 #### `modals/AddNewsModal.tsx`
 

@@ -17,7 +17,7 @@ type AddArtistModalProps = {
   artistToEdit?: ArtistItem | null;
 };
 
-
+// Regex pour valider les URLs YouTube et Spotify
 const YOUTUBE_REGEX = /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//;
 const SPOTIFY_REGEX = /^https?:\/\/open\.spotify\.com\//;
 
@@ -27,6 +27,8 @@ const SPOTIFY_REGEX = /^https?:\/\/open\.spotify\.com\//;
  * @param {string} genre Genre musical
  * @param {string} origin Origine geographique
  * @param {string} bio Biographie de l'artiste
+ * @function isEmpty Verifie si une chaine de caracteres est vide ou ne contient que des espaces.
+ * @function isMaxLength Verifie si une chaine de caracteres depasse une longueur maximale.
  */
 function isStep1Invalid(
   name: string,
@@ -35,9 +37,12 @@ function isStep1Invalid(
   bio: string,
 ) {
   return (
-    name.trim().length < 2 || isMaxLength(name, 100) ||
-    isEmpty(genre) || isMaxLength(genre, 60) ||
-    isEmpty(origin) || isMaxLength(origin, 80) ||
+    name.trim().length < 2 ||
+    isMaxLength(name, 100) ||
+    isEmpty(genre) ||
+    isMaxLength(genre, 60) ||
+    isEmpty(origin) ||
+    isMaxLength(origin, 80) ||
     isEmpty(bio)
   );
 }
@@ -46,9 +51,15 @@ function isStep1Invalid(
  * Retourne `true` si au moins un champ requis est vide, absent ou depasse sa longueur maximale.
  * @param {string} descriptionMedia Texte alternatif de l'image
  * @param {File | null} image Fichier image
+ * @function isEmpty Verifie si une chaine de caracteres est vide ou ne contient que des espaces.
+ * @function isMaxLength Verifie si une chaine de caracteres depasse une longueur maximale.
  */
 function isStep2Invalid(descriptionMedia: string, image: File | null) {
-  return isEmpty(descriptionMedia) || isMaxLength(descriptionMedia, 255) || image === null;
+  return (
+    isEmpty(descriptionMedia) ||
+    isMaxLength(descriptionMedia, 255) ||
+    image === null
+  );
 }
 
 /** Verifie si le formulaire de l'etape 3 est incomplet.
@@ -57,6 +68,7 @@ function isStep2Invalid(descriptionMedia: string, image: File | null) {
  * @param {string} date Date du concert
  * @param {string} startTime Heure de debut
  * @param {string} endTime Heure de fin
+ * @function isEmpty Verifie si une chaine de caracteres est vide ou ne contient que des espaces.
  */
 function isStep3Invalid(
   stage: string,
@@ -64,9 +76,7 @@ function isStep3Invalid(
   startTime: string,
   endTime: string,
 ) {
-  return (
-    isEmpty(stage) || date === "" || startTime === "" || endTime === ""
-  );
+  return isEmpty(stage) || date === "" || startTime === "" || endTime === "";
 }
 
 /** Affiche la modale d'ajout ou de modification d'un artiste en trois etapes.
@@ -78,6 +88,11 @@ function isStep3Invalid(
  * @param {() => void} props.onClose Ferme la modale.
  * @param {(artist: ArtistItem) => void} props.handleArtist Met a jour la liste des artistes et ferme la modale.
  * @param {ArtistItem | null} props.artistToEdit Artiste a modifier — pre-remplit le formulaire si defini.
+ * @function useMutation Hook de gestion des requetes HTTP avec mutation.
+ * @function isStep1Invalid Verifie si le formulaire de l'etape 1 est incomplet.
+ * @function isStep2Invalid Verifie si le formulaire de l'etape 2 est incomplet.
+ * @function isStep3Invalid Verifie si le formulaire de l'etape 3 est incomplet.
+ * @function formatDateLong Formate une date au format "Jour Mois" (ex: "14 juillet").
  * @children ModalCloseButton Ferme la modale.
  */
 export default function AddArtistModal({
@@ -86,42 +101,68 @@ export default function AddArtistModal({
   handleArtist,
   artistToEdit = null,
 }: AddArtistModalProps) {
+  // Determine si la modale est en mode ajout ou modification
   const isEditMode = artistToEdit !== null;
 
-  const initialStart = artistToEdit?.start_time ? new Date(artistToEdit.start_time) : null;
-
+  // Etats locaux pour stocker les valeurs des champs du formulaire et l'etape courante
   const [step, setStep] = useState<1 | 2 | 3>(1);
+
+  // Champs de l'etape 1
   const [name, setName] = useState(artistToEdit?.name ?? "");
   const [genre, setGenre] = useState(artistToEdit?.genre ?? "");
   const [origin, setOrigin] = useState(artistToEdit?.origin ?? "");
   const [bio, setBio] = useState(artistToEdit?.bio ?? "");
   const [youtubeUrl, setYoutubeUrl] = useState(artistToEdit?.youtube_url ?? "");
   const [spotifyUrl, setSpotifyUrl] = useState(artistToEdit?.spotify_url ?? "");
-  const [isFeatured, setIsFeatured] = useState(artistToEdit?.is_featured ?? false);
-  const [descriptionMedia, setDescriptionMedia] = useState(artistToEdit?.description_media ?? "");
-  const [image, setImage] = useState<File | null>(null);
-  // Si l'heure de fin est inferieure a l'heure de debut, le concert passe minuit — endTime est le lendemain du date selectionnee
-  const [stage, setStage] = useState(artistToEdit?.stage ?? "");
-  const [date, setDate] = useState(initialStart ? initialStart.toISOString().slice(0, 10) : "");
-  const [startTime, setStartTime] = useState(initialStart ? initialStart.toTimeString().slice(0, 5) : "");
-  const [endTime, setEndTime] = useState(artistToEdit?.end_time ? new Date(artistToEdit.end_time).toTimeString().slice(0, 5) : "");
-  const [previewUrl, setPreviewUrl] = useState<string | null>(artistToEdit?.url_media ?? null);
   const [youtubeUrlError, setYoutubeUrlError] = useState<string | null>(null);
   const [spotifyUrlError, setSpotifyUrlError] = useState<string | null>(null);
+  const [isFeatured, setIsFeatured] = useState(
+    artistToEdit?.is_featured ?? false,
+  );
 
-  // Revoque l'URL blob quand previewUrl change ou que le composant est demonte
+  // Champs de l'etape 2
+  const [descriptionMedia, setDescriptionMedia] = useState(
+    artistToEdit?.description_media ?? "",
+  );
+  const [image, setImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    artistToEdit?.url_media ?? null,
+  );
+
+  // Champs de l'etape 3
+  const [stage, setStage] = useState(artistToEdit?.stage ?? "");
+  // Si l'heure de fin est inferieure a l'heure de debut, le concert passe minuit — endTime est le lendemain du date selectionnee
+  const initialStart = artistToEdit?.start_time
+    ? new Date(artistToEdit.start_time)
+    : null;
+  const [date, setDate] = useState(
+    initialStart ? initialStart.toISOString().slice(0, 10) : "",
+  );
+  const [startTime, setStartTime] = useState(
+    initialStart ? initialStart.toTimeString().slice(0, 5) : "",
+  );
+  const [endTime, setEndTime] = useState(
+    artistToEdit?.end_time
+      ? new Date(artistToEdit.end_time).toTimeString().slice(0, 5)
+      : "",
+  );
+
+  // Nettoie l'URL de prévisualisation lorsque le composant est démonté ou lorsque l'image change (en mode ajout)
   useEffect(() => {
     if (!previewUrl || isEditMode) return;
     return () => URL.revokeObjectURL(previewUrl);
   }, [previewUrl, isEditMode]);
 
-  const { mutate, isLoading, error, reset } = useMutation<CreateApiResponse<{ artist: ArtistItem }>>(
+  // initialise la requete a effectuer en fonction du mode (ajout ou modification)
+  const { mutate, isLoading, error, reset } = useMutation<
+    CreateApiResponse<{ artist: ArtistItem }>
+  >(
     isEditMode ? `/admin/artists/${artistToEdit!.id}` : "/admin/artists",
     isEditMode ? "PATCH" : "POST",
   );
 
+  // Valide les champs requis de chaque etape pour activer ou desactiver le bouton "Suivant" ou "Ajouter/Modifier"
   const step1Invalid = isStep1Invalid(name, genre, origin, bio);
-  // En mode edition, l'image est optionnelle (on conserve l'existante si aucune nouvelle n'est choisie)
   const step2Invalid = isEditMode
     ? isEmpty(descriptionMedia)
     : isStep2Invalid(descriptionMedia, image);
@@ -132,6 +173,8 @@ export default function AddArtistModal({
    */
   const handleStep1Next = () => {
     let hasError = false;
+
+    // Valide le lien YouTube si present et affiche un message d'erreur si le domaine est invalide
     if (youtubeUrl && !YOUTUBE_REGEX.test(youtubeUrl)) {
       setYoutubeUrlError(
         "Le lien doit provenir de YouTube (youtube.com ou youtu.be).",
@@ -140,6 +183,8 @@ export default function AddArtistModal({
     } else {
       setYoutubeUrlError(null);
     }
+
+    // Valide le lien Spotify si present et affiche un message d'erreur si le domaine est invalide
     if (spotifyUrl && !SPOTIFY_REGEX.test(spotifyUrl)) {
       setSpotifyUrlError(
         "Le lien doit provenir de Spotify (open.spotify.com).",
@@ -148,11 +193,16 @@ export default function AddArtistModal({
     } else {
       setSpotifyUrlError(null);
     }
+
+    // Si aucune erreur de validation n'est presente, passe a l'etape 2
     if (!hasError) setStep(2);
   };
 
+  // Reinitialise le formulaire et les messages d'erreur a leur valeur initiale
   const resetForm = () => {
-    const start = artistToEdit?.start_time ? new Date(artistToEdit.start_time) : null;
+    const start = artistToEdit?.start_time
+      ? new Date(artistToEdit.start_time)
+      : null;
     setStep(1);
     setName(artistToEdit?.name ?? "");
     setGenre(artistToEdit?.genre ?? "");
@@ -167,17 +217,23 @@ export default function AddArtistModal({
     setStage(artistToEdit?.stage ?? "");
     setDate(start ? start.toISOString().slice(0, 10) : "");
     setStartTime(start ? start.toTimeString().slice(0, 5) : "");
-    setEndTime(artistToEdit?.end_time ? new Date(artistToEdit.end_time).toTimeString().slice(0, 5) : "");
+    setEndTime(
+      artistToEdit?.end_time
+        ? new Date(artistToEdit.end_time).toTimeString().slice(0, 5)
+        : "",
+    );
     setImage(null);
     setPreviewUrl(artistToEdit?.url_media ?? null);
   };
 
+  // Ferme la modale et reinitialise le formulaire
   const handleClose = () => {
     reset();
     resetForm();
     onClose();
   };
 
+  // Gere la selection d'une image et genere une URL de previsualisation
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
     setImage(file);
@@ -195,12 +251,10 @@ export default function AddArtistModal({
     formData.append("genre", genre);
     formData.append("origin", origin);
     formData.append("bio", bio);
-
     formData.append("description_media", descriptionMedia);
     if (youtubeUrl) formData.append("youtube_url", youtubeUrl);
     if (spotifyUrl) formData.append("spotify_url", spotifyUrl);
-    // en mode edition, l'image n'est ajoutee que si une nouvelle a ete selectionnee
-    if (image !== null) formData.append("image", image);
+    if (image !== null) formData.append("image", image); // en mode edition, l'image n'est ajoutee que si une nouvelle a ete selectionnee
     formData.append("stage", stage);
 
     // Si l'heure de fin est inferieure a l'heure de debut, le concert passe minuit — end_time est le lendemains du date selectionnee
@@ -210,18 +264,17 @@ export default function AddArtistModal({
             .toISOString()
             .slice(0, 10)
         : date;
-
     formData.append(
       "start_time",
       new Date(`${date}T${startTime}`).toISOString(),
     );
-
     formData.append(
       "end_time",
       new Date(`${endDate}T${endTime}`).toISOString(),
     );
     formData.append("is_featured", String(isFeatured));
 
+    // Envoie la requete de creation ou de modification de l'artiste et met a jour la liste des artistes a la reponse
     mutate(formData, (data) => {
       resetForm();
       handleArtist(data.artist);
@@ -456,7 +509,9 @@ export default function AddArtistModal({
                 >
                   <option value="">-- Choisir une scène --</option>
                   {FESTIVAL_STAGES.map((s) => (
-                    <option key={s} value={s}>{s}</option>
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
                   ))}
                 </select>
               </div>
