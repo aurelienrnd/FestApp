@@ -1385,6 +1385,8 @@ Même structure que `/artists/[id]` — page serveur qui charge la news via `fet
 
 #### `/practical-info` — Informations pratiques
 
+Page serveur entièrement statique — pas d'appel API, pas d'état client. Elle affiche les informations pratiques du festival (lieu, accès, restauration, sur place) à partir de constantes locales et de `FESTIVAL_LOCATION` importé depuis `festival.ts`.
+
 ### 12.2. Page d'authentification
 
 #### `/login`
