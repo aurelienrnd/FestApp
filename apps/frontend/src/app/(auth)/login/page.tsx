@@ -15,7 +15,9 @@ import { isEmail } from "../../../functions/validation";
  * Redirige vers `/admin/dashboard` si la connexion reussit.
  * Ouvre une modale "Mot de passe oublie" au clic sur le bouton dedie.
  * @function useMutation Envoie la requete POST de connexion et gere les etats loading/error
+ * @function isEmail Validation du formulaire: email doit etre au format email et mot de passe doit faire au moins 8 caracteres
  * @children ForgotPassword Affiche le formulaire d'initialisation de reinitialisation du mot de passe.
+ * @children ModalCloseButton Affiche un bouton de fermeture pour la modale "Mot de passe oublie".
  */
 export default function Page() {
   // Permet de rediriger vers une autre page
@@ -24,9 +26,14 @@ export default function Page() {
   // Initialise les champs du formulaire, le message d'erreur et l'etat d'ouverture de la modale
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { mutate, isLoading, error } = useMutation<ApiMessageResponse>("/admin/auth/login", "POST");
   const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
     useState(false);
+
+  //initialisation de la requete
+  const { mutate, isLoading, error } = useMutation<ApiMessageResponse>(
+    "/admin/auth/login",
+    "POST",
+  );
 
   // Valide le contenu du formulaire.
   const isFormInvalid = !isEmail(email) || password.trim().length < 8;
@@ -81,11 +88,13 @@ export default function Page() {
         </div>
 
         <div className="flex flex-col items-center gap-2 pt-2">
-          {error ? (
-            <p className="error-message">{error}</p>
-          ) : null}
+          {error ? <p className="error-message">{error}</p> : null}
 
-          <button type="submit" className="btn-cta" disabled={isFormInvalid || isLoading}>
+          <button
+            type="submit"
+            className="btn-cta"
+            disabled={isFormInvalid || isLoading}
+          >
             Envoyer
           </button>
         </div>
