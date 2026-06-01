@@ -20,6 +20,9 @@ type DeleteModalProps<T extends { id: string }> = {
  * @param {string} props.entityName Nom de l'entite pour les textes (ex : "artiste").
  * @param {(item: T) => string} props.getLabel Extrait le nom affiche dans la confirmation.
  * @param {(id: string) => void} props.onDeleted Appele avec l'id apres suppression reussie.
+ * @param {boolean} props.isOpen Controle l'affichage de la modale.
+ * @param {() => void} props.onClose Ferme la modale.
+ * @function useDelete Custom hook pour gerer la suppression via API.
  * @children ModalCloseButton Ferme la modale.
  */
 export default function DeleteModal<T extends { id: string }>({
@@ -31,6 +34,8 @@ export default function DeleteModal<T extends { id: string }>({
   entityName,
   getLabel,
 }: DeleteModalProps<T>) {
+
+  // initialise la requete a effectuer 
   const {
     handleDelete,
     isSubmitting,
@@ -39,13 +44,13 @@ export default function DeleteModal<T extends { id: string }>({
     reset,
   } = useDelete(endpoint);
 
-  // Reinitialise l'etat interne et ferme la modale
+  // Ferme la modale et reinitialise le formulaire
   const handleClose = () => {
     reset();
     onClose();
   };
 
-  // Confirme la suppression et met a jour l'UI selon la reponse API
+  // Gere la soumission du formulaire de suppression
   const handleConfirmDelete = () => {
     if (!item) return;
     handleDelete(item.id, onDeleted);
@@ -97,4 +102,3 @@ export default function DeleteModal<T extends { id: string }>({
       </div>
     </Modal>
   );
-}

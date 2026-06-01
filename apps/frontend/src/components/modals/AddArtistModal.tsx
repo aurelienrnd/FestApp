@@ -83,7 +83,6 @@ function isStep3Invalid(
  * Etape 1 : nom, genre, origine, bio, liens YouTube et Spotify (optionnels). Etape 2 : description image, fichier image. Etape 3 : scene, heure de debut et de fin, case "Publier sur la page d'accueil".
  * Soumet les donnees en multipart/form-data a POST /admin/artists ou PATCH /admin/artists/:id.
  * En mode edition (artistToEdit defini), pre-remplit les champs et affiche "Modifier" a la place de "Ajouter".
- * @param {AddArtistModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
  * @param {() => void} props.onClose Ferme la modale.
  * @param {(artist: ArtistItem) => void} props.handleArtist Met a jour la liste des artistes et ferme la modale.
@@ -198,7 +197,7 @@ export default function AddArtistModal({
     if (!hasError) setStep(2);
   };
 
-  // Reinitialise le formulaire et les messages d'erreur a leur valeur initiale
+  //Reinitialise le formulaire a son etat initial
   const resetForm = () => {
     const start = artistToEdit?.start_time
       ? new Date(artistToEdit.start_time)

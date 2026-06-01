@@ -1226,11 +1226,22 @@ Chaque étape a sa propre fonction de validation (`isStep1Invalid`, `isStep2Inva
 
 #### `modals/AddNewsModal.tsx`
 
-`AddNewsModal` est une modale de création et modification d'actualité en deux étapes : contenu et image. Elle fonctionne en mode création (sans item) et en mode édition (avec un `NewsItem` existant). L'endpoint et la méthode (`POST` ou `PATCH`) sont adaptés selon le mode.
+`AddNewsModal` est la modale de création et de modification d'actualité. Elle fonctionne en deux modes : création (`POST /admin/news`) et édition (`PATCH /admin/news/:id`) — le mode est détecté via la prop `newsToEdit`. En mode édition, les champs sont pré-remplis et l'image est optionnelle.
+
+Le formulaire est découpé en deux étapes :
+
+- **Étape 1** — titre (obligatoire, min 2 / max 150 caractères), contenu (optionnel) et case "Publier".
+- **Étape 2** — description alt de l'image et upload du fichier. Même principe que `AddArtistModal` : prévisualisation via `URL.createObjectURL` et révocation via `useEffect`.
+
+Les données sont soumises en `multipart/form-data` via `useMutation` pour permettre l'upload d'image côté backend.
 
 #### `modals/DeleteModal.tsx`
 
-`DeleteModal` est une modale de confirmation de suppression générique. Elle est partagée entre artistes, news et utilisateurs. Elle utilise `useDelete` et affiche deux états distincts : "Suppression en cours..." pendant la requête via `isSubmitting`, et un message de confirmation une fois la suppression réussie via `isDeleted`. Contrairement à `AddArtistModal` qui est dédié à un seul type d'entité et code ses informations en dur, `DeleteModal` est générique et reçoit en props l'`endpoint`, le nom de l'entité (`entityName`) et une fonction `getLabel` pour extraire le nom de l'item à afficher dans le message de confirmation.
+`DeleteModal` est la modale de confirmation de suppression générique, partagée entre artistes, news et utilisateurs. Contrairement à `AddArtistModal` et `AddNewsModal` qui sont dédiés à un seul type d'entité, `DeleteModal` est générique grâce à trois props : `endpoint` (chemin de l'API), `entityName` (nom affiché dans les textes) et `getLabel` (fonction qui extrait le nom de l'item à afficher dans le message de confirmation).
+
+Il est générique au sens TypeScript également — `DeleteModal<T extends { id: string }>` — ce qui garantit que l'item passé possède toujours un `id`.
+
+Il utilise `useDelete` et affiche deux états distincts : pendant la requête, le bouton affiche "Suppression..." via `isSubmitting` et est désactivé. En cas de succès, le contenu est remplacé par un message de confirmation via `isDeleted`. À la fermeture, `reset()` est appelé pour remettre `isDeleted` et `error` à leur valeur initiale avant la prochaine ouverture.
 
 ### 10.4. Composants utilitaires
 

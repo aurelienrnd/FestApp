@@ -15,7 +15,6 @@ type AddNewsModalProps = {
   newsToEdit?: NewsItem | null;
 };
 
-
 /** Verifie si le formulaire de l'etape 1 est incomplet.
  * Retourne `true` si le titre est vide ou depasse 150 caracteres.
  * @param {string} title Titre de la news
@@ -35,7 +34,8 @@ function isStep2Invalid(
   image: File | null,
   isEditMode: boolean,
 ) {
-  if (isEmpty(descriptionMedia) || isMaxLength(descriptionMedia, 255)) return true;
+  if (isEmpty(descriptionMedia) || isMaxLength(descriptionMedia, 255))
+    return true;
   if (!isEditMode && image === null) return true;
   return false;
 }
@@ -45,11 +45,15 @@ function isStep2Invalid(
  * Etape 2 : description image, fichier image.
  * Soumet les donnees en multipart/form-data a POST /admin/news ou PATCH /admin/news/:id.
  * En mode edition (newsToEdit defini), pre-remplit les champs et conserve l'image existante si aucune nouvelle n'est choisie.
- * @param {AddNewsModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
  * @param {() => void} props.onClose Ferme la modale.
  * @param {(news: NewsItem) => void} props.handleNews Met a jour la liste des news et ferme la modale.
  * @param {NewsItem | null} props.newsToEdit News a modifier — pre-remplit le formulaire si defini.
+ * @function useMutation Gere la requete d'ajout ou de modification de news.
+ * @function isEmpty Verifie si une chaine de caracteres est vide ou ne contient que des espaces.
+ * @function isMaxLength Verifie si une chaine de caracteres depasse une longueur maximale.
+ * @function isStep1Invalid Verifie si les champs de l'etape 1 sont valides pour activer le bouton "Suivant".
+ * @function isStep2Invalid Verifie si les champs de l'etape 2 sont valides pour activer le bouton "Ajouter/Modifier".
  * @children ModalCloseButton Ferme la modale.
  */
 export default function AddNewsModal({
@@ -61,29 +65,44 @@ export default function AddNewsModal({
   // Determine si on est en mode edition (newsToEdit defini) ou en mode creation (newsToEdit null)
   const isEditMode = newsToEdit !== null;
 
+  // Etats locaux pour stocker les valeurs des champs du formulaire et l'etape courante
   const [step, setStep] = useState<1 | 2>(1);
+
+  // Champs de l'etape 1
   const [title, setTitle] = useState(newsToEdit?.title ?? "");
   const [content, setContent] = useState(newsToEdit?.content ?? "");
-  const [isPublished, setIsPublished] = useState(newsToEdit?.is_published ?? false);
-  const [descriptionMedia, setDescriptionMedia] = useState(newsToEdit?.description_media ?? "");
-  const [image, setImage] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(newsToEdit?.url_media ?? null);
+  const [isPublished, setIsPublished] = useState(
+    newsToEdit?.is_published ?? false,
+  );
 
-  // Revoque l'URL blob quand previewUrl change ou que le composant est demonte
+  // Champs de l'etape 2
+  const [descriptionMedia, setDescriptionMedia] = useState(
+    newsToEdit?.description_media ?? "",
+  );
+  const [image, setImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    newsToEdit?.url_media ?? null,
+  );
+
+  // Nettoie l'URL de prévisualisation lorsque le composant est démonté ou lorsque l'image change (en mode ajout)
   useEffect(() => {
     if (!previewUrl || isEditMode) return;
     return () => URL.revokeObjectURL(previewUrl);
   }, [previewUrl, isEditMode]);
 
-  const { mutate, isLoading, error, reset } = useMutation<CreateApiResponse<{ news: NewsItem }>>(
+  // initialise la requete a effectuer en fonction du mode (ajout ou modification)
+  const { mutate, isLoading, error, reset } = useMutation<
+    CreateApiResponse<{ news: NewsItem }>
+  >(
     isEditMode ? `/admin/news/${newsToEdit!.id}` : "/admin/news",
     isEditMode ? "PATCH" : "POST",
   );
 
-  // Validation des formulaires des deux etapes
+  // Valide les champs requis de chaque etape pour activer ou desactiver le bouton "Suivant" ou "Ajouter/Modifier"
   const step1Invalid = isStep1Invalid(title);
   const step2Invalid = isStep2Invalid(descriptionMedia, image, isEditMode);
 
+  //Reinitialise le formulaire a son etat initial
   const resetForm = () => {
     setStep(1);
     setTitle(newsToEdit?.title ?? "");
@@ -94,19 +113,21 @@ export default function AddNewsModal({
     setPreviewUrl(newsToEdit?.url_media ?? null);
   };
 
+  // Ferme la modale et reinitialise le formulaire
   const handleClose = () => {
     reset();
     resetForm();
     onClose();
   };
 
+  // Gere la selection d'une image et genere une URL de previsualisation
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
     setImage(file);
     setPreviewUrl(file ? URL.createObjectURL(file) : null);
   };
 
-  // Soumet les donnees du formulaire a l'API et traite la reponse
+  // Gere la soumission du formulaire d'ajout de news
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     // Empêche la soumission normale du formulaire
     event.preventDefault();
@@ -272,9 +293,7 @@ export default function AddNewsModal({
               </button>
             </div>
 
-            {error ? (
-              <p className="error-message">{error}</p>
-            ) : null}
+            {error ? <p className="error-message">{error}</p> : null}
           </form>
         )}
       </div>
