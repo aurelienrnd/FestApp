@@ -1403,6 +1403,15 @@ Un bouton "Mot de passe oublié" ouvre une modale contenant `ForgotPassword`.
 
 #### `/admin/dashboard`
 
+La page dashboard est un composant serveur minimal qui délègue tout à `DashboardContent` — un composant client qui accède aux données utilisateur via `useAdminUser`.
+
+`DashboardContent` affiche deux zones :
+
+- **Carte profil** — nom, rôle, email et bouton de changement de mot de passe. Si `mustChangePassword` est `true`, `useModal` est initialisé avec `true` pour ouvrir automatiquement la modale de changement de mot de passe au montage.
+- **Grille** — un compte à rebours jusqu'au premier jour du festival (calculé via `getDaysUntil`) avec le lieu depuis `FESTIVAL_LOCATION`, et une liste de raccourcis vers les sections admin accessibles selon le rôle de l'utilisateur via `filterNavByRole`.
+
+À la fermeture de la modale de changement de mot de passe, `router.refresh()` est appelé si `mustChangePassword` était `true`. Cela force Next.js à refaire le rendu côté serveur du layout — ce qui relance le fetch vers `/admin/auth/me` et récupère la nouvelle valeur de `mustChangePassword` (`false`). Sans ça, la modale se rouvrirait à chaque rechargement car les données du contexte viendraient encore du serveur avec l'ancienne valeur.
+
 #### `/admin/artists`
 
 #### `/admin/artists/[id]`

@@ -9,7 +9,10 @@ import { navAdminQuickLinks, filterNavByRole } from "../../../config/ui";
 import ChangePasswordModal from "./ChangePasswordModal";
 import { formatDateLong } from "../../../functions/formatDate";
 
-/** Retourne le nombre de jours restants avant une date ISO. */
+/** Retourne le nombre de jours restants avant une date ISO.
+ * @param dateStr - La date cible au format ISO (YYYY-MM-DD).
+ * @return Le nombre de jours restants avant la date cible. Si la date est passée, retourne 0.
+ */
 function getDaysUntil(dateStr: string): number {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -24,24 +27,37 @@ function getDaysUntil(dateStr: string): number {
  * Recupere l'utilisateur connecte et presente les donnees de profil.
  * Si mustChangePassword est vrai, ouvre automatiquement la modale en mode force.
  * Les dates du festival sont derivees dynamiquement depuis FESTIVAL_DAYS.
+ * @function useModal - Gere l'etat d'ouverture de la modale de changement de mot de passe.
+ * @function getDaysUntil - Calcule le nombre de jours restants avant le debut du festival.
+ * @function filterNavByRole - Filtre les liens d'acces rapide en fonction du role de l'utilisateur.
+ * @function formatDateLong - Formate les dates du festival dans un format lisible.
+ * @function useAdminUser - Recupere les informations de l'utilisateur administrateur connecte.
+ * @children ChangePasswordModal - La modale de changement de mot de passe, qui s'affiche en fonction de l'etat isChangePasswordModalOpen.
+ * @hildren Liens d'acces rapide - Affiche les liens d'acces rapide disponibles pour le role de l'utilisateur, avec une description pour chacun.
  */
 export default function DashboardContent() {
+  //Recuperation de l'utilisateur admin et gestion de la modale de changement de mot de passe
   const adminUser = useAdminUser();
   const router = useRouter();
+
+  //initialise la modale
   const {
     isOpen: isChangePasswordModalOpen,
     open: openChangePassword,
     close: closeChangePassword,
   } = useModal(adminUser?.mustChangePassword ?? false);
 
+  //Si aucun utilisateur admin n'est trouve, ne rien afficher
   if (!adminUser) return null;
   const { user, mustChangePassword } = adminUser;
 
+  //Ferme la modale et rafraichit la page si le mot de passe a ete change (mustChangePassword devient faux)
   const handleModalClose = () => {
     closeChangePassword();
     if (mustChangePassword) router.refresh();
   };
 
+  //LINK - Calcule le nombre de jours restants avant le debut du festival et filtre les liens d'acces rapide en fonction du role de l'utilisateur
   const daysLeft = getDaysUntil(FESTIVAL_DAYS[0]);
   const accessibleLinks = filterNavByRole(navAdminQuickLinks, user.role);
 
@@ -57,9 +73,7 @@ export default function DashboardContent() {
         {/* Infos — distribue sur toute la largeur */}
         <div className="flex-1 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 w-full text-center sm:text-left">
           <div className="flex flex-col gap-2">
-            <p className="card-primary text-4xl">
-              {user.display_name}
-            </p>
+            <p className="card-primary text-4xl">{user.display_name}</p>
             <div className="flex items-center gap-3 justify-center sm:justify-start">
               <span className="card-profile-badge px-4 py-1.5">
                 {user.role}
