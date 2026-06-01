@@ -13,13 +13,17 @@ import ArtistsContent from "../../../components/ArtistsContent";
  * @children ArtistsContent : Affiche la liste des artistes filtree
  */
 export default function Page() {
+  // Gere le filtre actif pour la programmation (ex: jour 1, jour 2, etc.)
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
+  // Prepare les items de navigation en injectant l'etat actif et les handlers de clic
   const items = filterArtistsItems.map((item) => ({
     ...item,
     active:
       item.value === activeFilter ||
-      (item.value === undefined && activeFilter === null),
+      (item.value === undefined && activeFilter === null), // Si item.value est undefined, il correspond a "Tous" et est actif si aucun filtre n'est actif
+
+    // Met a jour le filtre actif lors du clic sur un item
     onClick: () => setActiveFilter(item.value ?? null),
   }));
 

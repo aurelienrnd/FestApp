@@ -1365,11 +1365,23 @@ Elle est composée de cinq sections distinctes, chacune dans son propre composan
 
 #### `/artists` — Liste des artistes
 
+Contrairement aux autres pages publiques, cette page est un composant **client** (`"use client"`) — elle gère l'état du filtre actif (`activeFilter`) via `useState`. C'est le seul état de la page : les données sont chargées par `ArtistsContent` via `useFetch`.
+
+Les filtres sont construits dynamiquement depuis `filterArtistsItems` en ajoutant un `onClick` et un `active` à chaque item selon le filtre courant. Ces items enrichis sont passés à la fois à `SideBarTool` (sidebar desktop) et `MobileFiltersButton` (modale mobile).
+
 #### `/artists/[id]` — Fiche artiste
+
+Page serveur qui charge l'artiste via `fetchPublic` sur `GET /public/artists/:id`. Si les données sont `null` (artiste inexistant ou API inaccessible), `notFound()` est appelé — Next.js affiche la page 404. Sinon les données sont passées à `ArtistDetailContent`.
 
 #### `/news` — Liste des actualités
 
+Même structure que `/artists` — composant client qui gère l'état du filtre de tri (`activeFilter`) via `useState`, initialisé à `"Plus récent"`. Les filtres sont construits depuis `filterNewsItems` avec `active` et `onClick` ajoutés dynamiquement, puis passés à `SideBarTool` et `MobileFiltersButton`. Les données sont chargées par `NewsContent`.
+
+La différence avec `/artists` : `activeFilter` est une `string` (le label du filtre) et non `string | null` — il y a toujours un tri actif, jamais d'état "sans filtre".
+
 #### `/news/[id]` — Détail d'une actualité
+
+Même structure que `/artists/[id]` — page serveur qui charge la news via `fetchPublic` sur `GET /public/news/:id`. Si `null`, `notFound()` est appelé. Une news non publiée retourne également `null` côté backend — un visiteur ne peut pas accéder directement à une news en brouillon via son URL.
 
 #### `/practical-info` — Informations pratiques
 

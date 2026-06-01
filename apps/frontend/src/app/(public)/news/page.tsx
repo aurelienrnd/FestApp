@@ -13,11 +13,15 @@ import NewsContent from "../../../components/NewsContent";
  * @children NewsContent Affiche la liste des news filtree.
  */
 export default function Page() {
+  // Gere le filtre actif pour le tri des news (ex: plus recent, plus ancien, etc.)
   const [activeFilter, setActiveFilter] = useState("Plus récent");
 
+  // Prepare les items de navigation en injectant l'etat actif et les handlers de clic
   const items = filterNewsItems.map((item) => ({
     ...item,
     active: item.labelBtn === activeFilter,
+
+    // Met a jour le filtre actif lors du clic sur un item
     onClick: () => setActiveFilter(item.labelBtn ?? "Plus récent"),
   }));
 

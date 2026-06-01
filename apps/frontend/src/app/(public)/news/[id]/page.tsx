@@ -14,9 +14,11 @@ export default async function NewsPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  // initialise la requête pour récupérer les données de l'artiste en fonction de l'id
   const { id } = await params;
   const data = await fetchPublic<{ news: NewsItem }>(`/public/news/${id}`);
 
+  // si aucune donnée n'est retournée, redirige vers la page 404
   if (!data) notFound();
 
   return <NewsDetailContent news={data.news} />;
