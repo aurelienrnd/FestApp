@@ -2,7 +2,8 @@ import Banner from "../../components/Banner";
 import Footer from "../../components/Footer";
 
 /** Layout des pages publiques — fournit la banniere et le footer.
- * @children {ReactNode} children Pages publiques (accueil, artists, news, practical-info, login)
+ * @children Banner
+ * @children Footer
  */
 export default function PublicLayout({
   children,

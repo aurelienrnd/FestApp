@@ -9,11 +9,17 @@ import { fetchPublic } from "../../functions/fetchPublic";
 /** Page d'accueil publique — composant serveur avec ISR (revalidation toutes les 60 secondes).
  * Récupère les données agrégées depuis GET /public/home.
  * @function fetchPublic Effectue un fetch GET côté serveur avec revalidation ISR.
+ * @children HomeHero
+ * @children HomeProgrammation
+ * @children HomeNews
+ * @children HomeInfosPratiques
+ * @children HomePartenaires
  */
 export default async function Home() {
-  const data = await fetchPublic<{ artists: HomeArtist[]; news: HomeNews[] }>(
+  // Récupère les données d'artistes et de news pour la page d'accueil depuis l'API publique.
+  const data = (await fetchPublic<{ artists: HomeArtist[]; news: HomeNews[] }>(
     "/public/home",
-  ) ?? { artists: [], news: [] };
+  )) ?? { artists: [], news: [] };
 
   return (
     <>

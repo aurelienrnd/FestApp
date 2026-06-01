@@ -8,7 +8,9 @@ import Footer from "../../components/Footer";
 /** Verifie la session via le backend avant de rendre les pages `/admin`.
  * Redirige vers `/login` si la session est absente, invalide ou si le backend est inaccessible.
  * Injecte les donnees utilisateur dans AdminUserProvider pour les rendre accessibles a toutes les pages admin.
- * @children {ReactNode} children Pages enfants de la zone admin
+ * @children Banner
+ * @children Footer
+ * @children AdminUserProvider contexte
  */
 export default async function AdminLayout({
   children,

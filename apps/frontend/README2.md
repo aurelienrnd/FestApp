@@ -8,10 +8,10 @@ Le frontend est l'une des trois couches de l'architecture du projet Vindhellfest
 
 Dans l'architecture Docker, le frontend tourne dans un conteneur dédié (`vindhellfest-frontend`) accessible sur le port `3000`. Il communique avec le backend de deux façons selon le contexte d'exécution :
 
-| Contexte                      | URL utilisée                                         | Raison                                              |
-| ----------------------------- | ----------------------------------------------------- | --------------------------------------------------- |
+| Contexte                    | URL utilisée                                      | Raison                                           |
+| --------------------------- | ------------------------------------------------- | ------------------------------------------------ |
 | Côté serveur (SSR, layouts) | `http://backend:4000` via `API_URL_SERVER`        | Communication interne au réseau Docker `app-net` |
-| Côté client (navigateur)    | `http://localhost:4000` via `NEXT_PUBLIC_API_URL` | Le navigateur ne connaît pas le réseau Docker     |
+| Côté client (navigateur)    | `http://localhost:4000` via `NEXT_PUBLIC_API_URL` | Le navigateur ne connaît pas le réseau Docker    |
 
 Les fichiers statiques uploadés (images d'artistes, etc.) sont également servis via le frontend grâce à une règle de réécriture (`rewrite`) dans `next.config.ts` qui proxifie les requêtes `/uploads/*` vers le backend.
 
@@ -41,17 +41,17 @@ Next.js intègre nativement l'optimisation des polices Google (`next/font`) et l
 
 ### 2.1. Tableau des technologies et versions
 
-| Technologie           | Version     | Rôle                                                                  |
-| --------------------- | ----------- | ---------------------------------------------------------------------- |
-| Next.js               | 16.1.6      | Framework React — App Router, SSR, routing, optimisation d'images     |
+| Technologie           | Version     | Rôle                                                                |
+| --------------------- | ----------- | ------------------------------------------------------------------- |
+| Next.js               | 16.1.6      | Framework React — App Router, SSR, routing, optimisation d'images   |
 | React                 | 19.2.3      | Bibliothèque UI — composants, état, contexte                        |
-| TypeScript            | ^5          | Typage statique strict sur l'ensemble du code                          |
+| TypeScript            | ^5          | Typage statique strict sur l'ensemble du code                       |
 | Tailwind CSS          | ^4          | Styles utilitaires — via PostCSS, intégré sans fichier de config JS |
-| Vitest                | ^4.0.18     | Framework de tests unitaires et composants                             |
-| React Testing Library | ^16.3.2     | Tests d'intégration des composants React                              |
-| ESLint                | ^9          | Analyse statique du code — règles Next.js intégrées                |
-| Prettier              | ^3.8.1      | Formatage automatique du code                                          |
-| Node.js               | 20 (Alpine) | Environnement d'exécution du conteneur Docker                         |
+| Vitest                | ^4.0.18     | Framework de tests unitaires et composants                          |
+| React Testing Library | ^16.3.2     | Tests d'intégration des composants React                            |
+| ESLint                | ^9          | Analyse statique du code — règles Next.js intégrées                 |
+| Prettier              | ^3.8.1      | Formatage automatique du code                                       |
+| Node.js               | 20 (Alpine) | Environnement d'exécution du conteneur Docker                       |
 
 ### 2.2. Dépendances de production
 
@@ -222,11 +222,11 @@ L'App Router de Next.js permet de créer des **Route Groups** en nommant un doss
 
 Le projet exploite ce mécanisme pour définir trois zones visuellement et fonctionnellement distinctes, sans que cette organisation n'apparaisse dans les URLs.
 
-| Dossier       | URLs concernées                                    | Layout appliqué                        | Thème CSS               |
-| ------------- | --------------------------------------------------- | --------------------------------------- | ------------------------ |
-| `(public)/` | `/`, `/artists`, `/news`, `/practical-info` | Banner + Footer                         | `data-theme="visitor"` |
-| `(auth)/`   | `/login`                                          | Banner + Footer                         | `data-theme="admin"`   |
-| `admin/`    | `/admin/*`                                        | Banner + Footer + vérification session | `data-theme="admin"`   |
+| Dossier     | URLs concernées                             | Layout appliqué                        | Thème CSS              |
+| ----------- | ------------------------------------------- | -------------------------------------- | ---------------------- |
+| `(public)/` | `/`, `/artists`, `/news`, `/practical-info` | Banner + Footer                        | `data-theme="visitor"` |
+| `(auth)/`   | `/login`                                    | Banner + Footer                        | `data-theme="admin"`   |
+| `admin/`    | `/admin/*`                                  | Banner + Footer + vérification session | `data-theme="admin"`   |
 
 **Pourquoi `(auth)` partage-t-il le thème admin ?**
 
@@ -247,14 +247,14 @@ config/  ──►  functions/  ──►  hooks/  ──►  components/  ─�
               type.ts  (transversal)
 ```
 
-| Dossier         | Responsabilité                                                                               | Ce qu'il ne fait pas                                                       |
-| --------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `app/`        | Routing, layouts, pages — orchestration des composants et des données SSR                   | Pas de logique UI réutilisable — chaque page délègue aux composants    |
-| `components/` | Composants React réutilisables entre plusieurs pages                                         | Pas d'appel `fetch` brut — passe toujours par un hook ou `functions/` |
-| `hooks/`      | Logique stateful réutilisable (fetch, mutation, modale…)                                    | Pas de rendu JSX — retourne uniquement des données et des fonctions      |
-| `functions/`  | Fonctions pures sans état React (fetch, formatage, erreurs, validation)                      | Pas d'import de hooks ou composants React                                  |
-| `config/`     | Données de référence et fonctions utilitaires liées à l'UI (navigation, filtres, rôles) | Pas d'état React, pas d'appel réseau                                     |
-| `type.ts`     | Types TypeScript partagés entre tous les dossiers                                            | Source de vérité unique — aucun type métier dupliqué ailleurs         |
+| Dossier       | Responsabilité                                                                          | Ce qu'il ne fait pas                                                  |
+| ------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `app/`        | Routing, layouts, pages — orchestration des composants et des données SSR               | Pas de logique UI réutilisable — chaque page délègue aux composants   |
+| `components/` | Composants React réutilisables entre plusieurs pages                                    | Pas d'appel `fetch` brut — passe toujours par un hook ou `functions/` |
+| `hooks/`      | Logique stateful réutilisable (fetch, mutation, modale…)                                | Pas de rendu JSX — retourne uniquement des données et des fonctions   |
+| `functions/`  | Fonctions pures sans état React (fetch, formatage, erreurs, validation)                 | Pas d'import de hooks ou composants React                             |
+| `config/`     | Données de référence et fonctions utilitaires liées à l'UI (navigation, filtres, rôles) | Pas d'état React, pas d'appel réseau                                  |
+| `type.ts`     | Types TypeScript partagés entre tous les dossiers                                       | Source de vérité unique — aucun type métier dupliqué ailleurs         |
 
 Cette organisation garantit que chaque fichier reste testable indépendamment et que l'on peut retrouver n'importe quel élément de l'application sans ambiguïté.
 
@@ -299,15 +299,15 @@ Le composant `<Image>` de Next.js optimise et sécurise les images distantes. Po
 
 Ce fichier contrôle le comportement du compilateur TypeScript. Les options clés du projet :
 
-| Option               | Valeur                 | Effet                                                                                                   |
-| -------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------- |
-| `strict`           | `true`               | Active toutes les vérifications strictes — interdit `any` implicite, `null` non vérifié, etc.   |
-| `noEmit`           | `true`               | TypeScript vérifie les types mais ne génère pas de fichiers JS — c'est Next.js qui compile          |
-| `target`           | `ES2017`             | Code compilé compatible avec les navigateurs modernes et Node.js 20                                    |
-| `moduleResolution` | `bundler`            | Résolution de modules adaptée aux bundlers modernes (Next.js / Webpack / Turbopack)                   |
+| Option             | Valeur            | Effet                                                                                                |
+| ------------------ | ----------------- | ---------------------------------------------------------------------------------------------------- |
+| `strict`           | `true`            | Active toutes les vérifications strictes — interdit `any` implicite, `null` non vérifié, etc.        |
+| `noEmit`           | `true`            | TypeScript vérifie les types mais ne génère pas de fichiers JS — c'est Next.js qui compile           |
+| `target`           | `ES2017`          | Code compilé compatible avec les navigateurs modernes et Node.js 20                                  |
+| `moduleResolution` | `bundler`         | Résolution de modules adaptée aux bundlers modernes (Next.js / Webpack / Turbopack)                  |
 | `paths`            | `@/*` → `./src/*` | Alias d'import —`import X from "@/components/X"` au lieu de chemins relatifs profonds                |
-| `isolatedModules`  | `true`               | Chaque fichier est traité indépendamment, requis pour la compatibilité avec les transpileurs rapides |
-| `plugins`          | `next`               | Plugin TypeScript officiel Next.js — autocomplétion et validation dans les Server Components          |
+| `isolatedModules`  | `true`            | Chaque fichier est traité indépendamment, requis pour la compatibilité avec les transpileurs rapides |
+| `plugins`          | `next`            | Plugin TypeScript officiel Next.js — autocomplétion et validation dans les Server Components         |
 
 ---
 
@@ -381,11 +381,11 @@ Tailwind CSS 4 a abandonné son fichier de configuration dédié (`tailwind.conf
 
 Prettier formate automatiquement le code à chaque exécution de `npm run format`. Les règles définies :
 
-| Règle          | Valeur    | Signification                                                        |
-| --------------- | --------- | -------------------------------------------------------------------- |
-| `semi`        | `true`  | Point-virgule obligatoire en fin d'instruction                       |
+| Règle         | Valeur  | Signification                                                      |
+| ------------- | ------- | ------------------------------------------------------------------ |
+| `semi`        | `true`  | Point-virgule obligatoire en fin d'instruction                     |
 | `singleQuote` | `false` | Guillemets doubles pour les chaînes de caractères                  |
-| `tabWidth`    | `2`     | Indentation à 2 espaces                                             |
+| `tabWidth`    | `2`     | Indentation à 2 espaces                                            |
 | `endOfLine`   | `auto`  | Fin de ligne adaptée à l'OS (LF sur Linux/macOS, CRLF sur Windows) |
 
 `.prettierignore` exclut du formatage les fichiers qui n'ont pas à être touchés : `node_modules/`, `.next/`, et les fichiers Markdown (`README.md`, `STYLE.md`) pour éviter de reformater la documentation.
@@ -437,14 +437,14 @@ Les fichiers `.env` sont également exclus : les variables d'environnement sont 
 
 Ce fichier indique à Git quels fichiers ne pas versionner. Les catégories exclues :
 
-| Catégorie      | Fichiers / Dossiers                  | Raison                                                       |
-| --------------- | ------------------------------------ | ------------------------------------------------------------ |
-| Dépendances    | `node_modules/`                    | Recréées via `npm ci`, ne doivent pas être versionnées |
-| Build Next.js   | `.next/`, `out/`, `build/`     | Générés à la compilation, varient selon l'environnement  |
-| Variables d'env | `.env*`                            | Contiennent des secrets — ne jamais commiter                |
-| TypeScript      | `*.tsbuildinfo`, `next-env.d.ts` | Fichiers de cache et de types générés automatiquement     |
-| Logs            | `npm-debug.log*`, `yarn-*.log*`  | Fichiers de debug locaux                                     |
-| OS              | `.DS_Store`, `*.pem`             | Fichiers système macOS et certificats locaux                |
+| Catégorie       | Fichiers / Dossiers              | Raison                                                  |
+| --------------- | -------------------------------- | ------------------------------------------------------- |
+| Dépendances     | `node_modules/`                  | Recréées via `npm ci`, ne doivent pas être versionnées  |
+| Build Next.js   | `.next/`, `out/`, `build/`       | Générés à la compilation, varient selon l'environnement |
+| Variables d'env | `.env*`                          | Contiennent des secrets — ne jamais commiter            |
+| TypeScript      | `*.tsbuildinfo`, `next-env.d.ts` | Fichiers de cache et de types générés automatiquement   |
+| Logs            | `npm-debug.log*`, `yarn-*.log*`  | Fichiers de debug locaux                                |
+| OS              | `.DS_Store`, `*.pem`             | Fichiers système macOS et certificats locaux            |
 
 ---
 
@@ -642,13 +642,13 @@ Type générique pour les réponses de création : l'API retourne à la fois un 
 
 Tous les types suivent une convention de suffixe qui indique leur nature :
 
-| Suffixe             | Signification                                                                                                                            | Exemples                                   |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| `Item`            | Colonnes de la base de données retournées telles quelles par un `SELECT`                                                             | `ArtistItem`, `NewsItem`, `UserItem` |
-| `Response`        | Envelope retournée par un endpoint — peut contenir des données enrichies par le backend (jointures, calculs) en plus des colonnes BDD | `AdminAuthMeResponse`                    |
-| `Role`            | Union littérale de valeurs autorisées                                                                                                  | `UserRole`                               |
-| Préfixe `Home`   | Sous-ensemble d'une entité pour la page d'accueil                                                                                       | `HomeArtist`, `HomeNews`               |
-| `<T>` générique | Type paramétré réutilisable                                                                                                           | `CreateApiResponse<T>`                   |
+| Suffixe         | Signification                                                                                                                         | Exemples                             |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `Item`          | Colonnes de la base de données retournées telles quelles par un `SELECT`                                                              | `ArtistItem`, `NewsItem`, `UserItem` |
+| `Response`      | Envelope retournée par un endpoint — peut contenir des données enrichies par le backend (jointures, calculs) en plus des colonnes BDD | `AdminAuthMeResponse`                |
+| `Role`          | Union littérale de valeurs autorisées                                                                                                 | `UserRole`                           |
+| Préfixe `Home`  | Sous-ensemble d'une entité pour la page d'accueil                                                                                     | `HomeArtist`, `HomeNews`             |
+| `<T>` générique | Type paramétré réutilisable                                                                                                           | `CreateApiResponse<T>`               |
 
 **Composition plutôt que duplication**
 
@@ -755,17 +755,17 @@ C'est le fichier d'entrée du système de styles. Il remplit trois rôles distin
 
 **3. Classes composants** (`@layer components`) — toutes les classes CSS réutilisables de l'application. Organisées par catégorie via des commentaires :
 
-| Catégorie  | Classes                                                                                                                                                                                                |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Boutons     | `.btn-cta`, `.btn-action`, `.btn-type-2`                                                                                                                                                         |
-| Navigation  | `.nav-list`                                                                                                                                                                                          |
-| Formulaires | `.input`, `.form-modal`, `.form-grid`, `.error-message`, `.success-message`, `.upload-zone`, `.upload-btn`, `.submit-modal-area`                                                       |
-| Modales     | `.modal`, `.modal-overlay`                                                                                                                                                                         |
+| Catégorie   | Classes                                                                                                                                                                              |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Boutons     | `.btn-cta`, `.btn-action`, `.btn-type-2`                                                                                                                                             |
+| Navigation  | `.nav-list`                                                                                                                                                                          |
+| Formulaires | `.input`, `.form-modal`, `.form-grid`, `.error-message`, `.success-message`, `.upload-zone`, `.upload-btn`, `.submit-modal-area`                                                     |
+| Modales     | `.modal`, `.modal-overlay`                                                                                                                                                           |
 | Cartes      | `.card-row`, `.card-primary`, `.card-secondary`, `.card-profile`, `.card-profile-avatar`, `.card-profile-badge`, `.card-media-img`, `.card-artists-content`, `.card-artists-actions` |
-| Layout      | `.app-root`                                                                                                                                                                                          |
-| Pages       | `.title1`, `.title-modal`, `.admin-content-wrapper`, `.content-centered`, `.filter-row`, `.section-page`, `.detail-edit-area`                                                            |
-| Home        | `.home-section`, `.home-section-vh`, `.home-section-title`, `.home-cards`, `.home-card`, `.home-card-img`, `.home-card-content`                                                          |
-| Hero        | `.hero-slide-left`                                                                                                                                                                                   |
+| Layout      | `.app-root`                                                                                                                                                                          |
+| Pages       | `.title1`, `.title-modal`, `.admin-content-wrapper`, `.content-centered`, `.filter-row`, `.section-page`, `.detail-edit-area`                                                        |
+| Home        | `.home-section`, `.home-section-vh`, `.home-section-title`, `.home-cards`, `.home-card`, `.home-card-img`, `.home-card-content`                                                      |
+| Hero        | `.hero-slide-left`                                                                                                                                                                   |
 
 ---
 
@@ -773,14 +773,14 @@ C'est le fichier d'entrée du système de styles. Il remplit trois rôles distin
 
 Ce fichier déclare uniquement des `@keyframes` — aucune classe d'application directe. Les animations sont appliquées via des classes composants dans `globals.css` ou via des styles inline pour les cas ponctuels.
 
-| Keyframe                               | Usage                                         |
-| -------------------------------------- | --------------------------------------------- |
+| Keyframe                           | Usage                                        |
+| ---------------------------------- | -------------------------------------------- |
 | `marquee-left` / `marquee-right`   | Défilement horizontal du bandeau partenaires |
-| `line-reload`                        | Animation de la ligne dans `SectionCta`     |
-| `line-expand`                        | Animation de chargement dans `LoadingLine`  |
-| `slide-in-left` / `slide-in-right` | Entrée du texte hero depuis les côtés      |
-| `blur-in`                            | Apparition avec flou sur le hero              |
-| `scale-in`                           | Apparition avec zoom sur le hero              |
+| `line-reload`                      | Animation de la ligne dans `SectionCta`      |
+| `line-expand`                      | Animation de chargement dans `LoadingLine`   |
+| `slide-in-left` / `slide-in-right` | Entrée du texte hero depuis les côtés        |
+| `blur-in`                          | Apparition avec flou sur le hero             |
+| `scale-in`                         | Apparition avec zoom sur le hero             |
 
 ---
 
@@ -809,11 +809,11 @@ Toutes les valeurs CSS (couleurs, espacements, animations) passent par les token
 
 **Trois exceptions documentées :**
 
-| Exception                                        | Raison                                                                                                                                                                                                                                          |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `bg-transparent`                               | Transparence structurelle — utilisé dans `Banner.tsx` pour la navbar au scroll, pas de sémantique métier                                                                                                                                  |
-| `bg-white` / `text-black`                    | Utilisés directement dans les `.tsx` quand le fond blanc et le texte noir sont une intention visuelle explicite et non liée au thème — `HomeHero.tsx` (bandeaux de titre), `Navigation.tsx` (bouton logout), `ModalCloseButton.tsx` |
-| Valeurs Tailwind standard (`p-4`, `gap-6`…) | L'échelle d'espacement Tailwind s'utilise directement — un token `--ctx-*` n'est créé que si la valeur a une signification sémantique réutilisée dans 2+ endroits                                                                      |
+| Exception                                   | Raison                                                                                                                                                                                                                              |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bg-transparent`                            | Transparence structurelle — utilisé dans `Banner.tsx` pour la navbar au scroll, pas de sémantique métier                                                                                                                            |
+| `bg-white` / `text-black`                   | Utilisés directement dans les `.tsx` quand le fond blanc et le texte noir sont une intention visuelle explicite et non liée au thème — `HomeHero.tsx` (bandeaux de titre), `Navigation.tsx` (bouton logout), `ModalCloseButton.tsx` |
+| Valeurs Tailwind standard (`p-4`, `gap-6`…) | L'échelle d'espacement Tailwind s'utilise directement — un token `--ctx-*` n'est créé que si la valeur a une signification sémantique réutilisée dans 2+ endroits                                                                   |
 
 ---
 
@@ -827,11 +827,11 @@ Les fonctions de ce dossier n'ont pas d'état React : pas de hooks, pas de JSX. 
 
 `apiRequest` est la fonction de base qui effectue tous les appels API côté client. Elle n'est jamais appelée directement depuis un composant — elle est utilisée par des hooks dédiés selon le type d'opération :
 
-| Hook            | Type de requête   | Usage                                       |
-| --------------- | ------------------ | ------------------------------------------- |
-| `useFetch`    | `GET`            | Chargement de données (liste d'artistes…) |
-| `useMutation` | `POST` / `PUT` | Création et modification                   |
-| `useDelete`   | `DELETE`         | Suppression                                 |
+| Hook          | Type de requête | Usage                                     |
+| ------------- | --------------- | ----------------------------------------- |
+| `useFetch`    | `GET`           | Chargement de données (liste d'artistes…) |
+| `useMutation` | `POST` / `PUT`  | Création et modification                  |
+| `useDelete`   | `DELETE`        | Suppression                               |
 
 Chaque hook appelle `apiRequest` avec les options adaptées, ce qui centralise en un seul endroit la construction de la requête, la gestion des cookies et le traitement des erreurs. La fonction accepte deux paramètres :
 
@@ -887,13 +887,13 @@ Elle retourne `Promise<T | null>` : les données parsées en cas de succès, `nu
 
 #### Différences avec `apiRequest`
 
-|             | `apiRequest`                                | `fetchPublic`                                   |
-| ----------- | --------------------------------------------- | ------------------------------------------------- |
-| Contexte    | Côté client (navigateur)                    | Côté serveur (SSR, composants serveur)          |
-| URL de base | `NEXT_PUBLIC_API_URL` (`localhost:4000`)  | `API_URL_SERVER` (`backend:4000` dans Docker) |
-| Cookies     | `credentials: "include"`                    | Aucun — pas d'authentification                   |
-| Cache       | Aucune stratégie                             | ISR —`revalidate: 60` secondes                 |
-| Retour      | `ApiRequestResult<T>` (union discriminante) | `T \| null`                                      |
+|             | `apiRequest`                                | `fetchPublic`                                 |
+| ----------- | ------------------------------------------- | --------------------------------------------- |
+| Contexte    | Côté client (navigateur)                    | Côté serveur (SSR, composants serveur)        |
+| URL de base | `NEXT_PUBLIC_API_URL` (`localhost:4000`)    | `API_URL_SERVER` (`backend:4000` dans Docker) |
+| Cookies     | `credentials: "include"`                    | Aucun — pas d'authentification                |
+| Cache       | Aucune stratégie                            | ISR —`revalidate: 60` secondes                |
+| Retour      | `ApiRequestResult<T>` (union discriminante) | `T \| null`                                   |
 
 L'option `{ next: { revalidate: 60 } }` est spécifique à Next.js : elle indique au serveur de mettre la réponse en cache et de la revalider toutes les 60 secondes (ISR — Incremental Static Regeneration). La page d'accueil l'utilise pour afficher la programmation et les actualités sans interroger l'API à chaque visite.
 
@@ -913,13 +913,13 @@ La logique est en deux étapes :
 2. **Message par défaut** — si le corps de la réponse était vide, mal formé ou ne contenait pas de champ `error`, `extractApiErrorMessage` (dans `apiRequest`) a retourné `undefined` et `ApiRequestError` a reçu le fallback `"Erreur API"`. `getApiErrorMessage` détecte ce fallback et bascule sur le switch par statut HTTP pour retourner un message utile.
 
 | Status | Message retourné                              |
-| ------ | ---------------------------------------------- |
+| ------ | --------------------------------------------- |
 | 401    | "Session expirée, merci de vous reconnecter." |
-| 403    | "Accès refusé."                              |
-| 404    | "Ressource introuvable."                       |
+| 403    | "Accès refusé."                               |
+| 404    | "Ressource introuvable."                      |
 | 429    | "Trop de tentatives, réessayez plus tard."    |
 | 5xx    | "Erreur serveur, réessayez plus tard."        |
-| Autre  | "Une erreur est survenue."                     |
+| Autre  | "Une erreur est survenue."                    |
 
 Cette centralisation garantit que tous les messages d'erreur affichés dans l'interface passent par un seul endroit — aucun message brut de l'API n'atteint l'utilisateur sans passer par ce filtre.
 
@@ -1259,33 +1259,109 @@ Il utilise `useDelete` et affiche deux états distincts : pendant la requête, l
 
 ### 10.5. Composants fonctionnels
 
+Cette catégorie regroupe les composants qui n'affichent rien directement mais fournissent une infrastructure React — contexte, providers — aux composants qui les entourent.
+
 #### `AdminUserProvider.tsx`
 
-`AdminUserProvider` est un provider React qui expose les données de l'utilisateur admin (`AdminAuthMeResponse`) à tous ses enfants via le contexte React. Il est instancié dans `admin/layout.tsx` avec les données récupérées côté serveur via `/admin/auth/me`. N'importe quel composant enfant peut ensuite accéder à ces données via `useAdminUser()` sans avoir à les faire passer en props.
+`AdminUserProvider` est un provider React qui expose les données de l'utilisateur admin à tous les composants de l'espace admin via le contexte React. Il n'affiche rien — il encapsule ses enfants dans `AdminUserContext.Provider`.
+
+Il reçoit deux props : `value` — un `AdminAuthMeResponse` contenant les données utilisateur et le booléen `mustChangePassword` — et `children` — les composants enfants à envelopper. Il est instancié dans `admin/layout.tsx` avec les données récupérées côté serveur via `/admin/auth/me`.
+
+Le fichier exporte également `useAdminUser` — le hook de consommation du contexte. Il retourne `null` si appelé hors du provider (layouts public et auth), ce qui permet aux composants partagés comme `Banner` de s'en servir sans planter.
 
 ---
 
 ## 11. Structure des layouts et routage
 
+L'App Router de Next.js organise le routage par système de fichiers — chaque dossier dans `src/app/` correspond à un segment d'URL et peut définir son propre `layout.tsx`. Les layouts s'emboîtent : le layout racine englobe tout, les layouts enfants s'appliquent à leur sous-arbre uniquement.
+
+Le projet utilise trois **Route Groups** (dossiers entre parenthèses) pour appliquer des layouts et des thèmes distincts sans que le nom du dossier n'apparaisse dans l'URL :
+
+| Route Group | URL concernées                              | Layout appliqué                                          |
+| ----------- | ------------------------------------------- | -------------------------------------------------------- |
+| `(public)`  | `/`, `/artists`, `/news`, `/practical-info` | Thème visiteur +`Banner` + `Footer`                      |
+| `(auth)`    | `/login`                                    | Thème authentification                                   |
+| `admin`     | `/admin/*`                                  | Thème admin + protection de session +`AdminUserProvider` |
+
 ### 11.1. `src/app/layout.tsx` — racine
+
+Le layout racine est le seul point qui englobe toutes les pages de l'application. Il définit le squelette HTML commun : balise `<html lang="fr">`, `<body>`, et le `<div id="app-root">` utilisé par `ModalSetup` pour l'accessibilité de `react-modal`.
+
+Il configure trois éléments globaux :
+
+- **Police** — `Bebas_Neue` est chargée via `next/font/google` et exposée comme variable CSS `--font-display`. L'option `display: "swap"` évite le flash de texte invisible pendant le chargement.
+- **FontAwesome** — `config.autoAddCss = false` désactive l'injection automatique du CSS et les styles sont importés manuellement via `@fortawesome/fontawesome-svg-core/styles.css` pour éviter les flash de style.
+- **Métadonnées SEO** — `export const metadata` définit le titre et la description de l'application, repris par Next.js dans le `<head>`.
+
+`Banner`, `Footer` et les providers ne sont pas définis ici — ils sont délégués aux layouts de section pour que chaque zone de l'application puisse avoir sa propre structure.
 
 ### 11.2. `(public)/layout.tsx`
 
+Le layout public s'applique à toutes les pages visiteur : accueil, artistes, news, informations pratiques. C'est un composant serveur simple — il encapsule les pages dans `Banner`, `main` et `Footer`.
+
+Il applique le thème visiteur via `data-theme="visitor"` sur l'élément racine — l'attribut est lu par `globals.css` pour activer les tokens de couleur du thème public (`--color-bg`, `--color-text`…).
+
 ### 11.3. `(auth)/layout.tsx`
+
+Le layout auth s'applique aux pages de connexion (`/login`, `/forgot-password`). Sa structure est identique au layout public — `Banner`, `main`, `Footer` — mais il applique le thème admin via `data-theme="admin"` dès le rendu serveur. L'utilisateur voit donc l'interface aux couleurs de l'espace admin avant même de se connecter.
 
 ### 11.4. `admin/layout.tsx`
 
+Le layout admin est un composant serveur **asynchrone** — il exécute du code côté serveur avant de rendre quoi que ce soit. C'est le point d'entrée de la protection de la zone admin.
+
+Il effectue les étapes suivantes dans l'ordre :
+
+1. **Récupération des cookies** — `cookies()` de Next.js lit le cookie de session de la requête entrante côté serveur et le transmet manuellement dans le header `cookie` de la requête vers le backend.
+2. **Vérification de session** — `fetch` vers `/admin/auth/me` avec `cache: "no-store"` pour que la vérification soit faite à chaque requête sans mise en cache. Si `fetch` échoue (réseau, backend inaccessible) ou si la réponse n'est pas `ok`, `redirect("/login")` est appelé immédiatement — aucun contenu admin n'est rendu.
+3. **Injection des données** — si la session est valide, les données utilisateur (`AdminAuthMeResponse`) sont passées à `AdminUserProvider` qui les rend accessibles à tous les composants enfants via le contexte.
+
+Il applique également `data-theme="admin"` pour le thème et encapsule le contenu dans `Banner` et `Footer`.
+
+Ce `fetch` est intentionnellement différent de `fetchPublic` pour deux raisons : `fetchPublic` ne transmet pas les cookies (conçue pour les données publiques sans auth), et utilise `revalidate: 60` (ISR) — incompatible ici où la vérification doit être faite à chaque requête via `cache: "no-store"`.
+
 ### 11.5. Protection de la zone admin
 
+La protection de la zone admin fonctionne sur deux niveaux complémentaires :
+
+**Niveau 1 — Côté serveur (`admin/layout.tsx`)** — vérifie qu'une session valide existe avant de rendre quoi que ce soit. Si la session est absente ou invalide, `redirect("/login")` est appelé immédiatement côté serveur — aucun contenu admin n'est envoyé au navigateur. C'est le niveau le plus sûr.
+
+**Niveau 2 — Côté client (`useRoleGuard`)** — vérifie que le rôle de l'utilisateur lui permet d'accéder à la page spécifique. Le layout ne vérifie que l'existence d'une session, pas le rôle. `useRoleGuard` compare le `pathname` courant avec la configuration des routes dans `navAdminItem` et redirige vers `/admin/dashboard` si le rôle est insuffisant.
+
+Les deux niveaux sont nécessaires : le layout protège l'accès à la zone admin, `useRoleGuard` protège l'accès aux pages spécifiques à l'intérieur de cette zone.
+
 ### 11.6. Changement de thème entre layouts
+
+Le changement de thème entre les zones publique et admin repose sur l'attribut `data-theme` défini dans chaque layout :
+
+| Layout | `data-theme` | Tokens activés |
+| ------ | ------------ | -------------- |
+| `(public)/layout.tsx` | `"visitor"` | `--color-text-visitor`, `--color-bg-visitor` |
+| `(auth)/layout.tsx` | `"admin"` | `--color-text-admin`, `--color-bg-admin` |
+| `admin/layout.tsx` | `"admin"` | `--color-text-admin`, `--color-bg-admin` |
+
+Dans `globals.css`, les sélecteurs `[data-theme="admin"]` et `[data-theme="visitor"]` remappent les tokens `--color-text` et `--color-bg` vers les valeurs correspondantes. Tous les composants utilisent ces tokens — le changement de thème se propage automatiquement sans aucune logique JavaScript.
 
 ---
 
 ## 12. Pages de l'application
 
+Les pages sont des composants serveur par défaut dans l'App Router. Elles effectuent les appels API côté serveur via `fetchPublic` pour les pages publiques, ou directement avec `fetch` pour les pages admin. Les interactions dynamiques (filtres, modales, formulaires) sont déléguées à des composants client importés dans la page.
+
+Les routes dynamiques (`[id]`) utilisent le paramètre `params.id` pour charger les données spécifiques à l'entité demandée. Si les données ne sont pas trouvées (`fetchPublic` retourne `null`), la page appelle `notFound()` pour afficher la page 404 de Next.js.
+
 ### 12.1. Pages publiques
 
 #### `/` — Page d'accueil
+
+La page d'accueil charge ses données via `fetchPublic` sur `GET /public/home` — un endpoint qui agrège artistes et actualités en une seule requête. En cas d'échec, un fallback `{ artists: [], news: [] }` est utilisé pour éviter que la page ne plante.
+
+Elle est composée de cinq sections distinctes, chacune dans son propre composant local :
+
+- `HomeHero` — bandeau principal avec le visuel du festival
+- `HomeProgrammation` — aperçu de la programmation avec les artistes reçus
+- `HomeNews` — aperçu des actualités reçues
+- `HomeInfosPratiques` — informations pratiques statiques (lieu, dates…)
+- `HomePartenaires` — logos des partenaires
 
 #### `/artists` — Liste des artistes
 
