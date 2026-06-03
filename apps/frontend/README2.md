@@ -1426,6 +1426,8 @@ Elle affiche `ArtistDetailContent` avec `backPath="/admin/artists"` et `ArtistEd
 
 #### `/admin/news`
 
+Même structure que `/admin/artists` — composant client avec `useRoleGuard` en tête de composant. La différence principale : `activeFilter` est une `string` initialisée à `"Plus récent"` (pas `null`) car il y a toujours un tri actif. Un bouton `+` dans le `filter-row` ouvre la modale d'ajout via `useModal` — `isOpen` et `close` sont passés à `NewsContent` qui gère `AddNewsModal` en interne.
+
 #### `/admin/news/[id]`
 
 #### `/admin/users`
