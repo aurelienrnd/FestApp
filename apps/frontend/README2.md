@@ -1440,8 +1440,39 @@ Même structure que `/admin/artists` et `/admin/news` — composant client avec 
 
 ## 13. Tests
 
+Les tests sont organisés dans un dossier `tests/` à la racine du frontend, en dehors de `src/`. Ils couvrent les hooks, les composants et les fonctions utilitaires — soit 28 fichiers de test au total. La documentation détaillée de chaque test est disponible dans `tests/TEST.md`.
+
 ### 13.1. Stratégie de test
+
+Les tests sont organisés en trois couches :
+
+- **`hooks/`** — logique d'appel API isolée (`useFetch`, `useMutation`, `useDelete`, `useRoleGuard`). Testés avec `renderHook` sans composant.
+- **`components/`** — composants React : modales, pages, contenu. Testés avec `render` et `userEvent` pour simuler les interactions.
+- **`functions/`** — fonctions pures sans DOM (`formatDate`, `getApiErrorMessage`, `filterNavByRole`, `validation`). Testées avec Vitest seul sans jsdom.
+
+Les composants les plus complexes ont deux niveaux de test : le composant isolé (ex : `ArtistsContent.test.tsx`) et la page complète avec les filtres (ex : `ArtistsPage.test.tsx`) pour vérifier l'intégration.
 
 ### 13.2. Outils — Vitest, React Testing Library, jsdom
 
+| Outil | Rôle |
+| ----- | ---- |
+| Vitest | Framework de test — exécution, assertions, mocks (`vi.mock`, `vi.fn`) |
+| React Testing Library | Rendu des composants et queries orientées utilisateur (`getByText`, `getByRole`…) |
+| `@testing-library/user-event` | Simulation d'interactions clavier et souris |
+| `@testing-library/jest-dom` | Matchers DOM additionnels (`toBeInTheDocument`, `toBeDisabled`…) |
+| jsdom | Simulation du DOM navigateur dans Node.js |
+
+La configuration est dans `vitest.config.ts` — environnement `jsdom`, globals activés, `setup.ts` chargé avant chaque test pour initialiser `jest-dom`.
+
 ### 13.3. Ce qui est testé et ce qui ne l'est pas
+
+**Testé :**
+- Hooks d'API — les trois états (chargement, succès, erreur), les callbacks `onSuccess`, le `reset`
+- Composants interactifs — validation des formulaires, mises à jour optimistes, ouverture/fermeture des modales
+- Fonctions utilitaires pures — formatage de dates, messages d'erreur, filtrage de navigation, validation
+
+**Non testé :**
+- Les Server Components (`Home`, pages de détail publiques, `practical-info`) — incompatibles avec jsdom, ils utilisent `async/await` côté serveur
+- Les layouts — leur logique est couverte indirectement par les tests de composants
+
+Les blocs `vi.mock()` sont intentionnellement répétés dans chaque fichier de test — une contrainte technique de Vitest (hoisting) qui empêche de les extraire dans un fichier partagé. Les mocks systématiques incluent : `next/navigation`, `next/image`, `next/link`, `react-modal`, les hooks custom (`useFetch`, `useMutation`, `useDelete`) et les modales enfants complexes.
