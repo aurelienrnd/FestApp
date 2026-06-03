@@ -13,21 +13,24 @@ import { useRoleGuard } from "../../../hooks/useRoleGuard";
 /** Affiche la page d'administration des utilisateurs.
  * Affiche les filtres (sidebar + modal mobile) et la liste des utilisateurs.
  * Ouvre une modale permettant d'ajouter un utilisateur (formulaire).
+ * @function  useRoleGuard Redirige les utilisateurs non autorisés.
+ * @function useModal Gère l'état d'ouverture de la modale d'ajout d'utilisateur.
+ * @function filterUsersItems Liste des options de filtre pour les utilisateurs.
  * @children SideBarTool : Affiche une navigation sticky sur desktop
  * @children MobileFiltersButton : Affiche la navigation des filtres sur mobile
  * @children UsersContent : Affiche le contenu de la page utilisateurs
  */
 export default function Page() {
+  // Applique les restrictions de rôle pour accéder à cette page admin
   useRoleGuard();
 
+  // Gere l'ouverture et la fermeture de la modale d'ajout d'artiste et le filtre actif
   const { isOpen, open, close } = useModal();
-
-  // Etat du filtre utilisateurs (tout / admin / artists / news)
   const [userFilter, setUserFilter] = useState<
     "all" | "admin" | "artists" | "news"
   >("all");
 
-  //Determine quelle option est utilisé
+  // Mappe les items de filtre pour ajouter la logique d'activation et de clic
   const userFilterItems = filterUsersItems.map((item) => ({
     ...item, // On copie toutes les propriétés existantes de l'item
 

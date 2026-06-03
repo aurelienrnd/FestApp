@@ -1430,7 +1430,11 @@ Même structure que `/admin/artists` — composant client avec `useRoleGuard` en
 
 #### `/admin/news/[id]`
 
+Même structure que `/admin/artists/[id]` — composant client avec `useRoleGuard`, `useFetch` sur `GET /public/news/:id` et état `editedNews` pour mettre à jour l'affichage après édition sans recharger l'API. Un point notable : cette page permet de prévisualiser les brouillons — le backend retourne la news même si elle n'est pas publiée quand la requête porte le cookie d'un utilisateur privilégié.
+
 #### `/admin/users`
+
+Même structure que `/admin/artists` et `/admin/news` — composant client avec `useRoleGuard`, filtre via `useState` et bouton `+` pour ouvrir la modale d'ajout. La différence : `userFilter` est typé en union littérale `"all" | "admin" | "artists" | "news"` plutôt qu'une `string` libre — ce qui garantit que seules les valeurs valides peuvent être passées à `UsersContent`. Le filtre est initialisé à `"all"` pour afficher tous les utilisateurs par défaut.
 
 ---
 

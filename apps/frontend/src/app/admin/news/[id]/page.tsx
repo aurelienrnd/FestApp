@@ -7,6 +7,7 @@ import { useFetch } from "../../../../hooks/useFetch";
 import type { NewsItem } from "../../../../type";
 import NewsDetailContent from "../../../../components/NewsDetailContent";
 import NewsEditButton from "../NewsEditButton";
+import LoadingLine from "../../../../components/LoadingLine";
 
 /** Page admin de détail d'une news — permet la prévisualisation des brouillons.
  * Récupère la news via GET /public/news/:id avec les cookies d'auth.
@@ -22,7 +23,7 @@ export default function AdminNewsPage() {
   const [editedNews, setEditedNews] = useState<NewsItem | null>(null);
   const news = editedNews ?? data?.news ?? null;
 
-  if (isLoading) return null;
+  if (isLoading) return <LoadingLine />;
   if (error || !news) return <p className="content-centered">{error}</p>;
 
   return (
