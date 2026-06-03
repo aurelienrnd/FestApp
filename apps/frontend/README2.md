@@ -1418,6 +1418,12 @@ Même structure que `/artists` — composant client avec filtre par jour via `us
 
 #### `/admin/artists/[id]`
 
+Contrairement à `/artists/[id]` qui est serveur, cette page est un composant **client** — elle utilise `useFetch` pour charger l'artiste via `GET /public/artists/:id` et `useParams` pour récupérer l'`id` depuis l'URL.
+
+Elle maintient un état `editedArtist` — `null` tant que l'utilisateur n'a pas modifié l'artiste. La valeur affichée est `editedArtist ?? data?.artist` : après édition, l'artiste mis à jour est affiché immédiatement sans recharger l'API.
+
+Elle affiche `ArtistDetailContent` avec `backPath="/admin/artists"` et `ArtistEditButton` — un bouton flottant qui ouvre `AddArtistModal` en mode édition.
+
 #### `/admin/news`
 
 #### `/admin/news/[id]`

@@ -102,3 +102,4 @@ export default function DeleteModal<T extends { id: string }>({
       </div>
     </Modal>
   );
+}
