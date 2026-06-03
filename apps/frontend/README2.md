@@ -1414,6 +1414,8 @@ La page dashboard est un composant serveur minimal qui délègue tout à `Dashbo
 
 #### `/admin/artists`
 
+Même structure que `/artists` — composant client avec filtre par jour via `useState`. La différence principale : `useRoleGuard()` est appelé en tête de composant pour vérifier que le rôle de l'utilisateur lui permet d'accéder à cette page. Un bouton `+` dans le `filter-row` ouvre la modale d'ajout via `useModal` — `isOpen` et `close` sont passés à `ArtistsContent` qui gère `AddArtistModal` en interne.
+
 #### `/admin/artists/[id]`
 
 #### `/admin/news`

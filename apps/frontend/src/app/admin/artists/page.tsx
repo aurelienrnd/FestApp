@@ -14,6 +14,9 @@ import { useRoleGuard } from "../../../hooks/useRoleGuard";
  * Affiche les filtres et la liste des artistes.
  * Gere le filtre actif par jour et le transmet a ArtistsContent.
  * Ouvre une modale permettant d'ajouter un artiste.
+ * @function useRoleGuard : Verifie que l'utilisateur a les droits d'accès à la page admin
+ * @function useModal : Gere l'ouverture et la fermeture de la modale d'ajout d'artiste
+ * @function filterArtistsItems : Liste des items de filtre pour les artistes
  * @children SideBarTool : Affiche une navigation sticky sur desktop
  * @children MobileFiltersButton : Affiche la navigation des filtres sur mobile
  * @children ArtistsContent : Affiche le contenu de la page artistes filtree
@@ -22,6 +25,7 @@ export default function Page() {
   // Verifie que l'utilisateur a les droits d'accès à la page admin
   useRoleGuard();
 
+  // Gere l'ouverture et la fermeture de la modale d'ajout d'artiste et le filtre actif
   const { isOpen, open, close } = useModal();
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
