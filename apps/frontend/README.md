@@ -116,6 +116,7 @@ apps/frontend/
 │   │   ├── globals.css               # Classes composants (@layer components)
 │   │   ├── tokens.css                # Design tokens CSS (couleurs, typographie, espacements)
 │   │   ├── animations.css            # Keyframes et classes d'animation
+│   │   ├── not-found.tsx             # Routage page erreur 404
 │   │   │
 │   │   ├── (public)/                 # Route Group — thème visiteur
 │   │   │   ├── layout.tsx            # Layout public : Banner + Footer (thème visitor)
@@ -1516,6 +1517,12 @@ Même structure que `/admin/artists/[id]` — composant client avec `useRoleGuar
 #### `/admin/users`
 
 Même structure que `/admin/artists` et `/admin/news` — composant client avec `useRoleGuard`, filtre via `useState` et bouton `+` pour ouvrir la modale d'ajout. La différence : `userFilter` est typé en union littérale `"all" | "admin" | "artists" | "news"` plutôt qu'une `string` libre — ce qui garantit que seules les valeurs valides peuvent être passées à `UsersContent`. Le filtre est initialisé à `"all"` pour afficher tous les utilisateurs par défaut.
+
+### 12.4. Page 404
+
+#### `not-found.tsx`
+
+Composant serveur placé à la racine de `app/` — Next.js l'utilise automatiquement pour toutes les routes inconnues et chaque fois que `notFound()` est appelé dans le code (pages artiste ou news inexistants). Le thème visiteur (`data-theme="visitor"`) est appliqué manuellement car ce fichier est en dehors du layout `(public)` et n'en hérite pas. Affiche le code `404` en rouge, un message explicite et un lien de retour vers l'accueil.
 
 ---
 
