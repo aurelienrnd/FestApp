@@ -15,7 +15,6 @@ type AddUserModalProps = {
   userToEdit?: UserItem | null;
 };
 
-
 /** Verifie si le formulaire d'ajout utilisateur est incomplet.
  * Retourne `true` si au moins un champ requis est vide.
  * @param {string} firstName Champ prenom
@@ -30,8 +29,10 @@ function isAddUserFormInvalid(
   role: string,
 ) {
   return (
-    firstName.trim().length < 2 || isMaxLength(firstName, 30) ||
-    lastName.trim().length < 2 || isMaxLength(lastName, 30) ||
+    firstName.trim().length < 2 ||
+    isMaxLength(firstName, 30) ||
+    lastName.trim().length < 2 ||
+    isMaxLength(lastName, 30) ||
     !isEmail(email) ||
     isEmpty(role)
   );
@@ -53,6 +54,7 @@ export default function AddUserModal({
   handleUserSaved,
   userToEdit = null,
 }: AddUserModalProps) {
+  // Determine si la modale est en mode ajout ou modification
   const isEditMode = userToEdit !== null;
 
   // Initialise les champs depuis userToEdit en mode modification, vide en mode creation
@@ -65,15 +67,18 @@ export default function AddUserModal({
   const [email, setEmail] = useState(userToEdit?.email ?? "");
   const [role, setRole] = useState(userToEdit?.role ?? "");
 
-  const { mutate, isLoading, error, reset } = useMutation<CreateApiResponse<{ user: UserItem }>>(
+  // initialise la requete a effectuer en fonction du mode (ajout ou modification)
+  const { mutate, isLoading, error, reset } = useMutation<
+    CreateApiResponse<{ user: UserItem }>
+  >(
     isEditMode ? `/admin/users/${userToEdit!.id}` : "/admin/users",
     isEditMode ? "PATCH" : "POST",
   );
 
-
   // Verifie si le formulaire d'ajout utilisateur est incomplet.
   const isFormInvalid = isAddUserFormInvalid(firstName, lastName, email, role);
 
+  //Reinitialise le formulaire a son etat initial
   const resetForm = () => {
     const name = userToEdit?.display_name?.trim() ?? "";
     const [first, ...rest] = name.split(/\s+/);
@@ -83,16 +88,21 @@ export default function AddUserModal({
     setRole(userToEdit?.role ?? "");
   };
 
+  // Gere la soumission du formulaire d'ajout d'artiste
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isFormInvalid) return;
 
-    mutate({ email, first_name: firstName, last_name: lastName, role }, (data) => {
-      resetForm();
-      handleUserSaved(data.user);
-    });
+    mutate(
+      { email, first_name: firstName, last_name: lastName, role },
+      (data) => {
+        resetForm();
+        handleUserSaved(data.user);
+      },
+    );
   };
 
+  // Ferme la modale et reinitialise le formulaire
   const handleClose = () => {
     reset();
     resetForm();
@@ -183,7 +193,9 @@ export default function AddUserModal({
                 </option>
 
                 {USER_ROLES.map((r) => (
-                  <option key={r.value} value={r.value}>{r.label}</option>
+                  <option key={r.value} value={r.value}>
+                    {r.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -198,9 +210,7 @@ export default function AddUserModal({
               {isEditMode ? "Modifier" : "Ajouter"}
             </button>
           </div>
-          {error ? (
-            <p className="error-message">{error}</p>
-          ) : null}
+          {error ? <p className="error-message">{error}</p> : null}
         </form>
       </div>
     </Modal>

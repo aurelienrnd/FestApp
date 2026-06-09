@@ -29,10 +29,11 @@ export default function UsersContent({
   onCloseAddModal?: () => void;
   filterBy?: "all" | "admin" | "artists" | "news";
 }) {
-  // Navigation et contexte utilisateur
+  // Verifie si le chemin d'acces contient "/admin" pour afficher ou non les boutons
   const router = useRouter();
   const currentUser = useAdminUser();
 
+  // Recupere les artistes depuis l'API et gere les etats loading/error
   const { data, isLoading, error } = useFetch<{ users: UserItem[] }>(
     "/admin/users",
   );
@@ -42,6 +43,7 @@ export default function UsersContent({
   const [overrides, setOverrides] = useState<Map<string, UserItem>>(new Map());
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
+  // Gere l'ouverture et la fermeture de la modale de suppression d'utilisateur
   const {
     isOpen: isDeleteModalOpen,
     item: selectedUserToDelete,
@@ -49,6 +51,7 @@ export default function UsersContent({
     close: closeDeleteModal,
   } = useModal<UserItem>();
 
+  // Gere l'ouverture et la fermeture de la modale d'edition d'utilisateur
   const {
     isOpen: isEditModalOpen,
     item: userToEdit,
@@ -56,6 +59,7 @@ export default function UsersContent({
     close: closeEditModal,
   } = useModal<UserItem>();
 
+  // Ajoute l'id de l'artiste supprime a la liste des ids supprimes pour le filtrage
   const handleUserSavedDeleted = (userId: string) => {
     if (userId === currentUser?.user.id) {
       router.push("/login");
@@ -64,22 +68,31 @@ export default function UsersContent({
     setDeletedIds((current) => new Set([...current, userId]));
   };
 
+  // Ajoute ou remplace un utilisateur dans la liste des utilisateurs affiches selon s'il existait deja ou pas
   const upsertUser = (savedUser: UserItem) => {
+    //Verifie si l'utilisateur a etait modifier ou ajouter
     const existsInBase = baseUsers.some((u) => u.id === savedUser.id);
     const existsInAdded = addedUsers.some((u) => u.id === savedUser.id);
 
+    // Si l'utilisateur existait deja dans la base, on ajoute une override pour le remplacer par le nouvel utilisateur modifie
     if (existsInBase) {
-      setOverrides((current) => new Map([...current, [savedUser.id, savedUser]]));
-    } else if (existsInAdded) {
+      setOverrides(
+        (current) => new Map([...current, [savedUser.id, savedUser]]),
+      );
+    }
+    // si lutilisateur a etait ajouter dans la session
+    else if (existsInAdded) {
       setAddedUsers((current) =>
         current.map((u) => (u.id === savedUser.id ? savedUser : u)),
       );
-    } else {
+    }
+    // Sinon, on ajoute le nouvel utilisateur a la liste des utilisateurs ajoutes
+    else {
       setAddedUsers((current) => [...current, savedUser]);
     }
   };
 
-  // Ferme la modale (ajout ou edition) et reinitialise l'utilisateur selectionne
+  // Ferme la modale et reinitialise l'utilisateur selectionne
   const closeUserModal = () => {
     closeEditModal();
     onCloseAddModal();
@@ -91,6 +104,7 @@ export default function UsersContent({
     closeUserModal();
   };
 
+  // filtrage des utilisateurs a afficher
   const filteredUsers = useMemo(() => {
     const merged = [
       ...baseUsers
@@ -98,7 +112,9 @@ export default function UsersContent({
         .map((u) => overrides.get(u.id) ?? u),
       ...addedUsers.filter((u) => !deletedIds.has(u.id)),
     ];
-    return filterBy === "all" ? merged : merged.filter((u) => u.role === filterBy);
+    return filterBy === "all"
+      ? merged
+      : merged.filter((u) => u.role === filterBy);
   }, [baseUsers, addedUsers, overrides, deletedIds, filterBy]);
 
   return (
