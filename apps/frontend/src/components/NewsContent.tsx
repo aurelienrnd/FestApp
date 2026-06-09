@@ -94,7 +94,7 @@ export default function NewsContent({
         {isLoading ? (
           <LoadingLine />
         ) : error ? (
-          <p className="error-message">{error}</p>
+          <p className="error-message overlay-centered">{error}</p>
         ) : filteredNews.length === 0 ? (
           <div className="content-centered">
             <p>Aucune news.</p>

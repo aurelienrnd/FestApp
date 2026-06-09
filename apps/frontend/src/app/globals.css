@@ -120,6 +120,9 @@
   .content-centered {
     @apply flex h-full justify-center items-center;
   }
+  .overlay-centered {
+    @apply flex flex-col items-center gap-4 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-75;
+  }
   .filter-row {
     @apply flex justify-center items-center gap-6;
   }

@@ -100,7 +100,9 @@ export default function ArtistsContent({
         {isLoading ? (
           <LoadingLine />
         ) : error ? (
-          <p className="error-message">{error}</p>
+          <p className="error-message overlay-centered">
+            {error}
+          </p>
         ) : filteredArtists.length === 0 ? (
           <div className="content-centered">
             <p>Aucun artiste.</p>
