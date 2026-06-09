@@ -40,15 +40,15 @@ export default function NewsDetailContent({
         </span>
       </div>
 
-      {news.content && (
-        <div className="max-w-3xl mx-auto px-6 md:px-10 py-10 md:py-16">
+      <div className="max-w-3xl mx-auto px-6 md:px-10 py-10 md:py-16">
+        {news.content && (
           <div className="leading-relaxed space-y-6 text-base md:text-lg">
             {news.content.split("\n").map((paragraph, i) =>
               paragraph.trim() ? <p key={i}>{paragraph}</p> : null,
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
