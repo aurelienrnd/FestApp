@@ -46,7 +46,7 @@ export default function NewsContent({
     "/public/news",
   );
 
-  const baseNews = useMemo(() => data?.news ?? [], [data]);
+  const baseNews = data?.news ?? [];
   const [addedNews, setAddedNews] = useState<NewsSummary[]>([]);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
@@ -73,7 +73,7 @@ export default function NewsContent({
   const filteredNews = useMemo(() => {
     // Fusionne les news de base, les news ajoutées et filtre les news supprimées
     const merged = [
-      ...addedNews,
+      ...addedNews.filter((news) => !deletedIds.has(news.id)),
       ...baseNews.filter((news) => !deletedIds.has(news.id)),
     ];
 

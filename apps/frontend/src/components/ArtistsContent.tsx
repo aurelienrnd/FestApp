@@ -48,7 +48,7 @@ export default function ArtistsContent({
     "/public/artists",
   );
 
-  const baseArtists = useMemo(() => data?.artists ?? [], [data]);
+  const baseArtists = data?.artists ?? [];
   const [addedArtists, setAddedArtists] = useState<ArtistSummary[]>([]);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
@@ -82,7 +82,7 @@ export default function ArtistsContent({
   const filteredArtists = useMemo(() => {
     // Fusionne les artistes de base, les artistes ajoutes et filtre les artistes supprimes
     const merged = [
-      ...addedArtists,
+      ...addedArtists.filter((a) => !deletedIds.has(a.id)),
       ...baseArtists.filter((a) => !deletedIds.has(a.id)),
     ];
 
