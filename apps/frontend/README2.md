@@ -1271,6 +1271,83 @@ Il reçoit deux props : `value` — un `AdminAuthMeResponse` contenant les donn�
 
 Le fichier exporte également `useAdminUser` — le hook de consommation du contexte. Il retourne `null` si appelé hors du provider (layouts public et auth), ce qui permet aux composants partagés comme `Banner` de s'en servir sans planter.
 
+### 10.6. Composants co-localisés dans `app/`
+
+Ces composants ne sont utilisés que par une seule page. Ils sont placés directement dans le dossier de la page qui les consomme plutôt que dans `src/components/` — un composant ne remonte dans `components/` que s'il est partagé entre deux pages ou plus.
+
+#### Composants de la page d'accueil — `app/(public)/`
+
+La page d'accueil est découpée en cinq composants distincts, chacun responsable d'une section. Ils reçoivent leurs données en props depuis `(public)/page.tsx` (composant serveur ISR) — aucun n'effectue de requête API directement.
+
+**`HomeHero.tsx`**
+
+Section héro pleine page. Affiche les dates du festival issues de `FESTIVAL_DAYS` formatées en français majuscules via une fonction locale `formatFestivalDate`, un visuel de fond (`hero_bg.webp`), le logo du festival et le bouton de billetterie pointant vers `TICKETING_URL`. Les textes entrent en scène via les animations `slide-in-left` et `slide-in-right` définies dans `animations.css`. Aucune prop — toutes les données proviennent des constantes de `festival.ts`.
+
+**`HomeProgrammation.tsx`**
+
+Section d'aperçu de la programmation. Reçoit un tableau `HomeArtist[]` en prop et affiche les deux premiers artistes avec nom, date, heure et scène. Si le tableau est vide, le composant ne rend rien (`null`). Un `SectionCta` renvoyant vers `/artists` est affiché en bas de section.
+
+**`HomeNews.tsx`**
+
+Section d'aperçu des actualités. Reçoit un tableau `HomeNews[]` en prop et affiche les deux premières actualités avec image, titre et date. Si le tableau est vide, le composant ne rend rien. Un `SectionCta` renvoyant vers `/news` est affiché en bas de section.
+
+**`HomeInfosPratiques.tsx`**
+
+Section statique sans prop — toutes les données viennent de `FESTIVAL_LOCATION` (`festival.ts`). Affiche l'adresse du festival et une iframe Google Maps chargée en `loading="lazy"`. Les SVGs décoratifs portent `aria-hidden="true"` pour être ignorés par les lecteurs d'écran.
+
+**`HomePartenaires.tsx`**
+
+Section de défilement des logos partenaires. Affiche 23 logos `.webp` répartis en deux rangées animées en sens opposé — `marquee-left` pour la première, `marquee-right` pour la seconde. Aucune prop, aucune donnée API — les chemins d'images sont générés par une boucle locale.
+
+---
+
+#### Composants du dashboard — `app/admin/dashboard/`
+
+**`DashboardContent.tsx`**
+
+Composant client qui constitue le corps de la page `/admin/dashboard`. Accède aux données de l'utilisateur connecté via `useAdminUser`.
+
+Il affiche deux zones :
+- **Carte profil** — nom d'affichage, rôle, email et bouton d'ouverture de `ChangePasswordModal`. Si `mustChangePassword` est `true`, `useModal` est initialisé avec `initialOpen: true` pour ouvrir la modale automatiquement au montage.
+- **Grille** — compte à rebours jusqu'au premier jour du festival via `getDaysUntil(FESTIVAL_DAYS[0])`, adresse depuis `FESTIVAL_LOCATION`, et raccourcis vers les sections admin filtrés par rôle via `filterNavByRole`.
+
+À la fermeture de la modale, `router.refresh()` est appelé si `mustChangePassword` était `true` — cela force Next.js à relancer le fetch vers `/admin/auth/me` pour récupérer la nouvelle valeur `mustChangePassword: false`.
+
+**`ChangePasswordModal.tsx`**
+
+Modale de changement de mot de passe. Contient trois champs : ancien mot de passe, nouveau mot de passe et confirmation. Envoie un `PATCH /admin/auth/password` via `useMutation`. La validation côté client bloque l'envoi si les deux nouveaux mots de passe ne correspondent pas ou si un champ est vide.
+
+---
+
+#### Composants des pages de détail admin — `app/admin/artists/` et `app/admin/news/`
+
+**`ArtistEditButton.tsx`**
+
+Bouton "Modifier" affiché sur la page `/admin/artists/[id]`. Gère localement un `useModal` et un `editKey` — la clé est incrémentée à chaque ouverture pour forcer le remontage de `AddArtistModal` et réinitialiser le formulaire. Reçoit l'`artist` à modifier et un callback `onArtistEdited` appelé avec l'artiste mis à jour, que la page parent utilise pour mettre à jour l'affichage sans recharger l'API.
+
+**`NewsEditButton.tsx`**
+
+Même structure qu'`ArtistEditButton`, adapté aux news. Reçoit une `news` et un callback `onNewsEdited`. Ouvre `AddNewsModal` en mode édition avec les champs pré-remplis.
+
+---
+
+#### Composants de la page utilisateurs — `app/admin/users/`
+
+**`UsersContent.tsx`**
+
+Composant client qui constitue le corps de la page `/admin/users`. Charge la liste via `useFetch` sur `GET /admin/users` et applique le filtre par rôle (`filterBy`) côté client via `useMemo`.
+
+Maintient trois états locaux pour éviter les rechargements d'API après mutation :
+- `addedUsers` — utilisateurs créés en session, ajoutés en tête de liste
+- `overrides` — map `id → UserItem` des utilisateurs modifiés, remplacés dans la liste fusionnée
+- `deletedIds` — set des ids supprimés, filtrés de la liste
+
+Cas particulier : si l'administrateur supprime son propre compte, `router.push("/login")` est appelé immédiatement. Orchestre l'ouverture d'`AddUserModal` en mode création (via props de la page parente) et en mode édition (via un `useModal` local).
+
+**`AddUserModal.tsx`**
+
+Modale de création et modification d'utilisateur. Le mode est détecté via la prop `userToEdit` — `null` pour une création, une `UserItem` pour une édition. Contient quatre champs : prénom, nom, email et rôle (sélecteur depuis `USER_ROLES`). Le `display_name` envoyé au backend est construit en concaténant prénom et nom. En création : `POST /admin/users` — le backend génère un mot de passe temporaire et envoie un email de bienvenue. En modification : `PATCH /admin/users/:id`. Les données sont transmises en JSON via `useMutation` et la réponse est retournée au parent via `onUserSaved`.
+
 ---
 
 ## 11. Structure des layouts et routage

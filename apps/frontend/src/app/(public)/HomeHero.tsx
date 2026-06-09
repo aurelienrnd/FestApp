@@ -17,6 +17,7 @@ function formatFestivalDate(isoDate: string): string {
 
 /** Affiche la section hero de la page d'accueil — logo centré, dates du festival, bouton billetterie et lieu.
  * Composant serveur — dates dérivées de FESTIVAL_DAYS.
+ * @function formatFestivalDate Formate une date ISO en "SAMEDI 23 AOÛT" en français majuscule.
  */
 export default function HomeHero() {
   // Les dates du festival sont dérivées dynamiquement depuis FESTIVAL_DAYS, source de vérité unique pour les dates.

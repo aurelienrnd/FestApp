@@ -11,13 +11,17 @@ import { formatDateLong } from "../../../functions/formatDate";
 
 /** Retourne le nombre de jours restants avant une date ISO.
  * @param dateStr - La date cible au format ISO (YYYY-MM-DD).
- * @return Le nombre de jours restants avant la date cible. Si la date est passée, retourne 0.
  */
 function getDaysUntil(dateStr: string): number {
+  // On initialise la date du jour a minuit pour eviter les problemes de decalage horaire et de fuseau horaire
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+
+  // on initialise la date cible a minuit pour les memes raisons
   const target = new Date(dateStr);
   target.setHours(0, 0, 0, 0);
+
+  // On calcule la difference en millisecondes entre la date cible et aujourd'hui, puis on convertit en jours
   return Math.ceil(
     (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
   );
@@ -33,7 +37,6 @@ function getDaysUntil(dateStr: string): number {
  * @function formatDateLong - Formate les dates du festival dans un format lisible.
  * @function useAdminUser - Recupere les informations de l'utilisateur administrateur connecte.
  * @children ChangePasswordModal - La modale de changement de mot de passe, qui s'affiche en fonction de l'etat isChangePasswordModalOpen.
- * @hildren Liens d'acces rapide - Affiche les liens d'acces rapide disponibles pour le role de l'utilisateur, avec une description pour chacun.
  */
 export default function DashboardContent() {
   //Recuperation de l'utilisateur admin et gestion de la modale de changement de mot de passe
@@ -57,7 +60,7 @@ export default function DashboardContent() {
     if (mustChangePassword) router.refresh();
   };
 
-  //LINK - Calcule le nombre de jours restants avant le debut du festival et filtre les liens d'acces rapide en fonction du role de l'utilisateur
+  //Calcule le nombre de jours restants avant le debut du festival et filtre les liens d'acces rapide en fonction du role de l'utilisateur
   const daysLeft = getDaysUntil(FESTIVAL_DAYS[0]);
   const accessibleLinks = filterNavByRole(navAdminQuickLinks, user.role);
 

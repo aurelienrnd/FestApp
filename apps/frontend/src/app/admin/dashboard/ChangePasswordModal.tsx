@@ -34,14 +34,18 @@ export default function ChangePasswordModal({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  // pour stocker les erreurs de validation locale repetion des mots de passe
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  // Initialisation de la requete
   const {
     mutate,
     isLoading,
     error: apiError,
     reset,
   } = useMutation<ApiMessageResponse>("/admin/auth/password", "PATCH");
-  // Erreur de validation locale (confirmation de mot de passe) — distincte de l'erreur API
-  const [localError, setLocalError] = useState<string | null>(null);
+
+  // on ajoute les erreurs de validation locale et d'API dans une seule variable pour l'affichage
   const error = localError ?? apiError;
   const [success, setSuccess] = useState(false);
 
@@ -61,8 +65,9 @@ export default function ChangePasswordModal({
       setLocalError("Les nouveaux mots de passe ne correspondent pas.");
       return;
     }
-
     setLocalError(null);
+
+    //Fait un appel API pour changer le mot de passe
     mutate({ password: oldPassword, newPassword }, () => setSuccess(true));
   };
 

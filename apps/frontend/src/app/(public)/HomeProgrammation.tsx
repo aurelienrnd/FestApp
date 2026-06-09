@@ -5,6 +5,7 @@ import { formatConcertDatetime } from "../../functions/formatDate";
 
 /** Affiche la section programmation de la page d'accueil — 2 artistes les plus récents.
  * @param {HomeArtist[]} props.artists Liste des artistes à afficher.
+ * @children SectionCta pour voir la page complète de la programmation.
  */
 export default function HomeProgrammation({
   artists,

@@ -45,12 +45,20 @@ const PARTNERS_ROW_2 = [
 function PartnerLogo({ name, logo }: { name: string; logo: string }) {
   return (
     <div className="relative h-16 w-28 shrink-0">
-      <Image src={logo} alt={name} fill sizes="112px" className="object-contain" />
+      <Image
+        src={logo}
+        alt={name}
+        fill
+        sizes="112px"
+        className="object-contain"
+      />
     </div>
   );
 }
 
-/** Affiche la section partenaires — deux rangées en défilement infini opposé. */
+/** Affiche la section partenaires — deux rangées en défilement infini opposé.
+ * @children PartnerLogo Affiche un logo partenaire.
+ */
 export default function HomePartenaires() {
   return (
     <section className="home-section">

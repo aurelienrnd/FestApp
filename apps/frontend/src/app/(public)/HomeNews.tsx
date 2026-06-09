@@ -4,6 +4,7 @@ import SectionCta from "../../components/SectionCta";
 
 /** Affiche la section news de la page d'accueil — 2 dernières news publiées.
  * @param {HomeNewsItem[]} props.newsList Liste des news à afficher.
+ * @children SectionCta avec lien vers la page news.
  */
 export default function HomeNews({ newsList }: { newsList: HomeNewsItem[] }) {
   // si aucune news n'est publiée, on n'affiche pas la section
