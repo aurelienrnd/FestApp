@@ -38,7 +38,7 @@ export default function UsersContent({
     "/admin/users",
   );
 
-  const baseUsers = data?.users ?? [];
+  const baseUsers = useMemo(() => data?.users ?? [], [data]);
   const [addedUsers, setAddedUsers] = useState<UserItem[]>([]);
   const [overrides, setOverrides] = useState<Map<string, UserItem>>(new Map());
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());

@@ -46,7 +46,6 @@ export default function NewsContent({
     "/public/news",
   );
 
-  const baseNews = data?.news ?? [];
   const [addedNews, setAddedNews] = useState<NewsSummary[]>([]);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
@@ -71,6 +70,7 @@ export default function NewsContent({
 
   // Filtrage des news à afficher
   const filteredNews = useMemo(() => {
+    const baseNews = data?.news ?? [];
     // Fusionne les news de base, les news ajoutées et filtre les news supprimées
     const merged = [
       ...addedNews.filter((news) => !deletedIds.has(news.id)),
@@ -86,7 +86,7 @@ export default function NewsContent({
     return activeFilter === "Plus ancien"
       ? [...published].reverse()
       : published;
-  }, [baseNews, addedNews, deletedIds, activeFilter, isAdminPath]);
+  }, [data, addedNews, deletedIds, activeFilter, isAdminPath]);
 
   return (
     <div className="admin-content-wrapper">

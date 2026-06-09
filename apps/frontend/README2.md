@@ -1160,7 +1160,7 @@ Il reçoit deux props : `items` — la liste des liens à afficher dans la sideb
 
 `ArtistsContent` est le composant d'affichage de la liste des artistes. Il est partagé entre la page publique (`/artists`) et l'admin (`/admin/artists`) — `useNavPath` lui permet de détecter le contexte pour adapter les liens et afficher les boutons d'ajout et de suppression uniquement en admin.
 
-Les données sont chargées via `useFetch` sur `/public/artists`. Le composant maintient deux états locaux pour gérer les modifications sans recharger l'API : `addedArtists` (artistes ajoutés en session) et `deletedIds` (ids supprimés en session). La liste affichée est recalculée via `useMemo` en fusionnant `addedArtists` et `baseArtists` — les deux sont filtrés par `deletedIds` pour exclure les éléments supprimés en session —, en appliquant le filtre par jour (`activeFilter`) et en triant par heure de passage. `useMemo` évite de recalculer cette liste à chaque re-render — par exemple quand `isDeleteModalOpen` change, le composant se re-render mais la liste n'est pas recalculée car ses dépendances n'ont pas changé.
+Les données sont chargées via `useFetch` sur `/public/artists`. Le composant maintient deux états locaux pour gérer les modifications sans recharger l'API : `addedArtists` (artistes ajoutés en session) et `deletedIds` (ids supprimés en session). La liste affichée est recalculée via `useMemo` — `baseArtists` y est dérivé de `data` puis fusionné avec `addedArtists`, les deux filtrés par `deletedIds` pour exclure les éléments supprimés en session — en appliquant le filtre par jour (`activeFilter`) et en triant par heure de passage. `useMemo` évite de recalculer cette liste à chaque re-render — par exemple quand `isDeleteModalOpen` change, le composant se re-render mais la liste n'est pas recalculée car ses dépendances n'ont pas changé.
 
 Il utilise deux modales : `AddArtistModal`, dédié uniquement à la création d'artiste et non partagé avec d'autres composants, et `DeleteModal`, un composant générique partagé entre artistes, news et utilisateurs.
 
@@ -1168,7 +1168,7 @@ Il utilise deux modales : `AddArtistModal`, dédié uniquement à la création d
 
 `NewsContent` est le composant d'affichage de la liste des actualités. Il est partagé entre la page publique (`/news`) et l'admin (`/admin/news`) — `useNavPath` lui permet de détecter le contexte pour afficher le badge "Brouillon" sur les news non publiées et les boutons de suppression uniquement en admin. En vue publique, les news non publiées sont filtrées côté client et ne sont jamais affichées.
 
-Les données sont chargées via `useFetch` sur `/public/news`. Comme `ArtistsContent`, il maintient deux états locaux — `addedNews` et `deletedIds` — pour gérer les modifications sans recharger l'API. La liste affichée est recalculée via `useMemo` en fusionnant `addedNews` et `baseNews` — les deux sont filtrés par `deletedIds` pour exclure les éléments supprimés en session — et en appliquant le tri selon `activeFilter` — `"Plus ancien"` inverse l'ordre, `null` conserve l'ordre DESC retourné par l'API.
+Les données sont chargées via `useFetch` sur `/public/news`. Comme `ArtistsContent`, il maintient deux états locaux — `addedNews` et `deletedIds` — pour gérer les modifications sans recharger l'API. La liste affichée est recalculée via `useMemo` — `baseNews` y est dérivé de `data` puis fusionné avec `addedNews`, les deux filtrés par `deletedIds` pour exclure les éléments supprimés en session — et en appliquant le tri selon `activeFilter` — `"Plus ancien"` inverse l'ordre, `null` conserve l'ordre DESC retourné par l'API.
 
 Il utilise deux modales : `AddNewsModal`, dédié uniquement à la création et modification de news, et `DeleteModal`, le composant générique partagé entre artistes, news et utilisateurs.
 
@@ -1337,6 +1337,8 @@ Même structure qu'`ArtistEditButton`, adapté aux news. Reçoit une `news` et u
 **`UsersContent.tsx`**
 
 Composant client qui constitue le corps de la page `/admin/users`. Charge la liste via `useFetch` sur `GET /admin/users` et applique le filtre par rôle (`filterBy`) côté client via `useMemo`.
+
+`baseUsers` est dérivé de `data` dans son propre `useMemo([data])` — contrairement à `ArtistsContent` et `NewsContent` où `baseArtists`/`baseNews` sont dérivés directement à l'intérieur du `useMemo` de la liste filtrée, ici `baseUsers` est aussi utilisé dans `upsertUser` pour détecter l'origine d'un utilisateur modifié. Il doit donc être stable au niveau du composant.
 
 Maintient trois états locaux pour éviter les rechargements d'API après mutation :
 
