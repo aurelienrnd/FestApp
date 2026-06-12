@@ -26,7 +26,10 @@ const envSchema = z.object({
  * Lance une erreur et arrete le processus si une variable est manquante ou invalide.
  */
 export function validateEnv() {
+  // valide les variables d'environnement et recupere les erreurs s'il y en a
   const result = envSchema.safeParse(process.env);
+
+  // si la validation echoue, on recupere les noms des variables manquantes ou invalides et on lance une erreur
   if (!result.success) {
     const missing = result.error.issues.map((i) => i.path[0]).join(", ");
     throw new Error(`Missing env vars: ${missing}`);
