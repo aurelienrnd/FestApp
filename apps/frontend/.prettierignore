@@ -1,0 +1,9 @@
+# Ignore the README file
+README.md
+STYLE.md
+
+# Ignore files and directories for Prettier
+node_modules/
+
+# Ignore build output
+.next/

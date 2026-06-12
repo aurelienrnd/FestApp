@@ -1,50 +1,56 @@
-# Étape 1 : build TypeScript -> JavaScript (inchangé, utilisé pour l'image de prod)
+# --- 1 IMAGE de BUILD ---
+# On choisit une image de base
 FROM node:20-alpine AS builder
 
+# Répertoire de travail à l’intérieur du conteneur
 WORKDIR /app
 
-# Copier les fichiers de dépendances et installer (inclut devDependencies par défaut)
+# Copier les fichiers de dépendances et install (inclut devDependencies par défaut)
 COPY package*.json ./
 RUN npm install
 
-# Copier le code source et la configuration TS, puis compiler vers dist/
+# Copier le code source et la configuration TS.
 COPY tsconfig.json ./
 COPY src ./src
 RUN npm run build
 
-# Étape 2 : image de production (runner) - plus légère, avec seulement les dépendances de prod
+
+# --- 2 IMAGE DE PRODUCTION ---
+# On choisit une image de base
 FROM node:20-alpine AS runner
 
+# Répertoire de travail à l’intérieur du conteneur
 WORKDIR /app
 ENV NODE_ENV=production
 
-# Installer uniquement les deps de production
+# Copier les fichiers de dépendances de production et les installe
 COPY package*.json ./
 RUN npm install --only=production
 
 # Copier les fichiers compilés depuis le build
 COPY --from=builder /app/dist ./dist
 
+# Ecoute sur le port 4000 et lance l’application quand le conteneur démarre
 EXPOSE 4000
 CMD ["node", "dist/index.js"]
 
+
+# --- 3 IMAGE DE DEV ---
 # Étape 3 : image de développement (avec hot reload)
 FROM node:20-alpine AS dev
 
+# Répertoire de travail à l’intérieur du conteneur
 WORKDIR /app
 ENV NODE_ENV=development
 
-# Copier les fichiers de dépendances et installer TOUTES les dépendances (y compris dev)
+# Copier les fichiers de dépendances et les installe
 COPY package*.json ./
 RUN npm install
 
-# Copier le code source (pour disposer d’un contexte initial dans l'image)
+# Copier les fichiers compilés depuis le build
 COPY tsconfig.json ./
 COPY src ./src
 
-# Exposer le port d'écoute de l'app en dev (ex: 4000)
+# Ecoute sur le port 4000 et lance l’application quand le conteneur démarre
 EXPOSE 4000
-
-# Lancer le serveur en mode développement (hot reload via ts-node-dev)
 CMD ["npm", "run", "dev"]
-
