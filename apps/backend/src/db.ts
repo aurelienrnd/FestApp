@@ -2,7 +2,8 @@
 import { Pool, QueryResultRow } from "pg";
 import dotenv from "dotenv";
 
-dotenv.config(); // charge .env.backend & .env (depuis Docker/env_file)
+// charge .env.backend & .env (depuis Docker/env_file)
+dotenv.config();
 
 // Configuration de la connexion à la base de données PostgreSQL
 export const pool = new Pool({

@@ -484,6 +484,45 @@ Ces deux middlewares sont enregistrés en dernier — `notFoundHandler` intercep
 
 ### 4.3. `src/db.ts`
 
+Ce fichier est l'unique point d'accès à la base de données PostgreSQL. Aucun controller ne crée de connexion directement — tous passent par les deux exports de ce fichier : `pool` et `query`.
+
+**Le pool de connexions**
+
+```ts
+export const pool = new Pool({
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
+```
+
+Un `Pool` maintient un ensemble de connexions PostgreSQL ouvertes en permanence. Quand un controller appelle `query()`, le pool lui attribue une connexion disponible — sans en ouvrir une nouvelle à chaque requête. Quand la requête est terminée, la connexion est remise dans le pool pour la prochaine requête. Ce mécanisme évite le coût d'ouverture d'une connexion TCP à chaque appel et permet de gérer plusieurs requêtes simultanées.
+
+Les valeurs de fallback (`|| "localhost"`, `|| "postgres"`…) ne sont là que pour satisfaire TypeScript — `process.env.*` étant typé `string | undefined`, TypeScript exige une valeur par défaut. En pratique elles ne sont jamais atteintes : `validateEnv()` garantit que toutes les variables sont définies avant que le pool soit créé. En production, ces variables seraient injectées par la plateforme d'hébergement avec les vraies valeurs de l'infrastructure — `"postgres"` comme mot de passe ou `"localhost"` comme host ne seraient pas des valeurs viables.
+
+`pool` est aussi exporté directement pour être utilisé dans `tests/setup.ts` — le setup de tests crée son propre pool pointant vers `vindhellfest_test` pour isoler les données de test de la base de développement.
+
+**La fonction `query<T>()`**
+
+```ts
+export async function query<T extends QueryResultRow>(
+  text: string,
+  params?: unknown[],
+): Promise<T[]>
+```
+
+Wrapper autour de `pool.query()` qui retourne directement `result.rows` — le tableau des lignes retournées par PostgreSQL. Le paramètre générique `T` permet de typer précisément les lignes retournées :
+
+```ts
+const rows = await query<ArtistItem>("SELECT * FROM artists WHERE id = $1", [id]);
+```
+
+TypeScript sait alors que `rows` est de type `ArtistItem[]` — sans casting manuel.
+
+`params` utilise les **requêtes paramétrées** (`$1`, `$2`…) : les valeurs sont transmises séparément du texte SQL, ce qui empêche les injections SQL — PostgreSQL traite les paramètres comme des valeurs pures, jamais comme du SQL à exécuter.
+
 ### 4.4. `src/env.ts`
 
 ### 4.5. `src/utils.ts`

@@ -1,6 +1,5 @@
 import express from "express";
 import path from "path";
-// Importation des routes
 import adminArtists from "./routes/admin.artists.routes";
 import adminNews from "./routes/admin.news.routes";
 import adminAuth from "./routes/admin.auth.routes";
@@ -56,10 +55,14 @@ export function createApp() {
     next();
   });
 
-  // Sert les fichiers images uploades (artistes, etc.)
+  /** Sert les fichiers images uploades (artistes, etc.) */
   app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
-  // Routes API (auth, admin, public, etc.)
+  /** Routes API (auth, admin, public, etc.)
+   * admin : routes pour l'interface d'administration (CRUD artistes, news, etc.)
+   * public : routes pour l'interface publique (affichage artistes, news, etc.)
+   * contact : route pour le formulaire de contact
+   */
   app.use("/admin", adminArtists);
   app.use("/admin", adminNews);
   app.use("/admin", adminAuth);
@@ -69,7 +72,10 @@ export function createApp() {
   app.use("/public", publicArtists);
   app.use("/public", publicNews);
 
-  // Handlers globaux de fin de chaine
+  /** Handlers globaux de fin de chaine
+   *  notFoundHandler : renvoie une erreur 404 si aucune route n'a ete trouvee
+   *  errorHandler : renvoie une erreur 500 si une erreur est survenue dans le traitement de la requete
+   */
   app.use(notFoundHandler);
   app.use(errorHandler);
 
