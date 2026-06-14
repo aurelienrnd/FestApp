@@ -405,21 +405,35 @@ Ce flux illustre trois principes structurants du projet :
 
 ---
 
-## 4. Fichiers de configuration
+## 4. Fichiers racine — `src/`
 
-### 4.1. `tsconfig.json`
+### 4.1. `src/index.ts`
 
-### 4.2. `eslint.config.mjs`
+### 4.2. `src/app.ts`
 
-### 4.3. `vitest.config.ts`
+### 4.3. `src/db.ts`
 
-### 4.4. `.prettierrc` / `.prettierignore`
+### 4.4. `src/env.ts`
 
-### 4.5. `Dockerfile`
+### 4.5. `src/utils.ts`
 
-### 4.6. `.dockerignore`
+---
 
-### 4.7. Variables d'environnement
+## 5. Fichiers de configuration
+
+### 5.1. `tsconfig.json`
+
+### 5.2. `eslint.config.mjs`
+
+### 5.3. `vitest.config.ts`
+
+### 5.4. `.prettierrc` / `.prettierignore`
+
+### 5.5. `Dockerfile`
+
+### 5.6. `.dockerignore`
+
+### 5.7. Variables d'environnement
 
 ---
 
