@@ -25,8 +25,6 @@
 | GET     | `/public/artists/:id`         | Public              | Détail d'un artiste                                                      |
 | GET     | `/public/news`                | Public / Privilégié | Liste des news (tous si admin/news, publiés sinon)                       |
 | GET     | `/public/news/:id`            | Public / Privilégié | Détail d'un news (brouillons accessibles si admin/news)                  |
-| GET     | `/health`                     | Public              | Santé du serveur (diagnostic)                                            |
-| GET     | `/debug/db`                   | Public              | Connexion à la base de données (diagnostic)                              |
 
 ---
 
@@ -1000,49 +998,6 @@ Reponses d'erreur:
 
 ---
 
-## Diagnostic
-
-> `/health` est disponible en toutes circonstances. `/debug/db` est conditionné à `NODE_ENV !== "production"` — il retourne `404` en production.
-
-### GET `/health`
-
-Vérifie que le serveur backend est opérationnel.
-
-Authentification : aucune.
-
-Réponse en succès :
-
-- Statut : `200`
-- Corps :
-
-```json
-{
-  "status": "ok",
-  "message": "Backend is running"
-}
-```
-
-### GET `/debug/db`
-
-Vérifie la connexion à la base de données. **Disponible uniquement hors production** (`NODE_ENV !== "production"`) — retourne `404` via `notFoundHandler` en production.
-
-Authentification : aucune.
-
-Réponse en succès :
-
-- Statut : `200`
-- Corps :
-
-```json
-{
-  "db": "ok",
-  "now": "2026-04-25T10:00:00.000Z"
-}
-```
-
-Réponse en erreur :
-
-- `500` `{ "error": "Impossible de joindre la base de donnees" }`
 
 ---
 

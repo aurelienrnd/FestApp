@@ -411,7 +411,76 @@ Ce flux illustre trois principes structurants du projet :
 
 ### 4.1. `src/index.ts`
 
+C'est le point d'entrée du serveur — le seul fichier exécuté directement par Node.js. Il ne contient aucune logique métier : son unique rôle est d'orchestrer le démarrage dans le bon ordre.
+
+```ts
+import dotenv from "dotenv";
+dotenv.config();           // 1. charge le .env
+
+import { validateEnv } from "./env";
+import { createApp } from "./app";
+
+validateEnv();             // 2. vérifie que toutes les variables sont présentes
+const app = createApp();   // 3. construit l'application Express
+const PORT = Number(process.env.PORT) || 4000;
+app.listen(PORT, ...);     // 4. démarre le serveur
+```
+
+L'ordre des trois premières étapes est intentionnel et non interchangeable :
+
+- `dotenv.config()` doit être la toute première instruction — avant même les imports qui suivent — pour que `process.env` soit peuplé au moment où les autres modules sont chargés.
+- `validateEnv()` s'exécute avant `createApp()` : si une variable manque, le processus s'arrête immédiatement avec un message explicite, sans qu'un serveur à moitié configuré ne démarre.
+- `createApp()` n'est appelé qu'une fois l'environnement validé — l'application Express est construite avec la garantie que toutes ses dépendances de configuration sont disponibles.
+
+Ce fichier n'est jamais importé dans les tests — ceux-ci appellent `createApp()` directement depuis `app.ts`, sans passer par `app.listen()`.
+
 ### 4.2. `src/app.ts`
+
+Ce fichier exporte la fonction `createApp()` qui construit et retourne l'instance Express configurée. Il est séparé de `index.ts` précisément pour que les tests puissent instancier l'application sans démarrer de serveur.
+
+`createApp()` configure l'application en cinq étapes dans l'ordre :
+
+**1. CORS**
+
+Un middleware manuel lit l'en-tête `Origin` de chaque requête et le compare à `FRONTEND_ORIGIN`. Si l'origine est autorisée, les headers `Access-Control-Allow-*` sont ajoutés à la réponse. Les requêtes `OPTIONS` (preflight) reçoivent une réponse `204` immédiate — sans passer par les routes.
+
+**2. Trust proxy**
+
+```ts
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+```
+
+En production, le backend est derrière un reverse proxy (nginx, load balancer…). Sans cette option, Express lit l'IP cliente depuis `req.ip` qui retourne l'IP du proxy — toujours la même. `express-rate-limit` utilise `req.ip` pour compter les tentatives par IP : sans `trust proxy`, toutes les requêtes semblent venir de la même adresse et le rate limiting ne fonctionne pas correctement. Avec `trust proxy: 1`, Express lit l'IP réelle du client depuis l'en-tête `X-Forwarded-For` ajouté par le proxy.
+
+Ce bloc est conditionnel — en développement, il n'y a pas de proxy et `req.ip` est déjà l'IP correcte.
+
+**3. Parsing du body**
+
+`express.json()` parse automatiquement le corps des requêtes `Content-Type: application/json` et le rend disponible dans `req.body`.
+
+**3. Fichiers statiques et routes API**
+
+```ts
+app.use("/uploads", express.static(...)); // sert les images uploadées
+app.use("/admin", adminArtists);
+app.use("/admin", adminNews);
+// ...
+app.use("/public", publicHome);
+// ...
+```
+
+Les images uploadées sont servies statiquement depuis le dossier `uploads/` — le frontend les atteint via `/uploads/artists/<uuid>.webp` sans passer par un controller.
+
+**4. Handlers de fin de chaîne**
+
+```ts
+app.use(notFoundHandler); // 404 si aucune route ne correspond
+app.use(errorHandler); // gère toutes les AppError et erreurs inattendues
+```
+
+Ces deux middlewares sont enregistrés en dernier — `notFoundHandler` intercepte toute requête qui n'a pas trouvé de route, `errorHandler` reçoit toutes les erreurs propagées via `next(error)` ou lancées dans un handler async.
 
 ### 4.3. `src/db.ts`
 

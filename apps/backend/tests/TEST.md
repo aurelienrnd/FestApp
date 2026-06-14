@@ -16,7 +16,6 @@
 
 ```
 tests/
-├── health.test.ts                ← test smoke (serveur répond)
 ├── setup.ts                      ← mocks globaux (nodemailer, sharp, fs)
 ├── helpers/
 │   ├── testServer.ts             ← instance Express partagée
@@ -94,15 +93,6 @@ Vitest hisse les appels `vi.mock()` en tête de fichier à la compilation. Il es
 
 ---
 
-### `health.test.ts`
-
-Test smoke minimal qui vérifie que le serveur Express répond correctement sur la route de santé. Utilisé en CI pour valider que l'infrastructure de test fonctionne avant d'exécuter les autres tests.
-
-| #   | Description             | `it(...)`                       |
-| --- | ----------------------- | ------------------------------- |
-| 1   | Serveur opérationnel    | `retourne 200 et status ok`     |
-
----
 
 ### `unit/validateBody.middleware.test.ts`
 

@@ -57,10 +57,7 @@ vi.mock("nodemailer", () => ({
  * puis les variables de .env.test qui peuvent écraser celles de .env.backend si nécessaire.
  */
 dotenv.config({ path: path.resolve(process.cwd(), ".env.backend") });
-dotenv.config({
-  path: path.resolve(process.cwd(), ".env.test"),
-  override: true,
-});
+process.env.DB_NAME = "vindhellfest_test";
 
 // Crée une instance de Pool pour se connecter à la base de données de test en utilisant les variables d'environnement chargées.
 const testPool = new Pool({

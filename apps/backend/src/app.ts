@@ -1,7 +1,5 @@
 import express from "express";
 import path from "path";
-import { query } from "./db";
-
 // Importation des routes
 import adminArtists from "./routes/admin.artists.routes";
 import adminNews from "./routes/admin.news.routes";
@@ -23,55 +21,40 @@ export function createApp() {
     app.set("trust proxy", 1);
   }
 
-  app.use(express.json()); // Permet de lire le JSON envoye par le client dans le body des requetes HTTP.
+  /** Permet de lire le JSON envoye par le client dans le body des requetes HTTP. */
+  app.use(express.json());
 
-  // Autorise le frontend a appeler l'API backend en local.
+  /** Autorise le frontend a appeler l'API backend en local.
+   * initialise l'en-tete de la requete HTTP
+   * Autorise les methodes HTTP
+   * Autorise les en-tetes que le front peut envoyer
+   * Renvoie un status 204 pour les requetes preflight (OPTIONS)
+   */
   app.use((req, res, next) => {
     const requestOrigin = req.headers.origin;
 
+    // Si l'origine de la requete est autorisee, on lui renvoie l'en-tete Access-Control-Allow-Origin pour lui permettre d'acceder a l'API.
     if (requestOrigin && requestOrigin === allowedOrigin) {
       res.header("Access-Control-Allow-Origin", requestOrigin); // Autorise cette origine a acceder a l'API.
       res.header("Vary", "Origin"); // Indique aux caches que la reponse depend de l'en-tete Origin.
       res.header("Access-Control-Allow-Credentials", "true"); // Autorise l'envoi des credentials (cookies, auth headers) cote navigateur.
     }
 
+    // Autorise les methodes HTTP.
     res.header(
       "Access-Control-Allow-Methods",
       "GET,POST,PUT,PATCH,DELETE,OPTIONS", // Liste les methodes HTTP permises en CORS.
     );
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Autorise les en-tetes que le front peut envoyer.
 
+    // Autorise les en-tetes que le front peut envoyer.
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+    // Detecte la requete preflight (verification CORS avant la vraie requete).
     if (req.method === "OPTIONS") {
-      // Detecte la requete preflight (verification CORS avant la vraie requete).
       return res.sendStatus(204);
     }
-
     next();
   });
-
-  // Test de demarrage du serveur
-  app.get("/health", (_req, res) => {
-    res.json({ status: "ok", message: "Backend is running" });
-  });
-
-  // Route de diagnostic — disponible uniquement hors production
-  if (process.env.NODE_ENV !== "production") {
-    app.get("/debug/db", async (_req, res) => {
-      try {
-        const rows = await query<{ now: Date }>("SELECT NOW() as now");
-        console.log("Connexion to the DB successful at:", rows[0].now);
-        res.json({
-          db: "ok",
-          now: rows[0].now,
-        });
-      } catch (err) {
-        console.error("Erreur de connexion DB :", err);
-        res
-          .status(500)
-          .json({ error: "Impossible de joindre la base de donnees" });
-      }
-    });
-  }
 
   // Sert les fichiers images uploades (artistes, etc.)
   app.use("/uploads", express.static(path.join(__dirname, "../uploads")));

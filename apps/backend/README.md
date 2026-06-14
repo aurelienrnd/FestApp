@@ -212,7 +212,6 @@ Crée et configure l'application Express sans démarrer le serveur — ce qui pe
 - Configure le middleware JSON (`express.json()`)
 - Gère le CORS manuellement (validation de l'origine, preflight `OPTIONS`)
 - Monte toutes les routes sous leurs préfixes (`/admin`, `/public`, `/contact`)
-- Expose les routes de diagnostic : `/health` (toujours disponible), `/debug/db` (conditionné à `NODE_ENV !== "production"`, retourne `404` en production)
 - Attache `notFoundHandler` et `errorHandler` en fin de chaîne
 
 ### `index.ts`
@@ -389,11 +388,10 @@ Vitest exécute les tests. Supertest simule les appels HTTP sur l'API Express po
 | `createAuthSession.ts`   | Insère un user + une session en base et retourne un cookie JWT valide pour Supertest                 |
 | `fixtures.ts`            | Helpers d'insertion rapide en base : `insertUser`, `insertArtist`, `insertNews`, constante `MINIMAL_PNG` |
 
-**Tests d'intégration** (`tests/integration/`, `tests/health.test.ts`) — valident routes, middlewares et contrôleurs contre une vraie base PostgreSQL de test :
+**Tests d'intégration** (`tests/integration/`) — valident routes, middlewares et contrôleurs contre une vraie base PostgreSQL de test :
 
 | Fichier                                  | Ce qui est testé                                                                                              |
 | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `health.test.ts`                         | Route `/health`                                                                                               |
 | `integration/admin/auth.test.ts`         | POST login, POST logout, GET me, POST forgot-password, PATCH password                                        |
 | `integration/admin/artists.test.ts`      | POST, PATCH, DELETE `/admin/artists` — upload image, UUID invalide, rôles                                  |
 | `integration/admin/news.test.ts`         | POST, PATCH, DELETE `/admin/news` — upload image, UUID invalide, rôles                                     |
