@@ -310,7 +310,7 @@ routes/  ──►  middlewares/  ──►  controllers/  ──►  services/ 
 
 **Convention de nommage des controllers**
 
-Chaque controller est un fichier à export nommé unique : `create_artist.controller.ts` exporte `createArtist`. Ce découpage un-fichier-par-action évite les fichiers fourre-tout et rend la suppression ou la modification d'une action chirurgicale.
+Chaque controller est un fichier à export nommé unique : `create_artist.controller.ts` exporte `createArtist`.
 
 **La factory `adminAuth()`**
 
@@ -406,6 +406,8 @@ Ce flux illustre trois principes structurants du projet :
 ---
 
 ## 4. Fichiers racine — `src/`
+
+À la racine de `src/` se trouvent les fichiers qui constituent le socle de l'application : point d'entrée, configuration Express, connexion à la base de données et validation de l'environnement. Ils ne contiennent pas de logique métier — ils assemblent et initialisent les briques sur lesquelles repose tout le reste.
 
 ### 4.1. `src/index.ts`
 
