@@ -18,6 +18,7 @@ export const notFoundHandler: RequestHandler = (req, res) => {
  * Sinon, renvoie une erreur generique 500 pour eviter d'exposer des details internes.
  */
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  // Log l'erreur dans la console si on n'est pas en production pour ne pas exposer les details internes aux utilisateurs finaux
   if (process.env.NODE_ENV !== "production") console.error(err);
 
   // Marque `next` et `req` comme volontairement non utilisés

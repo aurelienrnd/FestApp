@@ -674,10 +674,10 @@ Ce fichier configure l'environnement de test. Les paramètres clés :
 
 Prettier formate automatiquement le code à chaque exécution de `npm run format`. Les règles sont identiques à celles du frontend :
 
-| Règle         | Valeur  | Signification                                                       |
-| ------------- | ------- | ------------------------------------------------------------------- |
-| `semi`        | `true`  | Point-virgule obligatoire en fin d'instruction                      |
-| `singleQuote` | `false` | Guillemets doubles pour les chaînes de caractères                   |
+| Règle          | Valeur    | Signification                                                        |
+| --------------- | --------- | -------------------------------------------------------------------- |
+| `semi`        | `true`  | Point-virgule obligatoire en fin d'instruction                       |
+| `singleQuote` | `false` | Guillemets doubles pour les chaînes de caractères                  |
 | `tabWidth`    | `2`     | Indentation à 2 espaces                                             |
 | `endOfLine`   | `auto`  | Fin de ligne adaptée à l'OS (LF sur Linux/macOS, CRLF sur Windows) |
 
@@ -709,27 +709,27 @@ Les fichiers `.env` sont également exclus : les variables d'environnement sont 
 
 Les variables d'environnement sont définies dans `.env.backend` à la racine du projet et chargées par `dotenv` au démarrage. Toutes les variables marquées comme obligatoires sont validées par `validateEnv()` — le serveur ne démarre pas si l'une d'elles est absente.
 
-| Variable                      | Exemple                        | Rôle                                                                 |
-| ----------------------------- | ------------------------------ | -------------------------------------------------------------------- |
-| `PORT`                        | `4000`                         | Port d'écoute du serveur Express (optionnel — `4000` par défaut)    |
-| `DB_HOST`                     | `db`                           | Hostname PostgreSQL — `db` dans Docker, `localhost` hors Docker      |
-| `DB_PORT`                     | `5432`                         | Port PostgreSQL                                                      |
-| `DB_USER`                     | `postgres`                     | Utilisateur PostgreSQL                                               |
-| `DB_PASSWORD`                 | `postgres`                     | Mot de passe PostgreSQL                                              |
-| `DB_NAME`                     | `vindhellfest`                 | Nom de la base de données                                            |
-| `JWT_ACCESS_SECRET`           | `un-super-secret-a-changer`    | Clé de signature des JWT — doit être longue et aléatoire en production |
-| `JWT_ACCESS_EXPIRES_IN`       | `1h`                           | Durée de validité du JWT                                             |
-| `COOKIE_ACCESS_TOKEN_NAME`    | `vindhellfest_access_token`    | Nom du cookie JWT                                                    |
-| `COOKIE_ACCESS_TOKEN_SECURE`  | `false`                        | `true` en production (HTTPS uniquement), `false` en développement    |
-| `COOKIE_ACCESS_TOKEN_SAME_SITE` | `lax`                        | Politique SameSite du cookie (`lax`, `strict` ou `none`)            |
-| `SESSION_EXPIRES_IN`          | `12h`                          | Durée de validité d'une session en base                              |
-| `FRONTEND_ORIGIN`             | `http://localhost:3000`        | Origine autorisée par le CORS                                        |
-| `SMTP_HOST`                   | `smtp.gmail.com`               | Serveur SMTP pour l'envoi d'emails                                   |
-| `SMTP_PORT`                   | `587`                          | Port SMTP                                                            |
-| `SMTP_SECURE`                 | `false`                        | `true` si le port SMTP utilise TLS directement (port 465)            |
-| `SMTP_USER`                   | `email@gmail.com`              | Identifiant SMTP                                                     |
-| `SMTP_PASS`                   | `xxxx`                         | Mot de passe SMTP — utiliser un mot de passe d'application Gmail     |
-| `CONTACT_EMAIL`               | `email@gmail.com`              | Adresse destinataire des formulaires de contact                      |
+| Variable                          | Exemple                       | Rôle                                                                      |
+| --------------------------------- | ----------------------------- | -------------------------------------------------------------------------- |
+| `PORT`                          | `4000`                      | Port d'écoute du serveur Express (optionnel —`4000` par défaut)       |
+| `DB_HOST`                       | `db`                        | Hostname PostgreSQL —`db` dans Docker, `localhost` hors Docker        |
+| `DB_PORT`                       | `5432`                      | Port PostgreSQL                                                            |
+| `DB_USER`                       | `postgres`                  | Utilisateur PostgreSQL                                                     |
+| `DB_PASSWORD`                   | `postgres`                  | Mot de passe PostgreSQL                                                    |
+| `DB_NAME`                       | `vindhellfest`              | Nom de la base de données                                                 |
+| `JWT_ACCESS_SECRET`             | `un-super-secret-a-changer` | Clé de signature des JWT — doit être longue et aléatoire en production |
+| `JWT_ACCESS_EXPIRES_IN`         | `1h`                        | Durée de validité du JWT                                                 |
+| `COOKIE_ACCESS_TOKEN_NAME`      | `vindhellfest_access_token` | Nom du cookie JWT                                                          |
+| `COOKIE_ACCESS_TOKEN_SECURE`    | `false`                     | `true` en production (HTTPS uniquement), `false` en développement     |
+| `COOKIE_ACCESS_TOKEN_SAME_SITE` | `lax`                       | Politique SameSite du cookie (`lax`, `strict` ou `none`)             |
+| `SESSION_EXPIRES_IN`            | `12h`                       | Durée de validité d'une session en base                                  |
+| `FRONTEND_ORIGIN`               | `http://localhost:3000`     | Origine autorisée par le CORS                                             |
+| `SMTP_HOST`                     | `smtp.gmail.com`            | Serveur SMTP pour l'envoi d'emails                                         |
+| `SMTP_PORT`                     | `587`                       | Port SMTP                                                                  |
+| `SMTP_SECURE`                   | `false`                     | `true` si le port SMTP utilise TLS directement (port 465)                |
+| `SMTP_USER`                     | `email@gmail.com`           | Identifiant SMTP                                                           |
+| `SMTP_PASS`                     | `xxxx`                      | Mot de passe SMTP — utiliser un mot de passe d'application Gmail          |
+| `CONTACT_EMAIL`                 | `email@gmail.com`           | Adresse destinataire des formulaires de contact                            |
 
 > Les fichiers `.env` ne sont pas versionnés — ils sont exclus par `.gitignore` et `.dockerignore`. Ne jamais commiter des secrets en clair dans le dépôt.
 
@@ -737,27 +737,329 @@ Les variables d'environnement sont définies dans `.env.backend` à la racine du
 
 ## 5. Système de types — `src/type.ts`
 
+Tous les types TypeScript partagés entre plusieurs fichiers sont regroupés dans un fichier unique : `src/type.ts`. Ce fichier est organisé en cinq sections : `EXPRESS`, `USERS`, `SESSIONS`, `NEWS` et `ARTISTS`/`CONCERTS`.
+
 ### 5.1. Pourquoi centraliser les types
+
+Sans fichier central, chaque controller redéfinit localement le même type `NewsItem` ou `ArtistItem`. Si la structure d'une réponse API évolue (ajout d'un champ, changement d'un type nullable), il faut retrouver et corriger toutes les définitions dispersées. Avec un fichier unique, une seule modification se propage à l'ensemble des controllers et middlewares.
+
+Le frontend aligne ses propres types sur ceux du backend : `UserItem`, `NewsItem` et `ArtistItem` sont définis ici et reproduits à l'identique dans `apps/frontend/src/type.ts`. Ce contrat explicite évite les désynchronisations silencieuses entre ce que l'API envoie et ce que le frontend consomme.
+
+> Les types propres à un seul fichier restent locaux à ce fichier avec une déclaration `type` locale — seuls les types réutilisés dans 2+ fichiers remontent dans `src/type.ts`.
+
+---
 
 ### 5.2. Augmentation d'`Express.Locals`
 
+Express expose un objet `res.locals` pour transmettre des données entre middlewares et controllers. Sans typage, cet objet est `Record<string, any>`. L'augmentation de module TypeScript permet de typer ce passage sans casser le contrat Express :
+
+```ts
+declare global {
+  namespace Express {
+    interface Locals {
+      userId?: string;
+      userRole?: UserRole;
+      userDisplayName?: string;
+      sessionId?: string;
+    }
+  }
+}
+```
+
+Le middleware `auth` écrit dans `res.locals` après avoir vérifié le JWT ; les controllers lisent ces valeurs sans aucun cast. TypeScript garantit que `res.locals.userRole` est bien un `UserRole` et non un `any`.
+
+---
+
 ### 5.3. Types base de données (DB rows)
+
+Ces types correspondent directement aux colonnes retournées par `pg`. Ils sont passés en paramètre de type à `query<T>(...)` pour typer le résultat de chaque requête SQL.
+
+**`IdRow`**
+
+```ts
+type IdRow = { id: string };
+```
+
+Utilisé pour les requêtes de vérification d'existence (`SELECT id FROM users WHERE id = $1`). Plutôt que de définir un type local à chaque controller, `IdRow` est réutilisé partout.
+
+**`UserCredentialsRow`**
+
+```ts
+type UserCredentialsRow = {
+  id: string;
+  email: string;
+  password_hash: string;
+  display_name: string;
+};
+```
+
+Retourné par la requête de connexion (`SELECT id, email, password_hash, display_name FROM users WHERE email = $1`). Le champ `password_hash` ne sort jamais des controllers d'authentification — il n'est jamais inclus dans `UserItem`.
+
+**`SessionRow`**
+
+```ts
+type SessionRow = {
+  id: string;
+  revoked_at: Date | null;
+  expires_at: Date;
+};
+```
+
+Retourné par le middleware `sessionIsOpen` pour vérifier l'état de la session en base. `revoked_at` est nullable : il est `null` tant que la session est active et prend une valeur `Date` lors de la révocation.
+
+**`NewsMediaRow` / `ArtistMediaRow`**
+
+```ts
+type NewsMediaRow = Pick<NewsItem, "id" | "url_media">;
+type ArtistMediaRow = Pick<ArtistItem, "id" | "url_media">;
+```
+
+Construits par composition avec `Pick` — uniquement les champs nécessaires pour retrouver et supprimer le fichier image lors d'une mise à jour ou d'une suppression.
+
+**`ConcertRow`**
+
+```ts
+type ConcertRow = {
+  id: string;
+  artist_id: string;
+  stage: string;
+  start_time: string;
+  end_time: string;
+};
+```
+
+Représente une ligne de la table `concerts`. Distinct d'`ArtistItem` qui inclut déjà `stage`, `start_time` et `end_time` via une jointure — `ConcertRow` est utilisé pour les opérations directes sur la table `concerts`.
+
+---
 
 ### 5.4. Types métier partagés
 
+Ces types représentent les données telles qu'elles sont retournées par l'API et consommées par le frontend.
+
+**`UserRole`**
+
+```ts
+type UserRole = "admin" | "artists" | "news";
+```
+
+Union littérale des trois rôles autorisés — miroir exact de l'ENUM PostgreSQL `user_role`. Utilisé dans `Express.Locals`, dans `UserItem` et dans le middleware `requireRole`.
+
+**`UserItem`**
+
+```ts
+type UserItem = {
+  id: string;
+  email: string;
+  display_name: string;
+  role: UserRole;
+  created_at: string;
+  password_changed_at: string | null;
+};
+```
+
+Représente une ligne utilisateur telle que retournée par les endpoints de liste et de CRUD. `password_changed_at` est nullable : il est `null` tant que l'utilisateur n'a jamais changé son mot de passe — ce champ déclenche la modale de changement obligatoire côté frontend à la première connexion.
+
+**`NewsItem`**
+
+```ts
+type NewsItem = {
+  id: string;
+  title: string;
+  content: string | null;
+  is_published: boolean;
+  created_at: string;
+  url_media: string;
+  description_media: string;
+  author_name: string | null;
+};
+```
+
+Représente les données complètes d'une actualité. `content` et `author_name` sont nullables car optionnels à la création. Partagé avec le frontend.
+
+**`ArtistItem`**
+
+```ts
+type ArtistItem = {
+  id: string;
+  name: string;
+  genre: string;
+  origin: string;
+  bio: string;
+  url_media: string;
+  description_media: string;
+  youtube_url: string | null;
+  spotify_url: string | null;
+  stage: string | null;
+  start_time: string | null;
+  end_time: string | null;
+  is_featured: boolean;
+};
+```
+
+Représente les données complètes d'un artiste, incluant les informations de concert (`stage`, `start_time`, `end_time`) obtenues via jointure avec la table `concerts`. Les champs de liens externes et de programmation sont nullables : un artiste peut exister sans être encore programmé. Partagé avec le frontend.
+
+---
+
 ### 5.5. Convention de nommage et règle `no-any`
+
+| Convention | Explication                                                                                                                    |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `*Row`   | Type qui représente une ligne brute retournée par `pg` — noms de colonnes en `snake_case`                               |
+| `*Item`  | Type métier exposé par l'API — partagé avec le frontend, noms de champs en `snake_case` (miroir des colonnes PostgreSQL) |
+| `*Role`  | Union littérale miroir d'un ENUM PostgreSQL                                                                                   |
+
+La règle ESLint `@typescript-eslint/no-any` est activée dans `eslint.config.cjs`. L'augmentation de `Express.Locals` et le typage explicite de `query<T>(...)` sont les deux mécanismes qui permettent d'éliminer tous les `any` dans les controllers et middlewares.
 
 ---
 
 ## 6. Gestion des erreurs
 
+La gestion des erreurs repose sur quatre éléments qui travaillent ensemble : une classe `AppError` pour lever des erreurs métier typées, un fichier central qui regroupe tous les messages, un handler global Express qui intercepte toutes les erreurs non catchées, et un wrapper `asyncHandler` qui évite de répéter `try/catch` dans chaque controller.
+
 ### 6.1. La classe `AppError`
+
+`AppError` est une classe qui étend `Error` en ajoutant un code HTTP. Elle est levée partout dans les controllers lorsqu'une erreur métier se produit (ressource introuvable, accès refusé, conflit…), et interceptée en un seul endroit par le handler global.
+
+```ts
+export class AppError extends Error {
+  status: number;
+
+  constructor(message: string, status = 500) {
+    super(message);
+    this.name = "AppError";
+    this.status = status;
+    Object.setPrototypeOf(this, AppError.prototype);
+  }
+}
+```
+
+**Pourquoi ne pas gérer l'erreur directement dans le controller ?**
+
+Sans `AppError`, chaque controller construirait lui-même la réponse d'erreur :
+
+```ts
+res.status(404).json({ error: "Utilisateur introuvable" });
+return;
+```
+
+Avec `AppError`, le controller se contente de lever l'erreur — c'est le `errorHandler` global qui construit la réponse. Si la structure des réponses d'erreur change (ajout d'un champ, d'un timestamp…), il n'y a qu'un seul endroit à modifier. Étendre `Error` plutôt que de lancer un objet brut permet en plus d'utiliser `instanceof AppError` dans le handler pour distinguer une erreur métier intentionnelle d'une erreur JavaScript inattendue.
+
+**Pourquoi `Object.setPrototypeOf` ?**
+
+Quand TypeScript compile vers CommonJS (`"module": "commonjs"` dans `tsconfig.json`), l'héritage de classes natives comme `Error` peut casser `instanceof`. Cette ligne rétablit la chaîne de prototype correctement après l'appel à `super()`.
+
+Dans un controller, l'usage est systématique :
+
+```ts
+throw new AppError(ERRORS.USER_NOT_FOUND, 404);
+```
+
+Le code HTTP voyage avec l'erreur jusqu'au handler global, sans avoir à le re-préciser à chaque niveau.
 
 ### 6.2. Centralisation des messages — `errors/errorMessages.ts`
 
+Tous les messages d'erreur sont regroupés dans un objet `ERRORS` exporté depuis `errors/errorMessages.ts`. Dans les controllers, on n'écrit jamais de chaîne en dur — on référence toujours une clé :
+
+```ts
+throw new AppError(ERRORS.USER_NOT_FOUND, 404);
+```
+
+Le `as const` en fin de fichier est important : il indique à TypeScript que les valeurs sont des littéraux immuables. Sans lui, TypeScript infèrerait `string` pour chaque valeur, et tu perdrais l'autocomplétion et la vérification de typage sur les messages.
+
+Les clés sont organisées par domaine métier :
+
+| Préfixe                                                        | Domaine                    |
+| --------------------------------------------------------------- | -------------------------- |
+| `AUTH_`                                                       | Authentification et tokens |
+| `SESSION_`                                                    | État des sessions         |
+| `VALIDATION_`                                                 | Corps de requête invalide |
+| `PASSWORD_`                                                   | Format du mot de passe     |
+| `USER_`                                                       | CRUD utilisateurs          |
+| `ARTIST_`                                                     | CRUD artistes              |
+| `NEWS_`                                                       | CRUD actualités           |
+| `MAIL_`                                                       | Envoi d'email              |
+| `FORBIDDEN` / `ROUTE_NOT_FOUND` / `INTERNAL_SERVER_ERROR` | Erreurs génériques HTTP  |
+
 ### 6.3. Le handler global `errorHandler`
 
+Le fichier `middlewares/errorHandler.ts` exporte deux middlewares enregistrés en dernier dans `app.ts`.
+
+**`notFoundHandler`**
+
+Déclenché si aucune route n'a répondu à la requête. Renvoie un 404 avec la méthode et l'URL demandée pour faciliter le debug :
+
+```ts
+export const notFoundHandler: RequestHandler = (req, res) => {
+  res.status(404).json({
+    error: `${ERRORS.ROUTE_NOT_FOUND}: ${req.method} ${req.originalUrl}`,
+  });
+};
+```
+
+**`errorHandler`**
+
+Middleware Express à quatre paramètres — c'est cette signature `(err, req, res, next)` qui indique à Express qu'il s'agit d'un gestionnaire d'erreurs. Il est appelé dès qu'une erreur est levée dans un controller (via `asyncHandler`) ou passée à `next(err)`.
+
+```ts
+export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  if (process.env.NODE_ENV !== "production") console.error(err);
+
+  if (err instanceof AppError) {
+    return res.status(err.status).json({ error: err.message });
+  }
+
+  return res.status(500).json({ error: ERRORS.INTERNAL_SERVER_ERROR });
+};
+```
+
+Le `instanceof AppError` distingue deux cas :
+
+- **Erreur métier** (`AppError`) → on renvoie le `status` et le `message` définis par le controller
+- **Erreur inattendue** (bug JavaScript, crash…) → on renvoie toujours un 500 générique, sans exposer les détails internes au client
+
+Le `console.error` n'est actif qu'en dehors de la production — en développement il affiche la trace complète dans le terminal du conteneur, en production le serveur reste silencieux.
+
 ### 6.4. `asyncHandler` — envelopper les controllers async
+
+Express reconnaît deux types de middlewares selon leur signature :
+
+- **3 paramètres** `(req, res, next)` → middleware normal
+- **4 paramètres** `(err, req, res, next)` → gestionnaire d'erreurs
+
+Quand `next(err)` est appelé avec une valeur, Express saute tous les middlewares à 3 paramètres et transmet directement l'erreur au premier middleware à 4 paramètres qu'il trouve — c'est `errorHandler`.
+
+.Sans wrapper, chaque controller devrait gérer ça manuellement avec un `try/catch` et un appel à `next(err)` — ce qui se répète dans chaque route.`asyncHandler` résout ça en enveloppant chaque controller :
+
+```ts
+export function asyncHandler(
+  handler: (req: Request, res: Response, next: NextFunction) => Promise<unknown>,
+): RequestHandler {
+  return (req, res, next) => {
+    void handler(req, res, next).catch(next);
+  };
+}
+```
+
+Il exécute le controller async et enchaîne `.catch(next)` — si une erreur est levée, elle est attrapée et passée à `next(err)`, ce qui déclenche le saut direct vers `errorHandler`.
+
+```
+throw new AppError(...)
+        ↓
+  .catch(next)          ← asyncHandler attrape l'erreur
+        ↓
+    next(err)           ← appelle next avec une valeur
+        ↓
+  Express saute tous les middlewares à 3 params
+        ↓
+  errorHandler(err, req, res, next)
+```
+
+Dans les routes, l'usage est systématique :
+
+```ts
+router.get("/", asyncHandler(getUsers));
+router.post("/", asyncHandler(createUser));
+```
 
 ---
 
