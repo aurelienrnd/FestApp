@@ -525,25 +525,213 @@ TypeScript sait alors que `rows` est de type `ArtistItem[]` — sans casting man
 
 ### 4.4. `src/env.ts`
 
+Ce fichier exporte une seule fonction : `validateEnv()`. Elle est appelée dans `src/index.ts` juste après `dotenv.config()` et avant `createApp()` — si une variable manque, le processus s'arrête immédiatement avec un message explicite listant les variables absentes.
+
+```ts
+const envSchema = z.object({
+  DB_HOST: z.string(),
+  DB_PORT: z.string(),
+  // ...toutes les variables obligatoires
+});
+
+export function validateEnv() {
+  const result = envSchema.safeParse(process.env);
+  if (!result.success) {
+    const missing = result.error.issues.map((i) => i.path[0]).join(", ");
+    throw new Error(`Missing env vars: ${missing}`);
+  }
+}
+```
+
+Zod est utilisé ici de la même façon que pour la validation des corps de requête — `safeParse` tente de valider `process.env` contre le schéma. Si une variable est absente, Zod produit une issue par variable manquante. `.map((i) => i.path[0])` extrait le nom de chaque variable et `.join(", ")` les assemble en un message lisible :
+
+```
+Error: Missing env vars: DB_PASSWORD, JWT_ACCESS_SECRET
+```
+
 ### 4.5. `src/utils.ts`
+
+Ce fichier regroupe les fonctions utilitaires partagées entre plusieurs middlewares et controllers — principalement liées à l'authentification, aux sessions et aux cookies. Elles n'ont pas de dépendance Express (`req`, `res`) et peuvent être appelées depuis n'importe quelle couche.
+
+| Fonction                            | Rôle                                                                                                                                                                                                                                                                                                         |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `getEnv(name)`                    | Lit une variable d'environnement et lance une erreur si elle est absente —`process.env[name]` étant typé `string \| undefined`, TypeScript refuse de l'utiliser là où un `string` est attendu. `getEnv()` retourne `string` garanti et prévient l'erreur de compilation sans recourir au `!` |
+| `envToStringValue(name)`          | Lit une variable d'environnement et la caste en `StringValue` (type attendu par `jsonwebtoken` pour les durées comme `"1h"`, `"12h"`)                                                                                                                                                                |
+| `initToken(...)`                  | Crée et signe un JWT avec `userId` et `sessionId` comme payload                                                                                                                                                                                                                                          |
+| `serializeCookie(...)`            | Sérialise le JWT dans un cookie `httpOnly`, `secure`, `sameSite` — les options sont lues depuis les variables d'environnement                                                                                                                                                                         |
+| `userExists(user)`                | Vérifie qu'un utilisateur a été trouvé en base — lance `AppError 401` sinon                                                                                                                                                                                                                            |
+| `passwordIsValid(password, hash)` | Compare le mot de passe en clair avec le hash bcrypt — lance `AppError 401` si invalide                                                                                                                                                                                                                    |
+| `sessionExists(session)`          | Vérifie qu'une session a été trouvée en base — lance `AppError 401` sinon                                                                                                                                                                                                                              |
+| `sessionRevoked(session)`         | Vérifie que la session n'est pas révoquée ni expirée — lance `AppError 401` sinon                                                                                                                                                                                                                      |
+| `requireUserId(reqUserId)`        | Extrait et valide le `userId` depuis `res.locals` — lance `AppError 401` si absent                                                                                                                                                                                                                     |
+| `requireSessionId(reqSessionId)`  | Extrait et valide le `sessionId` depuis `res.locals` — lance `AppError 401` si absent                                                                                                                                                                                                                  |
+
+Ces fonctions centralisent des vérifications répétées dans plusieurs controllers et middlewares. Sans elles, chaque controller devrait réécrire la même logique de vérification — avec le risque d'oublier un cas ou de retourner des codes d'erreur différents pour la même situation.
 
 ---
 
 ## 5. Fichiers de configuration
 
+Ces fichiers contrôlent le comportement des outils de développement : compilation TypeScript, analyse statique, formatage, tests et conteneurisation. Ils ne contiennent pas de logique applicative — ils définissent les règles et les contraintes qui s'appliquent à l'ensemble du projet.
+
 ### 5.1. `tsconfig.json`
 
-### 5.2. `eslint.config.mjs`
+```json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "Node16",
+    "moduleResolution": "node16",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src"]
+}
+```
+
+Ce fichier contrôle le comportement du compilateur TypeScript. Les options clés du projet :
+
+| Option               | Valeur     | Effet                                                                                                                                                                  |
+| -------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `strict`           | `true`   | Active toutes les vérifications strictes — interdit `any` implicite, `null` non vérifié, etc.                                                                  |
+| `target`           | `ES2020` | Code compilé compatible avec Node.js 20                                                                                                                               |
+| `module`           | `Node16` | Format de modules natif Node.js — supporte les imports ES et CommonJS                                                                                                 |
+| `moduleResolution` | `node16` | Résolution de modules alignée sur le comportement de Node.js 16+                                                                                                     |
+| `esModuleInterop`  | `true`   | Permet d'importer des modules CommonJS avec la syntaxe `import x from "x"` — nécessaire pour `bcrypt`, `dotenv`, `nodemailer` qui sont des packages CommonJS |
+| `outDir`           | `dist`   | Dossier de sortie des fichiers JavaScript compilés par `npm run build`                                                                                              |
+| `rootDir`          | `src`    | Dossier source — seul `src/` est compilé, `tests/` est exclu                                                                                                     |
+| `skipLibCheck`     | `true`   | Ignore les erreurs de types dans `node_modules/` — accélère la compilation                                                                                        |
+
+`"include": ["src"]` exclut explicitement le dossier `tests/` de la compilation de production. Les tests ont leur propre `tests/tsconfig.json` qui étend ce fichier en ajoutant `tests/` à l'inclusion.
+
+### 5.2. `eslint.config.cjs`
+
+```js
+module.exports = [
+  ...compat.extends(
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+  ),
+  ...compat.config({
+    parser: "@typescript-eslint/parser",
+    rules: { "prettier/prettier": "error" },
+  }),
+];
+```
+
+Le fichier utilise l'extension `.cjs` (CommonJS) plutôt que `.mjs` car le backend n'a pas `"type": "module"` dans son `package.json` — Node.js traite les fichiers `.js` comme CommonJS par défaut, et ESLint doit être dans le même format de modules que le projet.
+
+Trois préréglages sont activés :
+
+- **`eslint:recommended`** — règles JavaScript de base (variables non déclarées, code mort…)
+- **`plugin:@typescript-eslint/recommended`** — règles TypeScript strictes (`no-explicit-any`, typage correct des fonctions…)
+- **`plugin:prettier/recommended`** — intègre Prettier dans ESLint : les violations de formatage sont signalées comme des erreurs ESLint, ce qui permet de tout corriger en une seule passe avec `npm run lint:fix`
+
+Le dernier bloc configure une exception pour le fichier `eslint.config.cjs` lui-même — il utilise `require` et `module.exports` qui sont des globals CommonJS, normalement interdits par les règles TypeScript.
 
 ### 5.3. `vitest.config.ts`
 
+```ts
+export default defineConfig({
+  test: {
+    environment: "node",
+    globals: true,
+    setupFiles: ["./tests/setup.ts"],
+    testTimeout: 10000,
+    hookTimeout: 20000,
+    include: ["tests/**/*.test.ts"],
+    fileParallelism: false,
+  },
+});
+```
+
+Ce fichier configure l'environnement de test. Les paramètres clés :
+
+**`environment: "node"`** — Contrairement au frontend qui utilise `jsdom` pour simuler un navigateur, le backend tourne dans un environnement Node.js pur. Pas de DOM nécessaire — les tests envoient des requêtes HTTP à l'instance Express via Supertest.
+
+**`globals: true`** — Active les globals de test (`describe`, `it`, `expect`, `vi`…) sans avoir à les importer dans chaque fichier de test.
+
+**`setupFiles`** — Exécute `tests/setup.ts` avant chaque suite de tests. Ce fichier mocke Sharp, Nodemailer, le système de fichiers et le rate limiter, charge les variables d'environnement, et configure la base de données de test.
+
+**`fileParallelism: false`** — Les fichiers de test s'exécutent séquentiellement. Les tests d'intégration partagent la même base PostgreSQL — exécuter plusieurs fichiers en parallèle provoquerait des conflits sur les migrations et les `TRUNCATE`.
+
+**`testTimeout` / `hookTimeout`** — Délais étendus à 10 et 20 secondes pour les opérations sur la base de données réelle, plus lentes qu'un mock.
+
 ### 5.4. `.prettierrc` / `.prettierignore`
+
+```json
+{
+  "semi": true,
+  "singleQuote": false,
+  "tabWidth": 2,
+  "endOfLine": "auto"
+}
+```
+
+Prettier formate automatiquement le code à chaque exécution de `npm run format`. Les règles sont identiques à celles du frontend :
+
+| Règle         | Valeur  | Signification                                                       |
+| ------------- | ------- | ------------------------------------------------------------------- |
+| `semi`        | `true`  | Point-virgule obligatoire en fin d'instruction                      |
+| `singleQuote` | `false` | Guillemets doubles pour les chaînes de caractères                   |
+| `tabWidth`    | `2`     | Indentation à 2 espaces                                             |
+| `endOfLine`   | `auto`  | Fin de ligne adaptée à l'OS (LF sur Linux/macOS, CRLF sur Windows) |
+
+`.prettierignore` exclut du formatage les fichiers qui n'ont pas à être touchés : `node_modules/`, `dist/` (fichiers compilés) et `README.md`.
 
 ### 5.5. `Dockerfile`
 
+Le Dockerfile du backend est organisé en **trois stages multi-étapes** :
+
+**Stage `builder`** — Compilation TypeScript
+
+Installe toutes les dépendances (y compris `devDependencies` nécessaires à `tsc`), copie le code source et exécute `npm run build`. TypeScript compile `src/` vers `dist/` — seuls les fichiers JavaScript générés sont conservés pour la suite.
+
+**Stage `runner`** — Image de production
+
+Repart d'une image Node.js propre, installe uniquement les dépendances de production (`npm install --only=production`), puis copie depuis `builder` uniquement le dossier `dist/`. L'image finale ne contient ni le code TypeScript source, ni les `devDependencies`, ni le cache de compilation. Elle démarre avec `node dist/index.js`.
+
+**Stage `dev`** — Image de développement
+
+N'exécute pas de compilation — le code source TypeScript est monté depuis l'hôte via un volume Docker et exécuté directement par `ts-node-dev`. Toute modification d'un fichier `.ts` déclenche un rechargement automatique du serveur sans reconstruire l'image.
+
 ### 5.6. `.dockerignore`
 
+Ce fichier indique à Docker quels fichiers ne pas envoyer au daemon lors du `docker build`. Sans lui, Docker enverrait l'intégralité du dossier `backend/` — y compris `node_modules/` et `dist/` — ce qui alourdirait inutilement le contexte de build et ralentirait chaque compilation.
+
+Les fichiers `.env` sont également exclus : les variables d'environnement sont injectées au démarrage du conteneur via `docker-compose.yml`, pas au moment du build.
+
 ### 5.7. Variables d'environnement
+
+Les variables d'environnement sont définies dans `.env.backend` à la racine du projet et chargées par `dotenv` au démarrage. Toutes les variables marquées comme obligatoires sont validées par `validateEnv()` — le serveur ne démarre pas si l'une d'elles est absente.
+
+| Variable                      | Exemple                        | Rôle                                                                 |
+| ----------------------------- | ------------------------------ | -------------------------------------------------------------------- |
+| `PORT`                        | `4000`                         | Port d'écoute du serveur Express (optionnel — `4000` par défaut)    |
+| `DB_HOST`                     | `db`                           | Hostname PostgreSQL — `db` dans Docker, `localhost` hors Docker      |
+| `DB_PORT`                     | `5432`                         | Port PostgreSQL                                                      |
+| `DB_USER`                     | `postgres`                     | Utilisateur PostgreSQL                                               |
+| `DB_PASSWORD`                 | `postgres`                     | Mot de passe PostgreSQL                                              |
+| `DB_NAME`                     | `vindhellfest`                 | Nom de la base de données                                            |
+| `JWT_ACCESS_SECRET`           | `un-super-secret-a-changer`    | Clé de signature des JWT — doit être longue et aléatoire en production |
+| `JWT_ACCESS_EXPIRES_IN`       | `1h`                           | Durée de validité du JWT                                             |
+| `COOKIE_ACCESS_TOKEN_NAME`    | `vindhellfest_access_token`    | Nom du cookie JWT                                                    |
+| `COOKIE_ACCESS_TOKEN_SECURE`  | `false`                        | `true` en production (HTTPS uniquement), `false` en développement    |
+| `COOKIE_ACCESS_TOKEN_SAME_SITE` | `lax`                        | Politique SameSite du cookie (`lax`, `strict` ou `none`)            |
+| `SESSION_EXPIRES_IN`          | `12h`                          | Durée de validité d'une session en base                              |
+| `FRONTEND_ORIGIN`             | `http://localhost:3000`        | Origine autorisée par le CORS                                        |
+| `SMTP_HOST`                   | `smtp.gmail.com`               | Serveur SMTP pour l'envoi d'emails                                   |
+| `SMTP_PORT`                   | `587`                          | Port SMTP                                                            |
+| `SMTP_SECURE`                 | `false`                        | `true` si le port SMTP utilise TLS directement (port 465)            |
+| `SMTP_USER`                   | `email@gmail.com`              | Identifiant SMTP                                                     |
+| `SMTP_PASS`                   | `xxxx`                         | Mot de passe SMTP — utiliser un mot de passe d'application Gmail     |
+| `CONTACT_EMAIL`               | `email@gmail.com`              | Adresse destinataire des formulaires de contact                      |
+
+> Les fichiers `.env` ne sont pas versionnés — ils sont exclus par `.gitignore` et `.dockerignore`. Ne jamais commiter des secrets en clair dans le dépôt.
 
 ---
 

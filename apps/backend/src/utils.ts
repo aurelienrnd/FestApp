@@ -9,7 +9,7 @@ import { AppError } from "./errors/AppError";
 import { ERRORS } from "./errors/errorMessages";
 
 /** Verifie si la variable d'environnement existe et renvoie une erreur si non
- * Permet de gerer le typage
+ * Permet de gerer les erreur de typage
  * @param {string} name nom de la variable d'environnement
  * @returns {string}
  */
@@ -71,7 +71,7 @@ export function initToken(
 }
 
 /** Cree un cookie
- * @param {string} EnvName variable d'environnement
+ * @param {string} envName variable d'environnement
  * @param {string} envSecure variable d'environnement
  * @param {string} envSameSite variable d'environnement
  * @param {string} token token a renvoyer dans le cookie
