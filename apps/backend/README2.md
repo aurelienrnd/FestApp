@@ -1242,7 +1242,51 @@ Valide qu'un paramètre de route est un UUID valide. Évite d'atteindre la base 
 
 ### 7.6. Upload — `multer` et traitement image
 
+`upload.ts` configure multer pour recevoir les fichiers image envoyés par les formulaires multipart.
+
+```ts
+export const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new AppError(ERRORS.ARTIST_INVALID_FILE_TYPE, 400));
+    }
+  },
+});
+```
+
+**`memoryStorage`** — le fichier n'est pas écrit sur le disque, il est conservé en mémoire sous forme de `Buffer` dans `req.file.buffer`. C'est ce buffer qui est ensuite passé à `sharp` dans le service `imageUpload.service` pour redimensionner et convertir l'image avant de l'écrire dans `uploads/`.
+
+**`fileFilter`** — vérifie le type MIME du fichier avant de l'accepter. Seuls `image/jpeg`, `image/png` et `image/webp` sont autorisés. Si le type est refusé, une `AppError` 400 est levée directement dans le callback multer.
+
+Dans les routes, `upload` est utilisé comme middleware avant le controller :
+
+```ts
+router.post("/", ...adminAuth("admin"), upload.single("image"), asyncHandler(createArtist));
+```
+
+`upload.single("image")` indique que la requête contient un seul fichier dans le champ `image`.
+
 ### 7.7. Rate limiting — `rateLimitLogin`
+
+`rateLimitLogin` est un middleware `express-rate-limit` configuré pour protéger la route de connexion contre les attaques par force brute :
+
+```ts
+export const rateLimitLogin = rateLimit({
+  windowMs: 10 * 60 * 1000, // fenêtre de 10 minutes
+  max: 5,                    // 5 tentatives max par IP
+  standardHeaders: true,     // renvoie les headers RateLimit-* au client
+  legacyHeaders: false,
+  message: { error: ERRORS.RATE_LIMIT_TOO_MANY_ATTEMPTS },
+});
+```
+
+Au-delà de 5 tentatives depuis la même IP en 10 minutes, `express-rate-limit` renvoie automatiquement une réponse 429 avec le message d'erreur — sans atteindre le controller. Le compteur se réinitialise après la fenêtre de 10 minutes.
+
+`standardHeaders: true` ajoute les headers `RateLimit-Limit`, `RateLimit-Remaining` et `RateLimit-Reset` à chaque réponse, ce qui permet au client de savoir combien de tentatives il lui reste avant d'être bloqué.
 
 ---
 
