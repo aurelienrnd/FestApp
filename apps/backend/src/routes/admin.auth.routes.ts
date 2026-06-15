@@ -22,7 +22,6 @@ import { hashPassword } from "../middlewares/hashPassword";
 
 const router = Router();
 
-// Auth administrateur
 router.post(
   "/auth/login",
   rateLimitLogin,

@@ -2033,19 +2033,115 @@ Chaque fichier de routes déclare les endpoints d'un domaine, compose la chaîne
 
 ### 11.1. `home.routes.ts`
 
+```ts
+router.get("/home", asyncHandler(getHome));
+```
+
+| Méthode | Endpoint | Middlewares | Controller |
+|---|---|---|---|
+| `GET` | `/public/home` | — | `getHome` |
+
 ### 11.2. `artists.routes.ts`
+
+```ts
+router.get("/artists", asyncHandler(listArtists));
+router.get("/artists/:id", asyncHandler(getArtist));
+```
+
+| Méthode | Endpoint | Middlewares | Controller |
+|---|---|---|---|
+| `GET` | `/public/artists` | — | `listArtists` |
+| `GET` | `/public/artists/:id` | — | `getArtist` |
 
 ### 11.3. `news.routes.ts`
 
+```ts
+router.get("/news", asyncHandler(optionalAuth), asyncHandler(getNewsList));
+router.get("/news/:id", asyncHandler(optionalAuth), asyncHandler(getNews));
+```
+
+| Méthode | Endpoint | Middlewares | Controller |
+|---|---|---|---|
+| `GET` | `/public/news` | `optionalAuth` | `getNewsList` |
+| `GET` | `/public/news/:id` | `optionalAuth` | `getNews` |
+
 ### 11.4. `admin.auth.routes.ts`
+
+```ts
+router.post("/auth/login",    rateLimitLogin, validateBody(loginSchema), asyncHandler(login));
+router.post("/auth/logout",   asyncHandler(auth), asyncHandler(logout));
+router.get( "/auth/me",       asyncHandler(auth), asyncHandler(sessionIsOpen), asyncHandler(userInfo));
+router.post("/auth/forgot-password", rateLimitLogin, validateBody(forgotPasswordSchema), asyncHandler(forgotPassword));
+router.patch("/auth/password", asyncHandler(auth), asyncHandler(sessionIsOpen), validateBody(changePasswordSchema), asyncHandler(hashPassword("newPassword")), asyncHandler(changePassword));
+```
+
+| Méthode | Endpoint | Middlewares | Controller |
+|---|---|---|---|
+| `POST` | `/admin/auth/login` | `rateLimitLogin`, `validateBody` | `login` |
+| `POST` | `/admin/auth/logout` | `auth` | `logout` |
+| `GET` | `/admin/auth/me` | `auth`, `sessionIsOpen` | `userInfo` |
+| `POST` | `/admin/auth/forgot-password` | `rateLimitLogin`, `validateBody` | `forgotPassword` |
+| `PATCH` | `/admin/auth/password` | `auth`, `sessionIsOpen`, `validateBody`, `hashPassword` | `changePassword` |
+
+`/auth/me` est la seule route auth qui passe par `sessionIsOpen` — elle renouvelle le token à chaque chargement du layout admin. `/auth/logout` n'en a pas besoin : il révoque la session lui-même.
 
 ### 11.5. `admin.artists.routes.ts`
 
+```ts
+router.post(  "/artists",    ...adminAuth("admin", "artists"), upload.single("image"), validateBody(createArtistSchema), asyncHandler(createArtist));
+router.patch( "/artists/:id",...adminAuth("admin", "artists"), validateUuidParam(), upload.single("image"), validateBody(createArtistSchema), asyncHandler(updateArtist));
+router.delete("/artists/:id",...adminAuth("admin", "artists"), validateUuidParam(), asyncHandler(deleteArtist));
+```
+
+| Méthode | Endpoint | Middlewares | Controller |
+|---|---|---|---|
+| `POST` | `/admin/artists` | `adminAuth("admin","artists")`, `upload`, `validateBody` | `createArtist` |
+| `PATCH` | `/admin/artists/:id` | `adminAuth("admin","artists")`, `validateUuidParam`, `upload`, `validateBody` | `updateArtist` |
+| `DELETE` | `/admin/artists/:id` | `adminAuth("admin","artists")`, `validateUuidParam` | `deleteArtist` |
+
 ### 11.6. `admin.news.routes.ts`
+
+```ts
+router.post(  "/news",    ...adminAuth("admin", "news"), upload.single("image"), validateBody(createNewsSchema), asyncHandler(createNews));
+router.patch( "/news/:id",...adminAuth("admin", "news"), validateUuidParam(), upload.single("image"), validateBody(createNewsSchema), asyncHandler(updateNews));
+router.delete("/news/:id",...adminAuth("admin", "news"), validateUuidParam(), asyncHandler(deleteNews));
+```
+
+| Méthode | Endpoint | Middlewares | Controller |
+|---|---|---|---|
+| `POST` | `/admin/news` | `adminAuth("admin","news")`, `upload`, `validateBody` | `createNews` |
+| `PATCH` | `/admin/news/:id` | `adminAuth("admin","news")`, `validateUuidParam`, `upload`, `validateBody` | `updateNews` |
+| `DELETE` | `/admin/news/:id` | `adminAuth("admin","news")`, `validateUuidParam` | `deleteNews` |
 
 ### 11.7. `admin.users.routes.ts`
 
+```ts
+router.get(   "/users",    ...adminAuth("admin"), asyncHandler(listUsers));
+router.post(  "/users",    ...adminAuth("admin"), validateBody(createUserSchema), asyncHandler(createUser));
+router.patch( "/users/:id",...adminAuth("admin"), validateUuidParam(), validateBody(createUserSchema), asyncHandler(updateUser));
+router.delete("/users/:id",...adminAuth("admin"), validateUuidParam(), asyncHandler(deleteUser));
+```
+
+| Méthode | Endpoint | Middlewares | Controller |
+|---|---|---|---|
+| `GET` | `/admin/users` | `adminAuth("admin")` | `listUsers` |
+| `POST` | `/admin/users` | `adminAuth("admin")`, `validateBody` | `createUser` |
+| `PATCH` | `/admin/users/:id` | `adminAuth("admin")`, `validateUuidParam`, `validateBody` | `updateUser` |
+| `DELETE` | `/admin/users/:id` | `adminAuth("admin")`, `validateUuidParam` | `deleteUser` |
+
+Seul le rôle `admin` peut gérer les utilisateurs — contrairement aux artistes et news accessibles aussi au rôle dédié.
+
 ### 11.8. `contact.routes.ts`
+
+```ts
+router.post("/submit", validateBody(contactSchema), asyncHandler(submitContact));
+```
+
+| Méthode | Endpoint | Middlewares | Controller |
+|---|---|---|---|
+| `POST` | `/contact/submit` | `validateBody` | `submitContact` |
+
+Route publique — aucune authentification requise. La validation Zod garantit que le message est complet avant l'envoi email.
 
 ---
 
