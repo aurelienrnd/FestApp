@@ -13,6 +13,7 @@ type AuthUserRow = Pick<UserItem, "id" | "display_name" | "role">;
 
 /** Verifie qu'un token est present dans le cookie de la requete
  * @param req - la requête HTTP entrante
+ * @function getEnv Recupere la valeur d'une variable d'environnement
  * @return le token
  */
 function getTokenFromCookie(req: Request) {
@@ -62,6 +63,7 @@ function decodedToken(token: string) {
  * @param next - la fonction de middleware suivante
  * @function getTokenFromCookie Verifie qu'un token est present dans le cookie de la requete
  * @function decodedToken Decode le token JWT pour recuperer le userId et le sessionId
+ * @function query Execute une requete SQL sur la base de donnees
  */
 export async function optionalAuth(
   req: Request,
@@ -85,13 +87,19 @@ export async function optionalAuth(
     }
 
     // Verifie que la session existe et n'est pas revoquee (logout invalide la session en BD)
-    const sessions = await query<Pick<SessionRow, "id" | "revoked_at" | "expires_at">>(
+    const sessions = await query<
+      Pick<SessionRow, "id" | "revoked_at" | "expires_at">
+    >(
       "SELECT id, revoked_at, expires_at FROM sessions WHERE id = $1 AND user_id = $2",
       [sessionId, userId],
     );
 
     // Si la session est valide, on stocke les infos d'authentification dans `res.locals`
-    if (sessions[0] && sessions[0].revoked_at === null && new Date(sessions[0].expires_at) > new Date()) {
+    if (
+      sessions[0] &&
+      sessions[0].revoked_at === null &&
+      new Date(sessions[0].expires_at) > new Date()
+    ) {
       res.locals.userId = user[0].id;
       res.locals.userRole = user[0].role;
       res.locals.userDisplayName = user[0].display_name;
@@ -108,8 +116,12 @@ export async function optionalAuth(
  * Recupere et decode le token
  * Recherche l'utilisateur dans la BDD
  * Stocke le user et le sessionId dans res.locals pour les handlers suivants
+ * @param req - la requête HTTP entrante
+ * @param res - la réponse HTTP
+ * @param next - la fonction de middleware suivante
  * @function getTokenFromCookie Verifie qu'un token est present dans le cookie de la requete
  * @function decodedToken Decode le token JWT pour recuperer le userId et le sessionId
+ * @function query Execute une requete SQL sur la base de donnees
  */
 export async function auth(req: Request, res: Response, next: NextFunction) {
   // Récupère les id depuis le token d'accès depuis les cookies,

@@ -10,7 +10,18 @@ import {
   sessionRevoked,
 } from "../utils";
 
-/** Verifie si la session est valide puis renouvelle le token d'acces. */
+/** Verifie si la session est valide puis renouvelle le token d'acces.
+ * @param req - la requête HTTP entrante
+ * @param res - la réponse HTTP
+ * @param next - la fonction de middleware suivante
+ * @function requireSessionId Verifie que le sessionId est present dans res.locals
+ * @function requireUserId Verifie que le userId est present dans res.locals
+ * @function sessionExists Verifie que la session existe en base de donnees
+ * @function sessionRevoked Verifie que la session n'est pas revoquee
+ * @function initToken Genere un nouveau token d'acces JWT
+ * @function serializeCookie Genere un cookie a partir du token d'acces
+ * @function query Execute une requete SQL sur la base de donnees
+ */
 export async function sessionIsOpen(
   _req: Request,
   res: Response,
@@ -31,15 +42,13 @@ export async function sessionIsOpen(
   sessionExists(sessionBdd);
   sessionRevoked(sessionBdd);
 
-  // Génère un nouveau token d'accès JWT
+  // Génère un nouveau token d'accès JWT puis le sérialise dans un cookie HTTP.
   const accessToken = initToken(
     reqUserId,
     "JWT_ACCESS_SECRET",
     "JWT_ACCESS_EXPIRES_IN",
     reqSessionId,
   );
-
-  // Sérialise un cookie
   const accessCookie = serializeCookie(
     "COOKIE_ACCESS_TOKEN_NAME",
     "COOKIE_ACCESS_TOKEN_SECURE",

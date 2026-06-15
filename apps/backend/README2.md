@@ -1125,7 +1125,34 @@ Dans `auth`, si la session est révoquée ou inexistante ce n'est pas grave — 
 
 Dans `optionalAuth` en revanche, `sessionIsOpen` n'est jamais appelé après — la route est semi-publique, il n'y a pas de chaîne de middlewares stricte. Donc `optionalAuth` vérifie elle-même que la session est active et non expirée avant de peupler `res.locals`, sinon un utilisateur avec une session révoquée ou expirée serait quand même considéré comme connecté.
 
+Conséquence : sur ces routes, le token n'est pas renouvelé. Le renouvellement n'a lieu que via `sessionIsOpen`, qui n'est appelé que sur les routes admin. Naviguer uniquement sur les pages publiques sans toucher à l'administration ne suffit pas à maintenir la session active.
+
 ### 7.2. Sessions — `sessionIsOpen`
+
+`sessionIsOpen` s'exécute après `auth` sur toutes les routes protégées. Son rôle est double : vérifier que la session en base est encore valide, et renouveler le token JWT à chaque requête.
+
+**Vérification de la session**
+
+```ts
+const rows = await query<SessionRow>(
+  "SELECT id, user_id, expires_at, revoked_at FROM sessions WHERE id = $1 AND user_id = $2",
+  [reqSessionId, reqUserId],
+);
+sessionExists(sessionBdd);
+sessionRevoked(sessionBdd);
+```
+
+`sessionExists` lève une `AppError` 401 si la session est introuvable en base. `sessionRevoked` lève une `AppError` 401 si `revoked_at` n'est pas `null` (session fermée par un logout) ou si `expires_at` est dépassé. Ces deux fonctions sont centralisées dans `utils.ts`.
+
+**Renouvellement du token**
+
+```ts
+const accessToken = initToken(reqUserId, "JWT_ACCESS_SECRET", "JWT_ACCESS_EXPIRES_IN", reqSessionId);
+const accessCookie = serializeCookie("COOKIE_ACCESS_TOKEN_NAME", ...);
+res.setHeader("Set-Cookie", accessCookie);
+```
+
+À chaque requête authentifiée réussie, un nouveau token JWT est généré et renvoyé dans le cookie. Cela permet de maintenir la session active tant que l'utilisateur navigue — le token expire seulement si l'utilisateur reste inactif plus longtemps que `JWT_ACCESS_EXPIRES_IN`.
 
 ### 7.3. Autorisation — `requireRole`
 
