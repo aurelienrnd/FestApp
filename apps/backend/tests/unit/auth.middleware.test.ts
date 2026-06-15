@@ -144,7 +144,13 @@ describe("optionalAuth", () => {
     queryMock.mockResolvedValueOnce([
       { id: "user-uuid", display_name: "Marie Martin", role: "news" },
     ]);
-    queryMock.mockResolvedValueOnce([{ id: "session-uuid", revoked_at: null, expires_at: new Date(Date.now() + 3600000) }]);
+    queryMock.mockResolvedValueOnce([
+      {
+        id: "session-uuid",
+        revoked_at: null,
+        expires_at: new Date(Date.now() + 3600000),
+      },
+    ]);
 
     // optionalAuth doit peupler res.locals et appeler next() sans erreur
     await optionalAuth(req, res, next);
