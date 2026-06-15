@@ -3,8 +3,11 @@ import type { Request, Response } from "express";
 import { query } from "../../../db";
 import type { ArtistItem, NewsItem } from "../../../type";
 
-/** Retourne les 2 artistes les plus recents et les 2 dernieres news publiees pour la page d'accueil. */
+/** Retourne les 2 artistes les plus recents et les 2 dernieres news publiees pour la page d'accueil.
+ * @function query
+ */
 export async function getHome(_req: Request, res: Response) {
+  // Récupère en parallèle les artistes mis en avant et les 2 dernières news publiées.
   const [artists, news] = await Promise.all([
     query<
       Pick<

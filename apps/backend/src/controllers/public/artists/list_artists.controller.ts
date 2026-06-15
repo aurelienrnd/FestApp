@@ -3,7 +3,9 @@ import type { Request, Response } from "express";
 import { query } from "../../../db";
 import type { ArtistItem } from "../../../type";
 
-/** Liste la programmation (artistes) avec leur concert associe si existant. */
+/** Liste la programmation (artistes) avec leur concert associe si existant.
+ * @function query
+ */
 export async function listArtists(_req: Request, res: Response) {
   const artists = await query<
     Omit<

@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
-
 import { query } from "../../../db";
 import { requireUserId } from "../../../utils";
 import { AppError } from "../../../errors/AppError";
@@ -11,8 +10,10 @@ import type { UserCredentialsRow } from "../../../type";
  * Verifie que le mot de passe actuel est correct, puis met a jour password_hash et password_changed_at.
  * @param {Request} req requete Express — body contient password (texte clair) et newPassword (deja hashe par le middleware hashPassword)
  * @param {Response} res reponse Express — res.locals.userId contient l'id extrait du token
+ * @function query
  */
 export async function changePassword(req: Request, res: Response) {
+  // Récupère l'userId depuis res.locals et extrait les mots de passe du body validé.
   const userId = requireUserId(res.locals.userId);
   const { password, newPassword } = req.body as {
     password: string;

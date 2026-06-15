@@ -1423,11 +1423,11 @@ const transporter = nodemailer.createTransport({
 
 Trois fonctions sont exportées, chacune pour un cas d'usage distinct :
 
-| Fonction | Déclencheur |
-|---|---|
-| `sendWelcomeEmail` | Création d'un compte utilisateur par un admin |
-| `sendPasswordResetEmail` | Demande de réinitialisation de mot de passe |
-| `sendContactEmail` | Soumission du formulaire de contact public |
+| Fonction                   | Déclencheur                                   |
+| -------------------------- | ---------------------------------------------- |
+| `sendWelcomeEmail`       | Création d'un compte utilisateur par un admin |
+| `sendPasswordResetEmail` | Demande de réinitialisation de mot de passe   |
+| `sendContactEmail`       | Soumission du formulaire de contact public     |
 
 Toutes passent par la fonction interne `sendMail` qui convertit toute erreur nodemailer en `AppError(ERRORS.MAIL_SEND_ERROR, 500)`.
 
@@ -1435,42 +1435,307 @@ Toutes passent par la fonction interne `sendMail` qui convertit toute erreur nod
 
 Regroupe les vérifications et opérations réutilisables par les controllers utilisateurs.
 
-| Fonction | Rôle |
-|---|---|
-| `generateTemporaryPassword` | Génère un mot de passe aléatoire de 16 caractères hexadécimaux |
-| `hashPassword` | Hash un mot de passe en clair avec bcrypt (coût 10) |
-| `checkEmailAvailable` | Vérifie qu'un email n'est pas déjà utilisé — lève 409 si conflit |
+| Fonction                      | Rôle                                                                            |
+| ----------------------------- | -------------------------------------------------------------------------------- |
+| `generateTemporaryPassword` | Génère un mot de passe aléatoire de 16 caractères hexadécimaux              |
+| `hashPassword`              | Hash un mot de passe en clair avec bcrypt (coût 10)                             |
+| `checkEmailAvailable`       | Vérifie qu'un email n'est pas déjà utilisé — lève 409 si conflit           |
 | `checkDisplayNameAvailable` | Vérifie qu'un nom d'affichage n'est pas déjà utilisé — lève 409 si conflit |
-| `checkUserExists` | Vérifie qu'un utilisateur existe en base — lève 404 sinon |
-| `isNewsPrivileged` | Retourne `true` si le rôle est `admin` ou `news` |
+| `checkUserExists`           | Vérifie qu'un utilisateur existe en base — lève 404 sinon                     |
+| `isNewsPrivileged`          | Retourne `true` si le rôle est `admin` ou `news`                          |
 
 `checkEmailAvailable` et `checkDisplayNameAvailable` acceptent un `excludeId` optionnel pour ignorer l'utilisateur courant lors d'une modification — sans ça, un utilisateur qui garde son propre email lors d'un `PATCH` déclencherait un faux conflit.
 
 ---
 
-## 10. Routes et controllers
+## 10. Controllers — `src/controllers/`
 
-### 10.1. Routes publiques — `/public`
+Chaque controller est un handler async enveloppé dans `asyncHandler`. Il lit les données validées depuis `req.body`, `req.params` ou `res.locals`, effectue les opérations en base, appelle les services si nécessaire, et renvoie la réponse JSON.
 
-### 10.2. Routes d'authentification — `/admin/auth`
+### 10.1. `get_home.controller.ts`
 
-### 10.3. Routes artistes — `/admin/artists`
+Retourne les données agrégées pour la page d'accueil : les artistes mis en avant et les deux dernières news publiées, en une seule requête parallèle.
 
-### 10.4. Routes actualités — `/admin/news`
+```ts
+const [artists, news] = await Promise.all([
+  query<Pick<ArtistItem, "id" | "name" | "stage" | "start_time" | "end_time" | "url_media" | "description_media">>(
+    `SELECT a.id, a.name, a.url_media, a.description_media,
+            c.stage, c.start_time, c.end_time
+     FROM artists a
+     LEFT JOIN concerts c ON c.artist_id = a.id
+     WHERE a.is_featured = TRUE`,
+  ),
+  query<Pick<NewsItem, "id" | "title" | "url_media" | "description_media" | "created_at">>(
+    `SELECT id, title, url_media, description_media, created_at
+     FROM news
+     WHERE is_published = TRUE
+     ORDER BY created_at DESC
+     LIMIT 2`,
+  ),
+]);
 
-### 10.5. Routes utilisateurs — `/admin/users`
+return res.status(200).json({ artists, news });
+```
 
-### 10.6. Route contact — `/contact`
+`Promise.all` exécute les deux requêtes SQL en parallèle — elles sont indépendantes l'une de l'autre et n'ont pas besoin de s'attendre. La jointure `LEFT JOIN concerts` récupère les informations de programmation (scène, horaires) directement avec les données artiste, sans second aller-retour en base.
+
+### 10.2. `list_artists.controller.ts`
+
+Retourne la liste de tous les artistes avec leurs informations de programmation, triés alphabétiquement.
+
+```ts
+const artists = await query<Omit<ArtistItem, "bio" | "genre" | "origin" | "youtube_url" | "spotify_url" | "end_time">>(
+  `SELECT a.id, a.name, a.url_media, a.description_media, a.is_featured,
+          c.stage, c.start_time
+   FROM artists a
+   LEFT JOIN concerts c ON c.artist_id = a.id
+   ORDER BY a.name ASC`,
+);
+
+return res.status(200).json({ artists });
+```
+
+`Omit` exclut les champs lourds ou inutiles pour la liste (`bio`, `genre`, `origin`, liens externes, `end_time`) — seules les données nécessaires à l'affichage des cards sont retournées. La jointure `LEFT JOIN` garantit que les artistes sans concert programmé apparaissent quand même dans la liste, avec `stage` et `start_time` à `null`.
+
+### 10.3. `get_artist.controller.ts`
+
+Retourne le détail complet d'un artiste par son UUID, incluant tous les champs et son concert associé.
+
+```ts
+const { id } = req.params;
+
+const rows = await query<ArtistItem>(
+  `SELECT a.id, a.name, a.genre, a.origin, a.bio, a.url_media, a.description_media,
+          a.youtube_url, a.spotify_url, a.is_featured,
+          c.stage, c.start_time, c.end_time
+   FROM artists a
+   LEFT JOIN concerts c ON c.artist_id = a.id
+   WHERE a.id = $1`,
+  [id],
+);
+
+if (!rows[0]) throw new AppError(ERRORS.ARTIST_NOT_FOUND, 404);
+
+return res.status(200).json({ artist: rows[0] });
+```
+
+Contrairement à `list_artists`, tous les champs d'`ArtistItem` sont retournés — `bio`, `genre`, `origin`, `youtube_url`, `spotify_url` et `end_time` sont nécessaires pour la page de détail. La vérification `if (!rows[0])` lève une `AppError` 404 si l'UUID ne correspond à aucun artiste en base.
+
+### 10.4. `get_news_list.controller.ts`
+
+Retourne la liste des actualités triées par date décroissante. Le filtre appliqué dépend du rôle de l'utilisateur détecté par `optionalAuth` en amont.
+
+```ts
+const isPrivileged = isNewsPrivileged(res.locals.userRole);
+
+const news = await query<Omit<NewsItem, "content">>(
+  `SELECT a.id, a.title, a.is_published, a.created_at,
+          a.url_media, a.description_media,
+          u.display_name AS author_name
+   FROM news a
+   LEFT JOIN users u ON u.id = a.user_id
+   ${isPrivileged ? "" : "WHERE a.is_published = TRUE"}
+   ORDER BY a.created_at DESC`,
+);
+
+return res.status(200).json({ news });
+```
+
+`isNewsPrivileged` retourne `true` si le rôle est `admin` ou `news` — dans ce cas la clause `WHERE is_published = TRUE` est omise et tous les brouillons sont inclus. Le `LEFT JOIN users` récupère le nom de l'auteur ; il reste `null` si l'utilisateur a été supprimé depuis la création de la news. Le champ `content` est exclu avec `Omit` — il n'est pas nécessaire pour l'affichage des cards de liste.
+
+### 10.5. `get_news.controller.ts`
+
+Retourne le détail complet d'une news par son UUID. La logique d'accès aux brouillons est gérée après la requête SQL.
+
+```ts
+const { id } = req.params;
+const isPrivileged = isNewsPrivileged(res.locals.userRole);
+
+const rows = await query<NewsItem>(
+  `SELECT a.id, a.title, a.content, a.is_published, a.created_at,
+          a.url_media, a.description_media,
+          u.display_name AS author_name
+   FROM news a
+   LEFT JOIN users u ON u.id = a.user_id
+   WHERE a.id = $1`,
+  [id],
+);
+
+if (!rows[0]) throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
+if (!isPrivileged && !rows[0].is_published) throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
+
+return res.status(200).json({ news: rows[0] });
+```
+
+La vérification se fait en deux temps : d'abord on vérifie que la news existe, puis que l'utilisateur y a accès. Un utilisateur non privilégié qui tente d'accéder à un brouillon reçoit une `404` et non une `403` — pour ne pas révéler l'existence d'un contenu non publié.
+
+### 10.6. `login.controller.ts`
+
+Gère la connexion en quatre étapes : vérification des identifiants, création de session en base, génération du JWT et pose du cookie.
+
+```ts
+// 1. Récupère l'utilisateur en base
+const email = String(req.body.email).trim().toLowerCase();
+const password = String(req.body.password);
+const user = (await query<UserCredentialsRow>(`SELECT id, email, password_hash, display_name FROM users WHERE email = $1 LIMIT 1`, [email]))[0];
+
+// 2. Vérifie existence et mot de passe
+userExists(user);
+passwordIsValid(password, user.password_hash);
+
+// 3. Crée une session en base et génère le JWT
+const sessionId = await generateSession(user, "SESSION_EXPIRES_IN");
+const accessToken = initToken(user.id, "JWT_ACCESS_SECRET", "JWT_ACCESS_EXPIRES_IN", sessionId);
+
+// 4. Pose le cookie et répond
+res.setHeader("Set-Cookie", serializeCookie(...));
+return res.status(200).json({ message: "Authentification reussie" });
+```
+
+`generateSession` insère une ligne dans la table `sessions` avec une date d'expiration calculée depuis `SESSION_EXPIRES_IN`, et retourne l'UUID de session. Cet UUID est ensuite embarqué dans le payload JWT aux côtés du `userId` — les deux sont nécessaires pour valider chaque requête dans `auth` et `sessionIsOpen`.
+
+`userExists` et `passwordIsValid` sont deux fonctions de `utils.ts` qui lèvent une `AppError` 401 en cas d'échec — sans préciser lequel, pour ne pas indiquer à un attaquant si l'email existe ou non.
+
+### 10.7. `logout.controller.ts`
+
+Révoque la session courante en base. Le cookie JWT n'est pas supprimé côté serveur — c'est le frontend qui le supprime — mais la session étant révoquée, le middleware `sessionIsOpen` bloquera toute requête ultérieure avec ce token.
+
+```ts
+const reqSessionId = requireSessionId(res.locals.sessionId);
+const reqUserId = requireUserId(res.locals.userId);
+
+const rows = await query<SessionRow>(
+  "SELECT id, revoked_at, expires_at FROM sessions WHERE id = $1 AND user_id = $2",
+  [reqSessionId, reqUserId],
+);
+sessionExists(rows[0]);
+sessionRevoked(rows[0]);
+
+await query(
+  "UPDATE sessions SET revoked_at = now() WHERE id = $1 AND user_id = $2",
+  [reqSessionId, reqUserId],
+);
+
+return res.status(200).json({ message: "Deconnexion reussie" });
+```
+
+`sessionExists` et `sessionRevoked` vérifient que la session est bien active avant de la révoquer — évite de mettre à jour une ligne déjà révoquée ou inexistante. L'`UPDATE` pose `revoked_at = now()` : dès lors, `sessionIsOpen` refusera tout token qui embarque cet identifiant de session.
+
+### 10.8. `user_info.controller.ts`
+
+Retourne les informations de l'utilisateur connecté et indique si un changement de mot de passe est obligatoire.
+
+```ts
+const reqUserId = requireUserId(res.locals.userId);
+const rows = await query<Omit<UserItem, "created_at">>(
+  `SELECT id, email, display_name, role, password_changed_at FROM users WHERE id = $1 LIMIT 1`,
+  [reqUserId],
+);
+if (!rows[0]) throw new AppError(ERRORS.AUTH_USER_NOT_FOUND, 401);
+
+return res.status(200).json({
+  user: { id: user.id, email: user.email, display_name: user.display_name, role: user.role },
+  mustChangePassword: user.password_changed_at === null,
+});
+```
+
+`mustChangePassword` est calculé directement depuis `password_changed_at` : si le champ est `null`, l'utilisateur n'a jamais changé son mot de passe depuis la création de son compte par un admin. Le frontend utilise ce flag pour afficher la modale de changement obligatoire avant l'accès à l'administration.
+
+### 10.9. `change_password.controller.ts`
+
+Permet à l'utilisateur connecté de modifier son mot de passe en vérifiant d'abord l'ancien.
+
+```ts
+// 1. Récupère le hash actuel
+const rows = await query<UserCredentialsRow>(
+  `SELECT id, email, password_hash, display_name FROM users WHERE id = $1 LIMIT 1`,
+  [userId],
+);
+if (!rows[0]) throw new AppError(ERRORS.AUTH_USER_NOT_FOUND, 404);
+
+// 2. Vérifie que le mot de passe actuel est correct
+const isValid = await bcrypt.compare(password, rows[0].password_hash);
+if (!isValid) throw new AppError(ERRORS.AUTH_WRONG_PASSWORD, 401);
+
+// 3. Met à jour le hash et la date de changement
+await query(
+  `UPDATE users SET password_hash = $1, password_changed_at = NOW() WHERE id = $2`,
+  [newPassword, userId],
+);
+```
+
+`newPassword` contient déjà le hash bcrypt — il est haché par le middleware `hashPassword` avant d'atteindre le controller. `password_changed_at = NOW()` est mis à jour à chaque changement — c'est ce champ que `userInfo` vérifie pour calculer `mustChangePassword`.
+
+### 10.10. `forgot_password.controller.ts`
+
+Réinitialise le mot de passe d'un utilisateur à partir de son email en générant un mot de passe temporaire et en le transmettant par email.
+
+```ts
+// 1. Vérifie que l'email existe en base
+const user = (await query<{ id: string; email: string; display_name: string }>(
+  `SELECT id, email, display_name FROM users WHERE email = $1 LIMIT 1`, [email],
+))[0];
+if (!user) throw new AppError(ERRORS.AUTH_EMAIL_NOT_FOUND, 404);
+
+// 2. Génère un mot de passe temporaire et le hash
+const temporaryPassword = generateTemporaryPassword();
+const passwordHash = await hashPassword(temporaryPassword);
+
+// 3. Remet password_changed_at à null pour forcer le changement à la prochaine connexion
+await query(
+  `UPDATE users SET password_hash = $1, password_changed_at = NULL WHERE id = $2`,
+  [passwordHash, user.id],
+);
+
+// 4. Envoie le mot de passe temporaire par email
+await sendPasswordResetEmail(user.email, user.display_name, temporaryPassword);
+```
+
+`password_changed_at = NULL` est la clé du mécanisme : en remettant ce champ à `null`, `userInfo` calculera `mustChangePassword: true` à la prochaine connexion, forçant l'utilisateur à changer son mot de passe provisoire avant d'accéder à l'administration.
+
+### 10.11. `create_artist.controller.ts`
+
+### 10.12. `update_artist.controller.ts`
+
+### 10.13. `delete_artist.controller.ts`
+
+### 10.14. `create_news.controller.ts`
+
+### 10.15. `update_news.controller.ts`
+
+### 10.16. `delete_news.controller.ts`
+
+### 10.17. `list_users.controller.ts`
+
+### 10.18. `create_user.controller.ts`
+
+### 10.19. `update_user.controller.ts`
+
+### 10.20. `delete_user.controller.ts`
+
+### 10.21. `submit_contact.controller.ts`
 
 ---
 
-## 11. Base de données — connexion et requêtes
+## 11. Routes — `src/routes/`
 
-### 11.1. Le pool de connexion — `src/db.ts`
+Chaque fichier de routes déclare les endpoints d'un domaine, compose la chaîne de middlewares et délègue au controller. Les routes ne contiennent aucune logique métier.
 
-### 11.2. Convention de typage des requêtes `query<T>`
+### 11.1. `home.routes.ts`
 
-### 11.3. Vérification systématique de `rows[0]`
+### 11.2. `artists.routes.ts`
+
+### 11.3. `news.routes.ts`
+
+### 11.4. `admin.auth.routes.ts`
+
+### 11.5. `admin.artists.routes.ts`
+
+### 11.6. `admin.news.routes.ts`
+
+### 11.7. `admin.users.routes.ts`
+
+### 11.8. `contact.routes.ts`
 
 ---
 

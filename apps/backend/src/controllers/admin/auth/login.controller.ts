@@ -16,6 +16,8 @@ import { ERRORS } from "../../../errors/errorMessages";
 /** Cree la session dans la BDD
  * @param {UserCredentialsRow} user utilisateur de la requete
  * @param {string} SESSION_EXPIRES_IN variable d'environnement
+ * @function query
+ * @function envToStringValue
  * @return l'ID de la session dans la BDD
  */
 export async function generateSession(
@@ -43,14 +45,19 @@ export async function generateSession(
  * Verifie que l'utilisateur existe dans la BDD
  * Cree une session
  * Renvoie un token et un cookie pour l'authentification
+ * @function query
  * @function userExists
  * @function passwordIsValid
  * @function generateSession
+ * @function initToken
+ * @function serializeCookie
  */
 export async function login(req: Request, res: Response) {
   // Récupère le mot de passe et l'email dans la requete et dans la BDD
   const email = String(req.body.email).trim().toLowerCase();
   const password = String(req.body.password);
+
+  // Recherche l'utilisateur en base par son email.
   const result = await query<UserCredentialsRow>(
     `SELECT id, email, password_hash, display_name
      FROM users

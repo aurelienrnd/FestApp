@@ -10,6 +10,8 @@ import type { UserItem } from "../../../type";
  * Verifie que l'utilisateur est present dans le header
  * Recupere le user en base de donnees
  * Renvoie les informations utilisateur et mustChangePassword
+ * @function query
+ * @function requireUserId
  */
 export async function userInfo(_req: Request, res: Response) {
   // Récupère l'userId depuis `res.locals`puis recherche l'utilisateur dnas la bdd,

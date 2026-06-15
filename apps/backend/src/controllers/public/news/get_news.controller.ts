@@ -11,11 +11,14 @@ import type { NewsItem } from "../../../type";
  * Leve une AppError 404 si la news n'existe pas ou n'est pas accessible.
  * @param {Request} req requete Express — `req.params.id` contient l'UUID de la news
  * @param {Response} res reponse Express
+ * @function query
  */
 export async function getNews(req: Request, res: Response) {
+  // Extrait l'UUID et vérifie si l'utilisateur a accès aux brouillons.
   const { id } = req.params;
   const isPrivileged = isNewsPrivileged(res.locals.userRole);
 
+  // Récupère la news complète avec le nom de l'auteur.
   const rows = await query<NewsItem>(
     `SELECT a.id, a.title, a.content, a.is_published, a.created_at,
             a.url_media, a.description_media,
@@ -26,8 +29,8 @@ export async function getNews(req: Request, res: Response) {
     [id],
   );
 
+  // Lève une 404 si introuvable, ou si brouillon non accessible par cet utilisateur.
   if (!rows[0]) throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
-
   if (!isPrivileged && !rows[0].is_published)
     throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
 

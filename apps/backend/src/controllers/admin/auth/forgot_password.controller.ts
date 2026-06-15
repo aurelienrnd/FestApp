@@ -12,11 +12,14 @@ import {
  * Verifie que l'email existe en base, genere un mot de passe temporaire,
  * met a jour le hash et remet password_changed_at a null,
  * puis envoie le nouveau mot de passe par email.
+ * @function query
+ * @function sendPasswordResetEmail
+ * @function generateTemporaryPassword
+ * @function hashPassword
  */
 export async function forgotPassword(req: Request, res: Response) {
-  const { email } = req.body as { email: string };
-
   // Verifie que l'email correspond a un utilisateur existant
+  const { email } = req.body as { email: string };
   const rows = await query<{ id: string; email: string; display_name: string }>(
     `SELECT id, email, display_name FROM users WHERE email = $1 LIMIT 1`,
     [email],
@@ -36,6 +39,7 @@ export async function forgotPassword(req: Request, res: Response) {
     [passwordHash, user.id],
   );
 
+  // Envoie le mot de passe temporaire en clair à l'utilisateur par email.
   await sendPasswordResetEmail(
     user.email,
     user.display_name,

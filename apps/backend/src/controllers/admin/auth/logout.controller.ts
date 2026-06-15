@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import type { SessionRow } from "../../../type";
-
 import {
   requireSessionId,
   requireUserId,
@@ -15,6 +14,9 @@ import { query } from "../../../db";
  * Revoque la session dans la BDD
  * @function requireSessionId
  * @function requireUserId
+ * @function sessionExists
+ * @function sessionRevoked
+ * @function query
  */
 export async function logout(_req: Request, res: Response) {
   // Récupère et valide les identifiants de session et d'utilisateur

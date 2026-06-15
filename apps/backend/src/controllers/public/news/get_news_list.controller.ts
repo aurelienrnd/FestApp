@@ -9,10 +9,13 @@ import type { NewsItem } from "../../../type";
  * L'auteur est recupere via LEFT JOIN users (null si l'utilisateur a ete supprime).
  * @param {Request} _req requete Express (non utilisee)
  * @param {Response} res reponse Express
+ * @function query
  */
 export async function getNewsList(_req: Request, res: Response) {
+  // Vérifie si l'utilisateur a accès aux brouillons (rôle admin ou news)
   const isPrivileged = isNewsPrivileged(res.locals.userRole);
 
+  // Récupère les news avec l'auteur — filtre sur is_published si non privilégié.
   const news = await query<Omit<NewsItem, "content">>(
     `SELECT a.id, a.title, a.is_published, a.created_at,
             a.url_media, a.description_media,
