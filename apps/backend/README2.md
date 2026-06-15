@@ -1963,11 +1963,13 @@ const temporaryPassword = generateTemporaryPassword();
 const passwordHash = await hashPassword(temporaryPassword);
 
 // 4. Insère l'utilisateur en base
-const createdUser = (await query<UserItem>(
-  `INSERT INTO users (email, password_hash, display_name, role) VALUES ($1, $2, $3, $4)
+const createdUser = (
+  await query<UserItem>(
+    `INSERT INTO users (email, password_hash, display_name, role) VALUES ($1, $2, $3, $4)
    RETURNING id, email, display_name, role, created_at, password_changed_at`,
-  [email, passwordHash, displayName, role],
-))[0];
+    [email, passwordHash, displayName, role],
+  )
+)[0];
 if (!createdUser) throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
 
 // 5. Envoie les identifiants provisoires par email
@@ -1987,11 +1989,13 @@ await checkUserExists(userId);
 await checkEmailAvailable(email, userId);
 await checkDisplayNameAvailable(displayName, userId);
 
-const updatedUser = (await query<UserItem>(
-  `UPDATE users SET email = $1, display_name = $2, role = $3 WHERE id = $4
+const updatedUser = (
+  await query<UserItem>(
+    `UPDATE users SET email = $1, display_name = $2, role = $3 WHERE id = $4
    RETURNING id, email, display_name, role, created_at, password_changed_at`,
-  [email, displayName, role, userId],
-))[0];
+    [email, displayName, role, userId],
+  )
+)[0];
 if (!updatedUser) throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
 ```
 
@@ -2037,9 +2041,9 @@ Chaque fichier de routes déclare les endpoints d'un domaine, compose la chaîne
 router.get("/home", asyncHandler(getHome));
 ```
 
-| Méthode | Endpoint | Middlewares | Controller |
-|---|---|---|---|
-| `GET` | `/public/home` | — | `getHome` |
+| Méthode | Endpoint       | Middlewares | Controller |
+| ------- | -------------- | ----------- | ---------- |
+| `GET`   | `/public/home` | —           | `getHome`  |
 
 ### 11.2. `artists.routes.ts`
 
@@ -2048,10 +2052,10 @@ router.get("/artists", asyncHandler(listArtists));
 router.get("/artists/:id", asyncHandler(getArtist));
 ```
 
-| Méthode | Endpoint | Middlewares | Controller |
-|---|---|---|---|
-| `GET` | `/public/artists` | — | `listArtists` |
-| `GET` | `/public/artists/:id` | — | `getArtist` |
+| Méthode | Endpoint              | Middlewares | Controller    |
+| ------- | --------------------- | ----------- | ------------- |
+| `GET`   | `/public/artists`     | —           | `listArtists` |
+| `GET`   | `/public/artists/:id` | —           | `getArtist`   |
 
 ### 11.3. `news.routes.ts`
 
@@ -2060,86 +2064,164 @@ router.get("/news", asyncHandler(optionalAuth), asyncHandler(getNewsList));
 router.get("/news/:id", asyncHandler(optionalAuth), asyncHandler(getNews));
 ```
 
-| Méthode | Endpoint | Middlewares | Controller |
-|---|---|---|---|
-| `GET` | `/public/news` | `optionalAuth` | `getNewsList` |
-| `GET` | `/public/news/:id` | `optionalAuth` | `getNews` |
+| Méthode | Endpoint           | Middlewares    | Controller    |
+| ------- | ------------------ | -------------- | ------------- |
+| `GET`   | `/public/news`     | `optionalAuth` | `getNewsList` |
+| `GET`   | `/public/news/:id` | `optionalAuth` | `getNews`     |
 
 ### 11.4. `admin.auth.routes.ts`
 
 ```ts
-router.post("/auth/login",    rateLimitLogin, validateBody(loginSchema), asyncHandler(login));
-router.post("/auth/logout",   asyncHandler(auth), asyncHandler(logout));
-router.get( "/auth/me",       asyncHandler(auth), asyncHandler(sessionIsOpen), asyncHandler(userInfo));
-router.post("/auth/forgot-password", rateLimitLogin, validateBody(forgotPasswordSchema), asyncHandler(forgotPassword));
-router.patch("/auth/password", asyncHandler(auth), asyncHandler(sessionIsOpen), validateBody(changePasswordSchema), asyncHandler(hashPassword("newPassword")), asyncHandler(changePassword));
+router.post(
+  "/auth/login",
+  rateLimitLogin,
+  validateBody(loginSchema),
+  asyncHandler(login),
+);
+router.post("/auth/logout", asyncHandler(auth), asyncHandler(logout));
+router.get(
+  "/auth/me",
+  asyncHandler(auth),
+  asyncHandler(sessionIsOpen),
+  asyncHandler(userInfo),
+);
+router.post(
+  "/auth/forgot-password",
+  rateLimitLogin,
+  validateBody(forgotPasswordSchema),
+  asyncHandler(forgotPassword),
+);
+router.patch(
+  "/auth/password",
+  asyncHandler(auth),
+  asyncHandler(sessionIsOpen),
+  validateBody(changePasswordSchema),
+  asyncHandler(hashPassword("newPassword")),
+  asyncHandler(changePassword),
+);
 ```
 
-| Méthode | Endpoint | Middlewares | Controller |
-|---|---|---|---|
-| `POST` | `/admin/auth/login` | `rateLimitLogin`, `validateBody` | `login` |
-| `POST` | `/admin/auth/logout` | `auth` | `logout` |
-| `GET` | `/admin/auth/me` | `auth`, `sessionIsOpen` | `userInfo` |
-| `POST` | `/admin/auth/forgot-password` | `rateLimitLogin`, `validateBody` | `forgotPassword` |
-| `PATCH` | `/admin/auth/password` | `auth`, `sessionIsOpen`, `validateBody`, `hashPassword` | `changePassword` |
+| Méthode | Endpoint                      | Middlewares                                             | Controller       |
+| ------- | ----------------------------- | ------------------------------------------------------- | ---------------- |
+| `POST`  | `/admin/auth/login`           | `rateLimitLogin`, `validateBody`                        | `login`          |
+| `POST`  | `/admin/auth/logout`          | `auth`                                                  | `logout`         |
+| `GET`   | `/admin/auth/me`              | `auth`, `sessionIsOpen`                                 | `userInfo`       |
+| `POST`  | `/admin/auth/forgot-password` | `rateLimitLogin`, `validateBody`                        | `forgotPassword` |
+| `PATCH` | `/admin/auth/password`        | `auth`, `sessionIsOpen`, `validateBody`, `hashPassword` | `changePassword` |
 
 `/auth/me` est la seule route auth qui passe par `sessionIsOpen` — elle renouvelle le token à chaque chargement du layout admin. `/auth/logout` n'en a pas besoin : il révoque la session lui-même.
 
 ### 11.5. `admin.artists.routes.ts`
 
 ```ts
-router.post(  "/artists",    ...adminAuth("admin", "artists"), upload.single("image"), validateBody(createArtistSchema), asyncHandler(createArtist));
-router.patch( "/artists/:id",...adminAuth("admin", "artists"), validateUuidParam(), upload.single("image"), validateBody(createArtistSchema), asyncHandler(updateArtist));
-router.delete("/artists/:id",...adminAuth("admin", "artists"), validateUuidParam(), asyncHandler(deleteArtist));
+router.post(
+  "/artists",
+  ...adminAuth("admin", "artists"),
+  upload.single("image"),
+  validateBody(createArtistSchema),
+  asyncHandler(createArtist),
+);
+router.patch(
+  "/artists/:id",
+  ...adminAuth("admin", "artists"),
+  validateUuidParam(),
+  upload.single("image"),
+  validateBody(createArtistSchema),
+  asyncHandler(updateArtist),
+);
+router.delete(
+  "/artists/:id",
+  ...adminAuth("admin", "artists"),
+  validateUuidParam(),
+  asyncHandler(deleteArtist),
+);
 ```
 
-| Méthode | Endpoint | Middlewares | Controller |
-|---|---|---|---|
-| `POST` | `/admin/artists` | `adminAuth("admin","artists")`, `upload`, `validateBody` | `createArtist` |
-| `PATCH` | `/admin/artists/:id` | `adminAuth("admin","artists")`, `validateUuidParam`, `upload`, `validateBody` | `updateArtist` |
-| `DELETE` | `/admin/artists/:id` | `adminAuth("admin","artists")`, `validateUuidParam` | `deleteArtist` |
+| Méthode  | Endpoint             | Middlewares                                                                   | Controller     |
+| -------- | -------------------- | ----------------------------------------------------------------------------- | -------------- |
+| `POST`   | `/admin/artists`     | `adminAuth("admin","artists")`, `upload`, `validateBody`                      | `createArtist` |
+| `PATCH`  | `/admin/artists/:id` | `adminAuth("admin","artists")`, `validateUuidParam`, `upload`, `validateBody` | `updateArtist` |
+| `DELETE` | `/admin/artists/:id` | `adminAuth("admin","artists")`, `validateUuidParam`                           | `deleteArtist` |
 
 ### 11.6. `admin.news.routes.ts`
 
 ```ts
-router.post(  "/news",    ...adminAuth("admin", "news"), upload.single("image"), validateBody(createNewsSchema), asyncHandler(createNews));
-router.patch( "/news/:id",...adminAuth("admin", "news"), validateUuidParam(), upload.single("image"), validateBody(createNewsSchema), asyncHandler(updateNews));
-router.delete("/news/:id",...adminAuth("admin", "news"), validateUuidParam(), asyncHandler(deleteNews));
+router.post(
+  "/news",
+  ...adminAuth("admin", "news"),
+  upload.single("image"),
+  validateBody(createNewsSchema),
+  asyncHandler(createNews),
+);
+router.patch(
+  "/news/:id",
+  ...adminAuth("admin", "news"),
+  validateUuidParam(),
+  upload.single("image"),
+  validateBody(createNewsSchema),
+  asyncHandler(updateNews),
+);
+router.delete(
+  "/news/:id",
+  ...adminAuth("admin", "news"),
+  validateUuidParam(),
+  asyncHandler(deleteNews),
+);
 ```
 
-| Méthode | Endpoint | Middlewares | Controller |
-|---|---|---|---|
-| `POST` | `/admin/news` | `adminAuth("admin","news")`, `upload`, `validateBody` | `createNews` |
-| `PATCH` | `/admin/news/:id` | `adminAuth("admin","news")`, `validateUuidParam`, `upload`, `validateBody` | `updateNews` |
-| `DELETE` | `/admin/news/:id` | `adminAuth("admin","news")`, `validateUuidParam` | `deleteNews` |
+| Méthode  | Endpoint          | Middlewares                                                                | Controller   |
+| -------- | ----------------- | -------------------------------------------------------------------------- | ------------ |
+| `POST`   | `/admin/news`     | `adminAuth("admin","news")`, `upload`, `validateBody`                      | `createNews` |
+| `PATCH`  | `/admin/news/:id` | `adminAuth("admin","news")`, `validateUuidParam`, `upload`, `validateBody` | `updateNews` |
+| `DELETE` | `/admin/news/:id` | `adminAuth("admin","news")`, `validateUuidParam`                           | `deleteNews` |
 
 ### 11.7. `admin.users.routes.ts`
 
 ```ts
-router.get(   "/users",    ...adminAuth("admin"), asyncHandler(listUsers));
-router.post(  "/users",    ...adminAuth("admin"), validateBody(createUserSchema), asyncHandler(createUser));
-router.patch( "/users/:id",...adminAuth("admin"), validateUuidParam(), validateBody(createUserSchema), asyncHandler(updateUser));
-router.delete("/users/:id",...adminAuth("admin"), validateUuidParam(), asyncHandler(deleteUser));
+router.get("/users", ...adminAuth("admin"), asyncHandler(listUsers));
+router.post(
+  "/users",
+  ...adminAuth("admin"),
+  validateBody(createUserSchema),
+  asyncHandler(createUser),
+);
+router.patch(
+  "/users/:id",
+  ...adminAuth("admin"),
+  validateUuidParam(),
+  validateBody(createUserSchema),
+  asyncHandler(updateUser),
+);
+router.delete(
+  "/users/:id",
+  ...adminAuth("admin"),
+  validateUuidParam(),
+  asyncHandler(deleteUser),
+);
 ```
 
-| Méthode | Endpoint | Middlewares | Controller |
-|---|---|---|---|
-| `GET` | `/admin/users` | `adminAuth("admin")` | `listUsers` |
-| `POST` | `/admin/users` | `adminAuth("admin")`, `validateBody` | `createUser` |
-| `PATCH` | `/admin/users/:id` | `adminAuth("admin")`, `validateUuidParam`, `validateBody` | `updateUser` |
-| `DELETE` | `/admin/users/:id` | `adminAuth("admin")`, `validateUuidParam` | `deleteUser` |
+| Méthode  | Endpoint           | Middlewares                                               | Controller   |
+| -------- | ------------------ | --------------------------------------------------------- | ------------ |
+| `GET`    | `/admin/users`     | `adminAuth("admin")`                                      | `listUsers`  |
+| `POST`   | `/admin/users`     | `adminAuth("admin")`, `validateBody`                      | `createUser` |
+| `PATCH`  | `/admin/users/:id` | `adminAuth("admin")`, `validateUuidParam`, `validateBody` | `updateUser` |
+| `DELETE` | `/admin/users/:id` | `adminAuth("admin")`, `validateUuidParam`                 | `deleteUser` |
 
 Seul le rôle `admin` peut gérer les utilisateurs — contrairement aux artistes et news accessibles aussi au rôle dédié.
 
 ### 11.8. `contact.routes.ts`
 
 ```ts
-router.post("/submit", validateBody(contactSchema), asyncHandler(submitContact));
+router.post(
+  "/submit",
+  validateBody(contactSchema),
+  asyncHandler(submitContact),
+);
 ```
 
-| Méthode | Endpoint | Middlewares | Controller |
-|---|---|---|---|
-| `POST` | `/contact/submit` | `validateBody` | `submitContact` |
+| Méthode | Endpoint          | Middlewares    | Controller      |
+| ------- | ----------------- | -------------- | --------------- |
+| `POST`  | `/contact/submit` | `validateBody` | `submitContact` |
 
 Route publique — aucune authentification requise. La validation Zod garantit que le message est complet avant l'envoi email.
 
@@ -2149,11 +2231,53 @@ Route publique — aucune authentification requise. La validation Zod garantit q
 
 ### 12.1. Stratégie JWT + sessions en base
 
+L'authentification combine un JWT et une session persistée en base de données. Les deux sont nécessaires : le JWT seul ne peut pas être révoqué avant son expiration, et la session seule nécessiterait un aller-retour en base à chaque requête sans bénéfice du stateless.
+
+Le JWT embarque `userId` et `sessionId` dans son payload. À chaque requête protégée :
+
+1. `auth` vérifie la signature du JWT et extrait `userId` et `sessionId`
+2. `sessionIsOpen` vérifie en base que la session existe, n'est pas révoquée et n'est pas expirée
+
+Cette combinaison permet de révoquer une session côté serveur (logout, bannissement) sans attendre l'expiration naturelle du JWT.
+
 ### 12.2. Cycle de vie d'une session
+
+```
+POST /admin/auth/login
+  → INSERT INTO sessions (user_id, expires_at)  — session créée
+  → JWT généré avec { userId, sessionId }
+  → cookie posé
+
+Chaque requête protégée
+  → sessionIsOpen vérifie sessions WHERE id = sessionId AND user_id = userId
+  → nouveau JWT généré, cookie renouvelé
+
+POST /admin/auth/logout
+  → UPDATE sessions SET revoked_at = now()  — session révoquée
+  → toute requête ultérieure avec ce sessionId → 401
+```
+
+La session (`SESSION_EXPIRES_IN`, 12h) définit la durée de vie maximale absolue — au-delà, `sessionIsOpen` refuse toute requête même si l'utilisateur est actif. Le JWT (`JWT_ACCESS_EXPIRES_IN`, 1h) est renouvelé à chaque requête protégée réussie — il n'expire que si l'utilisateur reste inactif plus d'une heure sans faire aucune requête admin.
 
 ### 12.3. Cookies httpOnly — configuration et sécurité
 
+Le JWT est transmis dans un cookie `httpOnly` — il n'est pas accessible via `document.cookie` en JavaScript, ce qui le protège des attaques XSS.
+
+La configuration du cookie est sérialisée par `serializeCookie` dans `utils.ts` à partir de trois variables d'environnement :
+
+| Variable | Dev | Prod |
+|---|---|---|
+| `COOKIE_ACCESS_TOKEN_SECURE` | `false` | `true` — cookie uniquement sur HTTPS |
+| `COOKIE_ACCESS_TOKEN_SAME_SITE` | `lax` | `strict` ou `lax` selon le déploiement |
+| `COOKIE_ACCESS_TOKEN_NAME` | `vindhellfest_access_token` | identique |
+
+`Secure: true` en production garantit que le cookie n'est jamais transmis en HTTP clair. `SameSite: lax` protège contre les attaques CSRF pour la majorité des cas d'usage.
+
 ### 12.4. Renouvellement du JWT à chaque requête
+
+`sessionIsOpen` génère un nouveau JWT et le pose dans un `Set-Cookie` à chaque requête authentifiée réussie. Ce mécanisme de sliding session maintient la connexion active tant que l'utilisateur navigue — le JWT expire uniquement si aucune requête protégée n'est faite pendant toute la durée de `JWT_ACCESS_EXPIRES_IN`.
+
+Ce renouvellement n'a lieu que sur les routes qui passent par `sessionIsOpen` — les routes publiques avec `optionalAuth` ne renouvellent pas le token.
 
 ---
 
@@ -2161,8 +2285,116 @@ Route publique — aucune authentification requise. La validation Zod garantit q
 
 ### 13.1. Organisation des tests
 
+Les tests sont répartis en deux catégories dans `tests/` :
+
+```
+tests/
+├── setup.ts                          — configuration globale Vitest
+├── helpers/
+│   ├── testServer.ts                 — instance Express pour Supertest
+│   ├── createAuthSession.ts          — helper : crée un user + session + cookie JWT
+│   └── fixtures.ts                   — helpers : insertUser, insertArtist, insertNews
+├── integration/
+│   ├── public/
+│   │   ├── public.test.ts            — GET /public/home, /artists, /news
+│   │   └── contact.test.ts           — POST /contact/submit
+│   └── admin/
+│       ├── auth.test.ts              — login, logout, me, change-password, forgot-password
+│       ├── artists.test.ts           — CRUD artistes
+│       ├── news.test.ts              — CRUD news
+│       └── users.test.ts             — CRUD utilisateurs
+└── unit/
+    ├── auth.middleware.test.ts
+    ├── requireRole.middleware.test.ts
+    ├── validateBody.middleware.test.ts
+    ├── validateUuidParam.middleware.test.ts
+    ├── imageUpload.service.test.ts
+    ├── mailer.service.test.ts
+    └── user.service.test.ts
+```
+
 ### 13.2. Tests d'intégration — routes HTTP avec Supertest
+
+Les tests d'intégration envoient de vraies requêtes HTTP contre l'instance Express retournée par `createApp()`, sur une vraie base PostgreSQL `vindhellfest_test`.
+
+`testServer.ts` expose l'instance sans démarrer de serveur réseau — Supertest monte directement l'application :
+
+```ts
+export const app = createApp();
+// Supertest s'occupe d'ouvrir et fermer le port
+```
+
+`setup.ts` prépare la base avant les tests et nettoie après chaque test :
+
+```ts
+beforeAll(async () => {
+  // rejoue les migrations SQL sur vindhellfest_test
+  for (const file of MIGRATION_FILES) {
+    const sql = fs.readFileSync(path.join(MIGRATIONS_DIR, file), "utf-8");
+    await testPool.query(sql);
+  }
+});
+
+afterEach(async () => {
+  // efface toutes les données entre chaque test
+  await testPool.query("TRUNCATE sessions, news, concerts, artists, users RESTART IDENTITY CASCADE;");
+});
+```
+
+`setup.ts` mocke aussi les dépendances externes pour éviter les effets de bord :
+
+| Mock | Raison |
+|---|---|
+| `sharp` | Ne pas traiter de vraies images |
+| `fs/promises` (`mkdir`, `unlink`, `writeFile`) | Ne pas écrire sur le disque |
+| `nodemailer` | Ne pas envoyer de vrais emails |
+| `express-rate-limit` | Ne pas bloquer les tests répétés |
 
 ### 13.3. Tests unitaires — services et middlewares
 
+Les tests unitaires isolent une fonction ou un middleware sans passer par Express. La base de données est mockée via `vi.mock` sur le module `../../src/db`.
+
+Chaque fichier de test unitaire couvre un fichier source :
+
+| Fichier de test | Ce qui est testé |
+|---|---|
+| `auth.middleware.test.ts` | `auth` et `optionalAuth` — cookie absent, token invalide, user inexistant, session révoquée |
+| `requireRole.middleware.test.ts` | `requireRole` — rôle autorisé, rôle refusé, locals absent |
+| `validateBody.middleware.test.ts` | `validateBody` — body valide, body invalide, champs manquants |
+| `validateUuidParam.middleware.test.ts` | `validateUuidParam` — UUID valide, UUID malformé, paramètre absent |
+| `imageUpload.service.test.ts` | `saveImage`, `deleteImage` — appels sharp et fs mockés |
+| `mailer.service.test.ts` | `sendWelcomeEmail`, `sendPasswordResetEmail`, `sendContactEmail` — nodemailer mocké |
+| `user.service.test.ts` | `checkEmailAvailable`, `checkDisplayNameAvailable`, `checkUserExists`, `isNewsPrivileged` |
+
 ### 13.4. Helpers et fixtures
+
+**`createAuthSession`**
+
+Insère un utilisateur et une session valide en base, génère un JWT signé et retourne un cookie prêt à passer dans Supertest :
+
+```ts
+const { cookie, userId } = await createAuthSession("admin");
+await request(app).get("/admin/users").set("Cookie", cookie).expect(200);
+```
+
+**`insertUser` / `insertArtist` / `insertNews`**
+
+Fonctions de fixtures pour insérer des données de test directement en base sans passer par l'API. Utilisées pour préparer l'état initial avant de tester un endpoint de lecture, modification ou suppression.
+
+```ts
+const artistId = await insertArtist();
+await request(app).delete(`/admin/artists/${artistId}`).set("Cookie", cookie).expect(200);
+```
+
+**`MINIMAL_PNG`**
+
+Buffer d'une image PNG 1x1px en base64, utilisé comme fichier de test pour les routes multipart qui attendent `req.file` :
+
+```ts
+await request(app)
+  .post("/admin/artists")
+  .set("Cookie", cookie)
+  .attach("image", MINIMAL_PNG, "test.png")
+  .field("name", "Artist Test")
+  ...
+```
