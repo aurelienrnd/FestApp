@@ -8,7 +8,6 @@ import type { UserRole } from "../type";
 /** Retourne la chaine de middlewares d'authentification admin :
  * verification du JWT, validation de la session, puis controle du role.
  * @param roles liste des roles autorises a acceder a la route
- * @returns tableau de middlewares Express pret a etre spread dans une route
  */
 export function adminAuth(...roles: UserRole[]): RequestHandler[] {
   return [

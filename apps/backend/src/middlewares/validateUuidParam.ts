@@ -10,11 +10,15 @@ import { ERRORS } from "../errors/errorMessages";
  */
 export function validateUuidParam(paramName = "id") {
   return (req: Request, _res: Response, next: NextFunction) => {
+    // Crée un schéma Zod pour valider que le paramètre est un UUID valide.
     const schema = z.object({ [paramName]: z.uuid() });
+
+    /// Valide le paramètre de route si invalide, transmet une AppError 400 à errorHandler.
     const result = schema.safeParse(req.params);
     if (!result.success) {
       return next(new AppError(ERRORS.VALIDATION_INVALID_BODY, 400));
     }
+
     return next();
   };
 }

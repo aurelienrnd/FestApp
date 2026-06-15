@@ -1156,9 +1156,89 @@ res.setHeader("Set-Cookie", accessCookie);
 
 ### 7.3. Autorisation — `requireRole`
 
+`requireRole` est une factory de middleware — elle ne retourne pas directement un middleware, elle retourne une fonction qui en est un. Cela permet de passer des arguments lors de la déclaration dans la route :
+
+```ts
+export function requireRole(...roles: UserRole[]) {
+  return (_req: Request, res: Response, next: NextFunction) => {
+    const userRole: UserRole | undefined = res.locals.userRole;
+    if (!userRole || !roles.includes(userRole)) {
+      throw new AppError(ERRORS.FORBIDDEN, 403);
+    }
+    next();
+  };
+}
+```
+
+`res.locals.userRole` est peuplé par `auth` en amont. `requireRole` lit cette valeur et vérifie qu'elle fait partie de la liste des rôles autorisés passés en argument. Si ce n'est pas le cas, une `AppError` 403 est levée.
+
+L'opérateur `...roles` permet de passer un ou plusieurs rôles autorisés :
+
+```ts
+requireRole("admin")               // admin uniquement
+requireRole("admin", "news")       // admin ou news
+```
+
 ### 7.4. Composition — `authChain`
 
+Plutôt que de répéter `asyncHandler(auth), asyncHandler(sessionIsOpen), requireRole(...)` dans chaque route protégée, `authChain.ts` expose une factory `adminAuth` qui compose les trois middlewares en un seul tableau :
+
+```ts
+export function adminAuth(...roles: UserRole[]): RequestHandler[] {
+  return [
+    asyncHandler(auth),
+    asyncHandler(sessionIsOpen),
+    requireRole(...roles),
+  ];
+}
+```
+
+Dans les routes, le tableau est spreadé directement :
+
+```ts
+router.get("/", ...adminAuth("admin"), asyncHandler(getUsers));
+router.delete("/:id", ...adminAuth("admin"), asyncHandler(deleteUser));
+```
+
+Le `...` (spread) déploie le tableau comme si chaque middleware était passé individuellement — Express les exécute dans l'ordre : `auth` → `sessionIsOpen` → `requireRole` → controller.
+
 ### 7.5. Validation — `validateBody` et `validateUuidParam`
+
+Ces deux factories valident les données entrantes avant qu'elles n'atteignent le controller. Comme `requireRole`, elles sont synchrones — pas besoin d'`asyncHandler`.
+
+**`validateBody`**
+
+```ts
+export function validateBody(schema: z.ZodTypeAny) {
+  return (req: Request, _res: Response, next: NextFunction) => {
+    const parsed = schema.safeParse(req.body);
+    if (!parsed.success) {
+      return next(new AppError(ERRORS.VALIDATION_INVALID_BODY, 400));
+    }
+    req.body = parsed.data;
+    return next();
+  };
+}
+```
+
+Prend un schéma Zod en argument et valide `req.body`. Si la validation échoue, une `AppError` 400 est transmise à `errorHandler`. Si elle réussit, `req.body` est remplacé par `parsed.data` — les données sont alors typées et nettoyées (champs inconnus supprimés, valeurs transformées selon le schéma).
+
+**`validateUuidParam`**
+
+```ts
+export function validateUuidParam(paramName = "id") {
+  return (req: Request, _res: Response, next: NextFunction) => {
+    const schema = z.object({ [paramName]: z.uuid() });
+    const result = schema.safeParse(req.params);
+    if (!result.success) {
+      return next(new AppError(ERRORS.VALIDATION_INVALID_BODY, 400));
+    }
+    return next();
+  };
+}
+```
+
+Valide qu'un paramètre de route est un UUID valide. Évite d'atteindre la base de données avec un identifiant malformé. Par défaut valide `req.params.id`, mais le nom du paramètre est configurable : `validateUuidParam("artistId")`.
 
 ### 7.6. Upload — `multer` et traitement image
 

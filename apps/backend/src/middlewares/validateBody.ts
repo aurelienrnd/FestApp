@@ -10,11 +10,13 @@ import { ERRORS } from "../errors/errorMessages";
  */
 export function validateBody(schema: z.ZodTypeAny) {
   return (req: Request, _res: Response, next: NextFunction) => {
+    // Valide le corps de la requête — si invalide, transmet une AppError 400 à errorHandler.
     const parsed = schema.safeParse(req.body);
     if (!parsed.success) {
       return next(new AppError(ERRORS.VALIDATION_INVALID_BODY, 400));
     }
 
+    // Remplace req.body par les données validées et nettoyées par Zod.
     req.body = parsed.data;
     return next();
   };
