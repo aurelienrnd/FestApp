@@ -1292,19 +1292,159 @@ Au-delà de 5 tentatives depuis la même IP en 10 minutes, `express-rate-limit` 
 
 ## 8. Validation des données — `src/schemas/schema.ts`
 
+Tous les schémas Zod utilisés pour valider les corps de requête sont centralisés dans `src/schemas/schema.ts`. Ils sont passés en argument à `validateBody` dans les routes.
+
 ### 8.1. Pourquoi Zod
 
+Sans validation, un controller qui reçoit `req.body` ne peut pas faire confiance aux données — un champ peut être absent, mal typé, ou contenir une valeur malveillante. Zod permet de définir la forme exacte attendue et de rejeter la requête avec un 400 avant d'atteindre la base de données.
+
+Zod présente aussi un avantage TypeScript : `parsed.data` est automatiquement typé selon le schéma. Le controller n'a pas besoin de caster ou de vérifier manuellement chaque champ.
+
 ### 8.2. Schémas par domaine
+
+**Authentification**
+
+```ts
+export const loginSchema = z.object({
+  email: z.email(),
+  password: z.string().min(8),
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.email(),
+});
+
+export const changePasswordSchema = z.object({
+  password: z.string().min(8),
+  newPassword: z.string().min(8),
+});
+```
+
+**Utilisateurs**
+
+```ts
+export const createUserSchema = z.object({
+  email: z.email(),
+  first_name: z.string().min(2).max(30).trim(),
+  last_name: z.string().min(2).max(30).trim(),
+  role: z.enum(["admin", "artists", "news"]),
+});
+```
+
+Utilisé à la fois pour la création (`POST`) et la modification (`PATCH`) — les champs sont les mêmes dans les deux cas.
+
+**Actualités**
+
+```ts
+export const createNewsSchema = z.object({
+  title: z.string().min(2).max(150).trim(),
+  content: z.string().trim().optional().or(z.literal("")),
+  is_published: z.enum(["true", "false"]).optional(),
+  description_media: z.string().min(1).max(255).trim(),
+});
+```
+
+`is_published` est une chaîne `"true"` / `"false"` et non un booléen : les formulaires `multipart/form-data` envoient tous les champs en texte. La conversion en booléen est effectuée dans le controller.
+
+**Artistes**
+
+```ts
+export const createArtistSchema = z.object({
+  name: z.string().min(2).max(100).trim(),
+  // ...
+  youtube_url: z.url().refine(
+    (val) => /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(val),
+  ).optional().or(z.literal("")),
+  spotify_url: z.url().refine(
+    (val) => /^https?:\/\/open\.spotify\.com\//.test(val),
+  ).optional().or(z.literal("")),
+  stage: z.enum(["MainStage", "Tremplin"]),
+  start_time: z.iso.datetime(),
+  end_time: z.iso.datetime(),
+  is_featured: z.enum(["true", "false"]).optional(),
+});
+```
+
+Les URLs YouTube et Spotify utilisent `.refine()` pour vérifier le domaine avec une regex — `z.url()` seul accepterait n'importe quelle URL valide. Le `.optional().or(z.literal(""))` permet d'accepter une chaîne vide quand le champ est laissé vide dans le formulaire.
+
+**Contact**
+
+```ts
+export const contactSchema = z.object({
+  email: z.email(),
+  name: z.string().min(2).max(100).trim(),
+  subject: z.string().min(2).max(150).trim(),
+  message: z.string().min(10).max(2000).trim(),
+});
+```
 
 ---
 
 ## 9. Couche services — `src/services/`
 
+Les services regroupent la logique métier réutilisable entre plusieurs controllers. Un controller délègue aux services les opérations qui dépassent la simple lecture/écriture en base — traitement d'image, envoi d'email, vérification d'unicité. Cela allège les controllers et évite la duplication.
+
 ### 9.1. `imageUpload.service` — pipeline image
+
+Deux fonctions exportées, utilisées par les controllers artistes et news.
+
+**`saveImage`**
+
+```ts
+export async function saveImage(
+  buffer: Buffer,
+  uploadsDir: string,
+  urlPrefix: string,
+): Promise<string>
+```
+
+Reçoit le `Buffer` de `req.file.buffer` (fourni par multer), génère un nom de fichier UUID unique, crée le dossier de destination si absent, redimensionne l'image à 1600px max en conservant les proportions, convertit en WebP qualité 80 avec `sharp`, écrit le fichier sur le disque et retourne l'URL publique.
+
+**`deleteImage`**
+
+```ts
+export async function deleteImage(uploadsDir: string, urlMedia: string): Promise<void>
+```
+
+Supprime silencieusement un fichier image à partir de son URL publique. Le `.catch(() => undefined)` évite de lever une erreur si le fichier est déjà absent. Elle est appelée **après** le commit en base — si la requête SQL échoue, l'ancienne image est conservée.
 
 ### 9.2. `mailer.service` — envoi d'emails
 
+Le transporteur SMTP est configuré une seule fois au démarrage depuis les variables d'environnement :
+
+```ts
+const transporter = nodemailer.createTransport({
+  host: getEnv("SMTP_HOST"),
+  port: Number(getEnv("SMTP_PORT")),
+  secure: getEnv("SMTP_SECURE") === "true",
+  auth: { user: getEnv("SMTP_USER"), pass: getEnv("SMTP_PASS") },
+});
+```
+
+Trois fonctions sont exportées, chacune pour un cas d'usage distinct :
+
+| Fonction | Déclencheur |
+|---|---|
+| `sendWelcomeEmail` | Création d'un compte utilisateur par un admin |
+| `sendPasswordResetEmail` | Demande de réinitialisation de mot de passe |
+| `sendContactEmail` | Soumission du formulaire de contact public |
+
+Toutes passent par la fonction interne `sendMail` qui convertit toute erreur nodemailer en `AppError(ERRORS.MAIL_SEND_ERROR, 500)`.
+
 ### 9.3. `user.service` — logique métier utilisateurs
+
+Regroupe les vérifications et opérations réutilisables par les controllers utilisateurs.
+
+| Fonction | Rôle |
+|---|---|
+| `generateTemporaryPassword` | Génère un mot de passe aléatoire de 16 caractères hexadécimaux |
+| `hashPassword` | Hash un mot de passe en clair avec bcrypt (coût 10) |
+| `checkEmailAvailable` | Vérifie qu'un email n'est pas déjà utilisé — lève 409 si conflit |
+| `checkDisplayNameAvailable` | Vérifie qu'un nom d'affichage n'est pas déjà utilisé — lève 409 si conflit |
+| `checkUserExists` | Vérifie qu'un utilisateur existe en base — lève 404 sinon |
+| `isNewsPrivileged` | Retourne `true` si le rôle est `admin` ou `news` |
+
+`checkEmailAvailable` et `checkDisplayNameAvailable` acceptent un `excludeId` optionnel pour ignorer l'utilisateur courant lors d'une modification — sans ça, un utilisateur qui garde son propre email lors d'un `PATCH` déclencherait un faux conflit.
 
 ---
 

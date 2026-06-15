@@ -21,6 +21,7 @@ export async function hashPassword(password: string): Promise<string> {
  * Si excludeId est fourni, l'utilisateur correspondant est ignore (cas de la modification).
  * @param email adresse email a verifier
  * @param excludeId id de l'utilisateur a exclure de la verification (optionnel)
+ * @function query
  */
 export async function checkEmailAvailable(
   email: string,
@@ -43,6 +44,7 @@ export async function checkEmailAvailable(
  * Si excludeId est fourni, l'utilisateur correspondant est ignore (cas de la modification).
  * @param displayName nom d'affichage a verifier
  * @param excludeId id de l'utilisateur a exclure de la verification (optionnel)
+ * @function query
  */
 export async function checkDisplayNameAvailable(
   displayName: string,
@@ -64,6 +66,7 @@ export async function checkDisplayNameAvailable(
 
 /** Verifie que l'utilisateur existe dans la base de donnees.
  * @param userId id de l'utilisateur a verifier
+ * @function query
  */
 export async function checkUserExists(userId: string): Promise<void> {
   const users = await query<IdRow>(

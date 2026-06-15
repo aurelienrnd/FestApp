@@ -4,7 +4,9 @@ import { getEnv } from "../utils";
 import { AppError } from "../errors/AppError";
 import { ERRORS } from "../errors/errorMessages";
 
-/** Instance partagee du transporteur SMTP — configuree une seule fois au demarrage. */
+/** Instance partagee du transporteur SMTP — configuree une seule fois au demarrage.
+ * @function getEnv
+ */
 const transporter = nodemailer.createTransport({
   host: getEnv("SMTP_HOST"),
   port: Number(getEnv("SMTP_PORT")),
@@ -30,6 +32,7 @@ async function sendMail(options: SendMailOptions): Promise<void> {
  * @param to adresse email du destinataire
  * @param displayName nom complet de l'utilisateur
  * @param tempPassword nouveau mot de passe temporaire en clair
+ * @function sendMail Envoie un email via le transporteur SMTP
  */
 export async function sendPasswordResetEmail(
   to: string,
@@ -49,6 +52,7 @@ export async function sendPasswordResetEmail(
  * @param name nom complet de l'expediteur
  * @param subject sujet du message
  * @param message contenu du message
+ * @function sendMail Envoie un email via le transporteur SMTP
  */
 export async function sendContactEmail(
   from: string,
@@ -69,6 +73,7 @@ export async function sendContactEmail(
  * @param to adresse email du destinataire
  * @param displayName nom complet de l'utilisateur
  * @param tempPassword mot de passe provisoire en clair genere a la creation
+ * @function sendMail Envoie un email via le transporteur SMTP
  */
 export async function sendWelcomeEmail(
   to: string,

@@ -24,15 +24,19 @@ export async function saveImage(
   uploadsDir: string,
   urlPrefix: string,
 ): Promise<string> {
+  // Génère un nom de fichier unique et construit les chemins disque et URL publique.
   const uuid = randomUUID();
   const filename = `${uuid}.webp`;
   const filepath = path.join(uploadsDir, filename);
   const url_media = `${urlPrefix}/${filename}`;
+
+  // Crée le dossier si absent, redimensionne à 1600px max et convertit en WebP qualité 80.
   await mkdir(uploadsDir, { recursive: true });
   await sharp(buffer)
     .resize(1600, undefined, { fit: "inside", withoutEnlargement: true })
     .webp({ quality: 80 })
     .toFile(filepath);
+
   return url_media;
 }
 
@@ -45,6 +49,7 @@ export async function deleteImage(
   uploadsDir: string,
   urlMedia: string,
 ): Promise<void> {
+  // Reconstruit le chemin absolu du fichier depuis son URL publique et le supprime
   const filename = path.basename(urlMedia);
   const filepath = path.join(uploadsDir, filename);
   await unlink(filepath).catch(() => undefined);
