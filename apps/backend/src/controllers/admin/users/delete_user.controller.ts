@@ -4,7 +4,9 @@ import { query } from "../../../db";
 import { AppError } from "../../../errors/AppError";
 import { ERRORS } from "../../../errors/errorMessages";
 
-/** Supprime definitivement un utilisateur par son identifiant. */
+/** Supprime definitivement un utilisateur par son identifiant.
+ * @function query
+ */
 export async function deleteUser(req: Request, res: Response) {
   // Supprime l’utilisateur correspondant a l’id fourni, si aucun utilisateur n’a ete supprime, retourne une erreur 404
   const deletedUsers = await query<IdRow>(

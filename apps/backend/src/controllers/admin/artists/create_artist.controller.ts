@@ -12,6 +12,9 @@ import type { ArtistItem, ConcertRow } from "../../../type";
 /** Cree un artiste avec une image convertie en WebP via sharp.
  * Verifie la presence du fichier image, le convertit en WebP (qualite 80),
  * l'ecrit sur le disque puis insere l'artiste en base de donnees.
+ * @function query
+ * @function saveImage
+ * @function deleteImage
  */
 export async function createArtist(req: Request, res: Response) {
   // verifie que le fichier image est present dans la requete

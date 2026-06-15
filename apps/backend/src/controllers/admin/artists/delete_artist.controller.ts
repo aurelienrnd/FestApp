@@ -13,6 +13,8 @@ import type { ArtistMediaRow } from "../../../type";
  * Le fichier image est supprime du disque apres la suppression en base.
  * @param {Request} req requete Express contenant l'id de l'artiste en parametre d'URL
  * @param {Response} res reponse Express
+ * @function query
+ * @function deleteImage
  */
 export async function deleteArtist(req: Request, res: Response) {
   // supprime l'artiste et retourne son url_media pour supprimer le fichier image
@@ -20,7 +22,6 @@ export async function deleteArtist(req: Request, res: Response) {
     "DELETE FROM artists WHERE id = $1 RETURNING id, url_media",
     [req.params.id],
   );
-
   if (!deletedArtists[0]) {
     throw new AppError(ERRORS.ARTIST_NOT_FOUND, 404);
   }

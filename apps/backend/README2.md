@@ -8,11 +8,11 @@ Le backend est l'une des trois couches de l'architecture du projet Vindhellfest,
 
 Dans l'architecture Docker, le backend tourne dans un conteneur dédié (`vindhellfest-backend`) accessible sur le port `4000`. Il occupe une position centrale dans le réseau interne Docker `app-net` :
 
-| Appelant                        | Adresse utilisée         | Raison                                                        |
-| ------------------------------- | ------------------------- | ------------------------------------------------------------- |
-| Frontend (SSR, layouts serveur) | `http://backend:4000`   | Communication interne au réseau Docker `app-net`           |
-| Frontend (navigateur client)    | `http://localhost:4000` | Le navigateur ne connaît pas le réseau Docker               |
-| Base de données PostgreSQL     | `postgresql://db:5432`  | Hostname `db` résolu par Docker sur le réseau `app-net` |
+| Appelant                        | Adresse utilisée        | Raison                                                  |
+| ------------------------------- | ----------------------- | ------------------------------------------------------- |
+| Frontend (SSR, layouts serveur) | `http://backend:4000`   | Communication interne au réseau Docker `app-net`        |
+| Frontend (navigateur client)    | `http://localhost:4000` | Le navigateur ne connaît pas le réseau Docker           |
+| Base de données PostgreSQL      | `postgresql://db:5432`  | Hostname `db` résolu par Docker sur le réseau `app-net` |
 
 Le backend remplit trois responsabilités principales :
 
@@ -56,25 +56,25 @@ Le démarrage est ainsi sécurisé : si une variable d'environnement obligatoire
 
 ### 2.1. Tableau des technologies et versions
 
-| Technologie        | Version     | Rôle                                                               |
-| ------------------ | ----------- | ------------------------------------------------------------------- |
-| Node.js            | 20 (Alpine) | Environnement d'exécution du conteneur Docker                      |
-| Express.js         | ^5.1.0      | Framework HTTP — routing, middlewares, gestion des erreurs async   |
-| TypeScript         | ^5.9.3      | Typage statique strict sur l'ensemble du code                       |
-| PostgreSQL         | 16          | Base de données relationnelle                                      |
-| pg                 | ^8.16.3     | Driver PostgreSQL natif — pool de connexions, requêtes typées    |
-| Zod                | ^4.2.1      | Validation des corps de requêtes — schémas déclaratifs          |
-| jsonwebtoken       | ^9.0.2      | Génération et vérification des JWT d'authentification            |
-| bcrypt             | ^6.0.0      | Hashage des mots de passe                                           |
+| Technologie        | Version     | Rôle                                                              |
+| ------------------ | ----------- | ----------------------------------------------------------------- |
+| Node.js            | 20 (Alpine) | Environnement d'exécution du conteneur Docker                     |
+| Express.js         | ^5.1.0      | Framework HTTP — routing, middlewares, gestion des erreurs async  |
+| TypeScript         | ^5.9.3      | Typage statique strict sur l'ensemble du code                     |
+| PostgreSQL         | 16          | Base de données relationnelle                                     |
+| pg                 | ^8.16.3     | Driver PostgreSQL natif — pool de connexions, requêtes typées     |
+| Zod                | ^4.2.1      | Validation des corps de requêtes — schémas déclaratifs            |
+| jsonwebtoken       | ^9.0.2      | Génération et vérification des JWT d'authentification             |
+| bcrypt             | ^6.0.0      | Hashage des mots de passe                                         |
 | multer             | ^2.1.1      | Réception des fichiers multipart (images uploadées)               |
-| sharp              | ^0.34.5     | Traitement d'images — conversion WebP, redimensionnement           |
-| nodemailer         | ^8.0.2      | Envoi d'emails (mot de passe provisoire, contact)                   |
-| express-rate-limit | ^8.2.1      | Limitation du débit sur les routes sensibles                       |
+| sharp              | ^0.34.5     | Traitement d'images — conversion WebP, redimensionnement          |
+| nodemailer         | ^8.0.2      | Envoi d'emails (mot de passe provisoire, contact)                 |
+| express-rate-limit | ^8.2.1      | Limitation du débit sur les routes sensibles                      |
 | dotenv             | ^17.2.3     | Chargement des variables d'environnement depuis `.env`            |
-| Vitest             | ^4.0.15     | Framework de tests unitaires et d'intégration                      |
+| Vitest             | ^4.0.15     | Framework de tests unitaires et d'intégration                     |
 | Supertest          | ^7.1.4      | Requêtes HTTP sur l'instance Express dans les tests d'intégration |
 | ESLint             | ^9.39.1     | Analyse statique du code — règles TypeScript                      |
-| Prettier           | ^3.6.2      | Formatage automatique du code                                       |
+| Prettier           | ^3.6.2      | Formatage automatique du code                                     |
 
 ---
 
@@ -298,15 +298,15 @@ routes/  ──►  middlewares/  ──►  controllers/  ──►  services/ 
                                    type.ts  (transversal)
 ```
 
-| Couche           | Responsabilité                                                                                   | Ce qu'elle ne fait pas                                                              |
-| ---------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `routes/`      | Déclare les URLs, les méthodes HTTP et la chaîne de middlewares de chaque endpoint             | Pas de logique métier — uniquement l'assemblage de la chaîne                     |
-| `middlewares/` | Intercepte la requête avant le controller — auth, validation, upload, rate limit                | Pas d'accès direct à la base de données (sauf `auth` et `sessionIsOpen`)     |
-| `controllers/` | Logique métier — lit `req`, interroge la base, appelle les services, retourne la réponse     | Pas de logique réutilisable extraite ici — elle monte dans `services/`          |
-| `services/`    | Fonctions réutilisables sans dépendance Express (`req`, `res`) — image, email, utilisateur | Pas de lecture directe de `req` ou `res`                                        |
-| `db.ts`        | Unique point d'accès à PostgreSQL — pool et fonction `query<T>()`                            | Pas de logique métier — exécute uniquement la requête SQL passée en paramètre |
-| `errors/`      | `AppError` + constantes `ERRORS.*` — source de vérité des messages d'erreur                | Transversal — importé par controllers et middlewares                              |
-| `schemas/`     | Schémas Zod pour la validation des corps de requête                                             | Pas de logique applicative — uniquement la forme des données attendues            |
+| Couche         | Responsabilité                                                                             | Ce qu'elle ne fait pas                                                        |
+| -------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| `routes/`      | Déclare les URLs, les méthodes HTTP et la chaîne de middlewares de chaque endpoint         | Pas de logique métier — uniquement l'assemblage de la chaîne                  |
+| `middlewares/` | Intercepte la requête avant le controller — auth, validation, upload, rate limit           | Pas d'accès direct à la base de données (sauf `auth` et `sessionIsOpen`)      |
+| `controllers/` | Logique métier — lit `req`, interroge la base, appelle les services, retourne la réponse   | Pas de logique réutilisable extraite ici — elle monte dans `services/`        |
+| `services/`    | Fonctions réutilisables sans dépendance Express (`req`, `res`) — image, email, utilisateur | Pas de lecture directe de `req` ou `res`                                      |
+| `db.ts`        | Unique point d'accès à PostgreSQL — pool et fonction `query<T>()`                          | Pas de logique métier — exécute uniquement la requête SQL passée en paramètre |
+| `errors/`      | `AppError` + constantes `ERRORS.*` — source de vérité des messages d'erreur                | Transversal — importé par controllers et middlewares                          |
+| `schemas/`     | Schémas Zod pour la validation des corps de requête                                        | Pas de logique applicative — uniquement la forme des données attendues        |
 
 **Convention de nommage des controllers**
 
@@ -510,13 +510,15 @@ Les valeurs de fallback (`|| "localhost"`, `|| "postgres"`…) ne sont là que p
 export async function query<T extends QueryResultRow>(
   text: string,
   params?: unknown[],
-): Promise<T[]>
+): Promise<T[]>;
 ```
 
 Wrapper autour de `pool.query()` qui retourne directement `result.rows` — le tableau des lignes retournées par PostgreSQL. Le paramètre générique `T` permet de typer précisément les lignes retournées :
 
 ```ts
-const rows = await query<ArtistItem>("SELECT * FROM artists WHERE id = $1", [id]);
+const rows = await query<ArtistItem>("SELECT * FROM artists WHERE id = $1", [
+  id,
+]);
 ```
 
 TypeScript sait alors que `rows` est de type `ArtistItem[]` — sans casting manuel.
@@ -553,18 +555,18 @@ Error: Missing env vars: DB_PASSWORD, JWT_ACCESS_SECRET
 
 Ce fichier regroupe les fonctions utilitaires partagées entre plusieurs middlewares et controllers — principalement liées à l'authentification, aux sessions et aux cookies. Elles n'ont pas de dépendance Express (`req`, `res`) et peuvent être appelées depuis n'importe quelle couche.
 
-| Fonction                            | Rôle                                                                                                                                                                                                                                                                                                         |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fonction                          | Rôle                                                                                                                                                                                                                                                                                         |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `getEnv(name)`                    | Lit une variable d'environnement et lance une erreur si elle est absente —`process.env[name]` étant typé `string \| undefined`, TypeScript refuse de l'utiliser là où un `string` est attendu. `getEnv()` retourne `string` garanti et prévient l'erreur de compilation sans recourir au `!` |
-| `envToStringValue(name)`          | Lit une variable d'environnement et la caste en `StringValue` (type attendu par `jsonwebtoken` pour les durées comme `"1h"`, `"12h"`)                                                                                                                                                                |
-| `initToken(...)`                  | Crée et signe un JWT avec `userId` et `sessionId` comme payload                                                                                                                                                                                                                                          |
-| `serializeCookie(...)`            | Sérialise le JWT dans un cookie `httpOnly`, `secure`, `sameSite` — les options sont lues depuis les variables d'environnement                                                                                                                                                                         |
-| `userExists(user)`                | Vérifie qu'un utilisateur a été trouvé en base — lance `AppError 401` sinon                                                                                                                                                                                                                            |
-| `passwordIsValid(password, hash)` | Compare le mot de passe en clair avec le hash bcrypt — lance `AppError 401` si invalide                                                                                                                                                                                                                    |
-| `sessionExists(session)`          | Vérifie qu'une session a été trouvée en base — lance `AppError 401` sinon                                                                                                                                                                                                                              |
-| `sessionRevoked(session)`         | Vérifie que la session n'est pas révoquée ni expirée — lance `AppError 401` sinon                                                                                                                                                                                                                      |
-| `requireUserId(reqUserId)`        | Extrait et valide le `userId` depuis `res.locals` — lance `AppError 401` si absent                                                                                                                                                                                                                     |
-| `requireSessionId(reqSessionId)`  | Extrait et valide le `sessionId` depuis `res.locals` — lance `AppError 401` si absent                                                                                                                                                                                                                  |
+| `envToStringValue(name)`          | Lit une variable d'environnement et la caste en `StringValue` (type attendu par `jsonwebtoken` pour les durées comme `"1h"`, `"12h"`)                                                                                                                                                        |
+| `initToken(...)`                  | Crée et signe un JWT avec `userId` et `sessionId` comme payload                                                                                                                                                                                                                              |
+| `serializeCookie(...)`            | Sérialise le JWT dans un cookie `httpOnly`, `secure`, `sameSite` — les options sont lues depuis les variables d'environnement                                                                                                                                                                |
+| `userExists(user)`                | Vérifie qu'un utilisateur a été trouvé en base — lance `AppError 401` sinon                                                                                                                                                                                                                  |
+| `passwordIsValid(password, hash)` | Compare le mot de passe en clair avec le hash bcrypt — lance `AppError 401` si invalide                                                                                                                                                                                                      |
+| `sessionExists(session)`          | Vérifie qu'une session a été trouvée en base — lance `AppError 401` sinon                                                                                                                                                                                                                    |
+| `sessionRevoked(session)`         | Vérifie que la session n'est pas révoquée ni expirée — lance `AppError 401` sinon                                                                                                                                                                                                            |
+| `requireUserId(reqUserId)`        | Extrait et valide le `userId` depuis `res.locals` — lance `AppError 401` si absent                                                                                                                                                                                                           |
+| `requireSessionId(reqSessionId)`  | Extrait et valide le `sessionId` depuis `res.locals` — lance `AppError 401` si absent                                                                                                                                                                                                        |
 
 Ces fonctions centralisent des vérifications répétées dans plusieurs controllers et middlewares. Sans elles, chaque controller devrait réécrire la même logique de vérification — avec le risque d'oublier un cas ou de retourner des codes d'erreur différents pour la même situation.
 
@@ -594,16 +596,16 @@ Ces fichiers contrôlent le comportement des outils de développement : compilat
 
 Ce fichier contrôle le comportement du compilateur TypeScript. Les options clés du projet :
 
-| Option               | Valeur     | Effet                                                                                                                                                                  |
-| -------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `strict`           | `true`   | Active toutes les vérifications strictes — interdit `any` implicite, `null` non vérifié, etc.                                                                  |
-| `target`           | `ES2020` | Code compilé compatible avec Node.js 20                                                                                                                               |
-| `module`           | `Node16` | Format de modules natif Node.js — supporte les imports ES et CommonJS                                                                                                 |
-| `moduleResolution` | `node16` | Résolution de modules alignée sur le comportement de Node.js 16+                                                                                                     |
+| Option             | Valeur   | Effet                                                                                                                                                        |
+| ------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `strict`           | `true`   | Active toutes les vérifications strictes — interdit `any` implicite, `null` non vérifié, etc.                                                                |
+| `target`           | `ES2020` | Code compilé compatible avec Node.js 20                                                                                                                      |
+| `module`           | `Node16` | Format de modules natif Node.js — supporte les imports ES et CommonJS                                                                                        |
+| `moduleResolution` | `node16` | Résolution de modules alignée sur le comportement de Node.js 16+                                                                                             |
 | `esModuleInterop`  | `true`   | Permet d'importer des modules CommonJS avec la syntaxe `import x from "x"` — nécessaire pour `bcrypt`, `dotenv`, `nodemailer` qui sont des packages CommonJS |
-| `outDir`           | `dist`   | Dossier de sortie des fichiers JavaScript compilés par `npm run build`                                                                                              |
-| `rootDir`          | `src`    | Dossier source — seul `src/` est compilé, `tests/` est exclu                                                                                                     |
-| `skipLibCheck`     | `true`   | Ignore les erreurs de types dans `node_modules/` — accélère la compilation                                                                                        |
+| `outDir`           | `dist`   | Dossier de sortie des fichiers JavaScript compilés par `npm run build`                                                                                       |
+| `rootDir`          | `src`    | Dossier source — seul `src/` est compilé, `tests/` est exclu                                                                                                 |
+| `skipLibCheck`     | `true`   | Ignore les erreurs de types dans `node_modules/` — accélère la compilation                                                                                   |
 
 `"include": ["src"]` exclut explicitement le dossier `tests/` de la compilation de production. Les tests ont leur propre `tests/tsconfig.json` qui étend ce fichier en ajoutant `tests/` à l'inclusion.
 
@@ -674,11 +676,11 @@ Ce fichier configure l'environnement de test. Les paramètres clés :
 
 Prettier formate automatiquement le code à chaque exécution de `npm run format`. Les règles sont identiques à celles du frontend :
 
-| Règle          | Valeur    | Signification                                                        |
-| --------------- | --------- | -------------------------------------------------------------------- |
-| `semi`        | `true`  | Point-virgule obligatoire en fin d'instruction                       |
+| Règle         | Valeur  | Signification                                                      |
+| ------------- | ------- | ------------------------------------------------------------------ |
+| `semi`        | `true`  | Point-virgule obligatoire en fin d'instruction                     |
 | `singleQuote` | `false` | Guillemets doubles pour les chaînes de caractères                  |
-| `tabWidth`    | `2`     | Indentation à 2 espaces                                             |
+| `tabWidth`    | `2`     | Indentation à 2 espaces                                            |
 | `endOfLine`   | `auto`  | Fin de ligne adaptée à l'OS (LF sur Linux/macOS, CRLF sur Windows) |
 
 `.prettierignore` exclut du formatage les fichiers qui n'ont pas à être touchés : `node_modules/`, `dist/` (fichiers compilés) et `README.md`.
@@ -709,27 +711,27 @@ Les fichiers `.env` sont également exclus : les variables d'environnement sont 
 
 Les variables d'environnement sont définies dans `.env.backend` à la racine du projet et chargées par `dotenv` au démarrage. Toutes les variables marquées comme obligatoires sont validées par `validateEnv()` — le serveur ne démarre pas si l'une d'elles est absente.
 
-| Variable                          | Exemple                       | Rôle                                                                      |
-| --------------------------------- | ----------------------------- | -------------------------------------------------------------------------- |
-| `PORT`                          | `4000`                      | Port d'écoute du serveur Express (optionnel —`4000` par défaut)       |
-| `DB_HOST`                       | `db`                        | Hostname PostgreSQL —`db` dans Docker, `localhost` hors Docker        |
-| `DB_PORT`                       | `5432`                      | Port PostgreSQL                                                            |
-| `DB_USER`                       | `postgres`                  | Utilisateur PostgreSQL                                                     |
-| `DB_PASSWORD`                   | `postgres`                  | Mot de passe PostgreSQL                                                    |
-| `DB_NAME`                       | `vindhellfest`              | Nom de la base de données                                                 |
+| Variable                        | Exemple                     | Rôle                                                                   |
+| ------------------------------- | --------------------------- | ---------------------------------------------------------------------- |
+| `PORT`                          | `4000`                      | Port d'écoute du serveur Express (optionnel —`4000` par défaut)        |
+| `DB_HOST`                       | `db`                        | Hostname PostgreSQL —`db` dans Docker, `localhost` hors Docker         |
+| `DB_PORT`                       | `5432`                      | Port PostgreSQL                                                        |
+| `DB_USER`                       | `postgres`                  | Utilisateur PostgreSQL                                                 |
+| `DB_PASSWORD`                   | `postgres`                  | Mot de passe PostgreSQL                                                |
+| `DB_NAME`                       | `vindhellfest`              | Nom de la base de données                                              |
 | `JWT_ACCESS_SECRET`             | `un-super-secret-a-changer` | Clé de signature des JWT — doit être longue et aléatoire en production |
-| `JWT_ACCESS_EXPIRES_IN`         | `1h`                        | Durée de validité du JWT                                                 |
-| `COOKIE_ACCESS_TOKEN_NAME`      | `vindhellfest_access_token` | Nom du cookie JWT                                                          |
-| `COOKIE_ACCESS_TOKEN_SECURE`    | `false`                     | `true` en production (HTTPS uniquement), `false` en développement     |
-| `COOKIE_ACCESS_TOKEN_SAME_SITE` | `lax`                       | Politique SameSite du cookie (`lax`, `strict` ou `none`)             |
-| `SESSION_EXPIRES_IN`            | `12h`                       | Durée de validité d'une session en base                                  |
-| `FRONTEND_ORIGIN`               | `http://localhost:3000`     | Origine autorisée par le CORS                                             |
-| `SMTP_HOST`                     | `smtp.gmail.com`            | Serveur SMTP pour l'envoi d'emails                                         |
-| `SMTP_PORT`                     | `587`                       | Port SMTP                                                                  |
-| `SMTP_SECURE`                   | `false`                     | `true` si le port SMTP utilise TLS directement (port 465)                |
-| `SMTP_USER`                     | `email@gmail.com`           | Identifiant SMTP                                                           |
-| `SMTP_PASS`                     | `xxxx`                      | Mot de passe SMTP — utiliser un mot de passe d'application Gmail          |
-| `CONTACT_EMAIL`                 | `email@gmail.com`           | Adresse destinataire des formulaires de contact                            |
+| `JWT_ACCESS_EXPIRES_IN`         | `1h`                        | Durée de validité du JWT                                               |
+| `COOKIE_ACCESS_TOKEN_NAME`      | `vindhellfest_access_token` | Nom du cookie JWT                                                      |
+| `COOKIE_ACCESS_TOKEN_SECURE`    | `false`                     | `true` en production (HTTPS uniquement), `false` en développement      |
+| `COOKIE_ACCESS_TOKEN_SAME_SITE` | `lax`                       | Politique SameSite du cookie (`lax`, `strict` ou `none`)               |
+| `SESSION_EXPIRES_IN`            | `12h`                       | Durée de validité d'une session en base                                |
+| `FRONTEND_ORIGIN`               | `http://localhost:3000`     | Origine autorisée par le CORS                                          |
+| `SMTP_HOST`                     | `smtp.gmail.com`            | Serveur SMTP pour l'envoi d'emails                                     |
+| `SMTP_PORT`                     | `587`                       | Port SMTP                                                              |
+| `SMTP_SECURE`                   | `false`                     | `true` si le port SMTP utilise TLS directement (port 465)              |
+| `SMTP_USER`                     | `email@gmail.com`           | Identifiant SMTP                                                       |
+| `SMTP_PASS`                     | `xxxx`                      | Mot de passe SMTP — utiliser un mot de passe d'application Gmail       |
+| `CONTACT_EMAIL`                 | `email@gmail.com`           | Adresse destinataire des formulaires de contact                        |
 
 > Les fichiers `.env` ne sont pas versionnés — ils sont exclus par `.gitignore` et `.dockerignore`. Ne jamais commiter des secrets en clair dans le dépôt.
 
@@ -902,11 +904,11 @@ Représente les données complètes d'un artiste, incluant les informations de c
 
 ### 5.5. Convention de nommage et règle `no-any`
 
-| Convention | Explication                                                                                                                    |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `*Row`   | Type qui représente une ligne brute retournée par `pg` — noms de colonnes en `snake_case`                               |
-| `*Item`  | Type métier exposé par l'API — partagé avec le frontend, noms de champs en `snake_case` (miroir des colonnes PostgreSQL) |
-| `*Role`  | Union littérale miroir d'un ENUM PostgreSQL                                                                                   |
+| Convention | Explication                                                                                                              |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `*Row`     | Type qui représente une ligne brute retournée par `pg` — noms de colonnes en `snake_case`                                |
+| `*Item`    | Type métier exposé par l'API — partagé avec le frontend, noms de champs en `snake_case` (miroir des colonnes PostgreSQL) |
+| `*Role`    | Union littérale miroir d'un ENUM PostgreSQL                                                                              |
 
 La règle ESLint `@typescript-eslint/no-any` est activée dans `eslint.config.cjs`. L'augmentation de `Express.Locals` et le typage explicite de `query<T>(...)` sont les deux mécanismes qui permettent d'éliminer tous les `any` dans les controllers et middlewares.
 
@@ -968,17 +970,17 @@ Le `as const` en fin de fichier est important : il indique à TypeScript que les
 
 Les clés sont organisées par domaine métier :
 
-| Préfixe                                                        | Domaine                    |
-| --------------------------------------------------------------- | -------------------------- |
-| `AUTH_`                                                       | Authentification et tokens |
-| `SESSION_`                                                    | État des sessions         |
-| `VALIDATION_`                                                 | Corps de requête invalide |
-| `PASSWORD_`                                                   | Format du mot de passe     |
-| `USER_`                                                       | CRUD utilisateurs          |
-| `ARTIST_`                                                     | CRUD artistes              |
-| `NEWS_`                                                       | CRUD actualités           |
-| `MAIL_`                                                       | Envoi d'email              |
-| `FORBIDDEN` / `ROUTE_NOT_FOUND` / `INTERNAL_SERVER_ERROR` | Erreurs génériques HTTP  |
+| Préfixe                                                   | Domaine                    |
+| --------------------------------------------------------- | -------------------------- |
+| `AUTH_`                                                   | Authentification et tokens |
+| `SESSION_`                                                | État des sessions          |
+| `VALIDATION_`                                             | Corps de requête invalide  |
+| `PASSWORD_`                                               | Format du mot de passe     |
+| `USER_`                                                   | CRUD utilisateurs          |
+| `ARTIST_`                                                 | CRUD artistes              |
+| `NEWS_`                                                   | CRUD actualités            |
+| `MAIL_`                                                   | Envoi d'email              |
+| `FORBIDDEN` / `ROUTE_NOT_FOUND` / `INTERNAL_SERVER_ERROR` | Erreurs génériques HTTP    |
 
 ### 6.3. Le handler global `errorHandler`
 
@@ -1032,7 +1034,11 @@ Quand `next(err)` est appelé avec une valeur, Express saute tous les middleware
 
 ```ts
 export function asyncHandler(
-  handler: (req: Request, res: Response, next: NextFunction) => Promise<unknown>,
+  handler: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<unknown>,
 ): RequestHandler {
   return (req, res, next) => {
     void handler(req, res, next).catch(next);
@@ -1175,8 +1181,8 @@ export function requireRole(...roles: UserRole[]) {
 L'opérateur `...roles` permet de passer un ou plusieurs rôles autorisés :
 
 ```ts
-requireRole("admin")               // admin uniquement
-requireRole("admin", "news")       // admin ou news
+requireRole("admin"); // admin uniquement
+requireRole("admin", "news"); // admin ou news
 ```
 
 ### 7.4. Composition — `authChain`
@@ -1265,7 +1271,12 @@ export const upload = multer({
 Dans les routes, `upload` est utilisé comme middleware avant le controller :
 
 ```ts
-router.post("/", ...adminAuth("admin"), upload.single("image"), asyncHandler(createArtist));
+router.post(
+  "/",
+  ...adminAuth("admin"),
+  upload.single("image"),
+  asyncHandler(createArtist),
+);
 ```
 
 `upload.single("image")` indique que la requête contient un seul fichier dans le champ `image`.
@@ -1277,8 +1288,8 @@ router.post("/", ...adminAuth("admin"), upload.single("image"), asyncHandler(cre
 ```ts
 export const rateLimitLogin = rateLimit({
   windowMs: 10 * 60 * 1000, // fenêtre de 10 minutes
-  max: 5,                    // 5 tentatives max par IP
-  standardHeaders: true,     // renvoie les headers RateLimit-* au client
+  max: 5, // 5 tentatives max par IP
+  standardHeaders: true, // renvoie les headers RateLimit-* au client
   legacyHeaders: false,
   message: { error: ERRORS.RATE_LIMIT_TOO_MANY_ATTEMPTS },
 });
@@ -1352,12 +1363,16 @@ export const createNewsSchema = z.object({
 export const createArtistSchema = z.object({
   name: z.string().min(2).max(100).trim(),
   // ...
-  youtube_url: z.url().refine(
-    (val) => /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(val),
-  ).optional().or(z.literal("")),
-  spotify_url: z.url().refine(
-    (val) => /^https?:\/\/open\.spotify\.com\//.test(val),
-  ).optional().or(z.literal("")),
+  youtube_url: z
+    .url()
+    .refine((val) => /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(val))
+    .optional()
+    .or(z.literal("")),
+  spotify_url: z
+    .url()
+    .refine((val) => /^https?:\/\/open\.spotify\.com\//.test(val))
+    .optional()
+    .or(z.literal("")),
   stage: z.enum(["MainStage", "Tremplin"]),
   start_time: z.iso.datetime(),
   end_time: z.iso.datetime(),
@@ -1395,7 +1410,7 @@ export async function saveImage(
   buffer: Buffer,
   uploadsDir: string,
   urlPrefix: string,
-): Promise<string>
+): Promise<string>;
 ```
 
 Reçoit le `Buffer` de `req.file.buffer` (fourni par multer), génère un nom de fichier UUID unique, crée le dossier de destination si absent, redimensionne l'image à 1600px max en conservant les proportions, convertit en WebP qualité 80 avec `sharp`, écrit le fichier sur le disque et retourne l'URL publique.
@@ -1403,7 +1418,10 @@ Reçoit le `Buffer` de `req.file.buffer` (fourni par multer), génère un nom de
 **`deleteImage`**
 
 ```ts
-export async function deleteImage(uploadsDir: string, urlMedia: string): Promise<void>
+export async function deleteImage(
+  uploadsDir: string,
+  urlMedia: string,
+): Promise<void>;
 ```
 
 Supprime silencieusement un fichier image à partir de son URL publique. Le `.catch(() => undefined)` évite de lever une erreur si le fichier est déjà absent. Elle est appelée **après** le commit en base — si la requête SQL échoue, l'ancienne image est conservée.
@@ -1423,11 +1441,11 @@ const transporter = nodemailer.createTransport({
 
 Trois fonctions sont exportées, chacune pour un cas d'usage distinct :
 
-| Fonction                   | Déclencheur                                   |
-| -------------------------- | ---------------------------------------------- |
+| Fonction                 | Déclencheur                                   |
+| ------------------------ | --------------------------------------------- |
 | `sendWelcomeEmail`       | Création d'un compte utilisateur par un admin |
 | `sendPasswordResetEmail` | Demande de réinitialisation de mot de passe   |
-| `sendContactEmail`       | Soumission du formulaire de contact public     |
+| `sendContactEmail`       | Soumission du formulaire de contact public    |
 
 Toutes passent par la fonction interne `sendMail` qui convertit toute erreur nodemailer en `AppError(ERRORS.MAIL_SEND_ERROR, 500)`.
 
@@ -1435,14 +1453,14 @@ Toutes passent par la fonction interne `sendMail` qui convertit toute erreur nod
 
 Regroupe les vérifications et opérations réutilisables par les controllers utilisateurs.
 
-| Fonction                      | Rôle                                                                            |
-| ----------------------------- | -------------------------------------------------------------------------------- |
-| `generateTemporaryPassword` | Génère un mot de passe aléatoire de 16 caractères hexadécimaux              |
-| `hashPassword`              | Hash un mot de passe en clair avec bcrypt (coût 10)                             |
+| Fonction                    | Rôle                                                                       |
+| --------------------------- | -------------------------------------------------------------------------- |
+| `generateTemporaryPassword` | Génère un mot de passe aléatoire de 16 caractères hexadécimaux             |
+| `hashPassword`              | Hash un mot de passe en clair avec bcrypt (coût 10)                        |
 | `checkEmailAvailable`       | Vérifie qu'un email n'est pas déjà utilisé — lève 409 si conflit           |
 | `checkDisplayNameAvailable` | Vérifie qu'un nom d'affichage n'est pas déjà utilisé — lève 409 si conflit |
-| `checkUserExists`           | Vérifie qu'un utilisateur existe en base — lève 404 sinon                     |
-| `isNewsPrivileged`          | Retourne `true` si le rôle est `admin` ou `news`                          |
+| `checkUserExists`           | Vérifie qu'un utilisateur existe en base — lève 404 sinon                  |
+| `isNewsPrivileged`          | Retourne `true` si le rôle est `admin` ou `news`                           |
 
 `checkEmailAvailable` et `checkDisplayNameAvailable` acceptent un `excludeId` optionnel pour ignorer l'utilisateur courant lors d'une modification — sans ça, un utilisateur qui garde son propre email lors d'un `PATCH` déclencherait un faux conflit.
 
@@ -1458,14 +1476,30 @@ Retourne les données agrégées pour la page d'accueil : les artistes mis en av
 
 ```ts
 const [artists, news] = await Promise.all([
-  query<Pick<ArtistItem, "id" | "name" | "stage" | "start_time" | "end_time" | "url_media" | "description_media">>(
+  query<
+    Pick<
+      ArtistItem,
+      | "id"
+      | "name"
+      | "stage"
+      | "start_time"
+      | "end_time"
+      | "url_media"
+      | "description_media"
+    >
+  >(
     `SELECT a.id, a.name, a.url_media, a.description_media,
             c.stage, c.start_time, c.end_time
      FROM artists a
      LEFT JOIN concerts c ON c.artist_id = a.id
      WHERE a.is_featured = TRUE`,
   ),
-  query<Pick<NewsItem, "id" | "title" | "url_media" | "description_media" | "created_at">>(
+  query<
+    Pick<
+      NewsItem,
+      "id" | "title" | "url_media" | "description_media" | "created_at"
+    >
+  >(
     `SELECT id, title, url_media, description_media, created_at
      FROM news
      WHERE is_published = TRUE
@@ -1484,7 +1518,12 @@ return res.status(200).json({ artists, news });
 Retourne la liste de tous les artistes avec leurs informations de programmation, triés alphabétiquement.
 
 ```ts
-const artists = await query<Omit<ArtistItem, "bio" | "genre" | "origin" | "youtube_url" | "spotify_url" | "end_time">>(
+const artists = await query<
+  Omit<
+    ArtistItem,
+    "bio" | "genre" | "origin" | "youtube_url" | "spotify_url" | "end_time"
+  >
+>(
   `SELECT a.id, a.name, a.url_media, a.description_media, a.is_featured,
           c.stage, c.start_time
    FROM artists a
@@ -1562,7 +1601,8 @@ const rows = await query<NewsItem>(
 );
 
 if (!rows[0]) throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
-if (!isPrivileged && !rows[0].is_published) throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
+if (!isPrivileged && !rows[0].is_published)
+  throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
 
 return res.status(200).json({ news: rows[0] });
 ```
@@ -1634,7 +1674,12 @@ const rows = await query<Omit<UserItem, "created_at">>(
 if (!rows[0]) throw new AppError(ERRORS.AUTH_USER_NOT_FOUND, 401);
 
 return res.status(200).json({
-  user: { id: user.id, email: user.email, display_name: user.display_name, role: user.role },
+  user: {
+    id: user.id,
+    email: user.email,
+    display_name: user.display_name,
+    role: user.role,
+  },
   mustChangePassword: user.password_changed_at === null,
 });
 ```
@@ -1672,9 +1717,12 @@ Réinitialise le mot de passe d'un utilisateur à partir de son email en génér
 
 ```ts
 // 1. Vérifie que l'email existe en base
-const user = (await query<{ id: string; email: string; display_name: string }>(
-  `SELECT id, email, display_name FROM users WHERE email = $1 LIMIT 1`, [email],
-))[0];
+const user = (
+  await query<{ id: string; email: string; display_name: string }>(
+    `SELECT id, email, display_name FROM users WHERE email = $1 LIMIT 1`,
+    [email],
+  )
+)[0];
 if (!user) throw new AppError(ERRORS.AUTH_EMAIL_NOT_FOUND, 404);
 
 // 2. Génère un mot de passe temporaire et le hash
@@ -1695,25 +1743,287 @@ await sendPasswordResetEmail(user.email, user.display_name, temporaryPassword);
 
 ### 10.11. `create_artist.controller.ts`
 
+Crée un artiste et son concert associé dans une transaction SQL. L'image est traitée et écrite sur le disque avant la transaction.
+
+```ts
+// 1. Vérifie la présence du fichier image
+if (!req.file) throw new AppError(ERRORS.ARTIST_FILE_REQUIRED, 400);
+
+// 2. Convertit et écrit l'image avant d'ouvrir la transaction
+const url_media = await saveImage(req.file.buffer, ARTISTS_UPLOADS_DIR, "/uploads/artists");
+
+// 3. Transaction : INSERT artiste + INSERT concert
+await query("BEGIN");
+try {
+  const artist = (await query<ArtistItem>(`INSERT INTO artists (...) VALUES (...) RETURNING ...`, [...]))[0];
+  if (!artist) throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
+
+  const concert = (await query<ConcertRow>(`INSERT INTO concerts (artist_id, stage, start_time, end_time) VALUES ($1, $2, $3, $4) RETURNING ...`, [artist.id, stage, start_time, end_time]))[0];
+  if (!concert) throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
+
+  await query("COMMIT");
+  return res.status(201).json({ artist: { ...artist, stage: concert.stage, start_time: concert.start_time, end_time: concert.end_time } });
+} catch (error) {
+  await query("ROLLBACK");
+  await deleteImage(ARTISTS_UPLOADS_DIR, url_media);
+  if (error instanceof Error && error.message === "featured_limit_reached") {
+    throw new AppError(ERRORS.ARTIST_FEATURED_LIMIT, 409);
+  }
+  throw error;
+}
+```
+
+L'image est écrite **avant** la transaction — si l'écriture disque échoue, aucune ligne SQL n'est insérée. En cas d'erreur SQL, le `ROLLBACK` annule les deux insertions et `deleteImage` supprime le fichier déjà écrit, laissant le système dans un état cohérent.
+
+La limite des artistes mis en avant (`is_featured`) est contrôlée par un trigger PostgreSQL qui lève une erreur `featured_limit_reached` si deux artistes sont déjà en avant — le `catch` intercepte ce message et renvoie une `AppError` 409.
+
 ### 10.12. `update_artist.controller.ts`
+
+Modifie un artiste existant et son concert. La gestion de l'image diffère de la création : l'ancienne image n'est supprimée qu'**après** le `COMMIT`.
+
+```ts
+// 1. Vérifie que l'artiste existe et récupère l'url_media actuelle
+const existingArtist = (
+  await query<ArtistMediaRow>(
+    "SELECT id, url_media FROM artists WHERE id = $1 LIMIT 1",
+    [artistId],
+  )
+)[0];
+if (!existingArtist) throw new AppError(ERRORS.ARTIST_NOT_FOUND, 404);
+
+// 2. Si une nouvelle image est fournie, l'écrit avant la transaction
+let url_media = existingArtist.url_media;
+if (req.file)
+  url_media = await saveImage(
+    req.file.buffer,
+    ARTISTS_UPLOADS_DIR,
+    "/uploads/artists",
+  );
+
+// 3. Transaction : UPDATE artiste + UPDATE concert
+await query("BEGIN");
+try {
+  // UPDATE artists ... UPDATE concerts ...
+  await query("COMMIT");
+
+  // 4. Supprime l'ancienne image uniquement après le COMMIT
+  if (req.file)
+    await deleteImage(ARTISTS_UPLOADS_DIR, existingArtist.url_media);
+
+  return res.status(200).json({ artist: { ...artist, ...concert } });
+} catch (error) {
+  await query("ROLLBACK");
+  // Supprime la nouvelle image si elle a été écrite avant l'échec SQL
+  if (req.file) await deleteImage(ARTISTS_UPLOADS_DIR, url_media);
+  throw error;
+}
+```
+
+L'ordre est important : `deleteImage` de l'ancienne image est appelé **après** le `COMMIT`. Si le `UPDATE` SQL échoue, le `ROLLBACK` remet la base dans l'état précédent et la nouvelle image (si écrite) est supprimée — l'ancienne est conservée intacte. L'artiste ne se retrouve jamais sans image.
 
 ### 10.13. `delete_artist.controller.ts`
 
+Supprime un artiste, son concert associé et son fichier image.
+
+```ts
+const deletedArtists = await query<ArtistMediaRow>(
+  "DELETE FROM artists WHERE id = $1 RETURNING id, url_media",
+  [req.params.id],
+);
+
+if (!deletedArtists[0]) throw new AppError(ERRORS.ARTIST_NOT_FOUND, 404);
+
+await deleteImage(ARTISTS_UPLOADS_DIR, deletedArtists[0].url_media);
+
+return res.status(200).json({ message: "Artiste supprime" });
+```
+
+Le `RETURNING id, url_media` récupère les données de la ligne supprimée en une seule requête — pas besoin de faire un `SELECT` avant le `DELETE`. Le concert associé est supprimé automatiquement par la contrainte `ON DELETE CASCADE` définie en base. Le fichier image est supprimé **après** le `DELETE` SQL — si la suppression en base échoue, l'image est conservée.
+
 ### 10.14. `create_news.controller.ts`
+
+Crée une news avec la même logique image/transaction que `create_artist` — image écrite avant la transaction, supprimée en cas d'échec SQL.
+
+```ts
+if (!req.file) throw new AppError(ERRORS.NEWS_FILE_REQUIRED, 400);
+
+const url_media = await saveImage(
+  req.file.buffer,
+  NEWS_UPLOADS_DIR,
+  "/uploads/news",
+);
+
+await query("BEGIN");
+try {
+  const news = (
+    await query<NewsItem>(
+      `WITH inserted AS (
+       INSERT INTO news (title, content, is_published, url_media, description_media, user_id)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING *
+     )
+     SELECT i.id, i.title, i.content, i.is_published, i.created_at,
+            i.url_media, i.description_media,
+            u.display_name AS author_name
+     FROM inserted i
+     LEFT JOIN users u ON u.id = i.user_id`,
+      [
+        title,
+        content || null,
+        isPublished,
+        url_media,
+        description_media,
+        res.locals.userId,
+      ],
+    )
+  )[0];
+  if (!news) throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
+
+  await query("COMMIT");
+  return res.status(201).json({ news });
+} catch (error) {
+  await query("ROLLBACK");
+  await deleteImage(NEWS_UPLOADS_DIR, url_media);
+  throw error;
+}
+```
+
+La requête utilise un CTE (`WITH inserted AS`) pour insérer la news et récupérer immédiatement le `display_name` de l'auteur via `LEFT JOIN users` — en une seule requête SQL plutôt que deux. `res.locals.userId` est injecté comme `user_id` — c'est l'utilisateur connecté qui est enregistré comme auteur.
 
 ### 10.15. `update_news.controller.ts`
 
+Modifie une news existante. La logique image est identique à `update_artist` — nouvelle image écrite avant la transaction, ancienne supprimée après le `COMMIT`.
+
+La différence notable avec `update_artist` : le `UPDATE` ne retourne pas `author_name` car ce champ vient de la table `users`. Un second `SELECT` est donc nécessaire après le `UPDATE` pour récupérer la news complète avec le nom de l'auteur :
+
+```ts
+// UPDATE news ... RETURNING *
+const updatedNews = (await query<NewsItem>(`UPDATE news SET ... WHERE id = $1 RETURNING *`, [...]))[0];
+
+// SELECT avec JOIN users pour récupérer author_name
+const news = (await query<NewsItem>(
+  `SELECT a.*, u.display_name AS author_name
+   FROM news a
+   LEFT JOIN users u ON u.id = a.user_id
+   WHERE a.id = $1`,
+  [newsId],
+))[0];
+
+await query("COMMIT");
+if (req.file) await deleteImage(NEWS_UPLOADS_DIR, existingNews.url_media);
+```
+
+> Ce double aller-retour pourrait être remplacé par un CTE `WITH updated AS (UPDATE ... RETURNING *) SELECT ... JOIN users` — comme dans `create_news`. C'est une simplification possible.
+
 ### 10.16. `delete_news.controller.ts`
+
+Structure identique à `delete_artist` — `DELETE ... RETURNING` en une requête, suppression du fichier image après.
+
+```ts
+const deletedNews = await query<NewsMediaRow>(
+  "DELETE FROM news WHERE id = $1 RETURNING id, url_media",
+  [req.params.id],
+);
+
+if (!deletedNews[0]) throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
+
+await deleteImage(NEWS_UPLOADS_DIR, deletedNews[0].url_media);
+
+return res.status(200).json({ message: "News supprimee" });
+```
 
 ### 10.17. `list_users.controller.ts`
 
+Retourne la liste de tous les utilisateurs triés alphabétiquement par nom d'affichage. Seuls les champs utiles au frontend sont sélectionnés — `password_hash` n'est jamais exposé.
+
+```ts
+const users = await query<UserItem>(
+  `SELECT id, email, display_name, role, created_at, password_changed_at
+   FROM users
+   ORDER BY display_name ASC`,
+);
+
+return res.status(200).json({ users });
+```
+
 ### 10.18. `create_user.controller.ts`
+
+Crée un compte utilisateur avec un mot de passe temporaire généré automatiquement et envoyé par email.
+
+```ts
+// 1. Construit le display_name depuis first_name + last_name
+const displayName = `${first_name} ${last_name}`.trim();
+
+// 2. Vérifie l'unicité de l'email et du nom d'affichage
+await checkEmailAvailable(email);
+await checkDisplayNameAvailable(displayName);
+
+// 3. Génère et hash le mot de passe temporaire
+const temporaryPassword = generateTemporaryPassword();
+const passwordHash = await hashPassword(temporaryPassword);
+
+// 4. Insère l'utilisateur en base
+const createdUser = (await query<UserItem>(
+  `INSERT INTO users (email, password_hash, display_name, role) VALUES ($1, $2, $3, $4)
+   RETURNING id, email, display_name, role, created_at, password_changed_at`,
+  [email, passwordHash, displayName, role],
+))[0];
+if (!createdUser) throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
+
+// 5. Envoie les identifiants provisoires par email
+await sendWelcomeEmail(email, displayName, temporaryPassword);
+```
+
+`password_changed_at` est `null` à la création — ce champ non renseigné déclenchera `mustChangePassword: true` à la première connexion, forçant l'utilisateur à changer son mot de passe provisoire.
 
 ### 10.19. `update_user.controller.ts`
 
+Modifie les informations d'un utilisateur existant — email, nom d'affichage et rôle.
+
+```ts
+const displayName = `${first_name} ${last_name}`.trim();
+
+await checkUserExists(userId);
+await checkEmailAvailable(email, userId);
+await checkDisplayNameAvailable(displayName, userId);
+
+const updatedUser = (await query<UserItem>(
+  `UPDATE users SET email = $1, display_name = $2, role = $3 WHERE id = $4
+   RETURNING id, email, display_name, role, created_at, password_changed_at`,
+  [email, displayName, role, userId],
+))[0];
+if (!updatedUser) throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
+```
+
+`checkEmailAvailable` et `checkDisplayNameAvailable` reçoivent `userId` en second argument pour exclure l'utilisateur courant de la vérification d'unicité — sans ça, un utilisateur qui garde son propre email déclencherait un faux conflit 409.
+
 ### 10.20. `delete_user.controller.ts`
 
+Supprime définitivement un utilisateur par son UUID.
+
+```ts
+const deletedUsers = await query<IdRow>(
+  "DELETE FROM users WHERE id = $1 RETURNING id",
+  [req.params.id],
+);
+if (!deletedUsers[0]) throw new AppError(ERRORS.USER_NOT_FOUND, 404);
+
+return res.status(200).json({ message: "Utilisateur supprime" });
+```
+
+Pas de fichier image à supprimer ici. Le `RETURNING id` sert uniquement à détecter si la suppression a concerné une ligne — si `deletedUsers[0]` est absent, l'UUID ne correspondait à aucun utilisateur.
+
 ### 10.21. `submit_contact.controller.ts`
+
+Le controller le plus simple du projet — les champs sont déjà validés par `validateBody(contactSchema)` en amont, il ne reste qu'à déléguer l'envoi au service mailer.
+
+```ts
+const { email, name, subject, message } = req.body;
+await sendContactEmail(email, name, subject, message);
+return res.status(200).json({ message: "Message envoye" });
+```
+
+Aucune écriture en base — le formulaire de contact transite uniquement par email.
 
 ---
 

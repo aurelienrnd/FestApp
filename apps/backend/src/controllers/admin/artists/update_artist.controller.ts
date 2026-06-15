@@ -14,11 +14,13 @@ import type { ArtistItem, ArtistMediaRow, ConcertRow } from "../../../type";
  * La mise a jour de l'artiste et du concert se fait dans une seule transaction SQL.
  * @param {Request} req requete Express contenant l'id en parametre d'URL et les champs dans le body
  * @param {Response} res reponse Express
+ * @function query
+ * @function saveImage
+ * @function deleteImage
  */
 export async function updateArtist(req: Request, res: Response) {
-  const artistId = req.params.id;
-
   // verifie que l'artiste existe et recupere son url_media actuelle
+  const artistId = req.params.id;
   const existingArtists = await query<ArtistMediaRow>(
     "SELECT id, url_media FROM artists WHERE id = $1 LIMIT 1",
     [artistId],
@@ -42,7 +44,6 @@ export async function updateArtist(req: Request, res: Response) {
     end_time,
     is_featured: is_featured_raw,
   } = req.body;
-
   const is_featured = is_featured_raw === "true";
 
   // si une nouvelle image est fournie, la convertit et l'ecrit avant la transaction
@@ -78,7 +79,6 @@ export async function updateArtist(req: Request, res: Response) {
         artistId,
       ],
     );
-
     const artist = updatedArtists[0];
     if (!artist) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
@@ -92,7 +92,6 @@ export async function updateArtist(req: Request, res: Response) {
        RETURNING id, artist_id, stage, start_time, end_time`,
       [stage, start_time, end_time, artistId],
     );
-
     const concert = updatedConcerts[0];
     if (!concert) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);

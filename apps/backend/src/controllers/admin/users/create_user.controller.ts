@@ -49,6 +49,7 @@ export const createUser = async (req: Request, res: Response) => {
     throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
   }
 
+  // envoie l'email
   await sendWelcomeEmail(email, displayName, temporaryPassword);
 
   return res.status(201).json({

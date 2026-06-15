@@ -15,6 +15,9 @@ import type { NewsItem } from "../../../type";
  * Retourne la news creee avec le display_name de l'auteur via JOIN users.
  * @param {Request} req requete Express contenant les champs dans le body et le fichier dans req.file
  * @param {Response} res reponse Express
+ * @function query
+ * @function saveImage
+ * @function deleteImage
  */
 export async function createNews(req: Request, res: Response) {
   // verifie que le fichier image est present dans la requete
@@ -22,10 +25,8 @@ export async function createNews(req: Request, res: Response) {
     throw new AppError(ERRORS.NEWS_FILE_REQUIRED, 400);
   }
 
-  // extrait les champs de la requete
+  // extrait les champs de la requete et convertit is_published de string en boolean (multipart envoie les booleens en string)
   const { title, content, is_published, description_media } = req.body;
-
-  // convertit is_published de string en boolean (multipart envoie les booleens en string)
   const isPublished = is_published === "true";
 
   // convertit et ecrit l'image sur le disque avant la transaction
@@ -60,7 +61,6 @@ export async function createNews(req: Request, res: Response) {
         res.locals.userId,
       ],
     );
-
     const news = createdNews[0];
     if (!news) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);

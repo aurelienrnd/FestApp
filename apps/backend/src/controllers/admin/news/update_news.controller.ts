@@ -13,11 +13,13 @@ import type { NewsItem, NewsMediaRow } from "../../../type";
  * Si une nouvelle image est fournie, elle remplace l'ancienne (conversion WebP, suppression de l'ancienne).
  * @param {Request} req requete Express contenant l'id en parametre d'URL et les champs dans le body
  * @param {Response} res reponse Express
+ * @function query
+ * @function saveImage
+ * @function deleteImage
  */
 export async function updateNews(req: Request, res: Response) {
-  const newsId = req.params.id;
-
   // verifie que la news existe et recupere son url_media actuelle
+  const newsId = req.params.id;
   const existingNewsRows = await query<NewsMediaRow>(
     "SELECT id, url_media FROM news WHERE id = $1 LIMIT 1",
     [newsId],
@@ -27,10 +29,8 @@ export async function updateNews(req: Request, res: Response) {
     throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
   }
 
-  // extrait les champs texte de la requete
+  // extrait les champs texte de la requete et convertit is_published de string en boolean (multipart envoie les booleens en string)
   const { title, content, is_published, description_media } = req.body;
-
-  // convertit is_published de string en boolean (multipart envoie les booleens en string)
   const isPublished = is_published === "true";
 
   // si une nouvelle image est fournie, la convertit et l'ecrit avant la transaction
@@ -62,7 +62,6 @@ export async function updateNews(req: Request, res: Response) {
         newsId,
       ],
     );
-
     const updatedNews = updatedNewsRows[0];
     if (!updatedNews) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
@@ -78,16 +77,13 @@ export async function updateNews(req: Request, res: Response) {
        WHERE a.id = $1`,
       [newsId],
     );
-
     const news = newsWithAuthor[0];
     if (!news) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
     }
 
-    // valide la transaction
+    // valide la transaction et supprime l'ancienne image apres le commit pour ne pas la perdre en cas d'erreur SQL
     await query("COMMIT");
-
-    // supprime l'ancienne image apres le commit pour ne pas la perdre en cas d'erreur SQL
     if (req.file) {
       await deleteImage(NEWS_UPLOADS_DIR, existingNews.url_media);
     }

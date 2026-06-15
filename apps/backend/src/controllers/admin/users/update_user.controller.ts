@@ -14,6 +14,7 @@ import type { UserItem } from "../../../type";
  * @function checkUserExists
  * @function checkEmailAvailable
  * @function checkDisplayNameAvailable
+ * @function query
  */
 export async function updateUser(req: Request, res: Response) {
   // Recupere les informations de l'utilisateur dans le body de la requete et cree un display name
