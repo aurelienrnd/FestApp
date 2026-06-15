@@ -12,6 +12,7 @@ import type { UserItem, SessionRow } from "../type";
 type AuthUserRow = Pick<UserItem, "id" | "display_name" | "role">;
 
 /** Verifie qu'un token est present dans le cookie de la requete
+ * @param req - la requête HTTP entrante
  * @return le token
  */
 function getTokenFromCookie(req: Request) {
@@ -34,6 +35,7 @@ function getTokenFromCookie(req: Request) {
 }
 
 /** Decode le token JWT pour recuperer le userId et le sessionId
+ * @param token - le token JWT à décoder
  * @return le userId et le sessionId
  */
 function decodedToken(token: string) {
@@ -55,6 +57,11 @@ function decodedToken(token: string) {
 /** Tente d'authentifier l'utilisateur sans bloquer la requete si absent ou invalide.
  * Peuple res.locals.userId, res.locals.userRole et res.locals.userDisplayName si le token est valide.
  * Appelle next() dans tous les cas — utilise pour les routes semi-publiques.
+ * @param req - la requête HTTP entrante
+ * @param res - la réponse HTTP
+ * @param next - la fonction de middleware suivante
+ * @function getTokenFromCookie Verifie qu'un token est present dans le cookie de la requete
+ * @function decodedToken Decode le token JWT pour recuperer le userId et le sessionId
  */
 export async function optionalAuth(
   req: Request,
@@ -62,25 +69,29 @@ export async function optionalAuth(
   next: NextFunction,
 ) {
   try {
+    // Récupère les id depuis le token d'accès depuis les cookies,
     const token = getTokenFromCookie(req);
     const { userId, sessionId } = decodedToken(token);
 
+    // Cherche l'utilisateur correspondant à l'userId extrait du token et renvoie sont nom et sont role
     const user = await query<AuthUserRow>(
       "SELECT id, display_name, role FROM users WHERE id = $1",
       [userId],
     );
 
+    // Si l'utilisateur n'existe pas, on continue sans authentification
     if (!user[0]) {
       return next();
     }
 
     // Verifie que la session existe et n'est pas revoquee (logout invalide la session en BD)
-    const sessions = await query<Pick<SessionRow, "id" | "revoked_at">>(
-      "SELECT id, revoked_at FROM sessions WHERE id = $1 AND user_id = $2",
+    const sessions = await query<Pick<SessionRow, "id" | "revoked_at" | "expires_at">>(
+      "SELECT id, revoked_at, expires_at FROM sessions WHERE id = $1 AND user_id = $2",
       [sessionId, userId],
     );
 
-    if (sessions[0] && sessions[0].revoked_at === null) {
+    // Si la session est valide, on stocke les infos d'authentification dans `res.locals`
+    if (sessions[0] && sessions[0].revoked_at === null && new Date(sessions[0].expires_at) > new Date()) {
       res.locals.userId = user[0].id;
       res.locals.userRole = user[0].role;
       res.locals.userDisplayName = user[0].display_name;
@@ -110,6 +121,8 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
     "SELECT id, display_name, role FROM users WHERE id = $1",
     [userId],
   );
+
+  // Si l'utilisateur n'existe pas, on renvoie une erreur d'authentification
   if (!user[0]) {
     throw new AppError(ERRORS.AUTH_USER_NOT_FOUND, 401);
   }

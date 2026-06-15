@@ -1065,7 +1065,65 @@ router.post("/", asyncHandler(createUser));
 
 ## 7. Middlewares
 
+Les middlewares sont des fonctions qui s'intercalent entre la réception de la requête et le controller. Chacun a une responsabilité unique et s'exécute dans l'ordre où il est déclaré dans la route. Si un middleware lève une `AppError`, la chaîne s'interrompt et `errorHandler` prend la main — le controller n'est jamais atteint.
+
+```
+requête → auth → sessionIsOpen → requireRole → validateBody → controller
+```
+
 ### 7.1. Authentification — `auth`
+
+Le middleware `auth` vérifie que la requête provient d'un utilisateur authentifié. Il s'exécute en trois étapes :
+
+**1. Extraction du token depuis le cookie**
+
+```ts
+function getTokenFromCookie(req: Request) {
+  if (!req.headers.cookie) throw new AppError(ERRORS.AUTH_MISSING_COOKIE, 401);
+  const cookies = parse(req.headers.cookie);
+  const token = cookies[getEnv("COOKIE_ACCESS_TOKEN_NAME")];
+  if (!token) throw new AppError(ERRORS.AUTH_MISSING_ACCESS_TOKEN, 401);
+  return token;
+}
+```
+
+Le token JWT est transporté dans un cookie `httpOnly` — il n'est pas accessible en JavaScript côté client. Le nom du cookie est lu depuis la variable d'environnement `COOKIE_ACCESS_TOKEN_NAME`.
+
+**2. Décodage et vérification du JWT**
+
+```ts
+function decodedToken(token: string) {
+  const decoded = jwt.verify(token, getEnv("JWT_ACCESS_SECRET")) as JwtPayload;
+  return { userId: decoded.userId, sessionId: decoded.sessionId };
+}
+```
+
+`jwt.verify` valide la signature et l'expiration du token. Si le token est invalide ou expiré, une `AppError` 401 est levée.
+
+**3. Vérification en base et peuplement de `res.locals`**
+
+```ts
+const user = await query<AuthUserRow>(
+  "SELECT id, display_name, role FROM users WHERE id = $1",
+  [userId],
+);
+if (!user[0]) throw new AppError(ERRORS.AUTH_USER_NOT_FOUND, 401);
+
+res.locals.userId = user[0].id;
+res.locals.userRole = user[0].role;
+res.locals.userDisplayName = user[0].display_name;
+res.locals.sessionId = sessionId;
+```
+
+On vérifie que l'utilisateur existe toujours en base — un token valide ne suffit pas si le compte a été supprimé entre-temps. Les données sont stockées dans `res.locals` pour être lues par les middlewares suivants et les controllers sans avoir à refaire la requête.
+
+**`optionalAuth`**
+
+Variante de `auth` qui n'interrompt pas la requête si le token est absent ou invalide. Elle peuple `res.locals` si le token est valide, et appelle `next()` dans tous les cas. Utilisée sur les routes semi-publiques accessibles aux visiteurs non connectés.
+
+Dans `auth`, si la session est révoquée ou inexistante ce n'est pas grave — `sessionIsOpen` s'en charge juste après dans la chaîne. Les deux middlewares ont des responsabilités séparées : `auth` identifie l'utilisateur, `sessionIsOpen` contrôle l'état de la session.
+
+Dans `optionalAuth` en revanche, `sessionIsOpen` n'est jamais appelé après — la route est semi-publique, il n'y a pas de chaîne de middlewares stricte. Donc `optionalAuth` vérifie elle-même que la session est active et non expirée avant de peupler `res.locals`, sinon un utilisateur avec une session révoquée ou expirée serait quand même considéré comme connecté.
 
 ### 7.2. Sessions — `sessionIsOpen`
 
