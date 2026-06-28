@@ -81,7 +81,7 @@ describe("DashboardContent", () => {
     // role "admin" voit tous les raccourcis, role "news" ne voit que News
     render(<DashboardContent />);
 
-    expect(screen.getByText("Programation")).toBeInTheDocument();
+    expect(screen.getByText("programmation")).toBeInTheDocument();
     expect(screen.getByText("News")).toBeInTheDocument();
     expect(screen.getByText("Utilisateurs")).toBeInTheDocument();
 
@@ -90,7 +90,7 @@ describe("DashboardContent", () => {
     const { unmount } = render(<DashboardContent />);
 
     expect(screen.getAllByText("News")).toHaveLength(2);
-    expect(screen.queryAllByText("Programation")).toHaveLength(1);
+    expect(screen.queryAllByText("programmation")).toHaveLength(1);
     expect(screen.queryAllByText("Utilisateurs")).toHaveLength(1);
 
     unmount();

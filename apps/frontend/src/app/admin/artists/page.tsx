@@ -42,7 +42,7 @@ export default function Page() {
     <section className="section-page">
       <div className="filter-row">
         <MobileFiltersButton items={items} />
-        <h1 className="title1">Programation</h1>
+        <h1 className="title1">programmation</h1>
         <button
           type="button"
           className="mb-(--ctx-title-mb)"

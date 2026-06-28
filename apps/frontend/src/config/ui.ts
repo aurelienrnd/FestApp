@@ -16,7 +16,7 @@ export const navAdminItem: NavItem[] = [
     role: "admin, artists, news",
   },
   {
-    label: "Programation",
+    label: "programmation",
     path: "/admin/artists",
     role: "admin, artists",
     desc: "Gérer la programmation artistique",

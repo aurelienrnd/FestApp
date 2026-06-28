@@ -16,7 +16,7 @@ describe("filterNavByRole", () => {
 
     const labels = result.map((item) => item.label ?? item.labelBtn);
     expect(labels).toContain("Dashboard");
-    expect(labels).toContain("Programation");
+    expect(labels).toContain("programmation");
     expect(labels).toContain("News");
     expect(labels).toContain("Utilisateurs");
   });
@@ -28,7 +28,7 @@ describe("filterNavByRole", () => {
     const labels = result.map((item) => item.label ?? item.labelBtn);
     expect(labels).toContain("Dashboard");
     expect(labels).toContain("News");
-    expect(labels).not.toContain("Programation");
+    expect(labels).not.toContain("programmation");
     expect(labels).not.toContain("Utilisateurs");
   });
 
