@@ -10,7 +10,7 @@ export const FESTIVAL_STAGES: string[] = ["MainStage", "Tremplin"];
 
 /** URL de la billetterie — source de vérité unique pour le lien d'achat. */
 export const TICKETING_URL =
-  "https://www.google.com/search?q=tiket+master&rlz=1C1ONGR_frFR1184FR1184&oq=tiket+master&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDM1ODJqMGo3qAIIsAIB&sourceid=chrome&ie=UTF-8";
+  "https://www.helloasso.com/associations/vind-hell-fest/evenements/vind-hell-fest-6eme-edition";
 
 /** Lieu du festival — source de vérité unique pour l'adresse. */
 export const FESTIVAL_LOCATION = {
