@@ -365,6 +365,53 @@ Les deux jobs s'exécutent **en parallèle** sur des VM Ubuntu fraîches — ils
 
 ## Fichiers d'environnement
 
+> Ces trois fichiers sont à créer **à la racine du projet** avant le premier `docker compose up`. Ils ne sont pas versionnés (`.gitignore`).
+
+### Contenu à copier-coller
+
+**`.env`**
+
+```env
+POSTGRES_DB=vindhellfest
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+```
+
+**`.env.backend`**
+
+```env
+PORT=4000
+DB_HOST=db
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=vindhellfest
+JWT_ACCESS_SECRET=un-super-secret-a-changer
+JWT_ACCESS_EXPIRES_IN=1h
+COOKIE_ACCESS_TOKEN_NAME=vindhellfest_access_token
+COOKIE_ACCESS_TOKEN_SECURE=false
+COOKIE_ACCESS_TOKEN_SAME_SITE=lax
+SESSION_EXPIRES_IN=12h
+FRONTEND_ORIGIN=http://localhost:3000
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=ton-email@gmail.com
+SMTP_PASS=ton-mot-de-passe-application
+CONTACT_EMAIL=ton-email@gmail.com
+```
+
+> `DB_USER`, `DB_PASSWORD` et `DB_NAME` doivent correspondre exactement aux valeurs de `.env`.
+
+**`.env.frontend`**
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000
+API_URL_SERVER=http://backend:4000
+```
+
+---
+
 ### `.env`
 
 Chargé par Docker Compose pour configurer le service `db`.

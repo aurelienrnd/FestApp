@@ -447,6 +447,28 @@ Ce fichier indique à Git quels fichiers ne pas versionner. Les catégories excl
 | Logs            | `npm-debug.log*`, `yarn-*.log*`  | Fichiers de debug locaux                                |
 | OS              | `.DS_Store`, `*.pem`             | Fichiers système macOS et certificats locaux            |
 
+### 4.10. Variables d'environnement
+
+Les variables d'environnement sont définies dans `.env.frontend` à la racine du projet et injectées dans le conteneur via `docker-compose.yml`. Next.js distingue deux portées selon le préfixe de la variable.
+
+| Variable | Exemple | Portée | Rôle |
+| --- | --- | --- | --- |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:4000` | Navigateur (client) | URL de l'API appelée depuis le navigateur — doit être accessible depuis la machine de l'utilisateur |
+| `API_URL_SERVER` | `http://backend:4000` | Serveur Next.js (SSR) | URL de l'API appelée depuis le serveur Next.js — utilise le réseau Docker interne |
+
+**Pourquoi deux variables pour la même API ?**
+
+Next.js s'exécute dans deux contextes distincts selon l'opération :
+
+- **SSR / Server Components** — le code s'exécute dans le conteneur Docker. Le navigateur n'est pas impliqué. Le backend est joignable via son hostname Docker `backend:4000`, inaccessible depuis l'extérieur.
+- **Client / navigateur** — le code s'exécute dans le navigateur de l'utilisateur. Le réseau Docker est invisible depuis le navigateur. L'API doit être joignable via `localhost:4000`.
+
+`fetchPublic` (SSR) utilise `API_URL_SERVER` en priorité, avec `NEXT_PUBLIC_API_URL` en fallback. `apiRequest` (client) utilise toujours `NEXT_PUBLIC_API_URL`.
+
+Les variables préfixées `NEXT_PUBLIC_` sont intégrées dans le bundle JavaScript envoyé au navigateur — ne jamais y mettre de secrets.
+
+> Les fichiers `.env` ne sont pas versionnés — exclus par `.gitignore` et `.dockerignore`. Ne jamais commiter des secrets en clair dans le dépôt.
+
 ---
 
 ## 5. Système de types — `src/type.ts`
