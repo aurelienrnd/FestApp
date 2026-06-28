@@ -100,7 +100,7 @@ Volumes montés :
 | ------------------------------------- | ---------------------------------------------------------------------------- |
 | `./apps/backend:/app`                 | Code source local monté dans le conteneur — permet le hot-reload             |
 | `/app/node_modules`                   | Isole les dépendances Docker des dépendances locales                         |
-| `./apps/backend/uploads:/app/uploads` | Stockage persistant des images uploadées                                     |
+| `./apps/backend/uploads:/app/uploads` | Les images uploadées sont stockées directement sur la machine hôte (pas un volume Docker) |
 | `./bd/init:/app/bd/init`              | Scripts SQL accessibles depuis le conteneur backend (utilisés par les tests) |
 
 ---

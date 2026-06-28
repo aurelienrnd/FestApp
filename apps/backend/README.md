@@ -270,7 +270,7 @@ apps/backend/
 │       ├── mailer.service.test.ts
 │       └── user.service.test.ts
 │
-├── uploads/                              # Images uploadées — volume Docker persistant
+├── uploads/                              # Les images uploadées sont stockées directement sur la machine hôte (pas un volume Docker)
 │   ├── artists/
 │   └── news/
 │
