@@ -58,7 +58,8 @@ services:
       - WATCHPACK_POLLING_INTERVAL=1000
       - CHOKIDAR_USEPOLLING=true
       - CHOKIDAR_INTERVAL=1000
-    command: ["npm", "run", "dev"] # run dev en mode développement
+      - NEXT_DISABLE_TURBOPACK=1 # Desactive Turbopack pour Next.js en dev
+    command: ["npm", "run", "dev", "--", "--webpack", "-H", "0.0.0.0", "-p", "3000"] # run dev avec webpack
     depends_on:
       - backend
     ports:

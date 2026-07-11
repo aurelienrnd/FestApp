@@ -124,6 +124,8 @@ Volumes montés :
 | `/app/node_modules`    | Isole les dépendances Docker des dépendances locales             |
 | `/app/.next`           | Isole le cache de build Next.js dans le conteneur                |
 
+> **Note Webpack** : Turbopack est désactivé en développement sous Docker sur Windows (`NEXT_DISABLE_TURBOPACK=1`, commande `next dev --webpack`). Turbopack a son propre système de surveillance de fichiers, indépendant de Watchpack/Chokidar, qui **ignore silencieusement** les variables de polling ci-dessous — sous Docker sur Windows, ça se traduit par un hot reload qui ne se déclenche jamais, sans aucune erreur visible. Revenir à Webpack (plus lent, mais dont le watcher respecte ces variables) est donc nécessaire pour que le polling ait un effet.
+>
 > **Note polling** : Les variables d'environnement `WATCHPACK_POLLING`, `WATCHPACK_POLLING_INTERVAL`, `CHOKIDAR_USEPOLLING` et `CHOKIDAR_INTERVAL` sont nécessaires au **hot reload en développement**.
 > Sous Windows et macOS, Docker tourne dans une VM Linux qui ne reçoit pas les événements de fichiers du système hôte. Sans ces variables, Next.js et le backend ne détectent pas les modifications de fichiers et ne se rechargent pas automatiquement.
 > Le polling force une vérification périodique du système de fichiers en remplacement des événements natifs. **Ne pas supprimer ces variables si vous développez sous Windows ou macOS.**
