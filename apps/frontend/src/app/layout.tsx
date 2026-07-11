@@ -17,7 +17,7 @@ const bebasNeue = Bebas_Neue({
 
 // Métadonnées SEO
 export const metadata: Metadata = {
-  title: "Vindellfest",
+  title: "Vindhellfest",
   description:
     "Vindhellfest — Le festival de musique en Charente. Programmation, actualités et informations pratiques.",
 };

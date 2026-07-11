@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+// Métadonnées SEO
+export const metadata: Metadata = {
+  title: "Page introuvable | Vindhellfest",
+  description: "La page que vous cherchez n'existe pas ou a été déplacée.",
+};
 
 /** Page 404 — affichée quand une route est introuvable ou quand notFound() est appelé.
  * Composant serveur rendu dans le layout racine, thème visiteur appliqué manuellement.

@@ -1,17 +1,25 @@
+import type { Metadata } from "next";
 import type { HomeArtist, HomeNews } from "../../type";
 import HomeHero from "./HomeHero";
 import HomeInfosPratiques from "./HomeInfosPratiques";
-import HomeNews from "./HomeNews";
+import HomeNewsSection from "./HomeNews";
 import HomePartenaires from "./HomePartenaires";
 import HomeProgrammation from "./HomeProgrammation";
 import { fetchPublic } from "../../functions/fetchPublic";
+
+// Métadonnées SEO
+export const metadata: Metadata = {
+  title: "Vindhellfest — Festival de musique en Charente",
+  description:
+    "Vindhellfest, festival de musique en Charente : découvrez la programmation, les dernières actualités et toutes les informations pratiques.",
+};
 
 /** Page d'accueil publique — composant serveur avec ISR (revalidation toutes les 60 secondes).
  * Récupère les données agrégées depuis GET /public/home.
  * @function fetchPublic Effectue un fetch GET côté serveur avec revalidation ISR.
  * @children HomeHero
  * @children HomeProgrammation
- * @children HomeNews
+ * @children HomeNewsSection
  * @children HomeInfosPratiques
  * @children HomePartenaires
  */
@@ -25,7 +33,7 @@ export default async function Home() {
     <>
       <HomeHero />
       <HomeProgrammation artists={data.artists} />
-      <HomeNews newsList={data.news ?? []} />
+      <HomeNewsSection newsList={data.news ?? []} />
       <HomeInfosPratiques />
       <HomePartenaires />
     </>

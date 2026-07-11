@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { FESTIVAL_LOCATION } from "../../../config/festival";
+
+// Métadonnées SEO
+export const metadata: Metadata = {
+  title: "Infos pratiques | Vindhellfest",
+  description:
+    "Accès, parking, restauration et informations utiles pour préparer votre venue au Vindhellfest.",
+};
 
 const ACCES_INFOS = [
   "Parking gratuit sur place",
