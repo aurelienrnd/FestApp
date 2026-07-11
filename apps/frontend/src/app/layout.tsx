@@ -16,10 +16,31 @@ const bebasNeue = Bebas_Neue({
 });
 
 // Métadonnées SEO
+const title = "Vindhellfest";
+const description =
+  "Vindhellfest — Le festival de musique en Charente. Programmation, actualités et informations pratiques.";
+const image = "/hero_bg.webp";
+
 export const metadata: Metadata = {
-  title: "Vindhellfest",
-  description:
-    "Vindhellfest — Le festival de musique en Charente. Programmation, actualités et informations pratiques.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  ),
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    images: [image],
+    siteName: "Vindhellfest",
+    locale: "fr_FR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: [image],
+  },
 };
 
 /** Layout racine — definit uniquement le squelette HTML commun a toutes les pages.
