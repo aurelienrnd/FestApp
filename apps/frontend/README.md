@@ -127,9 +127,11 @@ apps/frontend/
 │   │   │   ├── HomePartenaires.tsx   # Section partenaires de la page d'accueil
 │   │   │   ├── HomeInfosPratiques.tsx# Section infos pratiques de la page d'accueil
 │   │   │   ├── artists/
+│   │   │   │   ├── layout.tsx        # Metadata (page.tsx est un composant client)
 │   │   │   │   ├── page.tsx          # Page /artists — liste des artistes
 │   │   │   │   └── [id]/page.tsx     # Page /artists/[id] — fiche artiste
 │   │   │   ├── news/
+│   │   │   │   ├── layout.tsx        # Metadata (page.tsx est un composant client)
 │   │   │   │   ├── page.tsx          # Page /news — liste des actualités
 │   │   │   │   └── [id]/page.tsx     # Page /news/[id] — détail d'une actualité
 │   │   │   └── practical-info/
@@ -196,6 +198,7 @@ apps/frontend/
 │   │   ├── getApiErrorMessage.ts
 │   │   ├── formatDate.ts
 │   │   └── validation.ts
+
 │   │
 │   ├── config/                       # Données de configuration statiques
 │   │   ├── ui.ts
@@ -1461,6 +1464,8 @@ Les routes dynamiques (`[id]`) utilisent le paramètre `params.id` pour charger 
 
 La page d'accueil charge ses données via `fetchPublic` sur `GET /public/home` — un endpoint qui agrège artistes et actualités en une seule requête. En cas d'échec, un fallback `{ artists: [], news: [] }` est utilisé pour éviter que la page ne plante.
 
+Exporte des `metadata` statiques (`title`, `description`) — voir 12.5 pour le détail du système de metadata SEO.
+
 Elle est composée de cinq sections distinctes, chacune dans son propre composant local :
 
 - `HomeHero` — bandeau principal avec le visuel du festival
@@ -1475,9 +1480,13 @@ Contrairement aux autres pages publiques, cette page est un composant **client**
 
 Les filtres sont construits dynamiquement depuis `filterArtistsItems` en ajoutant un `onClick` et un `active` à chaque item selon le filtre courant. Ces items enrichis sont passés à la fois à `SideBarTool` (sidebar desktop) et `MobileFiltersButton` (modale mobile).
 
+Comme `page.tsx` est un composant client, il ne peut pas exporter `metadata` — un fichier `layout.tsx` serveur à côté porte les metadata statiques de cette route à sa place (voir 12.5).
+
 #### `/artists/[id]` — Fiche artiste
 
-Page serveur qui charge l'artiste via `fetchPublic` sur `GET /public/artists/:id`. Si les données sont `null` (artiste inexistant ou API inaccessible), `notFound()` est appelé — Next.js affiche la page 404. Sinon les données sont passées à `ArtistDetailContent`.
+Page serveur qui charge l'artiste via `getArtist(id)` (wrapper de `fetchPublic` sur `GET /public/artists/:id`, mémoïsé avec `cache()`). Si les données sont `null` (artiste inexistant ou API inaccessible), `notFound()` est appelé — Next.js affiche la page 404. Sinon les données sont passées à `ArtistDetailContent`.
+
+Exporte aussi `generateMetadata` qui appelle `getArtist(id)` pour construire un titre et une description propres à l'artiste. Détail du fonctionnement et du piège avec `notFound()` en 12.5.
 
 #### `/news` — Liste des actualités
 
@@ -1485,13 +1494,19 @@ Même structure que `/artists` — composant client qui gère l'état du filtre 
 
 La différence avec `/artists` : `activeFilter` est une `string` (le label du filtre) et non `string | null` — il y a toujours un tri actif, jamais d'état "sans filtre".
 
+Même raison qu'`/artists` : un `layout.tsx` serveur voisin porte les metadata statiques puisque `page.tsx` est un composant client.
+
 #### `/news/[id]` — Détail d'une actualité
 
-Même structure que `/artists/[id]` — page serveur qui charge la news via `fetchPublic` sur `GET /public/news/:id`. Si `null`, `notFound()` est appelé. Une news non publiée retourne également `null` côté backend — un visiteur ne peut pas accéder directement à une news en brouillon via son URL.
+Même structure que `/artists/[id]` — page serveur qui charge la news via `getNews(id)` (wrapper de `fetchPublic` sur `GET /public/news/:id`, mémoïsé avec `cache()`). Si `null`, `notFound()` est appelé. Une news non publiée retourne également `null` côté backend — un visiteur ne peut pas accéder directement à une news en brouillon via son URL.
+
+Exporte aussi `generateMetadata` qui appelle `getNews(id)` pour construire un titre et une description propres à l'actualité.
 
 #### `/practical-info` — Informations pratiques
 
 Page serveur entièrement statique — pas d'appel API, pas d'état client. Elle affiche les informations pratiques du festival (lieu, accès, restauration, sur place) à partir de constantes locales et de `FESTIVAL_LOCATION` importé depuis `festival.ts`.
+
+Exporte des `metadata` statiques (`title`, `description`) — voir 12.5.
 
 ### 12.2. Page d'authentification
 
@@ -1545,6 +1560,59 @@ Même structure que `/admin/artists` et `/admin/news` — composant client avec 
 #### `not-found.tsx`
 
 Composant serveur placé à la racine de `app/` — Next.js l'utilise automatiquement pour toutes les routes inconnues et chaque fois que `notFound()` est appelé dans le code (pages artiste ou news inexistants). Le thème visiteur (`data-theme="visitor"`) est appliqué manuellement car ce fichier est en dehors du layout `(public)` et n'en hérite pas. Affiche le code `404` en rouge, un message explicite et un lien de retour vers l'accueil.
+
+Exporte ses propres `metadata` (`title: "Page introuvable | Vindhellfest"`) — c'est le **seul** endroit où un titre 404 peut être défini. Voir 12.5 pour l'explication complète : `generateMetadata` d'une page qui appelle `notFound()` est ignoré par Next.js, il n'y a donc aucun intérêt à définir un titre "introuvable" ailleurs que dans ce fichier.
+
+---
+
+### 12.5. Metadata SEO dynamiques
+
+Chaque page **publique** (pas admin, pas auth) exporte des metadata (`title`, `description`) consommées par Next.js pour le `<head>` de la page — utile pour le SEO et l'aperçu de partage sur les réseaux sociaux.
+
+#### Le mécanisme : convention de nommage, pas d'import
+
+`metadata` (constante) et `generateMetadata` (fonction) ne sont **jamais importés ni appelés** dans le code. Ce sont des noms d'export réservés que Next.js recherche automatiquement dans chaque `page.tsx` / `layout.tsx` au moment de construire le `<head>` — exactement comme `export default` est la convention attendue pour le composant de la page. Le seul import réellement utilisé, `import type { Metadata } from "next"`, ne sert qu'au typage TypeScript de l'objet retourné — il n'a aucun rôle dans le déclenchement de la fonctionnalité.
+
+| Type de page | Export utilisé | Raison |
+| --- | --- | --- |
+| Page statique (`/`, `/practical-info`) | `export const metadata` | Contenu connu à l'avance, pas besoin de données |
+| Page dynamique (`/artists/[id]`, `/news/[id]`) | `export async function generateMetadata(...)` | Le titre dépend de données chargées via l'API |
+
+#### Le problème des pages liste — composants client
+
+`/artists` et `/news` sont des composants client (`"use client"`, state `activeFilter`). Next.js interdit d'exporter `metadata` depuis un composant client. Solution : un `layout.tsx` **serveur** est ajouté à côté de chaque `page.tsx`, dont l'unique rôle est de porter les metadata statiques et de laisser passer les enfants :
+
+```ts
+// app/(public)/artists/layout.tsx
+export const metadata: Metadata = {
+  title: "Programmation | Vindhellfest",
+  description: "...",
+};
+
+export default function ArtistsLayout({ children }: { children: React.ReactNode }) {
+  return children;
+}
+```
+
+#### Dédoublonnage du fetch avec `cache()`
+
+Sur les pages dynamiques, `generateMetadata` et le composant de page ont chacun besoin des mêmes données (ex : le nom de l'artiste pour le titre, et pour l'affichage). Sans précaution, ça déclenche **deux appels réseau identiques** vers le backend — vérifié empiriquement en développement (2 hits sur `/public/artists/:id` pour une seule visite de page).
+
+La solution appliquée dans `artists/[id]/page.tsx` et `news/[id]/page.tsx` : la fonction de fetch est enveloppée dans `cache()` de `"react"`, définie une fois dans le fichier et appelée par les deux :
+
+```ts
+const getArtist = cache((id: string) =>
+  fetchPublic<{ artist: ArtistItem }>(`/public/artists/${id}`),
+);
+```
+
+`cache()` mémoïse par **fonction + argument**, pour la durée d'une seule requête serveur (pas de partage entre deux visiteurs différents, contrairement au cache ISR `revalidate: 60` déjà présent dans `fetchPublic`, voir 7.2). Le premier appel à `getArtist(id)` déclenche le vrai fetch ; le second appel avec le même `id`, dans la même requête, renvoie directement le résultat déjà obtenu — vérifié à nouveau empiriquement (1 seul hit après correctif).
+
+#### Le piège : `notFound()` ignore les metadata de la page
+
+Si `fetchPublic` retourne `null` (artiste/news inexistant), la page appelle `notFound()`, qui fait basculer le rendu vers `not-found.tsx`. Constat fait en testant en direct dans le navigateur : **Next.js jette alors le retour de `generateMetadata` pour cette route** — un titre du type `"Artiste introuvable | Vindhellfest"` défini dans la branche `if (!data)` de `generateMetadata` ne s'affiche jamais, quoi qu'on y écrive.
+
+La branche `if (!data) return {};` reflète ça honnêtement : elle ne définit rien, puisque de toute façon ce n'est jamais utilisé. Le vrai titre affiché dans ce cas vient de `not-found.tsx` lui-même (voir 12.4), seul fichier dont les metadata sont effectivement rendues quand `notFound()` est appelé.
 
 ---
 
