@@ -2313,7 +2313,35 @@ tests/
     └── user.service.test.ts
 ```
 
-### 13.2. Tests d'intégration — routes HTTP avec Supertest
+### 13.2. Lancer les tests en local
+
+Les tests d'intégration ont besoin d'une vraie base PostgreSQL nommée `vindhellfest_test`, distincte de la base de développement `vindhellfest`. Elle n'est pas créée automatiquement — contrairement au schéma, qui est rejoué par `tests/setup.ts` à chaque lancement (voir 13.3).
+
+**1. Démarrer PostgreSQL**
+
+```bash
+docker compose up -d db
+```
+
+**2. Créer la base de test**
+
+```bash
+docker exec -it vindhellfest-db psql -U postgres -c "CREATE DATABASE vindhellfest_test"
+```
+
+Cette étape n'est à faire qu'une seule fois — la base persiste dans le volume `pgdata` (voir [Volume persistant — `pgdata`](../../README.md#volume-persistant--pgdata) à la racine du projet) tant qu'il n'est pas supprimé via `docker compose down -v`.
+
+**3. Lancer les tests**
+
+```bash
+npm test
+```
+
+`tests/setup.ts` se connecte directement à `vindhellfest_test` (voir 4.3), rejoue les migrations SQL et nettoie les données entre chaque test — aucune autre préparation n'est nécessaire.
+
+> C'est exactement la séquence reproduite par le job `backend` de la CI (voir [Pipeline CI/CD](../../README.md#pipeline-cicd) à la racine du projet), à l'étape "Create test database".
+
+### 13.3. Tests d'intégration — routes HTTP avec Supertest
 
 Les tests d'intégration envoient de vraies requêtes HTTP contre l'instance Express retournée par `createApp()`, sur une vraie base PostgreSQL `vindhellfest_test`.
 
@@ -2350,7 +2378,7 @@ afterEach(async () => {
 | `nodemailer` | Ne pas envoyer de vrais emails |
 | `express-rate-limit` | Ne pas bloquer les tests répétés |
 
-### 13.3. Tests unitaires — services et middlewares
+### 13.4. Tests unitaires — services et middlewares
 
 Les tests unitaires isolent une fonction ou un middleware sans passer par Express. La base de données est mockée via `vi.mock` sur le module `../../src/db`.
 
@@ -2366,7 +2394,7 @@ Chaque fichier de test unitaire couvre un fichier source :
 | `mailer.service.test.ts` | `sendWelcomeEmail`, `sendPasswordResetEmail`, `sendContactEmail` — nodemailer mocké |
 | `user.service.test.ts` | `checkEmailAvailable`, `checkDisplayNameAvailable`, `checkUserExists`, `isNewsPrivileged` |
 
-### 13.4. Helpers et fixtures
+### 13.5. Helpers et fixtures
 
 **`createAuthSession`**
 
