@@ -74,7 +74,7 @@ export default function Page() {
     <section className="section-page">
       <h1 className="title1">Infos pratiques</h1>
 
-      <div className="flex flex-col gap-16 max-w-5xl mx-auto w-full">
+      <div className="flex flex-col gap-16 max-w-5xl mx-auto w-full px-6 lg:px-0">
         {/* Accès & Localisation — texte à gauche, carte à droite */}
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           <div className="flex flex-col gap-4 lg:w-2/5">
