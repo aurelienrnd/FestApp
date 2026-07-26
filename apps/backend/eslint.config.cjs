@@ -8,6 +8,9 @@ const compat = new FlatCompat({
 });
 
 module.exports = [
+  {
+    ignores: ["dist/**", "node_modules/**"],
+  },
   ...compat.extends(
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
