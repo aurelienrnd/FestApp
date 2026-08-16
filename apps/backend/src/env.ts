@@ -14,6 +14,8 @@ const envSchema = z.object({
   COOKIE_ACCESS_TOKEN_SECURE: z.string(),
   COOKIE_ACCESS_TOKEN_SAME_SITE: z.string(),
   SESSION_EXPIRES_IN: z.string(),
+  BETTER_AUTH_SECRET: z.string(),
+  BETTER_AUTH_URL: z.string(),
   FRONTEND_ORIGIN: z.string(),
   SMTP_HOST: z.string(),
   SMTP_PORT: z.string(),
