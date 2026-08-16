@@ -1,33 +1,15 @@
-# Projet Vindhellfest — Architecture & Documentation
+# FestApp — Architecture & Documentation
 
-Ce projet est développé dans le cadre du titre professionnel Concepteur Développeur d'Applications (CDA).
-Il s'appuie sur une architecture frontend / backend / base de données orchestrée via Docker et intègre une démarche DevOps (CI/CD).
-
-## Contexte du projet
-
-Vindhellfest est un festival de musique organisé par une association en Charente.
-Ce projet est une **refonte complète** du site officiel [vindhellfest.fr](https://vindhellfest.fr/).
-
-L'ancien site était développé en PHP avec un design vieillissant et offrait peu d'interactions.
-Les organisateurs souhaitaient un nouveau site plus moderne, avec davantage de dynamisme et de fonctionnalités.
-
-**Besoins exprimés par l'association :**
-
-- Un espace public attractif pour présenter la programmation et les actualités du festival
-- Un accès administrateur permettant d'ajouter de nouveaux artistes et de publier des actualités
-- Une gestion des droits différenciée pour les membres de l'association (rôles `admin`, `artists`, `news`)
-- La billetterie reste prise en charge par **HelloAsso**, partenaire historique du festival
-
----
+FestApp s'appuie sur une architecture frontend / backend / base de données orchestrée via Docker et intègre une démarche DevOps (CI/CD).
 
 ## Stack technique
 
-| Couche              | Technologie                                      |
-| ------------------- | ------------------------------------------------ |
-| **Frontend**        | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| **Backend**         | Express.js 5, TypeScript, Node.js 20             |
+| Couche                     | Technologie                                      |
+| -------------------------- | ------------------------------------------------ |
+| **Frontend**         | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
+| **Backend**          | Express.js 5, TypeScript, Node.js 20             |
 | **Base de données** | PostgreSQL 16 (Alpine)                           |
-| **DevOps**          | Docker Compose, GitHub Actions CI/CD             |
+| **DevOps**           | Docker Compose, GitHub Actions CI/CD             |
 
 ---
 
@@ -44,7 +26,6 @@ vindhellfest/
 │   ├── frontend/
 │   └── backend/
 ├── bd/
-├── doc/
 ├── .dockerignore
 ├── .env
 ├── .env.backend
@@ -65,64 +46,64 @@ Il est composé de **3 services**, connectés par **1 réseau interne** et utili
 
 #### `db` — Base de données PostgreSQL
 
-| Propriété        | Valeur                                                                                               |
-| ---------------- | ---------------------------------------------------------------------------------------------------- |
-| Image            | `postgres:16-alpine`                                                                                 |
-| Nom du conteneur | `vindhellfest-db`                                                                                    |
-| Port             | Interne uniquement (non exposé à l'hôte)                                                             |
-| Variables d'env  | Chargées depuis `.env`                                                                               |
-| Réseau           | `app-net`                                                                                            |
+| Propriété      | Valeur                                                                                                    |
+| ---------------- | --------------------------------------------------------------------------------------------------------- |
+| Image            | `postgres:16-alpine`                                                                                    |
+| Nom du conteneur | `vindhellfest-db`                                                                                       |
+| Port             | Interne uniquement (non exposé à l'hôte)                                                               |
+| Variables d'env  | Chargées depuis`.env`                                                                                  |
+| Réseau          | `app-net`                                                                                               |
 | Healthcheck      | `pg_isready` toutes les 10 s — garantit que le backend ne démarre pas avant que PostgreSQL soit prêt |
 
 Volumes montés :
 
-| Volume                                  | Rôle                                                          |
-| --------------------------------------- | ------------------------------------------------------------- |
-| `pgdata`                                | Stockage persistant des données PostgreSQL                    |
+| Volume                                    | Rôle                                                             |
+| ----------------------------------------- | ----------------------------------------------------------------- |
+| `pgdata`                                | Stockage persistant des données PostgreSQL                       |
 | `./bd/init:/docker-entrypoint-initdb.d` | Scripts SQL exécutés automatiquement à la création de la base |
 
 ---
 
 #### `backend` — API Express.js
 
-| Propriété        | Valeur                                                    |
-| ---------------- | --------------------------------------------------------- |
-| Image            | Construite depuis `apps/backend/Dockerfile` (stage `dev`) |
-| Nom du conteneur | `vindhellfest-backend`                                    |
-| Port exposé      | `4000` → accessible sur http://localhost:4000             |
-| Variables d'env  | Chargées depuis `.env` et `.env.backend`                  |
-| Dépendance       | Attend que `db` soit `healthy` avant de démarrer          |
-| Réseau           | `app-net`                                                 |
+| Propriété      | Valeur                                                       |
+| ---------------- | ------------------------------------------------------------ |
+| Image            | Construite depuis`apps/backend/Dockerfile` (stage `dev`) |
+| Nom du conteneur | `vindhellfest-backend`                                     |
+| Port exposé     | `4000` → accessible sur http://localhost:4000             |
+| Variables d'env  | Chargées depuis`.env` et `.env.backend`                 |
+| Dépendance      | Attend que`db` soit `healthy` avant de démarrer         |
+| Réseau          | `app-net`                                                  |
 
 Volumes montés :
 
-| Volume                                | Rôle                                                                         |
-| ------------------------------------- | ---------------------------------------------------------------------------- |
-| `./apps/backend:/app`                 | Code source local monté dans le conteneur — permet le hot-reload             |
-| `/app/node_modules`                   | Isole les dépendances Docker des dépendances locales                         |
+| Volume                                  | Rôle                                                                                        |
+| --------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `./apps/backend:/app`                 | Code source local monté dans le conteneur — permet le hot-reload                           |
+| `/app/node_modules`                   | Isole les dépendances Docker des dépendances locales                                       |
 | `./apps/backend/uploads:/app/uploads` | Les images uploadées sont stockées directement sur la machine hôte (pas un volume Docker) |
-| `./bd/init:/app/bd/init`              | Scripts SQL accessibles depuis le conteneur backend (utilisés par les tests) |
+| `./bd/init:/app/bd/init`              | Scripts SQL accessibles depuis le conteneur backend (utilisés par les tests)                |
 
 ---
 
 #### `frontend` — Application Next.js
 
-| Propriété        | Valeur                                                     |
-| ---------------- | ---------------------------------------------------------- |
-| Image            | Construite depuis `apps/frontend/Dockerfile` (stage `dev`) |
-| Nom du conteneur | `vindhellfest-frontend`                                    |
-| Port exposé      | `3000` → accessible sur http://localhost:3000              |
-| Variables d'env  | Chargées depuis `.env` et `.env.frontend`                  |
-| Dépendance       | Attend que `backend` soit démarré                          |
-| Réseau           | `app-net`                                                  |
+| Propriété      | Valeur                                                        |
+| ---------------- | ------------------------------------------------------------- |
+| Image            | Construite depuis`apps/frontend/Dockerfile` (stage `dev`) |
+| Nom du conteneur | `vindhellfest-frontend`                                     |
+| Port exposé     | `3000` → accessible sur http://localhost:3000              |
+| Variables d'env  | Chargées depuis`.env` et `.env.frontend`                 |
+| Dépendance      | Attend que`backend` soit démarré                          |
+| Réseau          | `app-net`                                                   |
 
 Volumes montés :
 
-| Volume                 | Rôle                                                             |
-| ---------------------- | ---------------------------------------------------------------- |
+| Volume                   | Rôle                                                              |
+| ------------------------ | ------------------------------------------------------------------ |
 | `./apps/frontend:/app` | Code source local monté dans le conteneur — permet le hot-reload |
 | `/app/node_modules`    | Isole les dépendances Docker des dépendances locales             |
-| `/app/.next`           | Isole le cache de build Next.js dans le conteneur                |
+| `/app/.next`           | Isole le cache de build Next.js dans le conteneur                  |
 
 > **Note Webpack** : Turbopack est désactivé en développement sous Docker sur Windows (`NEXT_DISABLE_TURBOPACK=1`, commande `next dev --webpack`). Turbopack a son propre système de surveillance de fichiers, indépendant de Watchpack/Chokidar, qui **ignore silencieusement** les variables de polling ci-dessous — sous Docker sur Windows, ça se traduit par un hot reload qui ne se déclenche jamais, sans aucune erreur visible. Revenir à Webpack (plus lent, mais dont le watcher respecte ces variables) est donc nécessaire pour que le polling ait un effet.
 >
@@ -138,13 +119,13 @@ Chaque Dockerfile est organisé en **stages multi-étapes**. Le `docker-compose.
 
 #### Différences entre les stages
 
-| Aspect               | `dev`                                          | `runner` (production)                          |
-| -------------------- | ---------------------------------------------- | ---------------------------------------------- |
-| Code source          | Monté depuis l'hôte (volume `./apps/xxx:/app`) | Copié dans l'image au moment du build          |
-| Hot reload           | Activé (`tsx watch`, `next dev` + polling)     | Désactivé (`node dist/index.js`, `next start`) |
-| Dépendances          | Toutes (dev incluses)                          | Production uniquement (`--omit=dev`)           |
-| Variables de polling | Présentes (`WATCHPACK_POLLING`, `CHOKIDAR_*`)  | Absentes (inutiles)                            |
-| Taille de l'image    | Plus lourde                                    | Optimisée                                      |
+| Aspect               | `dev`                                            | `runner` (production)                              |
+| -------------------- | -------------------------------------------------- | ---------------------------------------------------- |
+| Code source          | Monté depuis l'hôte (volume`./apps/xxx:/app`)  | Copié dans l'image au moment du build               |
+| Hot reload           | Activé (`tsx watch`, `next dev` + polling)    | Désactivé (`node dist/index.js`, `next start`) |
+| Dépendances         | Toutes (dev incluses)                              | Production uniquement (`--omit=dev`)               |
+| Variables de polling | Présentes (`WATCHPACK_POLLING`, `CHOKIDAR_*`) | Absentes (inutiles)                                  |
+| Taille de l'image    | Plus lourde                                        | Optimisée                                           |
 
 #### Passer en production
 
@@ -161,9 +142,9 @@ build:
 
 En production, le code est embarqué dans l'image — les volumes qui montaient le code local deviennent inutiles voire dangereux (ils écraseraient le contenu de l'image).
 
-| Service    | Volumes à retirer                                         |
-| ---------- | --------------------------------------------------------- |
-| `backend`  | `./apps/backend:/app`, `/app/node_modules`                |
+| Service      | Volumes à retirer                                              |
+| ------------ | --------------------------------------------------------------- |
+| `backend`  | `./apps/backend:/app`, `/app/node_modules`                  |
 | `frontend` | `./apps/frontend:/app`, `/app/node_modules`, `/app/.next` |
 
 Supprimer également le bloc `environment` de polling et la directive `command` du service `frontend`.
@@ -179,10 +160,10 @@ Il permet aux conteneurs de se joindre entre eux par leur **nom de service**, sa
 
 Exemples de communication interne :
 
-| De         | Vers      | Adresse utilisée |
-| ---------- | --------- | ---------------- |
-| `backend`  | `db`      | `db:5432`        |
-| `frontend` | `backend` | `backend:4000`   |
+| De           | Vers        | Adresse utilisée |
+| ------------ | ----------- | ----------------- |
+| `backend`  | `db`      | `db:5432`       |
+| `frontend` | `backend` | `backend:4000`  |
 
 Depuis l'extérieur (navigateur ou outil), seuls les ports explicitement exposés (`3000`, `4000`) sont accessibles.
 
@@ -323,27 +304,27 @@ Les deux jobs s'exécutent **en parallèle** sur des VM Ubuntu fraîches — ils
 
 ### Déclencheurs
 
-| Événement      | Condition                | Description                                                        |
-| -------------- | ------------------------ | ------------------------------------------------------------------ |
-| `push`         | Sur toutes les branches  | À chaque fois qu'un commit est poussé sur le dépôt                 |
+| Événement      | Condition                | Description                                                           |
+| ---------------- | ------------------------ | --------------------------------------------------------------------- |
+| `push`         | Sur toutes les branches  | À chaque fois qu'un commit est poussé sur le dépôt                |
 | `pull_request` | Vers toutes les branches | À l'ouverture, la mise à jour ou la réouverture d'une pull request |
 
 ---
 
 ### Job `backend`
 
-| #   | Étape                    | Commande / Action                                 | Description                                                                                                                                              |
-| --- | ------------------------ | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Checkout**             | `actions/checkout@v4`                             | Clone le dépôt Git sur la VM                                                                                                                             |
-| 2   | **Prepare env files**    | `cat > .env / .env.backend / .env.frontend`       | Crée les trois fichiers d'environnement requis par Docker Compose —`.env.backend` contient toutes les variables nécessaires aux tests (DB, JWT, SMTP...) |
-| 3   | **Build backend image**  | `docker compose build backend`                    | Construit l'image Docker du backend (stage `dev`)                                                                                                        |
-| 4   | **Start database**       | `docker compose up -d db`                         | Lance le conteneur PostgreSQL en arrière-plan                                                                                                            |
-| 5   | **Wait for database**    | `pg_isready` en boucle (20 tentatives, pause 3 s) | Attend que PostgreSQL soit prêt à accepter les connexions avant de continuer                                                                             |
-| 6   | **Create test database** | `psql -c "CREATE DATABASE vindhellfest_test"`     | Crée la base de données dédiée aux tests d'intégration                                                                                                   |
-| 7   | **Install dependencies** | `npm ci`                                          | Installe les dépendances npm de façon déterministe depuis `package-lock.json`                                                                            |
-| 8   | **Lint**                 | `npm run lint`                                    | Analyse statique du code — vérifie les règles ESLint                                                                                                     |
-| 9   | **Test**                 | `npm test`                                        | Exécute tous les tests (unitaires + intégration) via Vitest                                                                                              |
-| 10  | **Shutdown**             | `docker compose down -v`                          | Arrête et supprime les conteneurs, réseaux et volumes — **toujours exécuté**, même en cas d'échec                                                        |
+| #  | Étape                         | Commande / Action                                   | Description                                                                                                                                                   |
+| -- | ------------------------------ | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1  | **Checkout**             | `actions/checkout@v4`                             | Clone le dépôt Git sur la VM                                                                                                                                |
+| 2  | **Prepare env files**    | `cat > .env / .env.backend / .env.frontend`       | Crée les trois fichiers d'environnement requis par Docker Compose —`.env.backend` contient toutes les variables nécessaires aux tests (DB, JWT, SMTP...) |
+| 3  | **Build backend image**  | `docker compose build backend`                    | Construit l'image Docker du backend (stage`dev`)                                                                                                            |
+| 4  | **Start database**       | `docker compose up -d db`                         | Lance le conteneur PostgreSQL en arrière-plan                                                                                                                |
+| 5  | **Wait for database**    | `pg_isready` en boucle (20 tentatives, pause 3 s) | Attend que PostgreSQL soit prêt à accepter les connexions avant de continuer                                                                                |
+| 6  | **Create test database** | `psql -c "CREATE DATABASE vindhellfest_test"`     | Crée la base de données dédiée aux tests d'intégration                                                                                                   |
+| 7  | **Install dependencies** | `npm ci`                                          | Installe les dépendances npm de façon déterministe depuis`package-lock.json`                                                                             |
+| 8  | **Lint**                 | `npm run lint`                                    | Analyse statique du code — vérifie les règles ESLint                                                                                                       |
+| 9  | **Test**                 | `npm test`                                        | Exécute tous les tests (unitaires + intégration) via Vitest                                                                                                 |
+| 10 | **Shutdown**             | `docker compose down -v`                          | Arrête et supprime les conteneurs, réseaux et volumes —**toujours exécuté**, même en cas d'échec                                                 |
 
 > Le job backend démarre un vrai PostgreSQL via Docker pour que les tests d'intégration (Supertest) s'exécutent contre une base réelle, pas des mocks.
 
@@ -351,15 +332,15 @@ Les deux jobs s'exécutent **en parallèle** sur des VM Ubuntu fraîches — ils
 
 ### Job `frontend`
 
-| #   | Étape                    | Commande / Action                           | Description                                                                                       |
-| --- | ------------------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| 1   | **Checkout**             | `actions/checkout@v4`                       | Clone le dépôt Git sur la VM                                                                      |
-| 2   | **Prepare env files**    | `cat > .env / .env.backend / .env.frontend` | Crée les trois fichiers d'environnement vides pour éviter les erreurs Docker Compose au build     |
-| 3   | **Build frontend image** | `docker compose build frontend`             | Construit l'image Docker du frontend (stage `dev`)                                                |
-| 4   | **Install dependencies** | `npm ci` (`--no-deps`)                      | Installe les dépendances npm sans démarrer les services liés (backend, db)                        |
-| 5   | **Lint**                 | `npm run lint` (`--no-deps`)                | Analyse statique du code — vérifie les règles ESLint et Next.js                                   |
-| 6   | **Test**                 | `npm run test:run` (`--no-deps`)            | Exécute tous les tests en mode one-shot via Vitest (`test:run` = pas de watch mode, adapté au CI) |
-| 7   | **Shutdown**             | `docker compose down -v`                    | Supprime les conteneurs et ressources Docker — **toujours exécuté**, même en cas d'échec          |
+| # | Étape                         | Commande / Action                             | Description                                                                                           |
+| - | ------------------------------ | --------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| 1 | **Checkout**             | `actions/checkout@v4`                       | Clone le dépôt Git sur la VM                                                                        |
+| 2 | **Prepare env files**    | `cat > .env / .env.backend / .env.frontend` | Crée les trois fichiers d'environnement vides pour éviter les erreurs Docker Compose au build       |
+| 3 | **Build frontend image** | `docker compose build frontend`             | Construit l'image Docker du frontend (stage`dev`)                                                   |
+| 4 | **Install dependencies** | `npm ci` (`--no-deps`)                    | Installe les dépendances npm sans démarrer les services liés (backend, db)                         |
+| 5 | **Lint**                 | `npm run lint` (`--no-deps`)              | Analyse statique du code — vérifie les règles ESLint et Next.js                                    |
+| 6 | **Test**                 | `npm run test:run` (`--no-deps`)          | Exécute tous les tests en mode one-shot via Vitest (`test:run` = pas de watch mode, adapté au CI) |
+| 7 | **Shutdown**             | `docker compose down -v`                    | Supprime les conteneurs et ressources Docker —**toujours exécuté**, même en cas d'échec    |
 
 > **`--no-deps`** : indique à Docker Compose de ne pas démarrer les services dont le frontend dépend (`backend`, `db`). Les tests frontend sont purement unitaires et n'ont pas besoin d'une API active.
 
@@ -418,11 +399,11 @@ API_URL_SERVER=http://backend:4000
 
 Chargé par Docker Compose pour configurer le service `db`.
 
-| Variable            | Exemple        | Description                                                       |
-| ------------------- | -------------- | ----------------------------------------------------------------- |
+| Variable              | Exemple          | Description                                                          |
+| --------------------- | ---------------- | -------------------------------------------------------------------- |
 | `POSTGRES_USER`     | `postgres`     | Nom d'utilisateur PostgreSQL créé à l'initialisation du conteneur |
-| `POSTGRES_PASSWORD` | `postgres`     | Mot de passe associé à l'utilisateur PostgreSQL                   |
-| `POSTGRES_DB`       | `vindhellfest` | Nom de la base de données créée automatiquement au démarrage      |
+| `POSTGRES_PASSWORD` | `postgres`     | Mot de passe associé à l'utilisateur PostgreSQL                    |
+| `POSTGRES_DB`       | `vindhellfest` | Nom de la base de données créée automatiquement au démarrage     |
 
 ---
 
@@ -432,41 +413,41 @@ Chargé par le service `backend`. Toutes les variables sont validées au démarr
 
 **Base de données**
 
-| Variable      | Exemple        | Description                                       |
-| ------------- | -------------- | ------------------------------------------------- |
+| Variable        | Exemple          | Description                                        |
+| --------------- | ---------------- | -------------------------------------------------- |
 | `PORT`        | `4000`         | Port d'écoute du serveur Express                  |
 | `DB_HOST`     | `db`           | Nom du service Docker PostgreSQL (réseau interne) |
-| `DB_PORT`     | `5432`         | Port PostgreSQL                                   |
+| `DB_PORT`     | `5432`         | Port PostgreSQL                                    |
 | `DB_USER`     | `postgres`     | Utilisateur de la base de données                 |
 | `DB_PASSWORD` | `postgres`     | Mot de passe de la base de données                |
 | `DB_NAME`     | `vindhellfest` | Nom de la base de données                         |
 
 **Authentification & sessions**
 
-| Variable                        | Exemple                     | Description                                                    |
-| ------------------------------- | --------------------------- | -------------------------------------------------------------- |
-| `JWT_ACCESS_SECRET`             | `un-super-secret-a-changer` | Clé secrète pour signer et vérifier les tokens JWT             |
-| `JWT_ACCESS_EXPIRES_IN`         | `1h`                        | Durée de validité du token JWT                                 |
-| `COOKIE_ACCESS_TOKEN_NAME`      | `vindhellfest_access_token` | Nom du cookie httpOnly stockant le token                       |
+| Variable                          | Exemple                       | Description                                                        |
+| --------------------------------- | ----------------------------- | ------------------------------------------------------------------ |
+| `JWT_ACCESS_SECRET`             | `un-super-secret-a-changer` | Clé secrète pour signer et vérifier les tokens JWT              |
+| `JWT_ACCESS_EXPIRES_IN`         | `1h`                        | Durée de validité du token JWT                                   |
+| `COOKIE_ACCESS_TOKEN_NAME`      | `vindhellfest_access_token` | Nom du cookie httpOnly stockant le token                           |
 | `COOKIE_ACCESS_TOKEN_SECURE`    | `true`                      | `true` = cookie HTTPS uniquement (mettre `false` en dev local) |
-| `COOKIE_ACCESS_TOKEN_SAME_SITE` | `lax`                       | Politique SameSite du cookie                                   |
-| `SESSION_EXPIRES_IN`            | `12h`                       | Durée de validité maximale d'une session en base               |
+| `COOKIE_ACCESS_TOKEN_SAME_SITE` | `lax`                       | Politique SameSite du cookie                                       |
+| `SESSION_EXPIRES_IN`            | `12h`                       | Durée de validité maximale d'une session en base                 |
 
 **SMTP — envoi d'emails**
 
-| Variable        | Exemple            | Description                                                 |
-| --------------- | ------------------ | ----------------------------------------------------------- |
-| `SMTP_HOST`     | `smtp.example.com` | Adresse du serveur SMTP                                     |
-| `SMTP_PORT`     | `587`              | Port SMTP (587 pour STARTTLS, 465 pour SSL natif)           |
+| Variable          | Exemple              | Description                                                     |
+| ----------------- | -------------------- | --------------------------------------------------------------- |
+| `SMTP_HOST`     | `smtp.example.com` | Adresse du serveur SMTP                                         |
+| `SMTP_PORT`     | `587`              | Port SMTP (587 pour STARTTLS, 465 pour SSL natif)               |
 | `SMTP_SECURE`   | `false`            | `true` pour SSL/TLS natif (port 465), `false` pour STARTTLS |
-| `SMTP_USER`     | `...`              | Identifiant de connexion au serveur SMTP                    |
-| `SMTP_PASS`     | `...`              | Mot de passe du compte SMTP                                 |
-| `CONTACT_EMAIL` | `contact@...`      | Adresse de destination des messages du formulaire           |
+| `SMTP_USER`     | `...`              | Identifiant de connexion au serveur SMTP                        |
+| `SMTP_PASS`     | `...`              | Mot de passe du compte SMTP                                     |
+| `CONTACT_EMAIL` | `contact@...`      | Adresse de destination des messages du formulaire               |
 
 **Divers**
 
-| Variable          | Exemple                 | Description                                                      |
-| ----------------- | ----------------------- | ---------------------------------------------------------------- |
+| Variable            | Exemple                   | Description                                                        |
+| ------------------- | ------------------------- | ------------------------------------------------------------------ |
 | `FRONTEND_ORIGIN` | `http://localhost:3000` | Origine autorisée par CORS — en production, mettre l'URL du site |
 
 ---
@@ -475,10 +456,10 @@ Chargé par le service `backend`. Toutes les variables sont validées au démarr
 
 Chargé par le service `frontend`.
 
-| Variable              | Exemple                 | Description                                                            |
-| --------------------- | ----------------------- | ---------------------------------------------------------------------- |
+| Variable                | Exemple                   | Description                                                                |
+| ----------------------- | ------------------------- | -------------------------------------------------------------------------- |
 | `API_URL_SERVER`      | `http://backend:4000`   | URL de l'API côté serveur (SSR Next.js) — via le réseau Docker interne |
-| `NEXT_PUBLIC_API_URL` | `http://localhost:4000` | URL de l'API côté client (navigateur)                                  |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:4000` | URL de l'API côté client (navigateur)                                    |
 
 ---
 
