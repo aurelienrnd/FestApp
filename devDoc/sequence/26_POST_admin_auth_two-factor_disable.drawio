@@ -1,0 +1,23 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="POST /admin/auth/two-factor/disable" id="seq-POST /admin/auth/two-factor/disable">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1080" pageHeight="445" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c2" value="Client" style="rounded=0;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;strokeColor=#000000;fillColor=#FFFFFF;fontColor=#000000;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="220" height="40" as="geometry" /></mxCell>
+        <mxCell id="c3" style="endArrow=none;dashed=1;html=0;strokeColor=#000000;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="150.0" y="80" as="sourcePoint" /><mxPoint x="150.0" y="405" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="c4" value="Express" style="rounded=0;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;strokeColor=#000000;fillColor=#FFFFFF;fontColor=#000000;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="300" y="40" width="220" height="40" as="geometry" /></mxCell>
+        <mxCell id="c5" style="endArrow=none;dashed=1;html=0;strokeColor=#000000;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="410.0" y="80" as="sourcePoint" /><mxPoint x="410.0" y="405" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="c6" value="Better Auth" style="rounded=0;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;strokeColor=#000000;fillColor=#FFFFFF;fontColor=#000000;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="560" y="40" width="220" height="40" as="geometry" /></mxCell>
+        <mxCell id="c7" style="endArrow=none;dashed=1;html=0;strokeColor=#000000;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="670.0" y="80" as="sourcePoint" /><mxPoint x="670.0" y="405" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="c8" value="PostgreSQL" style="rounded=0;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;strokeColor=#000000;fillColor=#FFFFFF;fontColor=#000000;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="820" y="40" width="220" height="40" as="geometry" /></mxCell>
+        <mxCell id="c9" style="endArrow=none;dashed=1;html=0;strokeColor=#000000;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="930.0" y="80" as="sourcePoint" /><mxPoint x="930.0" y="405" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="c10" value="1. POST /admin/auth/two-factor/disable { password }" style="endArrow=block;html=0;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;verticalAlign=bottom;labelBackgroundColor=#FFFFFF;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="150.0" y="100" as="sourcePoint" /><mxPoint x="410.0" y="100" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="c11" value="2. delegue au plugin twoFactor de Better Auth" style="endArrow=block;html=0;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;verticalAlign=bottom;labelBackgroundColor=#FFFFFF;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="410.0" y="155" as="sourcePoint" /><mxPoint x="670.0" y="155" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="c12" value="BOITE NOIRE Better Auth — detail exact (requetes, ordre, algos) a verifier dans la doc officielle avant implementation
+Etapes attendues : verifier le mot de passe, DELETE la ligne two_factor. Re-authentification requise ?" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;strokeColor=#000000;dashed=1;fillColor=none;fontColor=#000000;fontSize=10;fontStyle=2;spacingLeft=8;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="630.0" y="210" width="340.0" height="90" as="geometry" /></mxCell>
+        <mxCell id="c13" value="3. 200 | 401" style="endArrow=block;html=0;dashed=1;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;verticalAlign=bottom;labelBackgroundColor=#FFFFFF;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="670.0" y="320" as="sourcePoint" /><mxPoint x="150.0" y="320" as="targetPoint" /></mxGeometry></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
