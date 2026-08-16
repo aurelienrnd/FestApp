@@ -1,0 +1,67 @@
+<mxfile host="app.diagrams.net" agent="FestApp" version="24.0.0" type="device">
+  <diagram name="MCD" id="mcd-festapp">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="950" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="n_account" value="ACCOUNT&#10;──────────&#10;id&#10;provider_id&#10;account_id&#10;password&#10;access_token&#10;refresh_token&#10;access_token_expires_at&#10;created_at&#10;updated_at" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;spacingBottom=8;strokeColor=#000000;fillColor=#FFFFFF;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="520" y="40" width="190" height="210" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_twofactor" value="TWO_FACTOR&#10;──────────&#10;id&#10;secret&#10;backup_codes" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;spacingBottom=8;strokeColor=#000000;fillColor=#FFFFFF;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="900" y="70" width="170" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_session" value="SESSION&#10;──────────&#10;id&#10;token&#10;expires_at&#10;ip_address&#10;user_agent&#10;created_at&#10;updated_at" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;spacingBottom=8;strokeColor=#000000;fillColor=#FFFFFF;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="140" y="360" width="180" height="175" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_users" value="USERS&#10;──────────&#10;id&#10;email&#10;display_name&#10;role&#10;email_verified&#10;image&#10;password_changed_at&#10;created_at&#10;updated_at" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;spacingBottom=8;strokeColor=#000000;fillColor=#FFFFFF;fontColor=#000000;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="520" y="340" width="190" height="210" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_verification" value="VERIFICATION&#10;──────────&#10;id&#10;identifier&#10;value&#10;expires_at&#10;created_at" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;spacingBottom=8;strokeColor=#000000;fillColor=#FFFFFF;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="900" y="360" width="180" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_news" value="NEWS&#10;──────────&#10;id&#10;title&#10;content&#10;is_published&#10;url_media&#10;description_media&#10;created_at" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;spacingBottom=8;strokeColor=#000000;fillColor=#FFFFFF;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="520" y="640" width="190" height="175" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_artists" value="ARTISTS&#10;──────────&#10;id&#10;name&#10;genre&#10;origin&#10;bio&#10;url_media&#10;description_media&#10;youtube_url&#10;spotify_url&#10;is_featured" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;spacingBottom=8;strokeColor=#000000;fillColor=#FFFFFF;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="340" width="190" height="230" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_concerts" value="CONCERTS&#10;──────────&#10;id&#10;stage&#10;start_time&#10;end_time" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;spacingBottom=8;strokeColor=#000000;fillColor=#FFFFFF;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="660" width="170" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_users_account" value="(1,1) s'authentifie via (1,n)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=none;startArrow=none;strokeColor=#000000;fontColor=#000000;fontSize=11;align=center;verticalAlign=middle;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_users" target="n_account">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_users_twofactor" value="(1,1) protège avec (0,1)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=none;startArrow=none;strokeColor=#000000;fontColor=#000000;fontSize=11;align=center;verticalAlign=middle;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_users" target="n_twofactor">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_users_session" value="(1,1) possède (0,n)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=none;startArrow=none;strokeColor=#000000;fontColor=#000000;fontSize=11;align=center;verticalAlign=middle;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_users" target="n_session">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_users_verification" value="(0,1) cible (0,n)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=none;startArrow=none;strokeColor=#000000;fontColor=#000000;fontSize=11;align=center;verticalAlign=middle;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_users" target="n_verification">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_users_news" value="(0,1) rédige (0,n)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=none;startArrow=none;strokeColor=#000000;fontColor=#000000;fontSize=11;align=center;verticalAlign=middle;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_users" target="n_news">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_artists_concerts" value="(1,1) se produit à (0,n)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=none;startArrow=none;strokeColor=#000000;fontColor=#000000;fontSize=11;align=center;verticalAlign=middle;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_artists" target="n_concerts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
