@@ -1,5 +1,11 @@
 # Modèle Conceptuel de Données (MCD)
 
+## Rôle des nouvelles tables (Phase 1)
+
+- **ACCOUNT** (tâche 2) : une méthode d'authentification pour un utilisateur (mot de passe, puis Google en tâche 5).
+- **VERIFICATION** (tâche 3) : tokens à usage unique pour le flux « mot de passe oublié » / vérification d'email. Volontairement **sans FK** vers `USERS` : elle référence l'utilisateur par son `identifier` (email), notamment parce qu'un token peut cibler une adresse qui ne correspond pas encore à un compte existant (ex. changement d'email). Le lien avec `USERS` reste donc logique/applicatif, pas une contrainte de base de données.
+- **TWO_FACTOR** (tâche 4) : activée quand un utilisateur (typiquement un admin) active la double authentification. Contient `secret` (clé TOTP utilisée par son appli d'authentification pour générer les codes à 6 chiffres) et `backup_codes` (codes de secours à usage unique en cas de perte d'accès à l'appli).
+
 ## Entités et associations
 
 ```mermaid
@@ -8,6 +14,7 @@ erDiagram
     USERS ||--o{ ACCOUNT : "s'authentifie via"
     USERS ||--o| TWO_FACTOR : "protège avec"
     USERS ||--o{ NEWS : "rédige"
+    USERS ||..o{ VERIFICATION : "cible (par email, sans FK)"
     ARTISTS ||--o{ CONCERTS : "se produit à"
 
     USERS {
@@ -103,6 +110,7 @@ USERS  (1,1) ────< POSSEDE >──── (0,N) SESSION
 USERS  (1,1) ────< AUTHENTIFIE_PAR >──── (1,N) ACCOUNT
 USERS  (1,1) ────< PROTEGE_PAR >──── (0,1) TWO_FACTOR
 USERS  (0,1) ────< REDIGE >──── (0,N) NEWS
+USERS  (0,1) ┄┄┄┄< CIBLE (par email, hors FK) >┄┄┄┄ (0,N) VERIFICATION
 ARTISTS(1,1) ────< SE_PRODUIT >──── (0,N) CONCERTS
 ```
 
