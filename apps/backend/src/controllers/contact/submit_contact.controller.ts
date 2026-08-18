@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { sendContactEmail } from "../../services/mailer.service";
+import { sendContactEmail } from "../../services/mailer.service.js";
 
 /** Transmet le message du formulaire de contact par email a l'organisation.
  * Recupere les champs valides par le schema Zod puis appelle sendContactEmail.

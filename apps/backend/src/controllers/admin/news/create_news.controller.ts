@@ -1,13 +1,13 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
 import {
   saveImage,
   deleteImage,
   NEWS_UPLOADS_DIR,
-} from "../../../services/imageUpload.service";
-import type { NewsItem } from "../../../type";
+} from "../../../services/imageUpload.service.js";
+import type { NewsItem } from "../../../type.js";
 
 /** Cree une news avec une image convertie en WebP via sharp.
  * Verifie la presence du fichier image, le convertit en WebP (qualite 80),

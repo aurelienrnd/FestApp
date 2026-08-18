@@ -1,9 +1,9 @@
 import type { RequestHandler } from "express";
-import { asyncHandler } from "./asyncHandler";
-import { auth } from "./auth";
-import { sessionIsOpen } from "./sessionIsOpen";
-import { requireRole } from "./requireRole";
-import type { UserRole } from "../type";
+import { asyncHandler } from "./asyncHandler.js";
+import { auth } from "./auth.js";
+import { sessionIsOpen } from "./sessionIsOpen.js";
+import { requireRole } from "./requireRole.js";
+import type { UserRole } from "../type.js";
 
 /** Retourne la chaine de middlewares d'authentification admin :
  * verification du JWT, validation de la session, puis controle du role.

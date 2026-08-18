@@ -2,16 +2,16 @@ import type { Request, Response } from "express";
 import type { UserCredentialsRow, IdRow } from "../../../type.js";
 import ms from "ms";
 
-import { query } from "../../../db";
+import { query } from "../../../db.js";
 import {
   envToStringValue,
   userExists,
   passwordIsValid,
   initToken,
   serializeCookie,
-} from "../../../utils";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
+} from "../../../utils.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
 
 /** Cree la session dans la BDD
  * @param {UserCredentialsRow} user utilisateur de la requete

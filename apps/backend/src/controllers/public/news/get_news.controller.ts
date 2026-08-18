@@ -1,9 +1,9 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
-import { isNewsPrivileged } from "../../../services/user.service";
-import type { NewsItem } from "../../../type";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
+import { isNewsPrivileged } from "../../../services/user.service.js";
+import type { NewsItem } from "../../../type.js";
 
 /** Retourne une news par son identifiant.
  * Si l'utilisateur est authentifie avec le role "admin" ou "news", retourne la news meme si elle est en brouillon.

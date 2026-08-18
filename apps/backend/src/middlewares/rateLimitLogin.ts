@@ -1,5 +1,5 @@
 import rateLimit from "express-rate-limit";
-import { ERRORS } from "../errors/errorMessages";
+import { ERRORS } from "../errors/errorMessages.js";
 
 /** Middleware de limitation de tentatives de connexion
  * express-rate-limit retourne un middleware, du coup on l'appelle directement sans utiliser les paramètres req, res, next

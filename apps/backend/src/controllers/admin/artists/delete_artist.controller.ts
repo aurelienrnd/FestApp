@@ -1,12 +1,12 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
 import {
   deleteImage,
   ARTISTS_UPLOADS_DIR,
-} from "../../../services/imageUpload.service";
-import type { ArtistMediaRow } from "../../../type";
+} from "../../../services/imageUpload.service.js";
+import type { ArtistMediaRow } from "../../../type.js";
 
 /** Supprime definitivement un artiste, son concert associe et son fichier image.
  * Le concert est supprime en cascade par la base de donnees (ON DELETE CASCADE).

@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
 
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
-import { requireUserId } from "../../../utils";
-import type { UserItem } from "../../../type";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
+import { requireUserId } from "../../../utils.js";
+import type { UserItem } from "../../../type.js";
 
 /** Recupere les informations de l'utilisateur connecte
  * Verifie que l'utilisateur est present dans le header

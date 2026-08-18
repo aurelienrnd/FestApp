@@ -1,13 +1,13 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
 import {
   saveImage,
   deleteImage,
   ARTISTS_UPLOADS_DIR,
-} from "../../../services/imageUpload.service";
-import type { ArtistItem, ArtistMediaRow, ConcertRow } from "../../../type";
+} from "../../../services/imageUpload.service.js";
+import type { ArtistItem, ArtistMediaRow, ConcertRow } from "../../../type.js";
 
 /** Modifie un artiste existant et son concert associe.
  * Si une nouvelle image est fournie, elle remplace l'ancienne (conversion WebP, suppression de l'ancienne).

@@ -1,16 +1,16 @@
 import { Router } from "express";
 // middlewares
-import { adminAuth } from "../middlewares/authChain";
-import { asyncHandler } from "../middlewares/asyncHandler";
-import { validateBody } from "../middlewares/validateBody";
-import { validateUuidParam } from "../middlewares/validateUuidParam";
+import { adminAuth } from "../middlewares/authChain.js";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
+import { validateBody } from "../middlewares/validateBody.js";
+import { validateUuidParam } from "../middlewares/validateUuidParam.js";
 // controllers
-import { createUser } from "../controllers/admin/users/create_user.controller";
-import { deleteUser } from "../controllers/admin/users/delete_user.controller";
-import { listUsers } from "../controllers/admin/users/list_users.controller";
-import { updateUser } from "../controllers/admin/users/update_user.controller";
+import { createUser } from "../controllers/admin/users/create_user.controller.js";
+import { deleteUser } from "../controllers/admin/users/delete_user.controller.js";
+import { listUsers } from "../controllers/admin/users/list_users.controller.js";
+import { updateUser } from "../controllers/admin/users/update_user.controller.js";
 // schema
-import { createUserSchema } from "../schemas/schema";
+import { createUserSchema } from "../schemas/schema.js";
 
 const router = Router();
 

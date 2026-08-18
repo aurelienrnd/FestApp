@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { query } from "../../../db";
-import { requireUserId } from "../../../utils";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
-import type { UserCredentialsRow } from "../../../type";
+import { query } from "../../../db.js";
+import { requireUserId } from "../../../utils.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
+import type { UserCredentialsRow } from "../../../type.js";
 
 /** Modifie le mot de passe de l'utilisateur connecte.
  * Verifie que le mot de passe actuel est correct, puis met a jour password_hash et password_changed_at.

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { query } from "../db";
-import type { SessionRow } from "../type";
+import { query } from "../db.js";
+import type { SessionRow } from "../type.js";
 import {
   initToken,
   requireSessionId,
@@ -8,7 +8,7 @@ import {
   serializeCookie,
   sessionExists,
   sessionRevoked,
-} from "../utils";
+} from "../utils.js";
 
 /** Verifie si la session est valide puis renouvelle le token d'acces.
  * @param req - la requête HTTP entrante

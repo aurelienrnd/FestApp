@@ -1,8 +1,8 @@
 import nodemailer from "nodemailer";
 import type { SendMailOptions } from "nodemailer";
-import { getEnv } from "../utils";
-import { AppError } from "../errors/AppError";
-import { ERRORS } from "../errors/errorMessages";
+import { getEnv } from "../utils.js";
+import { AppError } from "../errors/AppError.js";
+import { ERRORS } from "../errors/errorMessages.js";
 
 /** Instance partagee du transporteur SMTP — configuree une seule fois au demarrage.
  * @function getEnv

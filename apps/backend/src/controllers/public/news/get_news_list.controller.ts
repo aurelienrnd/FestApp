@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import { isNewsPrivileged } from "../../../services/user.service";
-import type { NewsItem } from "../../../type";
+import { query } from "../../../db.js";
+import { isNewsPrivileged } from "../../../services/user.service.js";
+import type { NewsItem } from "../../../type.js";
 
 /** Retourne la liste des news triees par date de creation decroissante.
  * Si l'utilisateur est authentifie avec le role "admin" ou "news", retourne toutes les news.

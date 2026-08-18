@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import { randomBytes } from "crypto";
-import { query } from "../db";
-import { AppError } from "../errors/AppError";
-import { ERRORS } from "../errors/errorMessages";
-import type { IdRow, UserRole } from "../type";
+import { query } from "../db.js";
+import { AppError } from "../errors/AppError.js";
+import { ERRORS } from "../errors/errorMessages.js";
+import type { IdRow, UserRole } from "../type.js";
 
 /** Genere un mot de passe temporaire aleatoire de 16 caracteres hexadecimaux. */
 export function generateTemporaryPassword(): string {

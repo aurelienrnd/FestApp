@@ -3,10 +3,10 @@ import ms from "ms";
 import bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { serialize } from "cookie";
-import type { UserCredentialsRow } from "../src/type";
-import type { SessionRow } from "../src/type";
-import { AppError } from "./errors/AppError";
-import { ERRORS } from "./errors/errorMessages";
+import type { UserCredentialsRow } from "../src/type.js";
+import type { SessionRow } from "../src/type.js";
+import { AppError } from "./errors/AppError.js";
+import { ERRORS } from "./errors/errorMessages.js";
 
 /** Verifie si la variable d'environnement existe et renvoie une erreur si non
  * Permet de gerer les erreur de typage

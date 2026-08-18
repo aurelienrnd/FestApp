@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
-import type { ArtistItem } from "../../../type";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
+import type { ArtistItem } from "../../../type.js";
 
 /** Retourne un artiste par son identifiant avec son concert associe si existant.
  * Leve une AppError 404 si l'artiste n'existe pas.

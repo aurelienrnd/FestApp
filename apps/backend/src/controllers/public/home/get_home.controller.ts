@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 
-import { query } from "../../../db";
-import type { ArtistItem, NewsItem } from "../../../type";
+import { query } from "../../../db.js";
+import type { ArtistItem, NewsItem } from "../../../type.js";
 
 /** Retourne les 2 artistes les plus recents et les 2 dernieres news publiees pour la page d'accueil.
  * @function query

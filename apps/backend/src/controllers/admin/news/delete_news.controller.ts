@@ -1,12 +1,12 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
 import {
   deleteImage,
   NEWS_UPLOADS_DIR,
-} from "../../../services/imageUpload.service";
-import type { NewsMediaRow } from "../../../type";
+} from "../../../services/imageUpload.service.js";
+import type { NewsMediaRow } from "../../../type.js";
 
 /** Supprime definitivement une news et son fichier image.
  * Le fichier image est supprime du disque apres la suppression en base (echec silencieux si absent).

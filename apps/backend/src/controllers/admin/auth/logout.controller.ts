@@ -1,12 +1,12 @@
 import type { Request, Response } from "express";
-import type { SessionRow } from "../../../type";
+import type { SessionRow } from "../../../type.js";
 import {
   requireSessionId,
   requireUserId,
   sessionExists,
   sessionRevoked,
-} from "../../../utils";
-import { query } from "../../../db";
+} from "../../../utils.js";
+import { query } from "../../../db.js";
 
 /** Deconnecte l'utilisateur du service
  * Verifie que la session existe
