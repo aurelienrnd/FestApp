@@ -53,6 +53,8 @@ jobs:
           COOKIE_ACCESS_TOKEN_SECURE=false
           COOKIE_ACCESS_TOKEN_SAME_SITE=lax
           SESSION_EXPIRES_IN=1h
+          BETTER_AUTH_SECRET=un-super-secret-better-auth-a-changer
+          BETTER_AUTH_URL=http://localhost:4000
           SMTP_HOST=localhost
           SMTP_PORT=1025
           SMTP_SECURE=false

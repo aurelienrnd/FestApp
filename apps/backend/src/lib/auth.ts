@@ -1,6 +1,7 @@
+import ms from "ms";
 import { betterAuth } from "better-auth";
 import { pool } from "../db.js";
-import { getEnv } from "../utils.js";
+import { getEnv, envToStringValue } from "../utils.js";
 
 const SAME_SITE_VALUES = ["lax", "strict", "none"] as const;
 
@@ -40,7 +41,10 @@ export const auth = betterAuth({
     },
   },
   session: {
-    expiresIn: Number(getEnv("SESSION_EXPIRES_IN")),
+    // SESSION_EXPIRES_IN est un format duree ("1h", "12h"...), pas un nombre de
+    // secondes brut — meme convention que utils.ts (encore utilise par l'ancien
+    // flux JWT tant que sessionIsOpen.ts/login.controller.ts n'ont pas ete migres).
+    expiresIn: ms(envToStringValue("SESSION_EXPIRES_IN")) / 1000,
   },
   advanced: {
     cookiePrefix: getEnv("COOKIE_ACCESS_TOKEN_NAME"),
