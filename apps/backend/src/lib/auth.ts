@@ -23,6 +23,22 @@ export const auth = betterAuth({
   database: pool,
   secret: getEnv("BETTER_AUTH_SECRET"),
   baseURL: getEnv("BETTER_AUTH_URL"),
+  user: {
+    // Reutilise la table "users" existante plutot que la table "user" par defaut
+    modelName: "users",
+    fields: {
+      // Better Auth attend un champ standard "name" ; notre colonne s'appelle "display_name"
+      name: "display_name",
+    },
+    additionalFields: {
+      // "role" n'existe pas dans le schema Better Auth par defaut : on le declare
+      // pour qu'il soit lu/type sur result.user.role (colonne "role" deja presente)
+      role: {
+        type: "string",
+        required: true,
+      },
+    },
+  },
   session: {
     expiresIn: Number(getEnv("SESSION_EXPIRES_IN")),
   },
