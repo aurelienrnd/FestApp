@@ -3,7 +3,6 @@ import { Router } from "express";
 import { validateBody } from "../middlewares/validateBody.js";
 import { rateLimitLogin } from "../middlewares/rateLimitLogin.js";
 import { auth } from "../middlewares/auth.js";
-import { sessionIsOpen } from "../middlewares/sessionIsOpen.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
 // controllers
 import { login } from "../controllers/admin/auth/login.controller.js";
@@ -31,12 +30,7 @@ router.post(
 
 router.post("/auth/logout", asyncHandler(auth), asyncHandler(logout)); // Deconnexion administrateur
 
-router.get(
-  "/auth/me",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  asyncHandler(userInfo),
-); // recupere les infos utilisateur et verifie qu'il est connecte
+router.get("/auth/me", asyncHandler(auth), asyncHandler(userInfo)); // recupere les infos utilisateur et verifie qu'il est connecte
 
 router.post(
   "/auth/forgot-password",
@@ -48,7 +42,6 @@ router.post(
 router.patch(
   "/auth/password",
   asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
   validateBody(changePasswordSchema),
   asyncHandler(hashPassword("newPassword")),
   asyncHandler(changePassword),
