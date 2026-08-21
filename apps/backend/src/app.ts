@@ -1,6 +1,8 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import { toNodeHandler } from "better-auth/node";
+import { auth as betterAuth } from "./lib/auth.js";
 import adminArtists from "./routes/admin.artists.routes.js";
 import adminNews from "./routes/admin.news.routes.js";
 import adminAuth from "./routes/admin.auth.routes.js";
@@ -22,9 +24,6 @@ export function createApp() {
   if (process.env.NODE_ENV === "production") {
     app.set("trust proxy", 1);
   }
-
-  /** Permet de lire le JSON envoye par le client dans le body des requetes HTTP. */
-  app.use(express.json());
 
   /** Autorise le frontend a appeler l'API backend en local.
    * initialise l'en-tete de la requete HTTP
@@ -57,6 +56,16 @@ export function createApp() {
     }
     next();
   });
+
+  /** Handler catch-all Better Auth (sign-in/email, sign-out, get-session, etc.).
+   * Doit etre monte AVANT express.json() : Better Auth lit et parse lui-meme
+   * le body brut de la requete, un body deja consomme par express.json()
+   * ferait planter ses routes.
+   */
+  app.all("/admin/auth/*splat", toNodeHandler(betterAuth));
+
+  /** Permet de lire le JSON envoye par le client dans le body des requetes HTTP. */
+  app.use(express.json());
 
   /** Sert les fichiers images uploades (artistes, etc.) */
   app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
