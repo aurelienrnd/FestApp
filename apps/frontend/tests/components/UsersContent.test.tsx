@@ -94,8 +94,7 @@ beforeEach(() => {
   });
   // utilisateur connecte different de mockUser pour ne pas declencher la redirection par defaut
   vi.mocked(useAdminUser).mockReturnValue({
-    user: { id: "uuid-99", email: "other@test.com", display_name: "Other", role: "admin" },
-    mustChangePassword: false,
+    user: { id: "uuid-99", email: "other@test.com", name: "Other", role: "admin" },
   });
 });
 
@@ -160,8 +159,7 @@ describe("UsersContent", () => {
 
     // l'utilisateur connecte est le meme que celui dans la liste (uuid-1)
     vi.mocked(useAdminUser).mockReturnValue({
-      user: { id: "uuid-1", email: "admin@test.com", display_name: "Admin Test", role: "admin" },
-      mustChangePassword: false,
+      user: { id: "uuid-1", email: "admin@test.com", name: "Admin Test", role: "admin" },
     });
 
     render(<UsersContent />);

@@ -1,7 +1,7 @@
 ﻿import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { AdminUserProvider } from "../../components/AdminUserProvider";
-import type { AdminAuthMeResponse } from "../../type";
+import type { AdminSessionResponse } from "../../type";
 import Banner from "../../components/Banner";
 import Footer from "../../components/Footer";
 
@@ -33,7 +33,7 @@ export default async function AdminLayout({
   // Verifie la session admin et redirige vers /login si la requete echoue ou renvoie une reponse non valide.
   let response: Response;
   try {
-    response = await fetch(`${apiBaseUrl}/admin/auth/me`, {
+    response = await fetch(`${apiBaseUrl}/admin/auth/get-session`, {
       method: "GET",
       headers: { cookie: cookieHeader },
       cache: "no-store",
@@ -45,12 +45,15 @@ export default async function AdminLayout({
     redirect("/login");
   }
 
-  // Parse les donnees utilisateur retournees par l'API
-  const me = (await response.json()) as AdminAuthMeResponse;
+  // Parse les donnees de session — Better Auth renvoie 200 + null si aucune session active
+  const session = (await response.json()) as AdminSessionResponse | null;
+  if (!session) {
+    redirect("/login");
+  }
 
   // Fournit les donnees utilisateur a toutes les pages enfants de la zone admin via le contexte
   return (
-    <AdminUserProvider value={me}>
+    <AdminUserProvider value={session}>
       <div data-theme="admin" id="app-root" className="app-root">
         <Banner />
         <main className="flex flex-1 flex-col">{children}</main>

@@ -95,8 +95,7 @@ beforeEach(() => {
   });
   // utilisateur connecte different des utilisateurs de la liste
   vi.mocked(useAdminUser).mockReturnValue({
-    user: { id: "uuid-99", email: "other@test.com", display_name: "Other", role: "admin" },
-    mustChangePassword: false,
+    user: { id: "uuid-99", email: "other@test.com", name: "Other", role: "admin" },
   });
 });
 

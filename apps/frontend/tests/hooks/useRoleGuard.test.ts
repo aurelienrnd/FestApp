@@ -2,7 +2,7 @@ import { renderHook } from "@testing-library/react";
 import { useRoleGuard } from "@/hooks/useRoleGuard";
 import { useAdminUser } from "@/components/AdminUserProvider";
 import { useNavPath } from "@/hooks/useNavPath";
-import type { AdminAuthMeResponse } from "@/type";
+import type { AdminSessionResponse } from "@/type";
 
 // next/navigation : mock de useRouter pour verifier la redirection sans Next.js
 const mockReplace = vi.fn();
@@ -21,14 +21,13 @@ vi.mock("@/hooks/useNavPath", () => ({
 }));
 
 // utilisateur avec le role "news" — autorise sur /admin/news mais pas sur /admin/users
-const mockAdminUser: AdminAuthMeResponse = {
+const mockAdminUser: AdminSessionResponse = {
   user: {
     id: "uuid-1",
     email: "test@test.com",
-    display_name: "Test User",
+    name: "Test User",
     role: "news",
   },
-  mustChangePassword: false,
 };
 
 beforeEach(() => {

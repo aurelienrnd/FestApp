@@ -13,13 +13,22 @@ export type UserItem = {
   password_changed_at: string | null;
 };
 
-/** Type representant l'utilisateur connecte retourne par GET /admin/auth/me. */
-export type AdminUser = Omit<UserItem, "created_at" | "password_changed_at">;
+/** Type representant l'utilisateur connecte retourne par GET /admin/auth/get-session.
+ * Le champ s'appelle "name" cote API Better Auth (mappe sur la colonne display_name en base),
+ * pas "display_name" comme sur UserItem.
+ */
+export type AdminUser = {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+};
 
-/** Type representant la reponse de GET /admin/auth/me. */
-export type AdminAuthMeResponse = {
+/** Type representant la reponse de GET /admin/auth/get-session quand une session existe.
+ * L'API renvoie null (200 OK) si aucune session n'est active — gere par AdminUserProvider.
+ */
+export type AdminSessionResponse = {
   user: AdminUser;
-  mustChangePassword: boolean;
 };
 
 /* === NEWS === */

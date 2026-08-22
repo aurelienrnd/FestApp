@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import DashboardContent from "@/app/admin/dashboard/DashboardContent";
 import { useAdminUser } from "@/components/AdminUserProvider";
-import type { AdminAuthMeResponse } from "@/type";
+import type { AdminSessionResponse } from "@/type";
 
 // next/navigation : mock de useRouter pour eviter les erreurs Next.js en jsdom
 vi.mock("next/navigation", () => ({
@@ -21,36 +21,30 @@ vi.mock("@/components/AdminUserProvider", () => ({
   useAdminUser: vi.fn(),
 }));
 
-// mock de ChangePasswordModal : div identifiable pour verifier l'ouverture et le mode forced
+// mock de ChangePasswordModal : div identifiable pour verifier l'ouverture (toujours volontaire, plus de mode forced)
 vi.mock("@/app/admin/dashboard/ChangePasswordModal", () => ({
-  default: ({ isOpen, forced }: { isOpen: boolean; forced?: boolean }) =>
-    isOpen ? (
-      <div>
-        {forced ? "Modale changement mot de passe (forced)" : "Modale changement mot de passe"}
-      </div>
-    ) : null,
+  default: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div>Modale changement mot de passe</div> : null,
 }));
 
-// utilisateur admin connecte sans changement de mot de passe obligatoire
-const mockAdminUser: AdminAuthMeResponse = {
+// utilisateur admin connecte
+const mockAdminUser: AdminSessionResponse = {
   user: {
     id: "uuid-1",
     email: "admin@test.com",
-    display_name: "Admin Test",
+    name: "Admin Test",
     role: "admin",
   },
-  mustChangePassword: false,
 };
 
 // utilisateur avec le role "news"
-const mockNewsUser: AdminAuthMeResponse = {
+const mockNewsUser: AdminSessionResponse = {
   user: {
     id: "uuid-2",
     email: "news@test.com",
-    display_name: "News Test",
+    name: "News Test",
     role: "news",
   },
-  mustChangePassword: false,
 };
 
 beforeEach(() => {
@@ -70,7 +64,7 @@ describe("DashboardContent", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it("affiche le display_name et le role de l'utilisateur connecte", () => {
+  it("affiche le name et le role de l'utilisateur connecte", () => {
     render(<DashboardContent />);
 
     expect(screen.getByText("Admin Test")).toBeInTheDocument();
@@ -106,17 +100,11 @@ describe("DashboardContent", () => {
     expect(screen.getByText("Modale changement mot de passe")).toBeInTheDocument();
   });
 
-  it("ouvre la modale en mode forced si mustChangePassword est true", () => {
-    // la modale doit s'ouvrir automatiquement sans interaction si mustChangePassword est vrai
-    vi.mocked(useAdminUser).mockReturnValue({
-      ...mockAdminUser,
-      mustChangePassword: true,
-    });
-
+  it("n'ouvre jamais la modale automatiquement (plus de changement force)", () => {
     render(<DashboardContent />);
 
     expect(
-      screen.getByText("Modale changement mot de passe (forced)"),
-    ).toBeInTheDocument();
+      screen.queryByText("Modale changement mot de passe"),
+    ).not.toBeInTheDocument();
   });
 });
