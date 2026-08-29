@@ -1,10 +1,10 @@
 import { Router } from "express";
 // middlewares
-import { optionalAuth } from "../middlewares/auth";
-import { asyncHandler } from "../middlewares/asyncHandler";
+import { optionalAuth } from "../middlewares/auth.js";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 // controllers
-import { getNewsList } from "../controllers/public/news/get_news_list.controller";
-import { getNews } from "../controllers/public/news/get_news.controller";
+import { getNewsList } from "../controllers/public/news/get_news_list.controller.js";
+import { getNews } from "../controllers/public/news/get_news.controller.js";
 
 const router = Router();
 

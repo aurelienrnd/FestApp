@@ -1,13 +1,13 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
 import {
   checkUserExists,
   checkEmailAvailable,
   checkDisplayNameAvailable,
-} from "../../../services/user.service";
-import type { UserItem } from "../../../type";
+} from "../../../services/user.service.js";
+import type { UserItem } from "../../../type.js";
 
 /** Modification d'un utilisateur dans le service
  * Met a jour les informations de l'utilisateur

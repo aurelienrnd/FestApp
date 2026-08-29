@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
-import { AppError } from "../errors/AppError";
-import { ERRORS } from "../errors/errorMessages";
+import { AppError } from "../errors/AppError.js";
+import { ERRORS } from "../errors/errorMessages.js";
 
 /** Retourne un middleware Express pour hasher le mot de passe dans req.body.
  * Si le champ du mot de passe n'existe pas ou n'est pas une chaîne, renvoie une erreur 400.

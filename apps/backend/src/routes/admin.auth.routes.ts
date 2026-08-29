@@ -1,24 +1,24 @@
 import { Router } from "express";
 // middlewares
-import { validateBody } from "../middlewares/validateBody";
-import { rateLimitLogin } from "../middlewares/rateLimitLogin";
-import { auth } from "../middlewares/auth";
-import { sessionIsOpen } from "../middlewares/sessionIsOpen";
-import { asyncHandler } from "../middlewares/asyncHandler";
+import { validateBody } from "../middlewares/validateBody.js";
+import { rateLimitLogin } from "../middlewares/rateLimitLogin.js";
+import { auth } from "../middlewares/auth.js";
+import { sessionIsOpen } from "../middlewares/sessionIsOpen.js";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 // controllers
-import { login } from "../controllers/admin/auth/login.controller";
-import { logout } from "../controllers/admin/auth/logout.controller";
-import { userInfo } from "../controllers/admin/auth/user_info.controller";
-import { changePassword } from "../controllers/admin/auth/change_password.controller";
-import { forgotPassword } from "../controllers/admin/auth/forgot_password.controller";
+import { login } from "../controllers/admin/auth/login.controller.js";
+import { logout } from "../controllers/admin/auth/logout.controller.js";
+import { userInfo } from "../controllers/admin/auth/user_info.controller.js";
+import { changePassword } from "../controllers/admin/auth/change_password.controller.js";
+import { forgotPassword } from "../controllers/admin/auth/forgot_password.controller.js";
 // schema
 import {
   loginSchema,
   changePasswordSchema,
   forgotPasswordSchema,
-} from "../schemas/schema";
+} from "../schemas/schema.js";
 // middlewares
-import { hashPassword } from "../middlewares/hashPassword";
+import { hashPassword } from "../middlewares/hashPassword.js";
 
 const router = Router();
 

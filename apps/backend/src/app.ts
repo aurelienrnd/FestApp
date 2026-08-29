@@ -1,17 +1,19 @@
 import express from "express";
 import path from "path";
-import adminArtists from "./routes/admin.artists.routes";
-import adminNews from "./routes/admin.news.routes";
-import adminAuth from "./routes/admin.auth.routes";
-import adminUsers from "./routes/admin.users.routes";
-import contact from "./routes/contact.routes";
-import publicHome from "./routes/home.routes";
-import publicArtists from "./routes/artists.routes";
-import publicNews from "./routes/news.routes";
-import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
+import { fileURLToPath } from "url";
+import adminArtists from "./routes/admin.artists.routes.js";
+import adminNews from "./routes/admin.news.routes.js";
+import adminAuth from "./routes/admin.auth.routes.js";
+import adminUsers from "./routes/admin.users.routes.js";
+import contact from "./routes/contact.routes.js";
+import publicHome from "./routes/home.routes.js";
+import publicArtists from "./routes/artists.routes.js";
+import publicNews from "./routes/news.routes.js";
+import { errorHandler, notFoundHandler } from "./middlewares/errorHandler.js";
 
 /** Cree et configure l'application Express — CORS, routes API, handlers d'erreur. */
 export function createApp() {
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
   const app = express();
   const allowedOrigin = process.env.FRONTEND_ORIGIN || "http://localhost:3000";
 

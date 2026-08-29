@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
-import type { IdRow } from "../../../type";
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
+import type { IdRow } from "../../../type.js";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
 
 /** Supprime definitivement un utilisateur par son identifiant.
  * @function query

@@ -1,12 +1,12 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
-import { sendPasswordResetEmail } from "../../../services/mailer.service";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
+import { sendPasswordResetEmail } from "../../../services/mailer.service.js";
 import {
   generateTemporaryPassword,
   hashPassword,
-} from "../../../services/user.service";
+} from "../../../services/user.service.js";
 
 /** Reinitialise le mot de passe d'un utilisateur a partir de son email.
  * Verifie que l'email existe en base, genere un mot de passe temporaire,

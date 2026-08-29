@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import type { UserItem } from "../../../type";
+import { query } from "../../../db.js";
+import type { UserItem } from "../../../type.js";
 
 /** Liste tous les utilisateurs.
  * Renvoie uniquement les champs utiles au front (pas de champs sensibles).

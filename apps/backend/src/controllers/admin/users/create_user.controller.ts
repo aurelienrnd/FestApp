@@ -1,15 +1,15 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
-import { sendWelcomeEmail } from "../../../services/mailer.service";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
+import { sendWelcomeEmail } from "../../../services/mailer.service.js";
 import {
   checkEmailAvailable,
   checkDisplayNameAvailable,
   generateTemporaryPassword,
   hashPassword,
-} from "../../../services/user.service";
-import type { UserItem } from "../../../type";
+} from "../../../services/user.service.js";
+import type { UserItem } from "../../../type.js";
 
 /** Creation d'un utilisateur dans le service.
  * Verifie que l'email n'est pas deja utilise dans la BDD,

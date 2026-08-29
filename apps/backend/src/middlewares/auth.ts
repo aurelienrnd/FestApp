@@ -2,12 +2,12 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { parse } from "cookie";
-import { getEnv } from "../utils";
+import { getEnv } from "../utils.js";
 import type { JwtPayload } from "jsonwebtoken";
-import { query } from "../db";
-import { AppError } from "../errors/AppError";
-import { ERRORS } from "../errors/errorMessages";
-import type { UserItem, SessionRow } from "../type";
+import { query } from "../db.js";
+import { AppError } from "../errors/AppError.js";
+import { ERRORS } from "../errors/errorMessages.js";
+import type { UserItem, SessionRow } from "../type.js";
 
 type AuthUserRow = Pick<UserItem, "id" | "display_name" | "role">;
 

@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
-import { AppError } from "../errors/AppError";
-import { ERRORS } from "../errors/errorMessages";
-import type { UserRole } from "../type";
+import { AppError } from "../errors/AppError.js";
+import { ERRORS } from "../errors/errorMessages.js";
+import type { UserRole } from "../type.js";
 
 /** Middleware factory qui restreint l'acces a une route selon le role de l'utilisateur connecte.
  * Doit etre place apres les middlewares `auth` et `sessionIsOpen`.
