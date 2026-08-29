@@ -13,7 +13,7 @@ Pour les groupes de dix personnes ou plus, un tarif degressif est applicable sur
   now() - INTERVAL '5 days',
   '/uploads/news/36991bf8-0c09-4ddf-8f62-bfd6f81f58d7.webp',
   'Billets de concert Vindhellfest',
-  id FROM users WHERE email = 'admin@example.com';
+  id FROM "user" WHERE email = 'admin@example.com';
 
 INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
@@ -29,7 +29,7 @@ Nous profitons de cette annonce pour remercier l ensemble de notre communaute po
   now() - INTERVAL '1 day',
   '/uploads/news/d61a5775-c160-45ce-b922-7d8d1f2344d8.webp',
   'Photo promo du nouvel artiste invite au Vindhellfest',
-  id FROM users WHERE email = 'admin@example.com';
+  id FROM "user" WHERE email = 'admin@example.com';
 
 INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
@@ -45,7 +45,7 @@ L application officielle du festival sera mise a jour avec le programme complet 
   now() - INTERVAL '4 days',
   '/uploads/news/72eb723b-6810-4156-ba3f-045b84bdc4b6.webp',
   'Vue de la scene principale du Vindhellfest',
-  id FROM users WHERE email = 'admin@example.com';
+  id FROM "user" WHERE email = 'admin@example.com';
 
 INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
@@ -61,7 +61,7 @@ Les cyclistes disposeront d un parking velo securise et gratuit a proximite imme
   now() - INTERVAL '3 days',
   '/uploads/news/3359a403-b41f-46cd-a2c5-257989945aec.webp',
   'Acces et transports pour le Vindhellfest',
-  id FROM users WHERE email = 'admin@example.com';
+  id FROM "user" WHERE email = 'admin@example.com';
 
 INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
@@ -77,7 +77,7 @@ Wonderwall, Champagne Supernova, Don t Look Back in Anger, Live Forever, Some Mi
   now() - INTERVAL '10 days',
   '/uploads/news/8d68c3de-45e3-409a-ab4e-a9e09c51a033.webp',
   'Photo de scene du groupe Oasis',
-  id FROM users WHERE email = 'admin@example.com';
+  id FROM "user" WHERE email = 'admin@example.com';
 
 INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
@@ -95,7 +95,7 @@ Rencontrer ces hommes et ces femmes, c est comprendre que Vindhellfest n est pas
   now() - INTERVAL '8 days',
   '/uploads/news/f2b70de1-3dcb-4fed-abe1-9ca10d4fa901.webp',
   'Equipe backstage du Vindhellfest',
-  id FROM users WHERE email = 'admin@example.com';
+  id FROM "user" WHERE email = 'admin@example.com';
 
 INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
@@ -113,7 +113,7 @@ Voici notre selection des cinq incontournables a ne pas manquer : le burger Blac
   now() - INTERVAL '2 days',
   '/uploads/news/5fc9d873-86c0-45e7-b83a-96869b3e89f5.webp',
   'Stands de restauration du festival',
-  id FROM users WHERE email = 'admin@example.com';
+  id FROM "user" WHERE email = 'admin@example.com';
 
 INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
@@ -131,7 +131,7 @@ Cette premiere edition restera dans nos memoires comme un moment de grace collec
   now() - INTERVAL '365 days',
   '/uploads/news/0c327982-c511-4861-9d51-7b71e9eca8a9.webp',
   'Foule lors de la premiere edition du Vindhellfest',
-  id FROM users WHERE email = 'admin@example.com';
+  id FROM "user" WHERE email = 'admin@example.com';
 
 INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
@@ -149,7 +149,7 @@ Enfin, un partenariat a ete conclu avec une association de reforestation locale 
   now() - INTERVAL '6 days',
   '/uploads/news/ffd7451f-c59e-43fb-b8c1-4984cba2fc6a.webp',
   'Initiatives eco-responsables du Vindhellfest',
-  id FROM users WHERE email = 'admin@example.com';
+  id FROM "user" WHERE email = 'admin@example.com';
 
 INSERT INTO news (title, content, is_published, created_at, url_media, description_media, user_id)
 SELECT
@@ -167,4 +167,4 @@ Bonne chance a tous, et que les meilleurs gagnent. Ou plutot : que les plus chan
   now() - INTERVAL '12 hours',
   '/uploads/news/51e7de18-c3de-4b1e-a730-f0e899872289.webp',
   'Pass VIP Vindhellfest a gagner',
-  id FROM users WHERE email = 'admin@example.com';
+  id FROM "user" WHERE email = 'admin@example.com';
