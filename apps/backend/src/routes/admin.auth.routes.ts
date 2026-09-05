@@ -6,14 +6,12 @@ import { auth } from "../middlewares/auth.js";
 import { sessionIsOpen } from "../middlewares/sessionIsOpen.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
 // controllers
-import { login } from "../controllers/admin/auth/login.controller.js";
 import { logout } from "../controllers/admin/auth/logout.controller.js";
 import { userInfo } from "../controllers/admin/auth/user_info.controller.js";
 import { changePassword } from "../controllers/admin/auth/change_password.controller.js";
 import { forgotPassword } from "../controllers/admin/auth/forgot_password.controller.js";
 // schema
 import {
-  loginSchema,
   changePasswordSchema,
   forgotPasswordSchema,
 } from "../schemas/schema.js";
@@ -22,12 +20,8 @@ import { hashPassword } from "../middlewares/hashPassword.js";
 
 const router = Router();
 
-router.post(
-  "/auth/login",
-  rateLimitLogin,
-  validateBody(loginSchema),
-  asyncHandler(login),
-); // Connexion administrateur
+// Connexion administrateur : geree directement par Better Auth cote front
+// (authClient.signIn.email -> /api/auth/sign-in/email), plus besoin de route custom ici.
 
 router.post("/auth/logout", asyncHandler(auth), asyncHandler(logout)); // Deconnexion administrateur
 
