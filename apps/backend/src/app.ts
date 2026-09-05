@@ -1,6 +1,8 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "./lib/auth.js";
 import adminArtists from "./routes/admin.artists.routes.js";
 import adminNews from "./routes/admin.news.routes.js";
 import adminAuth from "./routes/admin.auth.routes.js";
@@ -21,9 +23,6 @@ export function createApp() {
   if (process.env.NODE_ENV === "production") {
     app.set("trust proxy", 1);
   }
-
-  /** Permet de lire le JSON envoye par le client dans le body des requetes HTTP. */
-  app.use(express.json());
 
   /** Autorise le frontend a appeler l'API backend en local.
    * initialise l'en-tete de la requete HTTP
@@ -56,6 +55,15 @@ export function createApp() {
     }
     next();
   });
+
+  /** Permet de gérer les routes Better Auth (login, signup, session, etc.).
+   * Doit etre montee AVANT express.json() : Better Auth lit le body brut lui-meme.
+   * toNodeHandler : contien la configuration de Better Auth (secret, cookie, etc.) et renvoie un handler express compatible avec les routes express.
+   */
+  app.all("/api/auth/{*any}", toNodeHandler(auth));
+
+  /** Permet de lire le JSON envoye par le client dans le body des requetes HTTP. */
+  app.use(express.json());
 
   /** Sert les fichiers images uploades (artistes, etc.) */
   app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
