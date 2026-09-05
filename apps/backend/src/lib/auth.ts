@@ -9,6 +9,13 @@ export const auth = betterAuth({
   // origine autorisée à envoyer des requêtes avec credentials (cookies)
   trustedOrigins: [process.env.FRONTEND_ORIGIN ?? "http://localhost:3000"],
 
+  // rate limiting — active meme hors production (defaut : uniquement en prod)
+  // pour tester/valider le comportement en dev. Regle speciale integree sur
+  // /sign-in* : 3 tentatives / 10s (cf. rate-limiter/index.mjs getDefaultSpecialRules).
+  rateLimit: {
+    enabled: true,
+  },
+
   // options avancées
   advanced: {
     database: {
