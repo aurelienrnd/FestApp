@@ -15,16 +15,20 @@ export async function requireAuth(
   res: Response,
   next: NextFunction,
 ) {
-  const session = await auth.api.getSession({
+  const result = await auth.api.getSession({
+
+    // fromNodeHeaders : convertit les en-tetes de la requete Express en un format compatible avec Better Auth. 
     headers: fromNodeHeaders(req.headers),
   });
 
-  if (!session) {
+  // Si aucune session n'est presente, renvoie une erreur 401 Unauthorized.
+  if (!result) {
     throw new AppError(ERRORS.AUTH_MISSING_SESSION, 401);
   }
 
-  res.locals.userId = session.user.id;
-  res.locals.sessionId = session.session.id;
+  // Si une session est presente, on la stocke dans res.locals pour que les routes puissent y acceder.
+  res.locals.userId = result.user.id;
+  res.locals.sessionId = result.session.id;
 
   next();
 }
