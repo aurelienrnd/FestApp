@@ -11,10 +11,10 @@ export const auth = betterAuth({
 
   // options avancées
   advanced: {
-  database: {
-    generateId: "uuid", // génération d'ID aléatoire pour les utilisateurs
+    database: {
+      generateId: "uuid", // génération d'ID aléatoire pour les utilisateurs
+    },
   },
-},
 
   // options d'authentification
   emailAndPassword: {
@@ -35,4 +35,3 @@ export const auth = betterAuth({
     },
   },
 });
-

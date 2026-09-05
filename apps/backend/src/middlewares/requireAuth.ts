@@ -16,8 +16,7 @@ export async function requireAuth(
   next: NextFunction,
 ) {
   const result = await auth.api.getSession({
-
-    // fromNodeHeaders : convertit les en-tetes de la requete Express en un format compatible avec Better Auth. 
+    // fromNodeHeaders : convertit les en-tetes de la requete Express en un format compatible avec Better Auth.
     headers: fromNodeHeaders(req.headers),
   });
 
