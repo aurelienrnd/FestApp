@@ -7,7 +7,6 @@ import { sessionIsOpen } from "../middlewares/sessionIsOpen.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
 // controllers
 import { logout } from "../controllers/admin/auth/logout.controller.js";
-import { userInfo } from "../controllers/admin/auth/user_info.controller.js";
 import { changePassword } from "../controllers/admin/auth/change_password.controller.js";
 import { forgotPassword } from "../controllers/admin/auth/forgot_password.controller.js";
 // schema
@@ -25,12 +24,8 @@ const router = Router();
 
 router.post("/auth/logout", asyncHandler(auth), asyncHandler(logout)); // Deconnexion administrateur
 
-router.get(
-  "/auth/me",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  asyncHandler(userInfo),
-); // recupere les infos utilisateur et verifie qu'il est connecte
+// Infos utilisateur connecte : gere directement par Better Auth cote front
+// (fetch /api/auth/get-session), plus besoin de route custom ici.
 
 router.post(
   "/auth/forgot-password",

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAdminUser } from "../../../components/AdminUserProvider";
 import { useModal } from "../../../hooks/useModal";
 import { FESTIVAL_DAYS, FESTIVAL_LOCATION } from "../../../config/festival";
@@ -29,7 +28,6 @@ function getDaysUntil(dateStr: string): number {
 
 /** Affiche les informations principales du compte administrateur.
  * Recupere l'utilisateur connecte et presente les donnees de profil.
- * Si mustChangePassword est vrai, ouvre automatiquement la modale en mode force.
  * Les dates du festival sont derivees dynamiquement depuis FESTIVAL_DAYS.
  * @function useModal - Gere l'etat d'ouverture de la modale de changement de mot de passe.
  * @function getDaysUntil - Calcule le nombre de jours restants avant le debut du festival.
@@ -41,24 +39,17 @@ function getDaysUntil(dateStr: string): number {
 export default function DashboardContent() {
   //Recuperation de l'utilisateur admin et gestion de la modale de changement de mot de passe
   const adminUser = useAdminUser();
-  const router = useRouter();
 
   //initialise la modale
   const {
     isOpen: isChangePasswordModalOpen,
     open: openChangePassword,
     close: closeChangePassword,
-  } = useModal(adminUser?.mustChangePassword ?? false);
+  } = useModal();
 
   //Si aucun utilisateur admin n'est trouve, ne rien afficher
   if (!adminUser) return null;
-  const { user, mustChangePassword } = adminUser;
-
-  //Ferme la modale et rafraichit la page si le mot de passe a ete change (mustChangePassword devient faux)
-  const handleModalClose = () => {
-    closeChangePassword();
-    if (mustChangePassword) router.refresh();
-  };
+  const { user } = adminUser;
 
   //Calcule le nombre de jours restants avant le debut du festival et filtre les liens d'acces rapide en fonction du role de l'utilisateur
   const daysLeft = getDaysUntil(FESTIVAL_DAYS[0]);
@@ -70,13 +61,13 @@ export default function DashboardContent() {
       <div className="card-profile p-8 gap-8">
         {/* Avatar */}
         <div className="card-profile-avatar w-24 h-24 text-4xl">
-          {(user.display_name ?? "U").slice(0, 1)}
+          {(user.name ?? "U").slice(0, 1)}
         </div>
 
         {/* Infos — distribue sur toute la largeur */}
         <div className="flex-1 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 w-full text-center sm:text-left">
           <div className="flex flex-col gap-2">
-            <p className="card-primary text-4xl">{user.display_name}</p>
+            <p className="card-primary text-4xl">{user.name}</p>
             <div className="flex items-center gap-3 justify-center sm:justify-start">
               <span className="card-profile-badge px-4 py-1.5">
                 {user.role}
@@ -163,8 +154,7 @@ export default function DashboardContent() {
 
       <ChangePasswordModal
         isOpen={isChangePasswordModalOpen}
-        onClose={handleModalClose}
-        forced={mustChangePassword}
+        onClose={closeChangePassword}
       />
     </div>
   );

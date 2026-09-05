@@ -13,13 +13,24 @@ export type UserItem = {
   password_changed_at: string | null;
 };
 
-/** Type representant l'utilisateur connecte retourne par GET /admin/auth/me. */
-export type AdminUser = Omit<UserItem, "created_at" | "password_changed_at">;
+/** Utilisateur connecte tel que renvoye par la session Better Auth. */
+export type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+};
 
-/** Type representant la reponse de GET /admin/auth/me. */
+/** Reponse de GET /api/auth/get-session — null si aucune session active.
+ * `session` n'est pas consommee cote front pour l'instant, typee au minimum.
+ */
 export type AdminAuthMeResponse = {
+  session: {
+    id: string;
+    userId: string;
+    expiresAt: string;
+  };
   user: AdminUser;
-  mustChangePassword: boolean;
 };
 
 /* === NEWS === */
