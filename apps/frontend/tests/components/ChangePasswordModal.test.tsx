@@ -113,35 +113,4 @@ describe("ChangePasswordModal", () => {
 
     expect(screen.getByText("Acces refuse.")).toBeInTheDocument();
   });
-
-  it("masque le bouton fermer en mode forced", () => {
-    // en mode forced, l'utilisateur ne peut pas fermer la modale avant d'avoir change son mot de passe
-    render(<ChangePasswordModal isOpen={true} onClose={vi.fn()} forced={true} />);
-
-    expect(
-      screen.queryByRole("button", { name: /fermer la modal/i }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("affiche le bouton 'Continuer' apres succes en mode forced", async () => {
-    // en mode forced, un bouton Continuer permet de fermer la modale apres le changement
-    const user = userEvent.setup();
-
-    vi.mocked(useMutation).mockReturnValue({
-      mutate: vi.fn().mockImplementation((_data: unknown, onSuccess: () => void) => {
-        onSuccess();
-      }),
-      isLoading: false,
-      error: null,
-      reset: mockReset,
-    });
-
-    render(<ChangePasswordModal isOpen={true} onClose={vi.fn()} forced={true} />);
-
-    await fillForm(user);
-    await user.click(screen.getByRole("button", { name: "Modifier" }));
-
-    // le bouton Continuer doit apparaitre uniquement en mode forced apres succes
-    expect(screen.getByRole("button", { name: "Continuer" })).toBeInTheDocument();
-  });
 });

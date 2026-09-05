@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import LoginPage from "@/app/(auth)/login/page";
-import { useMutation } from "@/hooks/useMutation";
+import { authClient } from "@/lib/auth-client";
 
 // next/navigation : mock de useRouter pour verifier la redirection sans Next.js
 const mockPush = vi.fn();
@@ -25,21 +25,30 @@ vi.mock("@/components/ForgotPassword", () => ({
   default: () => <div>Formulaire mot de passe oublie</div>,
 }));
 
-// mock du hook useMutation pour controler mutate et error dans chaque test
-vi.mock("@/hooks/useMutation");
-
-const mockMutate = vi.fn();
+// mock du client Better Auth pour controler signIn.email dans chaque test
+vi.mock("@/lib/auth-client", () => ({
+  authClient: {
+    signIn: {
+      email: vi.fn(),
+    },
+  },
+}));
 
 beforeEach(() => {
   // reinitialise les mocks entre chaque test
   mockPush.mockClear();
-  vi.mocked(useMutation).mockReturnValue({
-    mutate: mockMutate,
-    isLoading: false,
+  vi.mocked(authClient.signIn.email).mockResolvedValue({
+    data: null,
     error: null,
-    reset: vi.fn(),
-  });
+  } as never);
 });
+
+// remplit le formulaire puis soumet
+async function submitForm(user: ReturnType<typeof userEvent.setup>) {
+  await user.type(screen.getByPlaceholderText("Votre email"), "admin@test.com");
+  await user.type(screen.getByPlaceholderText("Votre mot de passe"), "motdepasse");
+  await user.click(screen.getByRole("button", { name: "Envoyer" }));
+}
 
 // ---------------------------------------------------------------------------
 
@@ -51,40 +60,32 @@ describe("LoginPage", () => {
     expect(screen.getByRole("button", { name: "Envoyer" })).toBeDisabled();
   });
 
-  it("affiche l'erreur retournee par l'API si la connexion echoue", () => {
-    // l'erreur renvoyee par useMutation doit etre visible au-dessus du bouton
-    vi.mocked(useMutation).mockReturnValue({
-      mutate: mockMutate,
-      isLoading: false,
-      error: "Session expiree, merci de vous reconnecter.",
-      reset: vi.fn(),
-    });
+  it("affiche l'erreur retournee par l'API si la connexion echoue", async () => {
+    // l'erreur renvoyee par authClient.signIn.email doit etre visible au-dessus du bouton
+    const user = userEvent.setup();
+    vi.mocked(authClient.signIn.email).mockResolvedValue({
+      data: null,
+      error: { message: "Session expiree, merci de vous reconnecter." },
+    } as never);
 
     render(<LoginPage />);
+    await submitForm(user);
 
     expect(
-      screen.getByText("Session expiree, merci de vous reconnecter."),
+      await screen.findByText("Session expiree, merci de vous reconnecter."),
     ).toBeInTheDocument();
   });
 
   it("redirige vers /admin/dashboard apres connexion reussie", async () => {
-    // quand mutate appelle son callback, router.push doit etre appele avec la bonne route
+    // quand signIn.email reussit (error: null), router.push doit etre appele avec la bonne route
     const user = userEvent.setup();
-
-    vi.mocked(useMutation).mockReturnValue({
-      mutate: vi.fn().mockImplementation((_data: unknown, onSuccess: () => void) => {
-        onSuccess();
-      }),
-      isLoading: false,
+    vi.mocked(authClient.signIn.email).mockResolvedValue({
+      data: { user: {} },
       error: null,
-      reset: vi.fn(),
-    });
+    } as never);
 
     render(<LoginPage />);
-
-    await user.type(screen.getByPlaceholderText("Votre email"), "admin@test.com");
-    await user.type(screen.getByPlaceholderText("Votre mot de passe"), "motdepasse");
-    await user.click(screen.getByRole("button", { name: "Envoyer" }));
+    await submitForm(user);
 
     expect(mockPush).toHaveBeenCalledWith("/admin/dashboard");
   });
