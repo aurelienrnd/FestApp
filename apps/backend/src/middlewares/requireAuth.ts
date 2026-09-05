@@ -29,6 +29,7 @@ export async function requireAuth(
   // Si une session est presente, on la stocke dans res.locals pour que les routes puissent y acceder.
   res.locals.userId = result.user.id;
   res.locals.sessionId = result.session.id;
+  res.locals.userRole = result.user.role ?? undefined; // colonne nullable en BDD, res.locals.userRole ne connait pas `null`
 
   next();
 }

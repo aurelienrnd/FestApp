@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { z } from "zod";
 import { pool } from "../db.js";
 
 export const auth = betterAuth({
@@ -16,8 +17,22 @@ export const auth = betterAuth({
 },
 
   // options d'authentification
-  emailAndPassword: { 
-    enabled: true, 
-  }, 
+  emailAndPassword: {
+    enabled: true,
+  },
+
+  // champs additionnels sur la table "user"
+  user: {
+    additionalFields: {
+      role: {
+        type: ["admin", "artists", "news"], // reflete UserRole, pour l'autocompletion/typage TypeScript uniquement
+        required: false,
+        input: false, // empeche l'utilisateur de definir son propre role a l'inscription
+        validator: {
+          input: z.enum(["admin", "artists", "news"]), // validation reelle au runtime (type: [...] seul ne valide rien)
+        },
+      },
+    },
+  },
 });
 
