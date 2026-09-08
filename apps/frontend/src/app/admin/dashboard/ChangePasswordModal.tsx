@@ -3,8 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
-import type { ApiMessageResponse } from "../../../type";
-import { useMutation } from "../../../hooks/useMutation";
+import { authClient } from "../../../lib/auth-client";
 import { isEmpty } from "../../../functions/validation";
 
 type ChangePasswordModalProps = {
@@ -17,7 +16,7 @@ type ChangePasswordModalProps = {
  * @param {ChangePasswordModalProps} props Proprietes de controle de la modale
  * @param {boolean} props.isOpen Definit si la modale est ouverte
  * @param {() => void} props.onClose Ferme la modale
- * @function useMutation Hook de mutation pour l'appel API de changement de mot de passe
+ * @function authClient.changePassword Appel Better Auth pour changer le mot de passe de l'utilisateur connecte
  * @function isEmpty Fonction de validation pour verifier si un champ est vide
  * @children ModalCloseButton Ferme la modale
  */
@@ -33,13 +32,9 @@ export default function ChangePasswordModal({
   // pour stocker les erreurs de validation locale repetion des mots de passe
   const [localError, setLocalError] = useState<string | null>(null);
 
-  // Initialisation de la requete
-  const {
-    mutate,
-    isLoading,
-    error: apiError,
-    reset,
-  } = useMutation<ApiMessageResponse>("/admin/auth/password", "PATCH");
+  // Etat de l'appel Better Auth (authClient.changePassword -> /api/auth/change-password)
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   // on ajoute les erreurs de validation locale et d'API dans une seule variable pour l'affichage
   const error = localError ?? apiError;
@@ -63,8 +58,25 @@ export default function ChangePasswordModal({
     }
     setLocalError(null);
 
-    //Fait un appel API pour changer le mot de passe
-    mutate({ password: oldPassword, newPassword }, () => setSuccess(true));
+    setIsLoading(true);
+    setApiError(null);
+
+    // Delegue a Better Auth : verifie le mot de passe actuel, met a jour le hash
+    // et revoque les autres sessions actives.
+    const result = await authClient.changePassword({
+      currentPassword: oldPassword,
+      newPassword,
+      revokeOtherSessions: true,
+    });
+
+    setIsLoading(false);
+
+    if (result.error) {
+      setApiError(result.error.message ?? "Une erreur est survenue.");
+      return;
+    }
+
+    setSuccess(true);
   };
 
   // Gere la fermeture de la modal et reinitialise les etats associes
@@ -73,7 +85,8 @@ export default function ChangePasswordModal({
     setNewPassword("");
     setConfirmPassword("");
     setLocalError(null);
-    reset();
+    setApiError(null);
+    setIsLoading(false);
     setSuccess(false);
     onClose();
   };
