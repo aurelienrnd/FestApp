@@ -11,12 +11,6 @@ export const createUserSchema = z.object({
   role: z.enum(["admin", "artists", "news"]),
 });
 
-/** Schema Zod de changement de mot de passe — valide le mot de passe actuel et le nouveau (min 8 caracteres). */
-export const changePasswordSchema = z.object({
-  password: z.string().min(8),
-  newPassword: z.string().min(8),
-});
-
 /** Schema Zod de reinitialisation de mot de passe — valide uniquement l'email. */
 export const forgotPasswordSchema = z.object({
   email: z.email(),

@@ -2,19 +2,11 @@ import { Router } from "express";
 // middlewares
 import { validateBody } from "../middlewares/validateBody.js";
 import { rateLimitLogin } from "../middlewares/rateLimitLogin.js";
-import { auth } from "../middlewares/auth.js";
-import { sessionIsOpen } from "../middlewares/sessionIsOpen.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
 // controllers
-import { changePassword } from "../controllers/admin/auth/change_password.controller.js";
 import { forgotPassword } from "../controllers/admin/auth/forgot_password.controller.js";
 // schema
-import {
-  changePasswordSchema,
-  forgotPasswordSchema,
-} from "../schemas/schema.js";
-// middlewares
-import { hashPassword } from "../middlewares/hashPassword.js";
+import { forgotPasswordSchema } from "../schemas/schema.js";
 
 const router = Router();
 
@@ -34,13 +26,8 @@ router.post(
   asyncHandler(forgotPassword),
 ); // reinitialise le mot de passe et envoie un nouveau par email
 
-router.patch(
-  "/auth/password",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  validateBody(changePasswordSchema),
-  asyncHandler(hashPassword("newPassword")),
-  asyncHandler(changePassword),
-); // modifie le mot de passe de l'utilisateur connecte
+// Changement de mot de passe de l'utilisateur connecte : gere directement par
+// Better Auth cote front (authClient.changePassword -> /api/auth/change-password),
+// plus besoin de route custom ici.
 
 export default router;
