@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { z } from "zod";
 import { pool } from "../db.js";
+import { sendPasswordResetEmail } from "../services/mailer.service.js";
 
 export const auth = betterAuth({
   // connexion BDD
@@ -26,6 +27,14 @@ export const auth = betterAuth({
   // options d'authentification
   emailAndPassword: {
     enabled: true,
+    minPasswordLength: 8, // longueur minimale du mot de passe — aligne sur la validation du front
+    resetPasswordTokenExpiresIn: 60 * 60, // duree de validite du token de reinitialisation (defaut Better Auth : 1 h)
+    revokeSessionsOnPasswordReset: true, // revoque toutes les autres sessions apres une reinitialisation reussie,
+
+    // callback pour envoyer l'email de reinitialisation du mot de passe
+    sendResetPassword: async ({ user, url }) => {
+      await sendPasswordResetEmail(user.email, user.name, url);
+    },
   },
 
   // champs additionnels sur la table "user"
