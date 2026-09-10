@@ -5,7 +5,6 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.js";
 import adminArtists from "./routes/admin.artists.routes.js";
 import adminNews from "./routes/admin.news.routes.js";
-import adminAuth from "./routes/admin.auth.routes.js";
 import adminUsers from "./routes/admin.users.routes.js";
 import contact from "./routes/contact.routes.js";
 import publicHome from "./routes/home.routes.js";
@@ -68,14 +67,15 @@ export function createApp() {
   /** Sert les fichiers images uploades (artistes, etc.) */
   app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
-  /** Routes API (auth, admin, public, etc.)
+  /** Routes API (admin, public, contact).
+   * L'authentification admin (connexion, session, deconnexion, mot de passe oublie,
+   * changement de mot de passe) est entierement geree par Better Auth sur /api/auth/*.
    * admin : routes pour l'interface d'administration (CRUD artistes, news, etc.)
    * public : routes pour l'interface publique (affichage artistes, news, etc.)
    * contact : route pour le formulaire de contact
    */
   app.use("/admin", adminArtists);
   app.use("/admin", adminNews);
-  app.use("/admin", adminAuth);
   app.use("/admin", adminUsers);
   app.use("/contact", contact);
   app.use("/public", publicHome);

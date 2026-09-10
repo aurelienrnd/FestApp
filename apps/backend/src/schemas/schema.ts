@@ -11,11 +11,6 @@ export const createUserSchema = z.object({
   role: z.enum(["admin", "artists", "news"]),
 });
 
-/** Schema Zod de reinitialisation de mot de passe — valide uniquement l'email. */
-export const forgotPasswordSchema = z.object({
-  email: z.email(),
-});
-
 /** Schema Zod du formulaire de contact — valide l'email, le nom, le sujet et le message. */
 export const contactSchema = z.object({
   email: z.email(),

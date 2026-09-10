@@ -31,7 +31,6 @@ tests/
 │   └── user.service.test.ts
 └── integration/
     ├── admin/
-    │   ├── auth.test.ts
     │   ├── artists.test.ts
     │   ├── news.test.ts
     │   └── users.test.ts
@@ -198,32 +197,6 @@ Teste le service `mailer` qui envoie des emails via nodemailer. `nodemailer.crea
 | 6   | `sendContactEmail` — sujet préfixé `[Contact]`                     | `appelle sendMail avec le sujet prefixe [Contact]`                                 |
 | 7   | `sendContactEmail` — `replyTo` = email de l'expéditeur             | `appelle sendMail avec replyTo egal a l'email de l'expediteur`                     |
 | 8   | `sendContactEmail` — nom et email de l'expéditeur dans le corps    | `inclut le nom et l'email de l'expediteur dans le corps du mail`                   |
-
----
-
-### `integration/admin/auth.test.ts`
-
-Teste toutes les routes d'authentification admin de bout en bout via Supertest. Les cas nominaux et tous les cas d'erreur métier sont couverts : credentials incorrects, sessions révoquées ou expirées, validation du body Zod.
-
-| #   | Description                                              | `it(...)`                                                                  |
-| --- | -------------------------------------------------------- | -------------------------------------------------------------------------- |
-| 1   | `POST /login` — bons credentials → 200 + cookie         | `retourne 200 et un cookie avec les bons credentials`                      |
-| 2   | `POST /login` — mauvais mot de passe → 401              | `retourne 401 avec un mauvais mot de passe`                                |
-| 3   | `POST /login` — email inexistant → 401                  | `retourne 401 avec un email inexistant`                                    |
-| 4   | `POST /login` — body invalide → 400                     | `retourne 400 si le body est invalide`                                     |
-| 5   | `POST /logout` — session révoquée → 200                 | `retourne 200 et revoque la session`                                       |
-| 6   | `POST /logout` — sans cookie → 401                      | `retourne 401 sans cookie`                                                 |
-| 7   | `GET /me` — connecté → 200 + infos user                 | `retourne 200 et les infos du user connecte`                               |
-| 8   | `GET /me` — sans cookie → 401                           | `retourne 401 sans cookie`                                                 |
-| 9   | `GET /me` — session révoquée → 401                      | `retourne 401 avec une session revoquee`                                   |
-| 10  | `GET /me` — session expirée → 401                       | `retourne 401 avec une session expiree`                                    |
-| 11  | `POST /forgot-password` — email existant → 200          | `retourne 200 et envoie un email si l'email existe`                        |
-| 12  | `POST /forgot-password` — email inexistant → 404        | `retourne 404 si l'email n'existe pas`                                     |
-| 13  | `POST /forgot-password` — body invalide → 400           | `retourne 400 si le body est invalide`                                     |
-| 14  | `PATCH /password` — mot de passe mis à jour → 200       | `retourne 200 et met a jour le mot de passe`                               |
-| 15  | `PATCH /password` — ancien mot de passe incorrect → 401 | `retourne 401 si l'ancien mot de passe est incorrect`                      |
-| 16  | `PATCH /password` — body invalide → 400                 | `retourne 400 si le body est invalide`                                     |
-| 17  | `PATCH /password` — sans cookie → 401                   | `retourne 401 sans cookie`                                                 |
 
 ---
 
