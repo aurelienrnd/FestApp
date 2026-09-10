@@ -15,27 +15,41 @@ beforeAll(() => {
 // ---------------------------------------------------------------------------
 
 describe("sendPasswordResetEmail", () => {
-  it("appelle sendMail avec le bon destinataire et le mot de passe dans le body", async () => {
+  const resetUrl =
+    "http://localhost:4000/api/auth/reset-password/tok123?callbackURL=x";
+
+  it("appelle sendMail avec le bon destinataire et le lien de reinitialisation dans le body", async () => {
     // Appelle la fonction avec des valeurs de test
-    await sendPasswordResetEmail("user@test.com", "Jean Dupont", "tmp123abc");
+    await sendPasswordResetEmail("user@test.com", "Jean Dupont", resetUrl);
 
     expect(sendMailMock).toHaveBeenCalledWith(
       expect.objectContaining({
         to: "user@test.com",
         subject: expect.stringContaining("mot de passe"),
-        text: expect.stringContaining("tmp123abc"),
+        text: expect.stringContaining(resetUrl),
+        html: expect.stringContaining(resetUrl),
       }),
     );
   });
 
   it("inclut le nom de l'utilisateur dans le corps du mail", async () => {
     // Appelle la fonction avec des valeurs de test
-    await sendPasswordResetEmail("user@test.com", "Jean Dupont", "tmp123abc");
+    await sendPasswordResetEmail("user@test.com", "Jean Dupont", resetUrl);
 
     expect(sendMailMock).toHaveBeenCalledWith(
       expect.objectContaining({
         text: expect.stringContaining("Jean Dupont"),
       }),
+    );
+  });
+
+  it("ne transmet aucun mot de passe en clair dans le mail", async () => {
+    // Appelle la fonction avec des valeurs de test
+    await sendPasswordResetEmail("user@test.com", "Jean Dupont", resetUrl);
+
+    const { text } = sendMailMock.mock.calls.at(-1)![0];
+    expect(text).not.toMatch(
+      /mot de passe provisoire|mot de passe temporaire/i,
     );
   });
 });

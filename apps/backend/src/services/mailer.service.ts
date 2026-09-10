@@ -28,22 +28,29 @@ async function sendMail(options: SendMailOptions): Promise<void> {
   }
 }
 
-/** Envoie un nouveau mot de passe temporaire a l'utilisateur qui a demande la reinitialisation.
+/** Envoie le lien de reinitialisation de mot de passe a l'utilisateur qui en a fait la demande.
+ * Le lien pointe vers Better Auth (GET /api/auth/reset-password/<token>), qui valide le token
+ * puis redirige vers la page /reset-password du front. Aucun mot de passe n'est transmis.
  * @param to adresse email du destinataire
- * @param displayName nom complet de l'utilisateur
- * @param tempPassword nouveau mot de passe temporaire en clair
+ * @param name nom complet de l'utilisateur
+ * @param resetUrl lien de reinitialisation genere par Better Auth (token a usage unique, valable 1 h)
  * @function sendMail Envoie un email via le transporteur SMTP
  */
 export async function sendPasswordResetEmail(
   to: string,
-  displayName: string,
-  tempPassword: string,
+  name: string,
+  resetUrl: string,
 ): Promise<void> {
   await sendMail({
     from: `"Vindhellfest" <${getEnv("SMTP_USER")}>`,
     to,
     subject: "Reinitialisation de votre mot de passe",
-    text: `Bonjour ${displayName},\n\nVous avez demande la reinitialisation de votre mot de passe.\nVotre nouveau mot de passe provisoire : ${tempPassword}\n\nVeuillez le modifier des votre prochaine connexion.`,
+    text: `Bonjour ${name},\n\nVous avez demande la reinitialisation de votre mot de passe.\nOuvrez ce lien pour en choisir un nouveau :\n${resetUrl}\n\nCe lien est valable 1 heure et ne peut servir qu'une seule fois.\nSi vous n'etes pas a l'origine de cette demande, ignorez cet email : votre mot de passe reste inchange.`,
+    html: `<p>Bonjour ${name},</p>
+<p>Vous avez demande la reinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour en choisir un nouveau :</p>
+<p><a href="${resetUrl}">Reinitialiser mon mot de passe</a></p>
+<p>Ce lien est valable 1 heure et ne peut servir qu'une seule fois.</p>
+<p>Si vous n'etes pas a l'origine de cette demande, ignorez cet email : votre mot de passe reste inchange.</p>`,
   });
 }
 
