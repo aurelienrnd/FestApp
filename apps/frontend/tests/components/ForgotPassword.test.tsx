@@ -1,67 +1,77 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ForgotPassword from "@/components/ForgotPassword";
-import { useMutation } from "@/hooks/useMutation";
+import { authClient } from "@/lib/auth-client";
 
-// mock du hook useMutation pour controler mutate et error dans chaque test
-vi.mock("@/hooks/useMutation");
+// mock du client Better Auth pour controler requestPasswordReset dans chaque test
+vi.mock("@/lib/auth-client", () => ({
+  authClient: {
+    requestPasswordReset: vi.fn(),
+  },
+}));
 
 beforeEach(() => {
-  // reinitialise les mocks entre chaque test
-  vi.mocked(useMutation).mockReturnValue({
-    mutate: vi.fn(),
-    isLoading: false,
+  // par defaut : l'appel Better Auth reussit
+  vi.mocked(authClient.requestPasswordReset).mockResolvedValue({
+    data: { status: true },
     error: null,
-    reset: vi.fn(),
-  });
+  } as never);
 });
 
 // ---------------------------------------------------------------------------
 
 describe("ForgotPassword", () => {
   it("desactive le bouton 'Envoyer' si le champ email est vide", () => {
-    // le champ email doit contenir du texte pour activer le bouton d'envoi
+    // le champ email doit contenir une adresse valide pour activer le bouton d'envoi
     render(<ForgotPassword />);
 
     expect(screen.getByRole("button", { name: "Envoyer" })).toBeDisabled();
   });
 
-  it("affiche un message de succes et masque le formulaire apres envoi reussi", async () => {
-    // quand mutate appelle son callback, setSuccess(true) remplace le formulaire
+  it("transmet l'email et un redirectTo absolu vers /reset-password a Better Auth", async () => {
     const user = userEvent.setup();
-
-    vi.mocked(useMutation).mockReturnValue({
-      mutate: vi.fn().mockImplementation((_data: unknown, onSuccess: () => void) => {
-        onSuccess();
-      }),
-      isLoading: false,
-      error: null,
-      reset: vi.fn(),
-    });
 
     render(<ForgotPassword />);
 
     await user.type(screen.getByPlaceholderText("Votre email"), "jean@test.com");
     await user.click(screen.getByRole("button", { name: "Envoyer" }));
 
-    // le message de succes doit remplacer le formulaire
+    expect(authClient.requestPasswordReset).toHaveBeenCalledWith({
+      email: "jean@test.com",
+      redirectTo: expect.stringMatching(/^https?:\/\/.+\/reset-password$/),
+    });
+  });
+
+  it("affiche un message de succes neutre et masque le formulaire apres envoi reussi", async () => {
+    // le message ne doit pas confirmer l'existence du compte : Better Auth repond
+    // toujours 200, que l'email soit connu ou non.
+    const user = userEvent.setup();
+
+    render(<ForgotPassword />);
+
+    await user.type(screen.getByPlaceholderText("Votre email"), "jean@test.com");
+    await user.click(screen.getByRole("button", { name: "Envoyer" }));
+
     expect(
-      screen.getByText(/un nouveau mot de passe vous a ete envoye/i),
+      await screen.findByText(/si un compte existe pour cet email/i),
     ).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Envoyer" })).not.toBeInTheDocument();
   });
 
-  it("affiche l'erreur retournee par l'API", () => {
-    // l'erreur renvoyee par useMutation doit etre visible sous le bouton
-    vi.mocked(useMutation).mockReturnValue({
-      mutate: vi.fn(),
-      isLoading: false,
-      error: "Ressource introuvable.",
-      reset: vi.fn(),
-    });
+  it("affiche l'erreur retournee par Better Auth", async () => {
+    const user = userEvent.setup();
+    vi.mocked(authClient.requestPasswordReset).mockResolvedValue({
+      data: null,
+      error: { message: "Trop de tentatives, reessayer plus tard." },
+    } as never);
 
     render(<ForgotPassword />);
 
-    expect(screen.getByText("Ressource introuvable.")).toBeInTheDocument();
+    await user.type(screen.getByPlaceholderText("Votre email"), "jean@test.com");
+    await user.click(screen.getByRole("button", { name: "Envoyer" }));
+
+    expect(
+      await screen.findByText("Trop de tentatives, reessayer plus tard."),
+    ).toBeInTheDocument();
   });
 });
