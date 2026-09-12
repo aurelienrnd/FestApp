@@ -25,10 +25,9 @@ const mockReset = vi.fn();
 const mockUserToEdit: UserItem = {
   id: "uuid-1",
   email: "jean.dupont@test.com",
-  display_name: "Jean Dupont",
+  name: "Jean Dupont",
   role: "news",
   created_at: "2025-01-01T00:00:00Z",
-  password_changed_at: null,
 };
 
 beforeEach(() => {
@@ -66,7 +65,7 @@ describe("AddUserModal", () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it("splittes display_name en prenom et nom en mode edition", () => {
+  it("splittes name en prenom et nom en mode edition", () => {
     // "Jean Dupont" doit etre decoupe en firstName="Jean" et lastName="Dupont"
     render(
       <AddUserModal

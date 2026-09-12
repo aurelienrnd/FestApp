@@ -58,7 +58,7 @@ export default function AddUserModal({
   const isEditMode = userToEdit !== null;
 
   // Initialise les champs depuis userToEdit en mode modification, vide en mode creation
-  const displayName = userToEdit?.display_name?.trim() ?? "";
+  const displayName = userToEdit?.name?.trim() ?? "";
   const [initialFirstName, ...initialLastNameParts] = displayName.split(/\s+/);
 
   // Champs du formulaire utilisateur
@@ -80,7 +80,7 @@ export default function AddUserModal({
 
   //Reinitialise le formulaire a son etat initial
   const resetForm = () => {
-    const name = userToEdit?.display_name?.trim() ?? "";
+    const name = userToEdit?.name?.trim() ?? "";
     const [first, ...rest] = name.split(/\s+/);
     setFirstName(first ?? "");
     setLastName(rest.join(" "));

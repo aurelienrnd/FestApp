@@ -7,14 +7,14 @@ import { validateUuidParam } from "../middlewares/validateUuidParam.js";
 // controllers
 import { createUser } from "../controllers/admin/users/create_user.controller.js";
 import { deleteUser } from "../controllers/admin/users/delete_user.controller.js";
-import { listUsers } from "../controllers/admin/users/list_users.controller.js";
 import { updateUser } from "../controllers/admin/users/update_user.controller.js";
 // schema
 import { createUserSchema } from "../schemas/schema.js";
 
 const router = Router();
 
-router.get("/users", ...adminAuth("admin"), asyncHandler(listUsers)); // Lister les utilisateurs
+// Liste des utilisateurs : geree directement par Better Auth cote front
+// (authClient.admin.listUsers -> /api/auth/admin/list-users), plus besoin de route custom ici.
 
 router.post(
   "/users",

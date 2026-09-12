@@ -1,9 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Page from "@/app/admin/users/page";
-import { useFetch } from "@/hooks/useFetch";
+import { authClient } from "@/lib/auth-client";
 import { useAdminUser } from "@/components/AdminUserProvider";
-import type { UserItem } from "@/type";
 
 // next/navigation : mock de useRouter pour eviter les erreurs Next.js en jsdom
 const mockPush = vi.fn();
@@ -29,8 +28,14 @@ vi.mock("react-modal", () => ({
     isOpen ? <>{children}</> : null,
 }));
 
-// mock du hook useFetch pour controler les donnees retournees
-vi.mock("@/hooks/useFetch");
+// mock du client Better Auth pour controler authClient.admin.listUsers dans chaque test
+vi.mock("@/lib/auth-client", () => ({
+  authClient: {
+    admin: {
+      listUsers: vi.fn(),
+    },
+  },
+}));
 
 // mock de useAdminUser pour simuler l'utilisateur connecte
 vi.mock("@/components/AdminUserProvider", () => ({
@@ -58,41 +63,37 @@ vi.mock("@/components/modals/DeleteModal", () => ({
   default: () => null,
 }));
 
-// utilisateurs avec des roles differents pour tester le filtre
-const mockAdminUser: UserItem = {
+// utilisateurs avec des roles differents pour tester le filtre (forme Better Auth : name/createdAt)
+const mockAdminUser = {
   id: "uuid-1",
   email: "admin@test.com",
-  display_name: "Admin User",
+  name: "Admin User",
   role: "admin",
-  created_at: "2024-01-01T00:00:00Z",
-  password_changed_at: null,
+  createdAt: new Date("2024-01-01T00:00:00Z"),
 };
 
-const mockArtistsUser: UserItem = {
+const mockArtistsUser = {
   id: "uuid-2",
   email: "artists@test.com",
-  display_name: "Artists User",
+  name: "Artists User",
   role: "artists",
-  created_at: "2024-01-01T00:00:00Z",
-  password_changed_at: null,
+  createdAt: new Date("2024-01-01T00:00:00Z"),
 };
 
-const mockNewsUser: UserItem = {
+const mockNewsUser = {
   id: "uuid-3",
   email: "news@test.com",
-  display_name: "News User",
+  name: "News User",
   role: "news",
-  created_at: "2024-01-01T00:00:00Z",
-  password_changed_at: null,
+  createdAt: new Date("2024-01-01T00:00:00Z"),
 };
 
 beforeEach(() => {
   mockPush.mockClear();
-  vi.mocked(useFetch).mockReturnValue({
-    data: { users: [mockAdminUser, mockArtistsUser, mockNewsUser] },
-    isLoading: false,
+  vi.mocked(authClient.admin.listUsers).mockResolvedValue({
+    data: { users: [mockAdminUser, mockArtistsUser, mockNewsUser], total: 3 },
     error: null,
-  });
+  } as never);
   // utilisateur connecte different des utilisateurs de la liste
   vi.mocked(useAdminUser).mockReturnValue({
     user: { id: "uuid-99", email: "other@test.com", display_name: "Other", role: "admin" },
@@ -109,7 +110,7 @@ describe("UsersPage", () => {
     render(<Page />);
 
     // tous les utilisateurs sont visibles par defaut
-    expect(screen.getByText("Admin User")).toBeInTheDocument();
+    expect(await screen.findByText("Admin User")).toBeInTheDocument();
     expect(screen.getByText("Artists User")).toBeInTheDocument();
     expect(screen.getByText("News User")).toBeInTheDocument();
 

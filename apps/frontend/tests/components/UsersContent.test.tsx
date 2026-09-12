@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import UsersContent from "@/app/admin/users/UsersContent";
-import { useFetch } from "@/hooks/useFetch";
+import { authClient } from "@/lib/auth-client";
 import { useAdminUser } from "@/components/AdminUserProvider";
 import type { UserItem } from "@/type";
 
@@ -11,8 +11,14 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
-// mock du hook useFetch pour controler les donnees retournees
-vi.mock("@/hooks/useFetch");
+// mock du client Better Auth pour controler authClient.admin.listUsers dans chaque test
+vi.mock("@/lib/auth-client", () => ({
+  authClient: {
+    admin: {
+      listUsers: vi.fn(),
+    },
+  },
+}));
 
 // mock de useAdminUser pour simuler l'utilisateur connecte
 vi.mock("@/components/AdminUserProvider", () => ({
@@ -58,41 +64,40 @@ vi.mock("@/components/modals/DeleteModal", () => ({
     ) : null,
 }));
 
-// utilisateur existant retourne par l'API
-const mockUser: UserItem = {
+// utilisateur existant retourne par authClient.admin.listUsers (forme Better Auth : name/createdAt)
+const mockBetterAuthUser = {
   id: "uuid-1",
   email: "admin@test.com",
-  display_name: "Admin Test",
+  name: "Admin Test",
   role: "admin",
-  created_at: "2024-01-01T00:00:00Z",
-  password_changed_at: null,
+  createdAt: new Date("2024-01-01T00:00:00Z"),
 };
 
-// nouvel utilisateur ajoute via la modale
+// nouvel utilisateur ajoute via la modale (forme UserItem : AddUserModal n'est pas encore migre)
 const mockNewUser: UserItem = {
   id: "uuid-2",
   email: "news@test.com",
-  display_name: "Nouvel Utilisateur",
+  name: "Nouvel Utilisateur",
   role: "news",
   created_at: "2024-02-01T00:00:00Z",
-  password_changed_at: null,
 };
 
 // utilisateur modifie retourne par la modale d'edition
 const mockUpdatedUser: UserItem = {
-  ...mockUser,
-  display_name: "Admin Modifie",
+  id: "uuid-1",
   email: "admin.modifie@test.com",
+  name: "Admin Modifie",
+  role: "admin",
+  created_at: "2024-01-01T00:00:00Z",
 };
 
 beforeEach(() => {
   mockPush.mockClear();
-  vi.mocked(useFetch).mockReturnValue({
-    data: { users: [mockUser] },
-    isLoading: false,
+  vi.mocked(authClient.admin.listUsers).mockResolvedValue({
+    data: { users: [mockBetterAuthUser], total: 1, limit: undefined, offset: undefined },
     error: null,
-  });
-  // utilisateur connecte different de mockUser pour ne pas declencher la redirection par defaut
+  } as never);
+  // utilisateur connecte different de mockBetterAuthUser pour ne pas declencher la redirection par defaut
   vi.mocked(useAdminUser).mockReturnValue({
     user: { id: "uuid-99", email: "other@test.com", display_name: "Other", role: "admin" },
     mustChangePassword: false,
@@ -102,11 +107,11 @@ beforeEach(() => {
 // ---------------------------------------------------------------------------
 
 describe("UsersContent", () => {
-  it("affiche les utilisateurs retournes par l'API", () => {
-    // rendu avec un utilisateur retourne par useFetch
+  it("affiche les utilisateurs retournes par l'API", async () => {
+    // rendu avec un utilisateur retourne par authClient.admin.listUsers
     render(<UsersContent />);
 
-    expect(screen.getByText("Admin Test")).toBeInTheDocument();
+    expect(await screen.findByText("Admin Test")).toBeInTheDocument();
   });
 
   it("ajoute l'utilisateur a la liste localement apres un ajout reussi", async () => {
@@ -114,6 +119,7 @@ describe("UsersContent", () => {
 
     // rendu avec la modale d'ajout ouverte
     render(<UsersContent isAddModalOpen={true} />);
+    await screen.findByText("Simuler ajout");
 
     // simuler un ajout via le bouton expose par le mock de AddUserModal
     await user.click(screen.getByText("Simuler ajout"));
@@ -127,7 +133,7 @@ describe("UsersContent", () => {
 
     render(<UsersContent />);
 
-    expect(screen.getByText("Admin Test")).toBeInTheDocument();
+    expect(await screen.findByText("Admin Test")).toBeInTheDocument();
 
     // ouvrir la modale de suppression via le bouton Supprimer de la carte
     await user.click(screen.getByRole("button", { name: "Supprimer" }));
@@ -145,12 +151,12 @@ describe("UsersContent", () => {
     render(<UsersContent />);
 
     // ouvrir la modale d'edition via le bouton Modifier de la carte
-    await user.click(screen.getByRole("button", { name: "Modifier" }));
+    await user.click(await screen.findByRole("button", { name: "Modifier" }));
 
     // simuler la modification via le bouton expose par le mock de AddUserModal
     await user.click(screen.getByText("Simuler modification"));
 
-    // le display_name mis a jour doit remplacer l'ancien sans refetch
+    // le name mis a jour doit remplacer l'ancien sans refetch
     expect(screen.getByText("Admin Modifie")).toBeInTheDocument();
     expect(screen.queryByText("Admin Test")).not.toBeInTheDocument();
   });
@@ -166,7 +172,7 @@ describe("UsersContent", () => {
 
     render(<UsersContent />);
 
-    await user.click(screen.getByRole("button", { name: "Supprimer" }));
+    await user.click(await screen.findByRole("button", { name: "Supprimer" }));
     await user.click(screen.getByText("Simuler suppression"));
 
     expect(mockPush).toHaveBeenCalledWith("/login");
@@ -177,7 +183,7 @@ describe("UsersContent", () => {
 
     render(<UsersContent />);
 
-    await user.click(screen.getByRole("button", { name: "Modifier" }));
+    await user.click(await screen.findByRole("button", { name: "Modifier" }));
 
     // le mock de AddUserModal expose "Simuler modification" quand userToEdit est present
     expect(screen.getByText("Simuler modification")).toBeInTheDocument();
@@ -188,7 +194,7 @@ describe("UsersContent", () => {
 
     render(<UsersContent />);
 
-    await user.click(screen.getByRole("button", { name: "Supprimer" }));
+    await user.click(await screen.findByRole("button", { name: "Supprimer" }));
 
     expect(screen.getByText("Simuler suppression")).toBeInTheDocument();
   });

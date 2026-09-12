@@ -3,14 +3,16 @@
 /** Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`. */
 export type UserRole = "admin" | "artists" | "news";
 
-/** Type representant une ligne utilisateur retournee par l'API. */
+/** Type representant une ligne utilisateur retournee par l'API.
+ * Aligne sur le schema Better Auth ("user".name, pas de password_changed_at — ce concept
+ * n'existe plus, cf. suppression de mustChangePassword).
+ */
 export type UserItem = {
   id: string;
   email: string;
-  display_name: string;
+  name: string;
   role: UserRole;
   created_at: string;
-  password_changed_at: string | null;
 };
 
 /** Utilisateur connecte tel que renvoye par la session Better Auth. */

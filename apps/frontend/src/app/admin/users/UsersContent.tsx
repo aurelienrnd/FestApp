@@ -1,8 +1,8 @@
 ﻿"use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useFetch } from "../../../hooks/useFetch";
+import { authClient } from "../../../lib/auth-client";
 import { useModal } from "../../../hooks/useModal";
 import { useAdminUser } from "../../../components/AdminUserProvider";
 import AddUserModal from "./AddUserModal";
@@ -33,12 +33,53 @@ export default function UsersContent({
   const router = useRouter();
   const currentUser = useAdminUser();
 
-  // Recupere les artistes depuis l'API et gere les etats loading/error
-  const { data, isLoading, error } = useFetch<{ users: UserItem[] }>(
-    "/admin/users",
-  );
+  // initialise les etats pour la liste des utilisateurs, le chargement et l'erreur
+  const [baseUsers, setBaseUsers] = useState<UserItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const baseUsers = useMemo(() => data?.users ?? [], [data]);
+  // Recupere la liste des utilisateurs via l'API Better Auth et met a jour les etats
+  useEffect(() => {
+    // Evite de mettre a jour l'etat apres un unmount du composant (ex: changement de page)
+    let cancelled = false;
+
+    async function loadUsers() {
+      try {
+        const result = await authClient.admin.listUsers({
+          query: { sortBy: "name" },
+        });
+        if (cancelled) return;
+
+        if (result.error) {
+          setError(result.error.message ?? "Une erreur est survenue.");
+          return;
+        }
+
+        // createdAt est un objet Date cote client Better Auth, converti en ISO string
+        // pour rester coherent avec le reste de UserItem.
+        setBaseUsers(
+          result.data.users.map((user) => ({
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role as UserItem["role"],
+            created_at: new Date(user.createdAt).toISOString(),
+          })),
+        );
+      } catch {
+        if (!cancelled) setError("Une erreur est survenue.");
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+
+    loadUsers();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const [addedUsers, setAddedUsers] = useState<UserItem[]>([]);
   const [overrides, setOverrides] = useState<Map<string, UserItem>>(new Map());
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
@@ -134,14 +175,14 @@ export default function UsersContent({
               <li key={user.id} className="card-profile p-6 gap-6">
                 {/* Avatar */}
                 <div className="card-profile-avatar w-14 h-14 text-2xl">
-                  {(user.display_name ?? "U").slice(0, 1)}
+                  {(user.name ?? "U").slice(0, 1)}
                 </div>
 
                 {/* Infos */}
                 <div className="flex-1 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 w-full text-center sm:text-left">
                   <div className="flex flex-col gap-2">
                     <p className="card-primary text-xl">
-                      {user.display_name ?? "Utilisateur"}
+                      {user.name ?? "Utilisateur"}
                     </p>
                     <div className="flex items-center gap-3 justify-center sm:justify-start">
                       <span className="card-profile-badge px-3 py-1">
@@ -153,12 +194,6 @@ export default function UsersContent({
                     </div>
                     <div className="flex flex-col sm:flex-row gap-1 sm:gap-4 text-xs uppercase text-(--color-text-input)">
                       <span>Créé le {formatDateLong(user.created_at)}</span>
-                      <span>
-                        Mot de passe{" "}
-                        {user.password_changed_at
-                          ? `modifié le ${formatDateLong(user.password_changed_at)}`
-                          : "provisoire"}
-                      </span>
                     </div>
                   </div>
 
@@ -193,7 +228,7 @@ export default function UsersContent({
         onDeleted={handleUserSavedDeleted}
         endpoint="/admin/users"
         entityName="utilisateur"
-        getLabel={(u) => u.display_name}
+        getLabel={(u) => u.name}
       />
       <AddUserModal
         key={userToEdit?.id ?? "new"}
