@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { admin } from "better-auth/plugins";
 import { z } from "zod";
 import { pool } from "../db.js";
 import { sendPasswordResetEmail } from "../services/mailer.service.js";
@@ -50,4 +51,7 @@ export const auth = betterAuth({
       },
     },
   },
+
+  // Delegue le CRUD utilisateurs (create/list/update/delete/setRole) a Better Auth :
+  plugins: [admin()],
 });

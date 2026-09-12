@@ -6,18 +6,22 @@ create table "user" (
     "image" text,
     "createdAt" timestamptz default CURRENT_TIMESTAMP not null,
     "updatedAt" timestamptz default CURRENT_TIMESTAMP not null,
-    "role" text
+    "role" text,
+    "banned" boolean default false,
+    "banReason" text,
+    "banExpires" timestamptz
 );
 
 create table "session" (
-    "id" uuid default pg_catalog.gen_random_uuid() not null primary key, 
-    "expiresAt" timestamptz not null, 
-    "token" text not null unique, 
-    "createdAt" timestamptz default CURRENT_TIMESTAMP not null, 
-    "updatedAt" timestamptz not null, 
-    "ipAddress" text, 
-    "userAgent" text, 
-    "userId" uuid not null references "user" ("id") on delete cascade
+    "id" uuid default pg_catalog.gen_random_uuid() not null primary key,
+    "expiresAt" timestamptz not null,
+    "token" text not null unique,
+    "createdAt" timestamptz default CURRENT_TIMESTAMP not null,
+    "updatedAt" timestamptz not null,
+    "ipAddress" text,
+    "userAgent" text,
+    "userId" uuid not null references "user" ("id") on delete cascade,
+    "impersonatedBy" text
 );
 
 create table "account" (
