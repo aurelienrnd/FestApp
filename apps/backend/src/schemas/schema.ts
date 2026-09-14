@@ -1,15 +1,4 @@
-// Schema pour la creation d'un utilisateur
 import { z } from "zod";
-
-/** Schema Zod de creation et modification d'un utilisateur — valide et trim email, prénom, nom et role.
- * Utilise pour la creation (POST) et la modification (PATCH).
- */
-export const createUserSchema = z.object({
-  email: z.email(), // pas de trim() ici car zod cree deja une regex qui prend en compte les espaces
-  first_name: z.string().min(2).max(30).trim(),
-  last_name: z.string().min(2).max(30).trim(),
-  role: z.enum(["admin", "artists", "news"]),
-});
 
 /** Schema Zod du formulaire de contact — valide l'email, le nom, le sujet et le message. */
 export const contactSchema = z.object({
