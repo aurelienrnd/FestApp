@@ -1,21 +1,7 @@
-import bcrypt from "bcrypt";
-import { randomBytes } from "crypto";
 import { query } from "../db.js";
 import { AppError } from "../errors/AppError.js";
 import { ERRORS } from "../errors/errorMessages.js";
 import type { IdRow, UserRole } from "../type.js";
-
-/** Genere un mot de passe temporaire aleatoire de 16 caracteres hexadecimaux. */
-export function generateTemporaryPassword(): string {
-  return randomBytes(8).toString("hex");
-}
-
-/** Hash un mot de passe en clair avec bcrypt (cout 10).
- * @param password mot de passe en clair a hasher
- */
-export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 10);
-}
 
 /** Verifie que l'email n'est pas deja utilise par un autre utilisateur.
  * Si excludeId est fourni, l'utilisateur correspondant est ignore (cas de la modification).

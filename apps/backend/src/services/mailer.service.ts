@@ -75,22 +75,3 @@ export async function sendContactEmail(
     text: `Message de : ${name} <${from}>\n\n${message}`,
   });
 }
-
-/** Envoie les identifiants provisoires au nouvel utilisateur cree par un admin.
- * @param to adresse email du destinataire
- * @param displayName nom complet de l'utilisateur
- * @param tempPassword mot de passe provisoire en clair genere a la creation
- * @function sendMail Envoie un email via le transporteur SMTP
- */
-export async function sendWelcomeEmail(
-  to: string,
-  displayName: string,
-  tempPassword: string,
-): Promise<void> {
-  await sendMail({
-    from: `"Vindhellfest" <${getEnv("SMTP_USER")}>`,
-    to,
-    subject: "Votre compte Vindhellfest",
-    text: `Bonjour ${displayName},\n\nVotre compte a ete cree.\nIdentifiant : ${to}\nMot de passe provisoire : ${tempPassword}\n\nVeuillez le modifier des votre premiere connexion.`,
-  });
-}

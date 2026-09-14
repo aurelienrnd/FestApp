@@ -1,7 +1,6 @@
 import nodemailer from "nodemailer";
 import {
   sendPasswordResetEmail,
-  sendWelcomeEmail,
   sendContactEmail,
 } from "../../src/services/mailer.service";
 
@@ -50,44 +49,6 @@ describe("sendPasswordResetEmail", () => {
     const { text } = sendMailMock.mock.calls.at(-1)![0];
     expect(text).not.toMatch(
       /mot de passe provisoire|mot de passe temporaire/i,
-    );
-  });
-});
-
-// ---------------------------------------------------------------------------
-
-describe("sendWelcomeEmail", () => {
-  it("appelle sendMail avec le bon destinataire et les identifiants dans le body", async () => {
-    // Appelle la fonction avec des valeurs de test
-    await sendWelcomeEmail("new@test.com", "Marie Martin", "init456def");
-
-    expect(sendMailMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        to: "new@test.com",
-        text: expect.stringContaining("init456def"),
-      }),
-    );
-  });
-
-  it("inclut le nom de l'utilisateur dans le corps du mail", async () => {
-    // Appelle la fonction avec des valeurs de test
-    await sendWelcomeEmail("new@test.com", "Marie Martin", "init456def");
-
-    expect(sendMailMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        text: expect.stringContaining("Marie Martin"),
-      }),
-    );
-  });
-
-  it("inclut l'email comme identifiant de connexion dans le corps du mail", async () => {
-    // Appelle la fonction avec des valeurs de test
-    await sendWelcomeEmail("new@test.com", "Marie Martin", "init456def");
-
-    expect(sendMailMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        text: expect.stringContaining("new@test.com"),
-      }),
     );
   });
 });

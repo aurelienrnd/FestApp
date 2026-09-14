@@ -1,10 +1,7 @@
-import bcrypt from "bcrypt";
 import {
   checkEmailAvailable,
   checkDisplayNameAvailable,
   checkUserExists,
-  generateTemporaryPassword,
-  hashPassword,
 } from "../../src/services/user.service";
 import { AppError } from "../../src/errors/AppError";
 import { ERRORS } from "../../src/errors/errorMessages";
@@ -94,48 +91,5 @@ describe("checkUserExists", () => {
     await expect(checkUserExists("uuid-inconnu")).rejects.toThrow(
       new AppError(ERRORS.USER_NOT_FOUND, 404),
     );
-  });
-});
-
-// ---------------------------------------------------------------------------
-
-describe("generateTemporaryPassword", () => {
-  it("retourne une chaine d'au moins 12 caracteres", () => {
-    // Appelle la fonction pour generer un mot de passe temporaire
-    const pwd = generateTemporaryPassword();
-
-    expect(pwd.length).toBeGreaterThanOrEqual(12);
-  });
-
-  it("chaque appel retourne une valeur differente", () => {
-    // Appelle la fonction plusieurs fois pour verifier que les resultats sont differents
-    const pwd1 = generateTemporaryPassword();
-    const pwd2 = generateTemporaryPassword();
-
-    expect(pwd1).not.toBe(pwd2);
-  });
-});
-
-// ---------------------------------------------------------------------------
-
-describe("hashPassword", () => {
-  it("retourne un hash bcrypt valide verifie par bcrypt.compare", async () => {
-    // Appelle la fonction pour hasher un mot de passe
-    const password = "MonMotDePasse123";
-    const hash = await hashPassword(password);
-
-    // Verifie que le hash correspond au mot de passe original
-    const isValid = await bcrypt.compare(password, hash);
-
-    expect(isValid).toBe(true);
-  });
-
-  it("deux appels avec le meme mot de passe produisent des hashs differents (salt)", async () => {
-    // Appelle la fonction deux fois avec le meme mot de passe
-    const password = "MonMotDePasse123";
-    const hash1 = await hashPassword(password);
-    const hash2 = await hashPassword(password);
-
-    expect(hash1).not.toBe(hash2);
   });
 });
