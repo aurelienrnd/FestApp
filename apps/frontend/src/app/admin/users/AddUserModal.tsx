@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
 import { useMutation } from "../../../hooks/useMutation";
+import { authClient } from "../../../lib/auth-client";
 import type { UserItem, CreateApiResponse } from "../../../type";
 import { USER_ROLES } from "../../../config/ui";
 import { isEmail, isEmpty, isMaxLength } from "../../../functions/validation";
@@ -41,6 +42,7 @@ function isAddUserFormInvalid(
 /** Affiche la modale d'ajout ou de modification d'un utilisateur.
  * Gere les champs du formulaire, la soumission API et les retours visuels (erreur/succes).
  * En mode edition (userToEdit defini), pre-remplit les champs et affiche "Modifier" a la place de "Ajouter".
+ * En mode creation, delegue a Better Auth
  * @param {AddUserModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
  * @param {() => void} props.onClose Ferme la modale.
@@ -67,13 +69,17 @@ export default function AddUserModal({
   const [email, setEmail] = useState(userToEdit?.email ?? "");
   const [role, setRole] = useState(userToEdit?.role ?? "");
 
-  // initialise la requete a effectuer en fonction du mode (ajout ou modification)
-  const { mutate, isLoading, error, reset } = useMutation<
+  // Requete PATCH pour le mode edition
+  const { mutate, isLoading: isUpdating, error: updateError, reset } = useMutation<
     CreateApiResponse<{ user: UserItem }>
-  >(
-    isEditMode ? `/admin/users/${userToEdit!.id}` : "/admin/users",
-    isEditMode ? "PATCH" : "POST",
-  );
+  >(`/admin/users/${userToEdit?.id ?? ""}`, "PATCH");
+
+  // etat des requetes API pour le mode creation
+  const [isCreating, setIsCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  const isLoading = isEditMode ? isUpdating : isCreating;
+  const error = isEditMode ? updateError : createError;
 
   // Verifie si le formulaire d'ajout utilisateur est incomplet.
   const isFormInvalid = isAddUserFormInvalid(firstName, lastName, email, role);
@@ -88,23 +94,63 @@ export default function AddUserModal({
     setRole(userToEdit?.role ?? "");
   };
 
-  // Gere la soumission du formulaire d'ajout d'artiste
+  // Gere la soumission du formulaire d'ajout ou de modification d'utilisateur
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isFormInvalid) return;
 
-    mutate(
-      { email, first_name: firstName, last_name: lastName, role },
-      (data) => {
-        resetForm();
-        handleUserSaved(data.user);
-      },
-    );
+    if (isEditMode) {
+      mutate(
+        { email, first_name: firstName, last_name: lastName, role },
+        (data) => {
+          resetForm();
+          handleUserSaved(data.user);
+        },
+      );
+      return;
+    }
+
+    setIsCreating(true);
+    setCreateError(null);
+
+    const name = `${firstName} ${lastName}`.trim();
+    // authClient.admin.createUser type son parametre role sur "admin" | "user" (roles par
+    // defaut du plugin admin) — le projet utilise 3 roles distincts ("admin", "artists",
+    // "news"), acceptes tels quels a l'execution (simple champ additionalField sur "user").
+    const createResult = await authClient.admin.createUser({
+      email,
+      name,
+      role: role as never,
+    });
+
+    if (createResult.error) {
+      setIsCreating(false);
+      setCreateError(createResult.error.message ?? "Une erreur est survenue.");
+      return;
+    }
+
+    // Best effort : le compte est deja cree meme si l'envoi du lien echoue.
+    await authClient.requestPasswordReset({
+      email,
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    setIsCreating(false);
+    resetForm();
+    handleUserSaved({
+      id: createResult.data.user.id,
+      email: createResult.data.user.email,
+      name: createResult.data.user.name,
+      role: createResult.data.user.role as UserItem["role"],
+      created_at: new Date(createResult.data.user.createdAt).toISOString(),
+    });
   };
 
   // Ferme la modale et reinitialise le formulaire
   const handleClose = () => {
     reset();
+    setIsCreating(false);
+    setCreateError(null);
     resetForm();
     onClose();
   };

@@ -1,7 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import AddUserModal from "@/app/admin/users/AddUserModal";
 import { useMutation } from "@/hooks/useMutation";
+import { authClient } from "@/lib/auth-client";
 import type { UserItem } from "@/type";
 
 // react-modal : rendu direct des enfants quand isOpen est true
@@ -15,8 +16,18 @@ vi.mock("@fortawesome/react-fontawesome", () => ({
   FontAwesomeIcon: () => null,
 }));
 
-// mock du hook useMutation pour controler mutate et error dans chaque test
+// mock du hook useMutation pour controler mutate et error en mode edition (PATCH, pas encore migre)
 vi.mock("@/hooks/useMutation");
+
+// mock du client Better Auth pour controler createUser/requestPasswordReset en mode creation
+vi.mock("@/lib/auth-client", () => ({
+  authClient: {
+    admin: {
+      createUser: vi.fn(),
+    },
+    requestPasswordReset: vi.fn(),
+  },
+}));
 
 const mockMutate = vi.fn();
 const mockReset = vi.fn();
@@ -31,14 +42,40 @@ const mockUserToEdit: UserItem = {
 };
 
 beforeEach(() => {
-  // reinitialise les mocks entre chaque test
+  // reinitialise les mocks (et leur historique d'appels) entre chaque test
+  vi.clearAllMocks();
   vi.mocked(useMutation).mockReturnValue({
     mutate: mockMutate,
     isLoading: false,
     error: null,
     reset: mockReset,
   });
+  // par defaut : la creation et l'envoi du lien reussissent
+  vi.mocked(authClient.admin.createUser).mockResolvedValue({
+    data: {
+      user: {
+        id: "uuid-2",
+        email: "nouveau@test.com",
+        name: "Nouveau Utilisateur",
+        role: "news",
+        createdAt: new Date("2025-02-01T00:00:00Z"),
+      },
+    },
+    error: null,
+  } as never);
+  vi.mocked(authClient.requestPasswordReset).mockResolvedValue({
+    data: { status: true },
+    error: null,
+  } as never);
 });
+
+// remplit le formulaire de creation
+async function fillCreateForm(user: ReturnType<typeof userEvent.setup>) {
+  await user.type(screen.getByPlaceholderText("Prenom"), "Nouveau");
+  await user.type(screen.getByPlaceholderText("Nom"), "Utilisateur");
+  await user.type(screen.getByPlaceholderText("Email"), "nouveau@test.com");
+  await user.selectOptions(screen.getByRole("combobox"), "news");
+}
 
 // ---------------------------------------------------------------------------
 
@@ -80,8 +117,60 @@ describe("AddUserModal", () => {
     expect(screen.getByDisplayValue("Dupont")).toBeInTheDocument();
   });
 
-  it("affiche l'erreur retournee par l'API", () => {
-    // l'erreur renvoyee par useMutation doit etre visible sous le bouton
+  it("cree l'utilisateur via Better Auth et envoie un lien de reinitialisation", async () => {
+    const user = userEvent.setup();
+    const handleUserSaved = vi.fn();
+
+    render(
+      <AddUserModal isOpen={true} onClose={vi.fn()} handleUserSaved={handleUserSaved} />,
+    );
+
+    await fillCreateForm(user);
+    await user.click(screen.getByRole("button", { name: "Ajouter" }));
+
+    expect(authClient.admin.createUser).toHaveBeenCalledWith({
+      email: "nouveau@test.com",
+      name: "Nouveau Utilisateur",
+      role: "news",
+    });
+
+    await waitFor(() =>
+      expect(handleUserSaved).toHaveBeenCalledWith({
+        id: "uuid-2",
+        email: "nouveau@test.com",
+        name: "Nouveau Utilisateur",
+        role: "news",
+        created_at: "2025-02-01T00:00:00.000Z",
+      }),
+    );
+
+    expect(authClient.requestPasswordReset).toHaveBeenCalledWith({
+      email: "nouveau@test.com",
+      redirectTo: expect.stringMatching(/\/reset-password$/),
+    });
+  });
+
+  it("affiche l'erreur retournee par Better Auth en mode creation", async () => {
+    const user = userEvent.setup();
+    vi.mocked(authClient.admin.createUser).mockResolvedValue({
+      data: null,
+      error: { message: "Email deja utilise." },
+    } as never);
+
+    render(
+      <AddUserModal isOpen={true} onClose={vi.fn()} handleUserSaved={vi.fn()} />,
+    );
+
+    await fillCreateForm(user);
+    await user.click(screen.getByRole("button", { name: "Ajouter" }));
+
+    expect(await screen.findByText("Email deja utilise.")).toBeInTheDocument();
+    // l'echec de la creation ne doit pas declencher l'envoi du lien
+    expect(authClient.requestPasswordReset).not.toHaveBeenCalled();
+  });
+
+  it("affiche l'erreur retournee par l'API en mode edition", () => {
+    // l'erreur renvoyee par useMutation (PATCH, pas encore migre) doit etre visible sous le bouton
     vi.mocked(useMutation).mockReturnValue({
       mutate: mockMutate,
       isLoading: false,
@@ -90,7 +179,12 @@ describe("AddUserModal", () => {
     });
 
     render(
-      <AddUserModal isOpen={true} onClose={vi.fn()} handleUserSaved={vi.fn()} />,
+      <AddUserModal
+        isOpen={true}
+        onClose={vi.fn()}
+        handleUserSaved={vi.fn()}
+        userToEdit={mockUserToEdit}
+      />,
     );
 
     expect(screen.getByText("Email deja utilise.")).toBeInTheDocument();
