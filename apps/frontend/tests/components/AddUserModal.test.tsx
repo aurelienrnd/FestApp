@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import AddUserModal from "@/app/admin/users/AddUserModal";
-import { useMutation } from "@/hooks/useMutation";
 import { authClient } from "@/lib/auth-client";
 import type { UserItem } from "@/type";
 
@@ -16,21 +15,16 @@ vi.mock("@fortawesome/react-fontawesome", () => ({
   FontAwesomeIcon: () => null,
 }));
 
-// mock du hook useMutation pour controler mutate et error en mode edition (PATCH, pas encore migre)
-vi.mock("@/hooks/useMutation");
-
-// mock du client Better Auth pour controler createUser/requestPasswordReset en mode creation
+// mock du client Better Auth pour controler createUser/updateUser/requestPasswordReset
 vi.mock("@/lib/auth-client", () => ({
   authClient: {
     admin: {
       createUser: vi.fn(),
+      updateUser: vi.fn(),
     },
     requestPasswordReset: vi.fn(),
   },
 }));
-
-const mockMutate = vi.fn();
-const mockReset = vi.fn();
 
 // utilisateur existant utilise pour tester le mode edition
 const mockUserToEdit: UserItem = {
@@ -44,13 +38,7 @@ const mockUserToEdit: UserItem = {
 beforeEach(() => {
   // reinitialise les mocks (et leur historique d'appels) entre chaque test
   vi.clearAllMocks();
-  vi.mocked(useMutation).mockReturnValue({
-    mutate: mockMutate,
-    isLoading: false,
-    error: null,
-    reset: mockReset,
-  });
-  // par defaut : la creation et l'envoi du lien reussissent
+  // par defaut : creation, modification et envoi du lien reussissent
   vi.mocked(authClient.admin.createUser).mockResolvedValue({
     data: {
       user: {
@@ -60,6 +48,16 @@ beforeEach(() => {
         role: "news",
         createdAt: new Date("2025-02-01T00:00:00Z"),
       },
+    },
+    error: null,
+  } as never);
+  vi.mocked(authClient.admin.updateUser).mockResolvedValue({
+    data: {
+      id: "uuid-1",
+      email: "jean.modifie@test.com",
+      name: "Jean Modifie",
+      role: "admin",
+      createdAt: new Date("2025-01-01T00:00:00Z"),
     },
     error: null,
   } as never);
@@ -169,14 +167,45 @@ describe("AddUserModal", () => {
     expect(authClient.requestPasswordReset).not.toHaveBeenCalled();
   });
 
-  it("affiche l'erreur retournee par l'API en mode edition", () => {
-    // l'erreur renvoyee par useMutation (PATCH, pas encore migre) doit etre visible sous le bouton
-    vi.mocked(useMutation).mockReturnValue({
-      mutate: mockMutate,
-      isLoading: false,
-      error: "Email deja utilise.",
-      reset: mockReset,
+  it("modifie l'utilisateur via Better Auth en mode edition", async () => {
+    const user = userEvent.setup();
+    const handleUserSaved = vi.fn();
+
+    render(
+      <AddUserModal
+        isOpen={true}
+        onClose={vi.fn()}
+        handleUserSaved={handleUserSaved}
+        userToEdit={mockUserToEdit}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Modifier" }));
+
+    expect(authClient.admin.updateUser).toHaveBeenCalledWith({
+      userId: "uuid-1",
+      data: { email: "jean.dupont@test.com", name: "Jean Dupont", role: "news" },
     });
+
+    await waitFor(() =>
+      expect(handleUserSaved).toHaveBeenCalledWith({
+        id: "uuid-1",
+        email: "jean.modifie@test.com",
+        name: "Jean Modifie",
+        role: "admin",
+        created_at: "2025-01-01T00:00:00.000Z",
+      }),
+    );
+    // la modification ne passe jamais par le flux de reinitialisation de mot de passe
+    expect(authClient.requestPasswordReset).not.toHaveBeenCalled();
+  });
+
+  it("affiche l'erreur retournee par Better Auth en mode edition", async () => {
+    const user = userEvent.setup();
+    vi.mocked(authClient.admin.updateUser).mockResolvedValue({
+      data: null,
+      error: { message: "Email deja utilise." },
+    } as never);
 
     render(
       <AddUserModal
@@ -187,6 +216,8 @@ describe("AddUserModal", () => {
       />,
     );
 
-    expect(screen.getByText("Email deja utilise.")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Modifier" }));
+
+    expect(await screen.findByText("Email deja utilise.")).toBeInTheDocument();
   });
 });
