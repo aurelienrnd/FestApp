@@ -43,20 +43,23 @@ export default function UsersContent({
     // Evite de mettre a jour l'etat apres un unmount du composant (ex: changement de page)
     let cancelled = false;
 
+    // Recupere la liste des utilisateurs via l'API Better Auth et met a jour les etats
     async function loadUsers() {
       try {
         const result = await authClient.admin.listUsers({
           query: { sortBy: "name" },
         });
+
+        // Si le composant a ete unmount, on ne met pas a jour l'etat
         if (cancelled) return;
 
+        // Si une erreur est survenue, on met a jour l'etat error et on quitte la fonction
         if (result.error) {
           setError(result.error.message ?? "Une erreur est survenue.");
           return;
         }
 
-        // createdAt est un objet Date cote client Better Auth, converti en ISO string
-        // pour rester coherent avec le reste de UserItem.
+        // createdAt est un objet Date cote client Better Auth, converti en ISO string pour rester coherent avec le reste de UserItem.
         setBaseUsers(
           result.data.users.map((user) => ({
             id: user.id,
@@ -67,19 +70,22 @@ export default function UsersContent({
           })),
         );
       } catch {
+        // Si une erreur est survenue, on met a jour l'etat error
         if (!cancelled) setError("Une erreur est survenue.");
       } finally {
+        // Si le composant a ete unmount, on ne met pas a jour l'etat
         if (!cancelled) setIsLoading(false);
       }
     }
-
     loadUsers();
 
+    // Nettoie l'effet en annulant la mise à jour de l'état si le composant est démonté
     return () => {
       cancelled = true;
     };
   }, []);
 
+  // Gere les utilisateurs ajoutes, modifies et supprimes dans la session pour ne pas recharger la page
   const [addedUsers, setAddedUsers] = useState<UserItem[]>([]);
   const [overrides, setOverrides] = useState<Map<string, UserItem>>(new Map());
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
@@ -147,12 +153,15 @@ export default function UsersContent({
 
   // filtrage des utilisateurs a afficher
   const filteredUsers = useMemo(() => {
+    // Merge les utilisateurs de la base, les utilisateurs ajoutes et les utilisateurs modifies, puis filtre selon le role selectionne
     const merged = [
       ...baseUsers
         .filter((u) => !deletedIds.has(u.id))
         .map((u) => overrides.get(u.id) ?? u),
       ...addedUsers.filter((u) => !deletedIds.has(u.id)),
     ];
+    
+    // Filtre les utilisateurs selon le role selectionne
     return filterBy === "all"
       ? merged
       : merged.filter((u) => u.role === filterBy);
