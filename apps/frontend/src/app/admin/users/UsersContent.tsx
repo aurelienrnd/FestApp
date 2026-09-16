@@ -235,7 +235,7 @@ export default function UsersContent({
         item={selectedUserToDelete}
         onClose={closeDeleteModal}
         onDeleted={handleUserSavedDeleted}
-        endpoint="/admin/users"
+        onConfirm={(id) => authClient.admin.removeUser({ userId: id })}
         entityName="utilisateur"
         getLabel={(u) => u.name}
       />
