@@ -5,7 +5,6 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.js";
 import adminArtists from "./routes/admin.artists.routes.js";
 import adminNews from "./routes/admin.news.routes.js";
-import adminUsers from "./routes/admin.users.routes.js";
 import contact from "./routes/contact.routes.js";
 import publicHome from "./routes/home.routes.js";
 import publicArtists from "./routes/artists.routes.js";
@@ -69,14 +68,14 @@ export function createApp() {
 
   /** Routes API (admin, public, contact).
    * L'authentification admin (connexion, session, deconnexion, mot de passe oublie,
-   * changement de mot de passe) est entierement geree par Better Auth sur /api/auth/*.
+   * changement de mot de passe) et le CRUD utilisateurs (liste, creation, modification,
+   * suppression) sont entierement geres par Better Auth sur /api/auth/*.
    * admin : routes pour l'interface d'administration (CRUD artistes, news, etc.)
    * public : routes pour l'interface publique (affichage artistes, news, etc.)
    * contact : route pour le formulaire de contact
    */
   app.use("/admin", adminArtists);
   app.use("/admin", adminNews);
-  app.use("/admin", adminUsers);
   app.use("/contact", contact);
   app.use("/public", publicHome);
   app.use("/public", publicArtists);
