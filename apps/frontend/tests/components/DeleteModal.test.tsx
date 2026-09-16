@@ -21,7 +21,8 @@ const mockHandleDelete = vi.fn();
 const mockReset = vi.fn();
 
 beforeEach(() => {
-  // reinitialise les mocks entre chaque test
+  // reinitialise les mocks (et leur historique d'appels) entre chaque test
+  vi.clearAllMocks();
   vi.mocked(useDelete).mockReturnValue({
     handleDelete: mockHandleDelete,
     isSubmitting: false,
@@ -137,5 +138,59 @@ describe("DeleteModal", () => {
 
     // onClose doit etre appele via handleClose qui appelle reset() puis onClose()
     expect(onClose).toHaveBeenCalled();
+  });
+
+  // -------------------------------------------------------------------------
+
+  it("appelle onConfirm (pas useDelete) et onDeleted quand onConfirm est fourni", async () => {
+    const user = userEvent.setup();
+    const onDeleted = vi.fn();
+    const onConfirm = vi.fn().mockResolvedValue({ error: null });
+
+    render(
+      <DeleteModal
+        isOpen={true}
+        onClose={vi.fn()}
+        onDeleted={onDeleted}
+        item={item}
+        onConfirm={onConfirm}
+        entityName="utilisateur"
+        getLabel={(a) => a.name}
+      />,
+    );
+
+    await user.click(screen.getByText("Confirmer"));
+
+    expect(onConfirm).toHaveBeenCalledWith("uuid-1");
+    expect(mockHandleDelete).not.toHaveBeenCalled();
+    await screen.findByText(/a ete supprime/i);
+    expect(onDeleted).toHaveBeenCalledWith("uuid-1");
+  });
+
+  it("affiche l'erreur retournee par onConfirm sans marquer la suppression reussie", async () => {
+    const user = userEvent.setup();
+    const onDeleted = vi.fn();
+    const onConfirm = vi.fn().mockResolvedValue({
+      error: { message: "Impossible de supprimer cet utilisateur." },
+    });
+
+    render(
+      <DeleteModal
+        isOpen={true}
+        onClose={vi.fn()}
+        onDeleted={onDeleted}
+        item={item}
+        onConfirm={onConfirm}
+        entityName="utilisateur"
+        getLabel={(a) => a.name}
+      />,
+    );
+
+    await user.click(screen.getByText("Confirmer"));
+
+    expect(
+      await screen.findByText("Impossible de supprimer cet utilisateur."),
+    ).toBeInTheDocument();
+    expect(onDeleted).not.toHaveBeenCalled();
   });
 });
