@@ -128,7 +128,7 @@ describe("Reinitialisation du mot de passe (request-password-reset + reset-passw
   de fichier), un budget partage sur toute la duree du fichier puisque `auth` est un singleton.
   Le choix invite/reset via callbackURL est deja teste en isolation totale (sans DB ni HTTP,
   donc hors de ce budget) dans tests/unit/auth.sendResetPassword.test.ts — on se contente ici
-  de verifier que le vrai endpoint HTTP est correctement branche dessus. */ 
+  de verifier que le vrai endpoint HTTP est correctement branche dessus. */
   it("cycle complet : demande, reset, ancien mot de passe refuse, nouveau accepte, sessions revoquees", async () => {
     const email = `reset-${Date.now()}@test.com`;
     await insertUser(email, "Reset User", "admin");
