@@ -1,7 +1,10 @@
 /* === USERS === */
 
-/** Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`. */
-export type UserRole = "admin" | "artists" | "news";
+/** Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`.
+ * Pas exporte : jamais importe par son nom en dehors de ce fichier, uniquement
+ * utilise ici pour typer UserItem.role et AdminUser.role.
+ */
+type UserRole = "admin" | "artists" | "news";
 
 /** Type representant une ligne utilisateur retournee par l'API.
  * Aligne sur le schema Better Auth ("user".name, pas de password_changed_at — ce concept
@@ -15,8 +18,11 @@ export type UserItem = {
   created_at: string;
 };
 
-/** Utilisateur connecte tel que renvoye par la session Better Auth. */
-export type AdminUser = {
+/** Utilisateur connecte tel que renvoye par la session Better Auth.
+ * Pas exporte : jamais importe par son nom en dehors de ce fichier, toujours
+ * accede via AdminAuthMeResponse.user.
+ */
+type AdminUser = {
   id: string;
   name: string;
   email: string;
