@@ -44,7 +44,9 @@ function isAddUserFormInvalid(
  * Les deux modes delegent a Better Auth :
  * - creation : authClient.admin.createUser cree le compte sans mot de passe, puis
  *   authClient.requestPasswordReset envoie le meme lien "choisir son mot de passe" que pour
- *   un oubli (cf. ForgotPassword.tsx).
+ *   un oubli (cf. ForgotPassword.tsx). Best effort : Better Auth n'expose jamais un echec
+ *   d'envoi (SMTP en panne, etc.) au client, donc aucun rollback n'est possible ici — se fier
+ *   aux logs backend en cas de souci.
  * - edition : authClient.admin.updateUser met a jour email/name/role.
  * @param {AddUserModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
@@ -138,14 +140,16 @@ export default function AddUserModal({
       role: role as never,
     });
 
-      // Si la creation a echoue, on affiche l'erreur et on ne ferme pas la modale
+    // Si la creation a echoue, on affiche l'erreur et on ne ferme pas la modale
     if (createResult.error) {
       setIsSaving(false);
       setSaveError(createResult.error.message ?? "Une erreur est survenue.");
       return;
     }
 
-    // Si la creation a reussi, on envoie un email de reinitialisation de mot de passe
+    // Best effort : le compte est deja cree meme si l'envoi du lien echoue (ex: SMTP en panne).
+    // Better Auth n'expose jamais cet echec au client (cf. ForgotPassword.tsx) — un rollback
+    // ici ne pourrait jamais se declencher pour cette raison, se fier aux logs backend.
     await authClient.requestPasswordReset({
       email,
       redirectTo: `${window.location.origin}/reset-password`,
