@@ -14,23 +14,8 @@ declare global {
 
 /* === USERS === */
 
-/** Type representant une ligne retournant uniquement l'id — utilise pour les verifications d'existence en BDD. */
-export type IdRow = { id: string };
-
 /** Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`. */
 export type UserRole = "admin" | "artists" | "news";
-
-/** Type representant les donnees utilisateur retournees par les endpoints de liste/CRUD — partage avec le front.
- * Aligne sur le schema Better Auth ("user".name, pas de password_changed_at — ce concept
- * n'existe plus, cf. suppression de mustChangePassword par 7521e39).
- */
-export type UserItem = {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  created_at: string;
-};
 
 /* === NEWS === */
 

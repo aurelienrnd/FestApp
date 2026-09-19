@@ -35,6 +35,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.4",
     "jsdom": "^27.4.0",
+    "knip": "^6.37.0",
     "prettier": "^3.8.1",
     "tailwindcss": "^4",
     "typescript": "^5",
