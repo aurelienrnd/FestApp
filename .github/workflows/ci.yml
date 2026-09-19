@@ -47,12 +47,9 @@ jobs:
           DB_USER=postgres
           DB_PASSWORD=postgres
           DB_NAME=vindhellfest
-          JWT_ACCESS_SECRET=un-super-secret-a-changer
-          JWT_ACCESS_EXPIRES_IN=1h
-          COOKIE_ACCESS_TOKEN_NAME=vindhellfest_access_token
-          COOKIE_ACCESS_TOKEN_SECURE=false
-          COOKIE_ACCESS_TOKEN_SAME_SITE=lax
-          SESSION_EXPIRES_IN=1h
+          FRONTEND_ORIGIN=http://localhost:3000
+          BETTER_AUTH_SECRET=ci-test-secret-a-changer
+          BETTER_AUTH_URL=http://localhost:4000
           SMTP_HOST=localhost
           SMTP_PORT=1025
           SMTP_SECURE=false
