@@ -6,7 +6,7 @@ import type { NewsItem } from "../../../type.js";
 /** Retourne la liste des news triees par date de creation decroissante.
  * Si l'utilisateur est authentifie avec le role "admin" ou "news", retourne toutes les news.
  * Sinon, retourne uniquement les news publiees (is_published = TRUE).
- * L'auteur est recupere via LEFT JOIN users (null si l'utilisateur a ete supprime).
+ * L'auteur est recupere via LEFT JOIN "user" (null si l'utilisateur a ete supprime).
  * @param {Request} _req requete Express (non utilisee)
  * @param {Response} res reponse Express
  * @function query
@@ -19,9 +19,9 @@ export async function getNewsList(_req: Request, res: Response) {
   const news = await query<Omit<NewsItem, "content">>(
     `SELECT a.id, a.title, a.is_published, a.created_at,
             a.url_media, a.description_media,
-            u.display_name AS author_name
+            u.name AS author_name
      FROM news a
-     LEFT JOIN users u ON u.id = a.user_id
+     LEFT JOIN "user" u ON u.id = a.user_id
      ${isPrivileged ? "" : "WHERE a.is_published = TRUE"}
      ORDER BY a.created_at DESC`,
   );

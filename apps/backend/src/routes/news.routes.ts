@@ -1,6 +1,6 @@
 import { Router } from "express";
 // middlewares
-import { optionalAuth } from "../middlewares/auth.js";
+import { optionalAuth } from "../middlewares/requireAuth.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
 // controllers
 import { getNewsList } from "../controllers/public/news/get_news_list.controller.js";

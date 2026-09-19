@@ -32,3 +32,29 @@ export async function requireAuth(
 
   next();
 }
+
+/** Tente de recuperer une session Better Auth sans jamais bloquer la requete.
+ * Peuple res.locals si une session valide existe, appelle next() dans tous les cas —
+ * utilise pour les routes semi-publiques (ex: /public/news, ou seuls les roles
+ * "admin"/"news" voient les brouillons, cf. isNewsPrivileged).
+ * @param req - la requête HTTP entrante
+ * @param res - la réponse HTTP
+ * @param next - la fonction de middleware suivante
+ */
+export async function optionalAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  const result = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  });
+
+  if (result) {
+    res.locals.userId = result.user.id;
+    res.locals.sessionId = result.session.id;
+    res.locals.userRole = result.user.role ?? undefined;
+  }
+
+  next();
+}

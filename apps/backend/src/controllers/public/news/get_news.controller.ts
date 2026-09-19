@@ -22,9 +22,9 @@ export async function getNews(req: Request, res: Response) {
   const rows = await query<NewsItem>(
     `SELECT a.id, a.title, a.content, a.is_published, a.created_at,
             a.url_media, a.description_media,
-            u.display_name AS author_name
+            u.name AS author_name
      FROM news a
-     LEFT JOIN users u ON u.id = a.user_id
+     LEFT JOIN "user" u ON u.id = a.user_id
      WHERE a.id = $1`,
     [id],
   );
