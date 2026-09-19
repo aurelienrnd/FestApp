@@ -4,7 +4,7 @@ import { ERRORS } from "../errors/errorMessages.js";
 import type { UserRole } from "../type.js";
 
 /** Middleware factory qui restreint l'acces a une route selon le role de l'utilisateur connecte.
- * Doit etre place apres les middlewares `auth` et `sessionIsOpen`.
+ * Doit etre place apres `requireAuth` (peuple res.locals.userRole depuis la session Better Auth).
  * @param {...UserRole} roles Liste des roles autorises a acceder a la route
  */
 export function requireRole(...roles: UserRole[]) {
