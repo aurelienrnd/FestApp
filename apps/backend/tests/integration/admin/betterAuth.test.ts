@@ -123,9 +123,25 @@ describe("GET /api/auth/get-session", () => {
 // ---------------------------------------------------------------------------
 
 describe("Reinitialisation du mot de passe (request-password-reset + reset-password)", () => {
-  it("cycle complet en HTTP reel : demande, reset, ancien mot de passe refuse, nouveau accepte", async () => {
+  /** Ces trois tests sont volontairement les 3 SEULS appels HTTP a /api/auth/request-password-reset
+  de tout le fichier : Better Auth limite ce chemin a 3 requetes / 60s (cf. commentaire de tete
+  de fichier), un budget partage sur toute la duree du fichier puisque `auth` est un singleton.
+  Le choix invite/reset via callbackURL est deja teste en isolation totale (sans DB ni HTTP,
+  donc hors de ce budget) dans tests/unit/auth.sendResetPassword.test.ts — on se contente ici
+  de verifier que le vrai endpoint HTTP est correctement branche dessus. */ 
+  it("cycle complet : demande, reset, ancien mot de passe refuse, nouveau accepte, sessions revoquees", async () => {
     const email = `reset-${Date.now()}@test.com`;
     await insertUser(email, "Reset User", "admin");
+
+    // Session ouverte avant le reset (hors HTTP, comme createAuthSession, pour ne pas toucher au
+    // quota de /sign-in/email), pour verifier ensuite qu'elle est bien revoquee par le reset.
+    const signInResponse = await auth.api.signInEmail({
+      body: { email, password: PASSWORD },
+      asResponse: true,
+    });
+    const existingCookie = signInResponse.headers
+      .getSetCookie()[0]!
+      .split(";")[0]!;
 
     const requestRes = await request(app)
       .post("/api/auth/request-password-reset")
@@ -144,63 +160,28 @@ describe("Reinitialisation du mot de passe (request-password-reset + reset-passw
 
     expect(await canSignIn(email, PASSWORD)).toBe(false);
     expect(await canSignIn(email, newPassword)).toBe(true);
-  });
 
-  it("revoque les sessions existantes apres un reset reussi (revokeSessionsOnPasswordReset)", async () => {
-    const email = `reset-revoke-${Date.now()}@test.com`;
-    await insertUser(email, "Reset Revoke User", "admin");
-
-    // Ouvre une session pour cet utilisateur hors HTTP (comme createAuthSession), pour ne pas
-    // consommer le quota de /sign-in/email partage sur tout le fichier.
-    const signInResponse = await auth.api.signInEmail({
-      body: { email, password: PASSWORD },
-      asResponse: true,
-    });
-    const existingCookie = signInResponse.headers
-      .getSetCookie()[0]!
-      .split(";")[0]!;
-
-    await auth.api.requestPasswordReset({
-      body: { email, redirectTo: "http://localhost:3000/reset-password" },
-    });
-    const url = vi.mocked(sendPasswordResetEmail).mock.calls[0]![2];
-    const token = extractToken(url);
-
-    await auth.api.resetPassword({
-      body: { token, newPassword: "AutreMotDePasse123!" },
-    });
-
+    // revokeSessionsOnPasswordReset : la session ouverte avant le reset ne fonctionne plus
     const sessionRes = await request(app)
       .get("/api/auth/get-session")
       .set("Cookie", existingCookie);
     expect(sessionRes.body).toBeNull();
   });
 
-  it("appelle sendInviteEmail (pas sendPasswordResetEmail) quand redirectTo contient context=invite", async () => {
+  it("appelle sendInviteEmail (pas sendPasswordResetEmail) quand redirectTo contient context=invite, en HTTP reel", async () => {
     const email = `invite-${Date.now()}@test.com`;
     await insertUser(email, "Invite User", "admin");
 
-    await auth.api.requestPasswordReset({
-      body: {
+    const res = await request(app)
+      .post("/api/auth/request-password-reset")
+      .send({
         email,
         redirectTo: "http://localhost:3000/reset-password?context=invite",
-      },
-    });
+      });
 
+    expect(res.status).toBe(200);
     expect(sendInviteEmail).toHaveBeenCalledTimes(1);
     expect(sendPasswordResetEmail).not.toHaveBeenCalled();
-  });
-
-  it("appelle sendPasswordResetEmail (pas sendInviteEmail) quand redirectTo n'a pas de context", async () => {
-    const email = `no-invite-${Date.now()}@test.com`;
-    await insertUser(email, "No Invite User", "admin");
-
-    await auth.api.requestPasswordReset({
-      body: { email, redirectTo: "http://localhost:3000/reset-password" },
-    });
-
-    expect(sendPasswordResetEmail).toHaveBeenCalledTimes(1);
-    expect(sendInviteEmail).not.toHaveBeenCalled();
   });
 
   it("retourne 200 sans envoyer d'email pour un email inconnu (pas d'enumeration d'utilisateurs)", async () => {
