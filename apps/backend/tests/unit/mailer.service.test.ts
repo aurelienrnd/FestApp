@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import {
   sendPasswordResetEmail,
+  sendInviteEmail,
   sendContactEmail,
 } from "../../src/services/mailer.service";
 
@@ -50,6 +51,42 @@ describe("sendPasswordResetEmail", () => {
     expect(text).not.toMatch(
       /mot de passe provisoire|mot de passe temporaire/i,
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+
+describe("sendInviteEmail", () => {
+  const inviteUrl =
+    "http://localhost:4000/api/auth/reset-password/tok123?callbackURL=x";
+
+  it("appelle sendMail avec le bon destinataire et le lien dans le body", async () => {
+    await sendInviteEmail("new@test.com", "Marie Martin", inviteUrl);
+
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "new@test.com",
+        text: expect.stringContaining(inviteUrl),
+        html: expect.stringContaining(inviteUrl),
+      }),
+    );
+  });
+
+  it("inclut le nom de l'utilisateur dans le corps du mail", async () => {
+    await sendInviteEmail("new@test.com", "Marie Martin", inviteUrl);
+
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        text: expect.stringContaining("Marie Martin"),
+      }),
+    );
+  });
+
+  it("ne mentionne pas de reinitialisation demandee par l'utilisateur (texte different de sendPasswordResetEmail)", async () => {
+    await sendInviteEmail("new@test.com", "Marie Martin", inviteUrl);
+
+    const { text } = sendMailMock.mock.calls.at(-1)![0];
+    expect(text).not.toMatch(/vous avez demande la reinitialisation/i);
   });
 });
 

@@ -2,7 +2,10 @@ import { betterAuth } from "better-auth";
 import { admin } from "better-auth/plugins";
 import { z } from "zod";
 import { pool } from "../db.js";
-import { sendPasswordResetEmail } from "../services/mailer.service.js";
+import {
+  sendInviteEmail,
+  sendPasswordResetEmail,
+} from "../services/mailer.service.js";
 
 export const auth = betterAuth({
   // connexion BDD
@@ -32,9 +35,18 @@ export const auth = betterAuth({
     resetPasswordTokenExpiresIn: 60 * 60, // duree de validite du token de reinitialisation (defaut Better Auth : 1 h)
     revokeSessionsOnPasswordReset: true, // revoque toutes les autres sessions apres une reinitialisation reussie,
 
-    // callback pour envoyer l'email de reinitialisation du mot de passe
+    // callback pour l'envoi de l'email de reinitialisation du mot de passe et l'email d'invitation (si le lien de reinitialisation contient un parametre "context=invite")
     sendResetPassword: async ({ user, url }) => {
-      await sendPasswordResetEmail(user.email, user.name, url);
+      const callbackURL = new URL(url).searchParams.get("callbackURL");
+      const isInvite =
+        !!callbackURL &&
+        new URL(callbackURL).searchParams.get("context") === "invite";
+
+      if (isInvite) {
+        await sendInviteEmail(user.email, user.name, url);
+      } else {
+        await sendPasswordResetEmail(user.email, user.name, url);
+      }
     },
   },
 

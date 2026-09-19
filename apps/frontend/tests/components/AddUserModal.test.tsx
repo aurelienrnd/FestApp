@@ -144,7 +144,7 @@ describe("AddUserModal", () => {
 
     expect(authClient.requestPasswordReset).toHaveBeenCalledWith({
       email: "nouveau@test.com",
-      redirectTo: expect.stringMatching(/\/reset-password$/),
+      redirectTo: expect.stringMatching(/\/reset-password\?context=invite$/),
     });
   });
 

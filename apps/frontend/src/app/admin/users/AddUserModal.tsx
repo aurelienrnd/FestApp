@@ -148,11 +148,10 @@ export default function AddUserModal({
     }
 
     // Best effort : le compte est deja cree meme si l'envoi du lien echoue (ex: SMTP en panne).
-    // Better Auth n'expose jamais cet echec au client (cf. ForgotPassword.tsx) — un rollback
-    // ici ne pourrait jamais se declencher pour cette raison, se fier aux logs backend.
+    // Better Auth n'expose jamais cet echec au client (cf. ForgotPassword.tsx)
     await authClient.requestPasswordReset({
       email,
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${window.location.origin}/reset-password?context=invite`,
     });
 
     // On reinitialise le formulaire et on notifie le parent pour mettre a jour la liste des utilisateurs

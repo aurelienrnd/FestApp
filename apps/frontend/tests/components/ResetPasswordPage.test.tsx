@@ -142,4 +142,48 @@ describe("ResetPasswordPage", () => {
 
     expect(await screen.findByText("Token invalide.")).toBeInTheDocument();
   });
+
+  // -------------------------------------------------------------------------
+  // ?context=invite — utilisateur cree par un admin (AddUserModal.tsx), jamais eu de
+  // mot de passe. Meme mecanisme de token, textes adaptes.
+
+  it("affiche un texte de bienvenue et le bouton adapte quand context=invite", () => {
+    searchParams = { token: "tok123", context: "invite" };
+
+    render(<ResetPasswordPage />);
+
+    expect(screen.getByText("Bienvenue")).toBeInTheDocument();
+    expect(
+      screen.getByText(/un compte a ete cree pour vous/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Creer mon mot de passe" }),
+    ).toBeInTheDocument();
+    // le libelle "reinitialisation" ne doit pas apparaitre pour une invitation
+    expect(screen.queryByText(/reinitialisation/i)).not.toBeInTheDocument();
+  });
+
+  it("affiche un message d'invitation invalide (pas de reinitialisation) quand context=invite et le lien est casse", () => {
+    searchParams = { context: "invite" };
+
+    render(<ResetPasswordPage />);
+
+    expect(
+      screen.getByText(/lien d'invitation est invalide ou a expire/i),
+    ).toBeInTheDocument();
+  });
+
+  it("affiche un message de compte active (pas de mot de passe modifie) apres succes quand context=invite", async () => {
+    searchParams = { token: "tok123", context: "invite" };
+    const user = userEvent.setup();
+
+    render(<ResetPasswordPage />);
+
+    await fillForm(user);
+    await user.click(screen.getByRole("button", { name: "Creer mon mot de passe" }));
+
+    expect(
+      await screen.findByText(/votre compte est pret/i),
+    ).toBeInTheDocument();
+  });
 });

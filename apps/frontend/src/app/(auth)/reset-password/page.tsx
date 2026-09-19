@@ -8,7 +8,6 @@ import { isEmpty } from "../../../functions/validation";
 
 /** Affiche le formulaire de choix du nouveau mot de passe.
  * Le token est lu dans l'URL (?token=...), depose par Better Auth apres verification
- * du lien recu par email (cf. ForgotPassword.tsx -> authClient.requestPasswordReset).
  * La page reste publique mais n'est pas "protegee" par elle-meme : c'est le token, verifie
  * et consomme une seule fois cote serveur (Better Auth, expire au bout d'1h), qui empeche
  * toute modification du mot de passe sans lien valide.
@@ -16,11 +15,12 @@ import { isEmpty } from "../../../functions/validation";
  * @function isEmpty Fonction de validation pour verifier si un champ est vide
  */
 function ResetPasswordForm() {
-  // Lecture du token et de l'eventuelle erreur dans l'URL
+  // Lecture du token, de l'eventuelle erreur et du contexte (invite ou reinitialisation) dans l'URL
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const linkError = searchParams.get("error");
+  const isInvite = searchParams.get("context") === "invite";
 
   // Champs du formulaire
   const [newPassword, setNewPassword] = useState("");
@@ -41,8 +41,13 @@ function ResetPasswordForm() {
   if (!token || linkError) {
     return (
       <div className="flex flex-col items-center gap-4 text-center">
+        <h1 className="title1">
+          {isInvite ? "Invitation invalide" : "Lien invalide"}
+        </h1>
         <p className="error-message">
-          Ce lien de reinitialisation est invalide ou a expire.
+          {isInvite
+            ? "Ce lien d'invitation est invalide ou a expire. Demandez a un administrateur de vous en renvoyer un."
+            : "Ce lien de reinitialisation est invalide ou a expire."}
         </p>
         <Link href="/login" className="btn-type-2">
           Retour a la connexion
@@ -55,8 +60,13 @@ function ResetPasswordForm() {
   if (success) {
     return (
       <div className="flex flex-col items-center gap-4 text-center">
+        <h1 className="title1">
+          {isInvite ? "Compte active" : "Mot de passe modifie"}
+        </h1>
         <p className="success-message">
-          Votre mot de passe a ete modifie avec succes.
+          {isInvite
+            ? "Votre mot de passe a ete defini, votre compte est pret."
+            : "Votre mot de passe a ete modifie avec succes."}
         </p>
         <button
           type="button"
@@ -88,7 +98,7 @@ function ResetPasswordForm() {
     setIsLoading(true);
     setApiError(null);
 
-    // Delegue a Better Auth : consomme le token (usage unique) et met a jour le hash.
+    // Delegue a Better Auth : consomme le token (usage unique) et cree/met a jour le hash.
     const result = await authClient.resetPassword({ newPassword, token });
 
     setIsLoading(false);
@@ -102,66 +112,79 @@ function ResetPasswordForm() {
   };
 
   return (
-    <form
-      className="w-full max-w-lg space-y-(--ctx-form-gap)"
-      onSubmit={handleSubmit}
-    >
-      <div>
-        <label htmlFor="newPassword" className="sr-only">
-          Nouveau mot de passe
-        </label>
-        <input
-          id="newPassword"
-          name="newPassword"
-          type="password"
-          autoComplete="new-password"
-          placeholder="Nouveau mot de passe"
-          className="input"
-          value={newPassword}
-          onChange={(event) => setNewPassword(event.target.value)}
-        />
-      </div>
+    <>
+      <h1 className="title1">
+        {isInvite ? "Bienvenue" : "Reinitialisation du mot de passe"}
+      </h1>
 
-      <div>
-        <label htmlFor="confirmPassword" className="sr-only">
-          Confirmer le nouveau mot de passe
-        </label>
-        <input
-          id="confirmPassword"
-          name="confirmPassword"
-          type="password"
-          autoComplete="new-password"
-          placeholder="Confirmer le nouveau mot de passe"
-          className="input"
-          value={confirmPassword}
-          onChange={(event) => setConfirmPassword(event.target.value)}
-        />
-      </div>
+      {isInvite ? (
+        <p className="mt-(--ctx-paragraph-gap) text-center">
+          Un compte a ete cree pour vous. Choisissez votre mot de passe pour
+          l&apos;activer.
+        </p>
+      ) : null}
 
-      <div className="flex flex-col items-center gap-2 pt-2">
-        {error ? <p className="error-message">{error}</p> : null}
+      <form
+        className="w-full max-w-lg space-y-(--ctx-form-gap)"
+        onSubmit={handleSubmit}
+      >
+        <div>
+          <label htmlFor="newPassword" className="sr-only">
+            Nouveau mot de passe
+          </label>
+          <input
+            id="newPassword"
+            name="newPassword"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Nouveau mot de passe"
+            className="input"
+            value={newPassword}
+            onChange={(event) => setNewPassword(event.target.value)}
+          />
+        </div>
 
-        <button
-          type="submit"
-          className="btn-cta"
-          disabled={isFormInvalid || isLoading}
-        >
-          Reinitialiser
-        </button>
-      </div>
-    </form>
+        <div>
+          <label htmlFor="confirmPassword" className="sr-only">
+            Confirmer le nouveau mot de passe
+          </label>
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Confirmer le nouveau mot de passe"
+            className="input"
+            value={confirmPassword}
+            onChange={(event) => setConfirmPassword(event.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-col items-center gap-2 pt-2">
+          {error ? <p className="error-message">{error}</p> : null}
+
+          <button
+            type="submit"
+            className="btn-cta"
+            disabled={isFormInvalid || isLoading}
+          >
+            {isInvite ? "Creer mon mot de passe" : "Reinitialiser"}
+          </button>
+        </div>
+      </form>
+    </>
   );
 }
 
-/** Affiche la page de reinitialisation de mot de passe, atteinte depuis le lien recu par email.
- * useSearchParams impose un Suspense boundary en app router (bailout sur le rendu statique).
+/** Affiche la page de reinitialisation/creation de mot de passe, atteinte depuis le lien
+ * recu par email (mot de passe oublie ou invitation d'un nouvel utilisateur).
+ * Le titre depend de ?context=invite, lu dans ResetPasswordForm : useSearchParams impose de
+ * toute facon un Suspense boundary en app router (bailout sur le rendu statique), donc le
  * @children ResetPasswordForm
  */
 export default function Page() {
   return (
     <section className="section-page flex flex-col items-center justify-center">
-      <h1 className="title1">Reinitialisation du mot de passe</h1>
-
       <Suspense fallback={null}>
         <ResetPasswordForm />
       </Suspense>
