@@ -85,7 +85,7 @@ describe("POST /admin/news", () => {
       .attach("image", MINIMAL_PNG, "image.png");
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_COOKIE);
+    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_SESSION);
   });
 });
 
@@ -186,7 +186,7 @@ describe("PATCH /admin/news/:id", () => {
       .field("title", VALID_NEWS_FIELDS.title);
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_COOKIE);
+    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_SESSION);
   });
 });
 
@@ -257,6 +257,6 @@ describe("DELETE /admin/news/:id", () => {
     const res = await request(app).delete(`/admin/news/${newsId}`);
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_COOKIE);
+    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_SESSION);
   });
 });

@@ -129,7 +129,7 @@ describe("POST /admin/artists", () => {
       .attach("image", MINIMAL_PNG, "image.png");
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_COOKIE);
+    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_SESSION);
   });
 });
 
@@ -249,7 +249,7 @@ describe("PATCH /admin/artists/:id", () => {
       .field("name", VALID_ARTIST_FIELDS.name);
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_COOKIE);
+    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_SESSION);
   });
 });
 
@@ -320,6 +320,6 @@ describe("DELETE /admin/artists/:id", () => {
     const res = await request(app).delete(`/admin/artists/${artistId}`);
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_COOKIE);
+    expect(res.body.error).toBe(ERRORS.AUTH_MISSING_SESSION);
   });
 });
