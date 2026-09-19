@@ -1,6 +1,6 @@
 import multer from "multer";
-import { AppError } from "../errors/AppError";
-import { ERRORS } from "../errors/errorMessages";
+import { AppError } from "../errors/AppError.js";
+import { ERRORS } from "../errors/errorMessages.js";
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 Mo

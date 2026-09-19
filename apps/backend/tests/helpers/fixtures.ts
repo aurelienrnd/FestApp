@@ -1,4 +1,5 @@
 import { query } from "../../src/db";
+import { auth } from "../../src/lib/auth";
 import type { UserRole } from "../../src/type";
 
 /** Image PNG minimale valide (1x1 px) utilisee comme fichier de test pour les routes multipart. */
@@ -7,25 +8,22 @@ export const MINIMAL_PNG = Buffer.from(
   "base64",
 );
 
-/** Insere un utilisateur directement en base et retourne son id.
+/** Insere un utilisateur via Better Auth (auth.api.createUser) et retourne son id.
+ * Delegue la creation du compte credential (hash scrypt) a Better Auth plutot que d'inserer
+ * directement en base — evite de dupliquer sa logique de hachage dans les fixtures.
  * @param email email unique de l'utilisateur
- * @param displayName nom affiche (defaut : unique via Date.now())
+ * @param name nom affiche (defaut : unique via Date.now())
  * @param role role de l'utilisateur (defaut : "admin")
- * @param passwordHash hash bcrypt ou placeholder (defaut : "hashed-password")
  */
 export async function insertUser(
   email: string,
-  displayName = `Test User ${Date.now()}`,
+  name = `Test User ${Date.now()}`,
   role: UserRole = "admin",
-  passwordHash = "hashed-password",
 ): Promise<string> {
-  const rows = await query<{ id: string }>(
-    `INSERT INTO users (email, password_hash, display_name, role)
-     VALUES ($1, $2, $3, $4)
-     RETURNING id`,
-    [email, passwordHash, displayName, role],
-  );
-  return rows[0].id;
+  const { user } = await auth.api.createUser({
+    body: { email, password: "TestPassword123!", name, role },
+  });
+  return user.id;
 }
 
 // compteur de slot pour generer des creneaux de concert uniques entre les appels

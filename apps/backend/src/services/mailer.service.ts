@@ -1,8 +1,8 @@
 import nodemailer from "nodemailer";
 import type { SendMailOptions } from "nodemailer";
-import { getEnv } from "../utils";
-import { AppError } from "../errors/AppError";
-import { ERRORS } from "../errors/errorMessages";
+import { getEnv } from "../utils.js";
+import { AppError } from "../errors/AppError.js";
+import { ERRORS } from "../errors/errorMessages.js";
 
 /** Instance partagee du transporteur SMTP — configuree une seule fois au demarrage.
  * @function getEnv
@@ -28,22 +28,80 @@ async function sendMail(options: SendMailOptions): Promise<void> {
   }
 }
 
-/** Envoie un nouveau mot de passe temporaire a l'utilisateur qui a demande la reinitialisation.
+/** Couleur d'accent du site (--color-1 dans tokens.css), reprise pour le bouton des emails. */
+const BRAND_COLOR = "#cb3346";
+
+/** Enveloppe le corps d'un email dans une mise en page simple centree.
+ * CSS inline uniquement (pas de balise <style>) : les clients mail (Outlook en tete) ignorent
+ * ou suppriment le CSS non inline.
+ * @param bodyHtml contenu HTML du mail (paragraphes, bouton...)
+ */
+function renderEmailLayout(bodyHtml: string): string {
+  return `<div style="font-family: Arial, Helvetica, sans-serif; max-width: 480px; margin: 0 auto; color: #1a1a1a;">
+  ${bodyHtml}
+</div>`;
+}
+
+/** Genere un bouton d'action stylise (lien avec l'apparence d'un bouton), centre.
+ * @param url lien du bouton
+ * @param label texte du bouton
+ */
+function renderEmailButton(url: string, label: string): string {
+  return `<p style="text-align: center; margin: 32px 0;">
+    <a href="${url}" style="display: inline-block; background-color: ${BRAND_COLOR}; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 6px; font-size: 15px; font-weight: bold;">${label}</a>
+  </p>`;
+}
+
+/** Envoie le lien de reinitialisation de mot de passe a l'utilisateur qui en a fait la demande.
+ * Le lien pointe vers Better Auth (GET /api/auth/reset-password/<token>), qui valide le token
+ * puis redirige vers la page /reset-password du front. Aucun mot de passe n'est transmis.
  * @param to adresse email du destinataire
- * @param displayName nom complet de l'utilisateur
- * @param tempPassword nouveau mot de passe temporaire en clair
+ * @param name nom complet de l'utilisateur
+ * @param resetUrl lien de reinitialisation genere par Better Auth (token a usage unique, valable 1 h)
  * @function sendMail Envoie un email via le transporteur SMTP
  */
 export async function sendPasswordResetEmail(
   to: string,
-  displayName: string,
-  tempPassword: string,
+  name: string,
+  resetUrl: string,
 ): Promise<void> {
   await sendMail({
     from: `"Vindhellfest" <${getEnv("SMTP_USER")}>`,
     to,
     subject: "Reinitialisation de votre mot de passe",
-    text: `Bonjour ${displayName},\n\nVous avez demande la reinitialisation de votre mot de passe.\nVotre nouveau mot de passe provisoire : ${tempPassword}\n\nVeuillez le modifier des votre prochaine connexion.`,
+    text: `Bonjour ${name},\n\nVous avez demande la reinitialisation de votre mot de passe.\nOuvrez ce lien pour en choisir un nouveau :\n${resetUrl}\n\nCe lien est valable 1 heure et ne peut servir qu'une seule fois.\nSi vous n'etes pas a l'origine de cette demande, ignorez cet email : votre mot de passe reste inchange.`,
+    html: renderEmailLayout(`
+  <p style="font-size: 16px;">Bonjour ${name},</p>
+  <p style="font-size: 15px; line-height: 1.5;">Vous avez demande la reinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour en choisir un nouveau :</p>
+  ${renderEmailButton(resetUrl, "Reinitialiser mon mot de passe")}
+  <p style="font-size: 13px; color: #6b6b6b;">Ce lien est valable 1 heure et ne peut servir qu'une seule fois.</p>
+  <p style="font-size: 13px; color: #6b6b6b;">Si vous n'etes pas a l'origine de cette demande, ignorez cet email : votre mot de passe reste inchange.</p>`),
+  });
+}
+
+/** envoye le lien d'invitation a l'utilisateur qui vient d'etre cree par un administrateur.
+ * Le lien pointe vers Better Auth (GET /api/auth/reset-password/<token>), qui valide le token
+ * puis redirige vers la page /reset-password du front. Aucun mot de passe n'est transmis.
+ * @param to adresse email du destinataire
+ * @param name nom complet de l'utilisateur
+ * @param inviteUrl lien genere par Better Auth (token a usage unique, valable 1 h)
+ * @function sendMail Envoie un email via le transporteur SMTP
+ */
+export async function sendInviteEmail(
+  to: string,
+  name: string,
+  inviteUrl: string,
+): Promise<void> {
+  await sendMail({
+    from: `"Vindhellfest" <${getEnv("SMTP_USER")}>`,
+    to,
+    subject: "Votre compte Vindhellfest",
+    text: `Bonjour ${name},\n\nUn compte administrateur Vindhellfest a ete cree pour vous.\nOuvrez ce lien pour choisir votre mot de passe :\n${inviteUrl}\n\nCe lien est valable 1 heure et ne peut servir qu'une seule fois.`,
+    html: renderEmailLayout(`
+  <p style="font-size: 16px;">Bonjour ${name},</p>
+  <p style="font-size: 15px; line-height: 1.5;">Un compte administrateur Vindhellfest a ete cree pour vous. Cliquez sur le bouton ci-dessous pour choisir votre mot de passe :</p>
+  ${renderEmailButton(inviteUrl, "Choisir mon mot de passe")}
+  <p style="font-size: 13px; color: #6b6b6b;">Ce lien est valable 1 heure et ne peut servir qu'une seule fois.</p>`),
   });
 }
 
@@ -66,24 +124,5 @@ export async function sendContactEmail(
     replyTo: from,
     subject: `[Contact] ${subject}`,
     text: `Message de : ${name} <${from}>\n\n${message}`,
-  });
-}
-
-/** Envoie les identifiants provisoires au nouvel utilisateur cree par un admin.
- * @param to adresse email du destinataire
- * @param displayName nom complet de l'utilisateur
- * @param tempPassword mot de passe provisoire en clair genere a la creation
- * @function sendMail Envoie un email via le transporteur SMTP
- */
-export async function sendWelcomeEmail(
-  to: string,
-  displayName: string,
-  tempPassword: string,
-): Promise<void> {
-  await sendMail({
-    from: `"Vindhellfest" <${getEnv("SMTP_USER")}>`,
-    to,
-    subject: "Votre compte Vindhellfest",
-    text: `Bonjour ${displayName},\n\nVotre compte a ete cree.\nIdentifiant : ${to}\nMot de passe provisoire : ${tempPassword}\n\nVeuillez le modifier des votre premiere connexion.`,
   });
 }

@@ -1,25 +1,44 @@
 /* === USERS === */
 
-/** Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`. */
-export type UserRole = "admin" | "artists" | "news";
+/** Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`.
+ * Pas exporte : jamais importe par son nom en dehors de ce fichier, uniquement
+ * utilise ici pour typer UserItem.role et AdminUser.role.
+ */
+type UserRole = "admin" | "artists" | "news";
 
-/** Type representant une ligne utilisateur retournee par l'API. */
+/** Type representant une ligne utilisateur retournee par l'API.
+ * Aligne sur le schema Better Auth ("user".name, pas de password_changed_at — ce concept
+ * n'existe plus, cf. suppression de mustChangePassword).
+ */
 export type UserItem = {
   id: string;
   email: string;
-  display_name: string;
+  name: string;
   role: UserRole;
   created_at: string;
-  password_changed_at: string | null;
 };
 
-/** Type representant l'utilisateur connecte retourne par GET /admin/auth/me. */
-export type AdminUser = Omit<UserItem, "created_at" | "password_changed_at">;
+/** Utilisateur connecte tel que renvoye par la session Better Auth.
+ * Pas exporte : jamais importe par son nom en dehors de ce fichier, toujours
+ * accede via AdminAuthMeResponse.user.
+ */
+type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+};
 
-/** Type representant la reponse de GET /admin/auth/me. */
+/** Reponse de GET /api/auth/get-session — null si aucune session active.
+ * `session` n'est pas consommee cote front pour l'instant, typee au minimum.
+ */
 export type AdminAuthMeResponse = {
+  session: {
+    id: string;
+    userId: string;
+    expiresAt: string;
+  };
   user: AdminUser;
-  mustChangePassword: boolean;
 };
 
 /* === NEWS === */
@@ -88,11 +107,6 @@ export type NavItem = {
 };
 
 /* === API === */
-
-/** Type representant une reponse API generique avec un message optionnel. */
-export type ApiMessageResponse = {
-  message?: string;
-};
 
 /** Type representant une reponse API de creation ou modification — message + entite retournee. */
 export type CreateApiResponse<T> = { message: string } & T;

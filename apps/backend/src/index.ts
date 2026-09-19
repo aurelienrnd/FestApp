@@ -3,8 +3,8 @@ import dotenv from "dotenv";
 // chargement des variables d’environnement avant toute validation
 dotenv.config();
 
-import { validateEnv } from "./env";
-import { createApp } from "./app";
+import { validateEnv } from "./env.js";
+import { createApp } from "./app.js";
 
 // validation des variables d’environnement — arrete le processus si une variable est manquante
 validateEnv();

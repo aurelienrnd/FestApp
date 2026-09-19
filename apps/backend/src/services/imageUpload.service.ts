@@ -1,7 +1,10 @@
 import { randomUUID } from "crypto";
 import { mkdir, unlink } from "fs/promises";
 import path from "path";
+import { fileURLToPath } from "url";
 import sharp from "sharp";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** Chemin absolu du dossier de stockage des images artistes. */
 export const ARTISTS_UPLOADS_DIR = path.join(

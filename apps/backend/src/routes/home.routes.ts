@@ -1,8 +1,8 @@
 import { Router } from "express";
 // middlewares
-import { asyncHandler } from "../middlewares/asyncHandler";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 // controllers
-import { getHome } from "../controllers/public/home/get_home.controller";
+import { getHome } from "../controllers/public/home/get_home.controller.js";
 
 const router = Router();
 

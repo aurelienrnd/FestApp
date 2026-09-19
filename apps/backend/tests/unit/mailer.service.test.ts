@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import {
   sendPasswordResetEmail,
-  sendWelcomeEmail,
+  sendInviteEmail,
   sendContactEmail,
 } from "../../src/services/mailer.service";
 
@@ -15,22 +15,26 @@ beforeAll(() => {
 // ---------------------------------------------------------------------------
 
 describe("sendPasswordResetEmail", () => {
-  it("appelle sendMail avec le bon destinataire et le mot de passe dans le body", async () => {
+  const resetUrl =
+    "http://localhost:4000/api/auth/reset-password/tok123?callbackURL=x";
+
+  it("appelle sendMail avec le bon destinataire et le lien de reinitialisation dans le body", async () => {
     // Appelle la fonction avec des valeurs de test
-    await sendPasswordResetEmail("user@test.com", "Jean Dupont", "tmp123abc");
+    await sendPasswordResetEmail("user@test.com", "Jean Dupont", resetUrl);
 
     expect(sendMailMock).toHaveBeenCalledWith(
       expect.objectContaining({
         to: "user@test.com",
         subject: expect.stringContaining("mot de passe"),
-        text: expect.stringContaining("tmp123abc"),
+        text: expect.stringContaining(resetUrl),
+        html: expect.stringContaining(resetUrl),
       }),
     );
   });
 
   it("inclut le nom de l'utilisateur dans le corps du mail", async () => {
     // Appelle la fonction avec des valeurs de test
-    await sendPasswordResetEmail("user@test.com", "Jean Dupont", "tmp123abc");
+    await sendPasswordResetEmail("user@test.com", "Jean Dupont", resetUrl);
 
     expect(sendMailMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -38,26 +42,38 @@ describe("sendPasswordResetEmail", () => {
       }),
     );
   });
+
+  it("ne transmet aucun mot de passe en clair dans le mail", async () => {
+    // Appelle la fonction avec des valeurs de test
+    await sendPasswordResetEmail("user@test.com", "Jean Dupont", resetUrl);
+
+    const { text } = sendMailMock.mock.calls.at(-1)![0];
+    expect(text).not.toMatch(
+      /mot de passe provisoire|mot de passe temporaire/i,
+    );
+  });
 });
 
 // ---------------------------------------------------------------------------
 
-describe("sendWelcomeEmail", () => {
-  it("appelle sendMail avec le bon destinataire et les identifiants dans le body", async () => {
-    // Appelle la fonction avec des valeurs de test
-    await sendWelcomeEmail("new@test.com", "Marie Martin", "init456def");
+describe("sendInviteEmail", () => {
+  const inviteUrl =
+    "http://localhost:4000/api/auth/reset-password/tok123?callbackURL=x";
+
+  it("appelle sendMail avec le bon destinataire et le lien dans le body", async () => {
+    await sendInviteEmail("new@test.com", "Marie Martin", inviteUrl);
 
     expect(sendMailMock).toHaveBeenCalledWith(
       expect.objectContaining({
         to: "new@test.com",
-        text: expect.stringContaining("init456def"),
+        text: expect.stringContaining(inviteUrl),
+        html: expect.stringContaining(inviteUrl),
       }),
     );
   });
 
   it("inclut le nom de l'utilisateur dans le corps du mail", async () => {
-    // Appelle la fonction avec des valeurs de test
-    await sendWelcomeEmail("new@test.com", "Marie Martin", "init456def");
+    await sendInviteEmail("new@test.com", "Marie Martin", inviteUrl);
 
     expect(sendMailMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -66,15 +82,11 @@ describe("sendWelcomeEmail", () => {
     );
   });
 
-  it("inclut l'email comme identifiant de connexion dans le corps du mail", async () => {
-    // Appelle la fonction avec des valeurs de test
-    await sendWelcomeEmail("new@test.com", "Marie Martin", "init456def");
+  it("ne mentionne pas de reinitialisation demandee par l'utilisateur (texte different de sendPasswordResetEmail)", async () => {
+    await sendInviteEmail("new@test.com", "Marie Martin", inviteUrl);
 
-    expect(sendMailMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        text: expect.stringContaining("new@test.com"),
-      }),
-    );
+    const { text } = sendMailMock.mock.calls.at(-1)![0];
+    expect(text).not.toMatch(/vous avez demande la reinitialisation/i);
   });
 });
 

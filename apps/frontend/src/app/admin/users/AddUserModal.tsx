@@ -3,8 +3,8 @@
 import { useState, type FormEvent } from "react";
 import Modal from "react-modal";
 import ModalCloseButton from "../../../components/ModalCloseButton";
-import { useMutation } from "../../../hooks/useMutation";
-import type { UserItem, CreateApiResponse } from "../../../type";
+import { authClient } from "../../../lib/auth-client";
+import type { UserItem } from "../../../type";
 import { USER_ROLES } from "../../../config/ui";
 import { isEmail, isEmpty, isMaxLength } from "../../../functions/validation";
 
@@ -41,6 +41,13 @@ function isAddUserFormInvalid(
 /** Affiche la modale d'ajout ou de modification d'un utilisateur.
  * Gere les champs du formulaire, la soumission API et les retours visuels (erreur/succes).
  * En mode edition (userToEdit defini), pre-remplit les champs et affiche "Modifier" a la place de "Ajouter".
+ * Les deux modes delegent a Better Auth :
+ * - creation : authClient.admin.createUser cree le compte sans mot de passe, puis
+ *   authClient.requestPasswordReset envoie le meme lien "choisir son mot de passe" que pour
+ *   un oubli (cf. ForgotPassword.tsx). Best effort : Better Auth n'expose jamais un echec
+ *   d'envoi (SMTP en panne, etc.) au client, donc aucun rollback n'est possible ici — se fier
+ *   aux logs backend en cas de souci.
+ * - edition : authClient.admin.updateUser met a jour email/name/role.
  * @param {AddUserModalProps} props Proprietes de controle de la modale.
  * @param {boolean} props.isOpen Definit si la modale est ouverte.
  * @param {() => void} props.onClose Ferme la modale.
@@ -58,7 +65,8 @@ export default function AddUserModal({
   const isEditMode = userToEdit !== null;
 
   // Initialise les champs depuis userToEdit en mode modification, vide en mode creation
-  const displayName = userToEdit?.display_name?.trim() ?? "";
+  const displayName = userToEdit?.name?.trim() ?? "";
+  // Decoupe le nom complet en prenom et nom de famille (tout ce qui suit le premier espace)
   const [initialFirstName, ...initialLastNameParts] = displayName.split(/\s+/);
 
   // Champs du formulaire utilisateur
@@ -67,20 +75,16 @@ export default function AddUserModal({
   const [email, setEmail] = useState(userToEdit?.email ?? "");
   const [role, setRole] = useState(userToEdit?.role ?? "");
 
-  // initialise la requete a effectuer en fonction du mode (ajout ou modification)
-  const { mutate, isLoading, error, reset } = useMutation<
-    CreateApiResponse<{ user: UserItem }>
-  >(
-    isEditMode ? `/admin/users/${userToEdit!.id}` : "/admin/users",
-    isEditMode ? "PATCH" : "POST",
-  );
+  // Etat de l'appel Better Auth (createUser ou updateUser selon le mode)
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Verifie si le formulaire d'ajout utilisateur est incomplet.
   const isFormInvalid = isAddUserFormInvalid(firstName, lastName, email, role);
 
   //Reinitialise le formulaire a son etat initial
   const resetForm = () => {
-    const name = userToEdit?.display_name?.trim() ?? "";
+    const name = userToEdit?.name?.trim() ?? "";
     const [first, ...rest] = name.split(/\s+/);
     setFirstName(first ?? "");
     setLastName(rest.join(" "));
@@ -88,23 +92,84 @@ export default function AddUserModal({
     setRole(userToEdit?.role ?? "");
   };
 
-  // Gere la soumission du formulaire d'ajout d'artiste
+  // Gere la soumission du formulaire d'ajout ou de modification d'utilisateur
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    // Si le formulaire est invalide, on ne fait rien
     if (isFormInvalid) return;
 
-    mutate(
-      { email, first_name: firstName, last_name: lastName, role },
-      (data) => {
-        resetForm();
-        handleUserSaved(data.user);
-      },
-    );
+    // Concatene prenom et nom de famille pour former le nom complet
+    const name = `${firstName} ${lastName}`.trim();
+
+    // Indique que l'appel API est en cours et reinitialise l'erreur de sauvegarde
+    setIsSaving(true);
+    setSaveError(null);
+
+    // si on est en mode edition, on met a jour l'utilisateur existant via Better Auth
+    if (isEditMode) {
+      // Delegue a Better Auth
+      const updateResult = await authClient.admin.updateUser({
+        userId: userToEdit.id,
+        data: { email, name, role: role as never },
+      });
+
+      setIsSaving(false);
+
+      // Si l'update a echoue, on affiche l'erreur et on ne ferme pas la modale
+      if (updateResult.error) {
+        setSaveError(updateResult.error.message ?? "Une erreur est survenue.");
+        return;
+      }
+
+      // Si l'update a reussi, on reinitialise le formulaire et on notifie le parent pour mettre a jour la liste des utilisateurs
+      resetForm();
+      handleUserSaved({
+        id: updateResult.data.id,
+        email: updateResult.data.email,
+        name: updateResult.data.name,
+        role: updateResult.data.role as UserItem["role"],
+        created_at: new Date(updateResult.data.createdAt).toISOString(),
+      });
+      return;
+    }
+
+    // Creation : delegue a Better Auth. Cree le compte sans mot de passe.
+    const createResult = await authClient.admin.createUser({
+      email,
+      name,
+      role: role as never,
+    });
+
+    // Si la creation a echoue, on affiche l'erreur et on ne ferme pas la modale
+    if (createResult.error) {
+      setIsSaving(false);
+      setSaveError(createResult.error.message ?? "Une erreur est survenue.");
+      return;
+    }
+
+    // Best effort : le compte est deja cree meme si l'envoi du lien echoue (ex: SMTP en panne).
+    // Better Auth n'expose jamais cet echec au client (cf. ForgotPassword.tsx)
+    await authClient.requestPasswordReset({
+      email,
+      redirectTo: `${window.location.origin}/reset-password?context=invite`,
+    });
+
+    // On reinitialise le formulaire et on notifie le parent pour mettre a jour la liste des utilisateurs
+    setIsSaving(false);
+    resetForm();
+    handleUserSaved({
+      id: createResult.data.user.id,
+      email: createResult.data.user.email,
+      name: createResult.data.user.name,
+      role: createResult.data.user.role as UserItem["role"],
+      created_at: new Date(createResult.data.user.createdAt).toISOString(),
+    });
   };
 
   // Ferme la modale et reinitialise le formulaire
   const handleClose = () => {
-    reset();
+    setIsSaving(false);
+    setSaveError(null);
     resetForm();
     onClose();
   };
@@ -205,12 +270,12 @@ export default function AddUserModal({
             <button
               type="submit"
               className="btn-cta"
-              disabled={isFormInvalid || isLoading}
+              disabled={isFormInvalid || isSaving}
             >
               {isEditMode ? "Modifier" : "Ajouter"}
             </button>
           </div>
-          {error ? <p className="error-message">{error}</p> : null}
+          {saveError ? <p className="error-message">{saveError}</p> : null}
         </form>
       </div>
     </Modal>

@@ -1,9 +1,9 @@
 import { Router } from "express";
 // middlewares
-import { asyncHandler } from "../middlewares/asyncHandler";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 // controllers
-import { listArtists } from "../controllers/public/artists/list_artists.controller";
-import { getArtist } from "../controllers/public/artists/get_artist.controller";
+import { listArtists } from "../controllers/public/artists/list_artists.controller.js";
+import { getArtist } from "../controllers/public/artists/get_artist.controller.js";
 
 const router = Router();
 

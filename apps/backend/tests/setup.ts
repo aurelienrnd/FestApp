@@ -73,19 +73,20 @@ const MIGRATIONS_DIR = path.resolve(process.cwd(), "bd/init");
 
 // Liste des fichiers de migration à exécuter pour préparer la base de données de test.
 const MIGRATION_FILES = [
-  "01_user_schema.sql",
-  "02_sessions_schema.sql",
+  "01_auth_schema.sql",
   "03_news_schema.sql",
   "04_artist_schema.sql",
   "05_concert_schema.sql",
 ];
 
 /** Prépare la base de données de test avant l'exécution des tests.
- * Pour chaque fichier de migration dans la liste
- * - lit le contenu du fichier SQL,
- * - Envoie le contenu du fichier SQL à la base de données de test pour l'exécuter.
+ * Reinitialise le schema public avant de rejouer les migrations : 01_auth_schema.sql n'a pas
+ * de DROP TABLE IF EXISTS (contrairement aux 3 autres fichiers) — il est genere par la CLI
+ * Better Auth pour un volume Postgres neuf, pas pour etre rejoue a chaque lancement.
  */
 beforeAll(async () => {
+  await testPool.query("DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
+
   for (const file of MIGRATION_FILES) {
     const sql = fs.readFileSync(path.join(MIGRATIONS_DIR, file), "utf-8");
     await testPool.query(sql);
@@ -97,7 +98,7 @@ beforeAll(async () => {
  */
 afterEach(async () => {
   await testPool.query(
-    "TRUNCATE sessions, news, concerts, artists, users RESTART IDENTITY CASCADE;",
+    'TRUNCATE "user", session, account, verification, news, concerts, artists RESTART IDENTITY CASCADE;',
   );
 });
 

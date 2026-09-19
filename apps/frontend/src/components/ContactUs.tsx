@@ -1,9 +1,13 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import type { ApiMessageResponse } from "../type";
 import { useMutation } from "../hooks/useMutation";
 import { isEmail, isMaxLength } from "../functions/validation";
+
+/** Type representant une reponse API generique avec un message optionnel. */
+type ApiMessageResponse = {
+  message?: string;
+};
 
 /** Affiche un formulaire de contact avec les champs nom, email, sujet et message
  * @function useMutation pour envoyer les données du formulaire au backend

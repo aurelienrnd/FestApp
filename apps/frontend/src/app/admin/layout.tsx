@@ -5,8 +5,8 @@ import type { AdminAuthMeResponse } from "../../type";
 import Banner from "../../components/Banner";
 import Footer from "../../components/Footer";
 
-/** Verifie la session via le backend avant de rendre les pages `/admin`.
- * Redirige vers `/login` si la session est absente, invalide ou si le backend est inaccessible.
+/** Verifie la session Better Auth via le backend avant de rendre les pages `/admin`.
+ * Redirige vers `/login` si la session est absente ou si le backend est inaccessible.
  * Injecte les donnees utilisateur dans AdminUserProvider pour les rendre accessibles a toutes les pages admin.
  * @children Banner
  * @children Footer
@@ -30,23 +30,26 @@ export default async function AdminLayout({
     throw new Error("Missing env var: API_URL_SERVER or NEXT_PUBLIC_API_URL");
   }
 
-  // Verifie la session admin et redirige vers /login si la requete echoue ou renvoie une reponse non valide.
-  let response: Response;
+  // Verifie la session admin aupres de Better Auth ({ session, user } ou null si absente).
+  // Chaque cas d'echec (reseau injoignable, reponse non-ok, pas de session) converge vers `me = null`.
+  let me: AdminAuthMeResponse | null;
   try {
-    response = await fetch(`${apiBaseUrl}/admin/auth/me`, {
+    const response = await fetch(`${apiBaseUrl}/api/auth/get-session`, {
       method: "GET",
       headers: { cookie: cookieHeader },
       cache: "no-store",
     });
+
+    // Si la reponse est ok, parse le JSON pour obtenir les donnees utilisateur, sinon retourne null
+    me = response.ok ? await response.json() : null;
   } catch {
-    redirect("/login");
-  }
-  if (!response.ok) {
-    redirect("/login");
+    me = null;
   }
 
-  // Parse les donnees utilisateur retournees par l'API
-  const me = (await response.json()) as AdminAuthMeResponse;
+  // Si la session est absente, redirige vers la page de connexion
+  if (!me) {
+    redirect("/login");
+  }
 
   // Fournit les donnees utilisateur a toutes les pages enfants de la zone admin via le contexte
   return (

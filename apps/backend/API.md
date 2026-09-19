@@ -1,30 +1,51 @@
-﻿# API Backend - Vindhellfest
+# API Backend - Vindhellfest
 
 ## Résumé des endpoints
 
 | Méthode | Route                         | Accès               | Description                                                              |
 | ------- | ----------------------------- | ------------------- | ------------------------------------------------------------------------ |
+| ALL     | `/api/auth/*`                  | Voir section dédiée  | Authentification, session et CRUD utilisateurs — géré par Better Auth   |
 | POST    | `/admin/news`                 | admin, news         | Créer une news (multipart/form-data)                                     |
 | PATCH   | `/admin/news/:id`             | admin, news         | Modifier une news (multipart/form-data)                                  |
 | DELETE  | `/admin/news/:id`             | admin, news         | Supprimer une news et son fichier image                                  |
 | POST    | `/admin/artists`              | admin, artists      | Créer un artiste (multipart/form-data)                                   |
 | PATCH   | `/admin/artists/:id`          | admin, artists      | Modifier un artiste (multipart/form-data)                                |
 | DELETE  | `/admin/artists/:id`          | admin, artists      | Supprimer un artiste et son concert associé                              |
-| POST    | `/admin/auth/login`           | Public              | Connexion administrateur                                                 |
-| POST    | `/admin/auth/logout`          | Authentifié         | Déconnexion                                                              |
-| GET     | `/admin/auth/me`              | Authentifié         | Informations utilisateur + renouvellement token                          |
-| PATCH   | `/admin/auth/password`        | Authentifié         | Modifier le mot de passe de l'utilisateur connecte                       |
-| POST    | `/admin/auth/forgot-password` | Public              | Reinitialiser le mot de passe et envoyer un nouveau par email            |
-| GET     | `/admin/users`                | admin               | Liste des utilisateurs                                                   |
-| POST    | `/admin/users`                | admin               | Créer un utilisateur                                                     |
-| PATCH   | `/admin/users/:id`            | admin               | Modifier un utilisateur                                                  |
-| DELETE  | `/admin/users/:id`            | admin               | Supprimer un utilisateur                                                 |
 | POST    | `/contact/submit`             | Public              | Soumettre le formulaire de contact                                       |
-| GET     | `/public/home`                | Public              | Données agrégées pour la page d'accueil (artistes mis en avant + 2 news) |
+| GET     | `/public/home`                | Public              | Données agrégées pour la page d'accueil (artistes mis en avant + news)  |
 | GET     | `/public/artists`             | Public              | Liste des artistes de la programmation                                   |
 | GET     | `/public/artists/:id`         | Public              | Détail d'un artiste                                                      |
 | GET     | `/public/news`                | Public / Privilégié | Liste des news (tous si admin/news, publiés sinon)                       |
 | GET     | `/public/news/:id`            | Public / Privilégié | Détail d'un news (brouillons accessibles si admin/news)                  |
+
+---
+
+## Authentification & Utilisateurs
+
+Base path : `/api/auth`
+
+Toute l'authentification (connexion, déconnexion, session, réinitialisation de mot de passe) et le CRUD utilisateurs sont gérés par **Better Auth** (`src/lib/auth.ts`), monté sur `/api/auth/*` via `toNodeHandler(auth)` (`src/app.ts`) — avant `express.json()`, Better Auth lisant lui-même le corps brut des requêtes. Ce ne sont pas des routes que ce backend définit : leur contrat exact (schéma de requête/réponse, codes d'erreur) est celui de Better Auth, pas documenté ici.
+
+Endpoints principaux :
+
+| Méthode | Route                                | Rôle requis        | Description                                    |
+| ------- | ------------------------------------- | -------------------- | ------------------------------------------------- |
+| POST    | `/api/auth/sign-in/email`            | Public               | Connexion, pose un cookie de session signé       |
+| POST    | `/api/auth/sign-out`                 | Authentifié          | Invalide la session courante                     |
+| GET     | `/api/auth/get-session`              | Public               | Session courante (`null` si absente)             |
+| POST    | `/api/auth/request-password-reset`   | Public               | Envoie un lien de réinitialisation par email      |
+| POST    | `/api/auth/reset-password`           | Public (token requis) | Change le mot de passe via le token reçu par email |
+| POST    | `/api/auth/admin/create-user`        | admin                | Créer un utilisateur                             |
+| GET     | `/api/auth/admin/list-users`         | admin                | Lister les utilisateurs                          |
+| POST    | `/api/auth/admin/update-user`        | admin                | Modifier un utilisateur (dont son rôle)          |
+| POST    | `/api/auth/admin/set-user-password`  | admin                | Changer le mot de passe d'un utilisateur         |
+| POST    | `/api/auth/admin/remove-user`        | admin                | Supprimer un utilisateur                         |
+
+> L'accès aux routes `/api/auth/admin/*` est réservé au rôle `admin` par la configuration `adminRoles` du plugin admin de Better Auth (défaut : `["admin"]`, aligné sur notre champ `role`). Un rôle `artists` ou `news` reçoit `403`.
+
+Le champ `role` (`"admin" | "artists" | "news"`) est un champ additionnel ajouté à l'utilisateur Better Auth (`user.additionalFields.role` dans `src/lib/auth.ts`) — c'est le seul champ que nos propres routes (`/admin/*` ci-dessous) lisent, via `res.locals.userRole` peuplé par `requireAuth`.
+
+Couverture de test : `tests/integration/admin/betterAuth.test.ts` (sign-in, sign-out, session, reset de mot de passe, plugin admin) et `tests/unit/auth.sendResetPassword.test.ts` (choix invite/reset).
 
 ---
 
@@ -56,7 +77,7 @@ Réponse en succès :
       "end_time": "2025-06-21T21:30:00.000Z"
     }
   ],
-  "newsList": [
+  "news": [
     {
       "id": "uuid",
       "title": "Ouverture de la billetterie",
@@ -68,11 +89,7 @@ Réponse en succès :
 }
 ```
 
-> `artists` contient uniquement les artistes dont `is_featured = TRUE` — au maximum 2 (limite appliquée par trigger en base). `newsList` est vide s'il n'y a aucune news publiée.
-
-Réponses d'erreur :
-
-- `500` `{ "error": "Erreur interne du serveur" }`
+> `artists` contient uniquement les artistes dont `is_featured = TRUE` — au maximum 2 (limite appliquée par trigger en base). `news` contient au plus les 2 dernières news publiées, vide s'il n'y en a aucune.
 
 ---
 
@@ -109,10 +126,6 @@ Reponse en succes:
 
 > `stage` et `start_time` sont `null` si aucun concert n'est encore associe a l'artiste (LEFT JOIN).
 > `bio`, `genre`, `origin`, `youtube_url`, `spotify_url` et `end_time` ne sont pas retournes dans la liste — utiliser `GET /public/artists/:id` pour recuperer l'artiste complet.
-
-Reponses d'erreur:
-
-- `500` `{ "error": "Erreur serveur" }`
 
 ### GET `/public/artists/:id`
 
@@ -156,7 +169,6 @@ Reponse en succes:
 Reponses d'erreur:
 
 - `404` `{ "error": "Artiste introuvable" }`
-- `500` `{ "error": "Erreur interne du serveur" }`
 
 ---
 
@@ -194,12 +206,6 @@ Reponse en succes:
 > `content` n'est pas retourné dans la liste — utiliser `GET /public/news/:id` pour récupérer la news complète.
 > `author_name` est `null` si l'utilisateur auteur a ete supprime.
 
-Reponses d'erreur:
-
-- `500` `{ "error": "Erreur interne du serveur" }`
-
----
-
 ### GET `/public/news/:id`
 
 Retourne une news complète par son identifiant.
@@ -229,7 +235,6 @@ Reponse en succes:
     "created_at": "2026-04-06T10:00:00.000Z",
     "url_media": "/uploads/news/uuid.webp",
     "description_media": "Photo de la billetterie",
-    "user_id": "uuid",
     "author_name": "Admin"
   }
 }
@@ -241,403 +246,17 @@ Reponses d'erreur:
 
 - `404` `{ "error": "News introuvable" }` — news inexistante ou brouillon non accessible
 
-## Authentification
-
-Base path: `/admin/auth`
-
-### POST `/admin/auth/login`
-
-Connecte un administrateur et pose un cookie httpOnly contenant le token d'acces.
-
-Middlewares: `rateLimitLogin`, `validateBody`
-
-Corps de requete:
-
-```json
-{
-  "email": "admin@test.fr",
-  "password": "Test1234!"
-}
-```
-
-Reponse en succes:
-
-- Statut: `200`
-- Corps:
-
-```json
-{
-  "message": "Authentification réussie"
-}
-```
-
-- Header: `Set-Cookie` (token d'acces)
-
-Reponses d'erreur:
-
-- `400` `{ "error": "Donnees invalides" }`
-- `401` `{ "error": "Email ou mot de passe incorrect" }`
-- `429` `{ "error": "Trop de tentatives, reessayer plus tard" }`
-
-### POST `/admin/auth/logout`
-
-Revoque la session courante.
-
-Authentification:
-
-- Cookie d'authentification valide requis.
-
-Reponse en succes:
-
-- Statut: `200`
-- Corps:
-
-```json
-{
-  "message": "Deconnexion reussie"
-}
-```
-
-Reponses d'erreur:
-
-- `401` si non authentifie ou session invalide/fermee.
-
-### GET `/admin/auth/me`
-
-Retourne les informations de l'utilisateur connecte et renouvelle le cookie d'acces si la session est ouverte.
-
-Authentification:
-
-- Cookie d'authentification valide requis.
-
-Reponse en succes:
-
-- Statut: `200`
-- Corps:
-
-```json
-{
-  "user": {
-    "id": "uuid",
-    "email": "admin@test.fr",
-    "display_name": "Admin",
-    "role": "admin"
-  },
-  "mustChangePassword": false
-}
-```
-
-> `mustChangePassword` est `true` si `password_changed_at` est `null` en base (mot de passe provisoire jamais modifié).
-
-- Header: `Set-Cookie` (token d'acces renouvele)
-
-Reponses d'erreur:
-
-- `401` `{ "error": "Cookie d'authentification manquant" }`
-- `401` `{ "error": "Token d'acces manquant" }`
-- `401` `{ "error": "Token d'acces invalide" }`
-- `401` `{ "error": "Utilisateur introuvable" }`
-- `401` `{ "error": "Session introuvable" }`
-- `401` `{ "error": "Session deja fermee ou expiree" }`
-- `401` `{ "error": "Session manquante" }`
-
-### POST `/admin/auth/forgot-password`
-
-Reinitialise le mot de passe d'un utilisateur en generant un mot de passe temporaire et en l'envoyant par email.
-
-Middlewares: `rateLimitLogin`, `validateBody`
-
-Corps de requete:
-
-```json
-{
-  "email": "admin@test.fr"
-}
-```
-
-Reponse en succes:
-
-- Statut: `200`
-- Corps:
-
-```json
-{
-  "message": "Nouveau mot de passe envoye par email"
-}
-```
-
-> L'utilisateur devra changer son mot de passe a la prochaine connexion (`mustChangePassword` sera `true`).
-
-Reponses d'erreur:
-
-- `400` `{ "error": "Donnees invalides" }`
-- `404` `{ "error": "Aucun compte associe a cet email" }`
-- `429` `{ "error": "Trop de tentatives, reessayer plus tard" }`
-
 ---
-
-### PATCH `/admin/auth/password`
-
-Modifie le mot de passe de l'utilisateur connecte.
-
-Middlewares: `auth`, `sessionIsOpen`, `validateBody`, `hashPassword("newPassword")`
-
-Authentification:
-
-- Cookie d'authentification valide requis.
-- L'`id` de l'utilisateur est extrait du token JWT (`res.locals.user.id`).
-
-Corps de requete:
-
-```json
-{
-  "password": "AncienMotDePasse1!",
-  "newPassword": "NouveauMotDePasse1!"
-}
-```
-
-Reponse en succes:
-
-- Statut: `200`
-- Corps:
-
-```json
-{
-  "message": "Mot de passe modifie"
-}
-```
-
-- Header: `Set-Cookie` (token d'acces renouvele)
-
-Reponses d'erreur:
-
-- `400` `{ "error": "Donnees invalides" }`
-- `401` `{ "error": "Cookie d'authentification manquant" }`
-- `401` `{ "error": "Token d'acces manquant" }`
-- `401` `{ "error": "Token d'acces invalide" }`
-- `401` `{ "error": "Session introuvable" }`
-- `401` `{ "error": "Session deja fermee ou expiree" }`
-- `401` `{ "error": "Session manquante" }`
-- `401` `{ "error": "Mot de passe incorrect" }`
-- `404` `{ "error": "Utilisateur introuvable" }`
-
----
-
-## Users
-
-Base path: `/admin/users`
-
-> Toutes les routes de cette section sont réservées au rôle `admin`. Un rôle `artists` ou `news` recevra une réponse `403`.
-
-### GET `/admin/users`
-
-Afficher la liste des utilisateurs.
-
-Authentification:
-
-- Cookie d'authentification valide requis.
-
-Reponse en succes:
-
-- Statut: `200`
-- Corps:
-
-```json
-{
-  "users": [
-    {
-      "id": "uuid",
-      "email": "admin@test.fr",
-      "display_name": "Admin",
-      "role": "admin",
-
-      "created_at": "2026-03-12T10:15:30.000Z",
-      "password_changed_at": "2026-03-12T12:00:00.000Z"
-    },
-    {
-      "id": "uuid",
-      "email": "autre@test.fr",
-      "display_name": "autreAdmin",
-      "role": "admin",
-
-      "created_at": "2026-03-12T11:10:00.000Z",
-      "password_changed_at": null
-    }
-  ]
-}
-```
-
-- Header: `Set-Cookie` (token d'acces renouvele)
-
-Reponses d'erreur:
-
-- `401` `{ "error": "Cookie d'authentification manquant" }`
-- `401` `{ "error": "Token d'acces manquant" }`
-- `401` `{ "error": "Token d'acces invalide" }`
-- `401` `{ "error": "Session introuvable" }`
-- `401` `{ "error": "Session deja fermee ou expiree" }`
-- `401` `{ "error": "Session manquante" }`
-
-### POST `/admin/users`
-
-Ajouter un utilisateur.
-
-Authentification:
-
-- Cookie d'authentification valide requis.
-
-Corps de requete:
-
-- `role` accepte: `admin`, `artists`, `news`.
-
-```json
-{
-  "email": "nouveau@test.fr",
-  "first_name": "Nouveau",
-  "last_name": "User",
-  "role": "admin"
-}
-```
-
-Reponse en succes:
-
-- Statut: `201`
-- Corps:
-
-```json
-{
-  "message": "Utilisateur cree",
-  "user": {
-    "id": "uuid",
-    "email": "nouveau@test.fr",
-    "display_name": "Nouveau User",
-    "role": "admin",
-
-    "created_at": "2026-03-12T10:30:00.000Z"
-  }
-}
-```
-
-> Le mot de passe provisoire est envoye directement par email a l'adresse du nouvel utilisateur.
-
-- Header: `Set-Cookie` (token d'acces renouvele)
-
-Reponses d'erreur:
-
-- `400` `{ "error": "Donnees invalides" }`
-- `401` `{ "error": "Cookie d'authentification manquant" }`
-- `401` `{ "error": "Token d'acces manquant" }`
-- `401` `{ "error": "Token d'acces invalide" }`
-- `401` `{ "error": "Session introuvable" }`
-- `401` `{ "error": "Session deja fermee ou expiree" }`
-- `401` `{ "error": "Session manquante" }`
-- `409` `{ "error": "Email deja utilise" }`
-- `409` `{ "error": "Nom deja utilise" }`
-
-### PATCH `/admin/users/:id`
-
-Modifier un utilisateur.
-
-Authentification:
-
-- Cookie d'authentification valide requis.
-
-Parametre d'URL:
-
-- `id`: UUID de l'utilisateur a modifier.
-
-Corps de requete:
-
-- `role` accepte: `admin`, `artists`, `news`.
-
-```json
-{
-  "email": "modifie@test.fr",
-  "first_name": "Modifie",
-  "last_name": "User",
-  "role": "artists"
-}
-```
-
-Reponse en succes:
-
-- Statut: `200`
-- Corps:
-
-```json
-{
-  "message": "Utilisateur modifie",
-  "user": {
-    "id": "uuid",
-    "email": "modifie@test.fr",
-    "display_name": "Modifie User",
-    "role": "artists",
-
-    "created_at": "2026-03-12T10:15:30.000Z"
-  }
-}
-```
-
-- Header: `Set-Cookie` (token d'acces renouvele)
-
-Reponses d'erreur:
-
-- `400` `{ "error": "Donnees invalides" }` (id invalide ou corps invalide)
-- `401` `{ "error": "Cookie d'authentification manquant" }`
-- `401` `{ "error": "Token d'acces manquant" }`
-- `401` `{ "error": "Token d'acces invalide" }`
-- `401` `{ "error": "Session introuvable" }`
-- `401` `{ "error": "Session deja fermee ou expiree" }`
-- `401` `{ "error": "Session manquante" }`
-- `404` `{ "error": "Utilisateur introuvable" }`
-- `409` `{ "error": "Email deja utilise" }`
-- `409` `{ "error": "Nom deja utilise" }`
-
-### DELETE `/admin/users/:id`
-
-Supprime definitivement un utilisateur de la base de donnees.
-
-Authentification:
-
-- Cookie d'authentification valide requis.
-
-Parametre d'URL:
-
-- `id`: UUID de l'utilisateur a supprimer.
-
-Reponse en succes:
-
-- Statut: `200`
-- Corps:
-
-```json
-{
-  "message": "Utilisateur supprime"
-}
-```
-
-- Header: `Set-Cookie` (token d'acces renouvele)
-
-Reponses d'erreur:
-
-- `400` `{ "error": "Donnees invalides" }` (id invalide)
-- `401` `{ "error": "Cookie d'authentification manquant" }`
-- `401` `{ "error": "Token d'acces manquant" }`
-- `401` `{ "error": "Token d'acces invalide" }`
-- `401` `{ "error": "Session introuvable" }`
-- `401` `{ "error": "Session deja fermee ou expiree" }`
-- `401` `{ "error": "Session manquante" }`
-- `404` `{ "error": "Utilisateur introuvable" }`
 
 ## News
 
-> Routes admin réservées aux rôles `admin` et `news`.
+> Routes admin réservées aux rôles `admin` et `news` — session Better Auth requise (`requireAuth` + `requireRole("admin", "news")`).
 
 ### POST `/admin/news`
 
 Creer une news avec une image uploadée.
 
-Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "news")`, `upload.single("image")`, `validateBody`
+Middlewares: `requireAuth`, `requireRole("admin", "news")`, `upload.single("image")`, `validateBody`
 
 Corps de requete:
 
@@ -670,7 +289,6 @@ Reponse en succes:
     "created_at": "2026-04-06T10:00:00.000Z",
     "url_media": "/uploads/news/uuid.webp",
     "description_media": "Photo de la billetterie",
-    "user_id": "uuid",
     "author_name": "Admin"
   }
 }
@@ -681,7 +299,7 @@ Reponses d'erreur:
 - `400` `{ "error": "Donnees invalides" }`
 - `400` `{ "error": "Image requise" }`
 - `400` `{ "error": "Type de fichier non autorise (jpeg, png ou webp uniquement)" }`
-- `401` `{ "error": "Cookie d'authentification manquant" }`
+- `401` `{ "error": "Session manquante" }`
 - `403` `{ "error": "Acces refuse" }`
 
 ---
@@ -690,7 +308,7 @@ Reponses d'erreur:
 
 Modifier une news existante.
 
-Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "news")`, `upload.single("image")`, `validateBody`
+Middlewares: `requireAuth`, `requireRole("admin", "news")`, `upload.single("image")`, `validateBody`
 
 Parametre d'URL:
 
@@ -725,7 +343,6 @@ Reponse en succes:
     "created_at": "2026-04-06T10:00:00.000Z",
     "url_media": "/uploads/news/uuid.webp",
     "description_media": "Photo de la billetterie",
-    "user_id": "uuid",
     "author_name": "Admin"
   }
 }
@@ -735,7 +352,7 @@ Reponses d'erreur:
 
 - `400` `{ "error": "Donnees invalides" }` (id invalide ou corps invalide)
 - `400` `{ "error": "Type de fichier non autorise (jpeg, png ou webp uniquement)" }`
-- `401` `{ "error": "Cookie d'authentification manquant" }`
+- `401` `{ "error": "Session manquante" }`
 - `403` `{ "error": "Acces refuse" }`
 - `404` `{ "error": "News introuvable" }`
 
@@ -745,7 +362,7 @@ Reponses d'erreur:
 
 Supprime definitivement une news et son fichier image.
 
-Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "news")`
+Middlewares: `requireAuth`, `requireRole("admin", "news")`
 
 Parametre d'URL:
 
@@ -765,7 +382,7 @@ Reponse en succes:
 Reponses d'erreur:
 
 - `400` `{ "error": "Donnees invalides" }` (id invalide)
-- `401` `{ "error": "Cookie d'authentification manquant" }`
+- `401` `{ "error": "Session manquante" }`
 - `403` `{ "error": "Acces refuse" }`
 - `404` `{ "error": "News introuvable" }`
 
@@ -773,11 +390,13 @@ Reponses d'erreur:
 
 ## Artists
 
+> Routes admin réservées aux rôles `admin` et `artists` — session Better Auth requise (`requireAuth` + `requireRole("admin", "artists")`).
+
 ### POST `/admin/artists`
 
 Creer un artiste avec une image uploadée.
 
-Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "artists")`, `upload.single("image")`, `validateBody`
+Middlewares: `requireAuth`, `requireRole("admin", "artists")`, `upload.single("image")`, `validateBody`
 
 Corps de requete:
 
@@ -832,7 +451,7 @@ Reponses d'erreur:
 - `400` `{ "error": "Donnees invalides" }`
 - `400` `{ "error": "Image requise" }`
 - `400` `{ "error": "Type de fichier non autorise (jpeg, png ou webp uniquement)" }`
-- `401` `{ "error": "Cookie d'authentification manquant" }`
+- `401` `{ "error": "Session manquante" }`
 - `403` `{ "error": "Acces refuse" }`
 - `409` `{ "error": "Deux artistes sont déjà mis en avant sur la page d'accueil." }`
 
@@ -840,11 +459,7 @@ Reponses d'erreur:
 
 Modifier un artiste existant et son concert associe.
 
-Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "artists")`, `upload.single("image")`, `validateBody`
-
-Authentification:
-
-- Cookie d'authentification valide requis.
+Middlewares: `requireAuth`, `requireRole("admin", "artists")`, `upload.single("image")`, `validateBody`
 
 Parametre d'URL:
 
@@ -898,17 +513,10 @@ Reponse en succes:
 }
 ```
 
-- Header: `Set-Cookie` (token d'acces renouvele)
-
 Reponses d'erreur:
 
 - `400` `{ "error": "Donnees invalides" }` (id invalide ou corps invalide)
 - `400` `{ "error": "Type de fichier non autorise (jpeg, png ou webp uniquement)" }`
-- `401` `{ "error": "Cookie d'authentification manquant" }`
-- `401` `{ "error": "Token d'acces manquant" }`
-- `401` `{ "error": "Token d'acces invalide" }`
-- `401` `{ "error": "Session introuvable" }`
-- `401` `{ "error": "Session deja fermee ou expiree" }`
 - `401` `{ "error": "Session manquante" }`
 - `403` `{ "error": "Acces refuse" }`
 - `404` `{ "error": "Artiste introuvable" }`
@@ -922,11 +530,7 @@ Supprime definitivement un artiste, son concert associe et son fichier image.
 
 > Le concert est supprime automatiquement en cascade par la base de donnees (`ON DELETE CASCADE`). Le fichier image est supprime du disque apres la suppression en base.
 
-Middlewares: `auth`, `sessionIsOpen`, `requireRole("admin", "artists")`
-
-Authentification:
-
-- Cookie d'authentification valide requis.
+Middlewares: `requireAuth`, `requireRole("admin", "artists")`
 
 Parametre d'URL:
 
@@ -943,16 +547,9 @@ Reponse en succes:
 }
 ```
 
-- Header: `Set-Cookie` (token d'acces renouvele)
-
 Reponses d'erreur:
 
 - `400` `{ "error": "Donnees invalides" }` (id invalide)
-- `401` `{ "error": "Cookie d'authentification manquant" }`
-- `401` `{ "error": "Token d'acces manquant" }`
-- `401` `{ "error": "Token d'acces invalide" }`
-- `401` `{ "error": "Session introuvable" }`
-- `401` `{ "error": "Session deja fermee ou expiree" }`
 - `401` `{ "error": "Session manquante" }`
 - `403` `{ "error": "Acces refuse" }`
 - `404` `{ "error": "Artiste introuvable" }`
@@ -994,17 +591,16 @@ Reponse en succes:
 Reponses d'erreur:
 
 - `400` `{ "error": "Donnees invalides" }`
-- `500` `{ "error": "Erreur interne du serveur" }`
-
----
-
 
 ---
 
 ## Notes
 
-- Format d'erreur standardisé :
+- Format d'erreur standardisé pour toutes les routes définies dans ce backend (`/admin/*`, `/public/*`, `/contact/*`) :
 
 ```json
 { "error": "..." }
 ```
+
+  Les routes `/api/auth/*` sont gérées par Better Auth et ont leur propre format d'erreur.
+- Toute erreur non anticipée est capturée par le handler d'erreur global et renvoyée en `500 { "error": "Erreur interne du serveur" }`.

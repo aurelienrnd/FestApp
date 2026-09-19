@@ -9,7 +9,7 @@ Le backend est l'une des trois couches de l'architecture du projet Vindhellfest,
 Dans l'architecture Docker, le backend tourne dans un conteneur dédié (`vindhellfest-backend`) accessible sur le port `4000`. Il occupe une position centrale dans le réseau interne Docker `app-net` :
 
 | Appelant                        | Adresse utilisée        | Raison                                                  |
-| ------------------------------- | ----------------------- | ------------------------------------------------------- |
+| -------------------------------- | ------------------------ | --------------------------------------------------------- |
 | Frontend (SSR, layouts serveur) | `http://backend:4000`   | Communication interne au réseau Docker `app-net`        |
 | Frontend (navigateur client)    | `http://localhost:4000` | Le navigateur ne connaît pas le réseau Docker           |
 | Base de données PostgreSQL      | `postgresql://db:5432`  | Hostname `db` résolu par Docker sur le réseau `app-net` |
@@ -17,7 +17,7 @@ Dans l'architecture Docker, le backend tourne dans un conteneur dédié (`vindhe
 Le backend remplit trois responsabilités principales :
 
 1. **API REST** — expose les endpoints consommés par le frontend, organisés en deux préfixes : `/public` pour les données accessibles sans authentification, `/admin` pour les opérations protégées.
-2. **Authentification et sessions** — gère l'intégralité du cycle de vie des sessions : création du JWT à la connexion, vérification à chaque requête protégée, révocation à la déconnexion. Les sessions sont persistées en base de données, ce qui permet de les invalider côté serveur.
+2. **Authentification et sessions** — déléguées entièrement à Better Auth (`src/lib/auth.ts`), montée sur `/api/auth/*`. Connexion, déconnexion, session, réinitialisation de mot de passe et CRUD utilisateurs (plugin admin) sont gérés par la librairie ; le backend ne fait que lire la session courante (`requireAuth`) pour protéger ses propres routes.
 3. **Fichiers uploadés** — traite les images envoyées par l'administration (artistes, actualités), les convertit au format WebP via Sharp, et les sert statiquement via `/uploads/*`. Le frontend proxifie ces URLs vers le backend de manière transparente via une règle `rewrite` dans `next.config.ts`.
 
 Le backend dépend de la base de données pour démarrer : Docker Compose configure un `healthcheck` sur le conteneur `db` et le `depends_on` du backend attend que PostgreSQL soit prêt avant de lancer le processus Node.js.
@@ -38,13 +38,9 @@ Express organise le traitement d'une requête comme une chaîne de fonctions ex�
 
 L'application Express est créée par `createApp()` dans `src/app.ts`, indépendamment du `app.listen()` dans `src/index.ts`. Cette séparation est directement exploitée dans les tests d'intégration : Supertest monte l'instance retournée par `createApp()` sans ouvrir de port réseau — les tests s'exécutent en isolation complète.
 
-**Architecture de l'application**
-
-L'application est exportée par la fonction `createApp()` dans `src/app.ts`, séparée du point d'entrée `src/index.ts`. Ce découpage permet d'instancier l'application dans les tests d'intégration sans démarrer de serveur HTTP réel — Supertest monte directement l'instance Express retournée par `createApp()`.
-
 ```
-src/index.ts       →  valide les variables d'env, lance app.listen()
-src/app.ts         →  createApp() — CORS, routes, handlers d'erreur
+src/index.ts       →  charge le .env, valide les variables d'env, lance app.listen()
+src/app.ts         →  createApp() — CORS, montage de Better Auth, routes, handlers d'erreur
 src/env.ts         →  validateEnv() — arrête le processus si une variable est manquante
 ```
 
@@ -56,25 +52,24 @@ Le démarrage est ainsi sécurisé : si une variable d'environnement obligatoire
 
 ### 2.1. Tableau des technologies et versions
 
-| Technologie        | Version     | Rôle                                                              |
-| ------------------ | ----------- | ----------------------------------------------------------------- |
-| Node.js            | 20 (Alpine) | Environnement d'exécution du conteneur Docker                     |
-| Express.js         | ^5.1.0      | Framework HTTP — routing, middlewares, gestion des erreurs async  |
-| TypeScript         | ^5.9.3      | Typage statique strict sur l'ensemble du code                     |
-| PostgreSQL         | 16          | Base de données relationnelle                                     |
-| pg                 | ^8.16.3     | Driver PostgreSQL natif — pool de connexions, requêtes typées     |
-| Zod                | ^4.2.1      | Validation des corps de requêtes — schémas déclaratifs            |
-| jsonwebtoken       | ^9.0.2      | Génération et vérification des JWT d'authentification             |
-| bcrypt             | ^6.0.0      | Hashage des mots de passe                                         |
-| multer             | ^2.1.1      | Réception des fichiers multipart (images uploadées)               |
-| sharp              | ^0.34.5     | Traitement d'images — conversion WebP, redimensionnement          |
-| nodemailer         | ^8.0.2      | Envoi d'emails (mot de passe provisoire, contact)                 |
-| express-rate-limit | ^8.2.1      | Limitation du débit sur les routes sensibles                      |
-| dotenv             | ^17.2.3     | Chargement des variables d'environnement depuis `.env`            |
-| Vitest             | ^4.0.15     | Framework de tests unitaires et d'intégration                     |
-| Supertest          | ^7.1.4      | Requêtes HTTP sur l'instance Express dans les tests d'intégration |
-| ESLint             | ^9.39.1     | Analyse statique du code — règles TypeScript                      |
-| Prettier           | ^3.6.2      | Formatage automatique du code                                     |
+| Technologie | Version     | Rôle                                                             |
+| ------------ | ----------- | ------------------------------------------------------------------ |
+| Node.js      | 20 (Alpine) | Environnement d'exécution du conteneur Docker                    |
+| Express.js   | ^5.1.0      | Framework HTTP — routing, middlewares, gestion des erreurs async |
+| TypeScript   | ^5.9.3      | Typage statique strict sur l'ensemble du code                    |
+| PostgreSQL   | 16          | Base de données relationnelle                                    |
+| Better Auth  | ^1.7.2      | Authentification, sessions et CRUD utilisateurs (plugin admin)   |
+| pg           | ^8.16.3     | Driver PostgreSQL natif — pool de connexions, requêtes typées    |
+| Zod          | ^4.2.1      | Validation des corps de requêtes — schémas déclaratifs           |
+| multer       | ^2.1.1      | Réception des fichiers multipart (images uploadées)              |
+| sharp        | ^0.35.3     | Traitement d'images — conversion WebP, redimensionnement         |
+| nodemailer   | ^9.0.3      | Envoi d'emails (reset de mot de passe, invitation, contact)      |
+| dotenv       | ^17.2.3     | Chargement des variables d'environnement depuis `.env`           |
+| tsx          | ^4.20.6     | Exécution TypeScript à la volée en développement (watch mode)    |
+| Vitest       | ^4.0.15     | Framework de tests unitaires et d'intégration                    |
+| Supertest    | ^7.1.4      | Requêtes HTTP sur l'instance Express dans les tests d'intégration |
+| ESLint       | ^9.39.1     | Analyse statique du code — règles TypeScript                     |
+| Prettier     | ^3.6.2      | Formatage automatique du code                                    |
 
 ---
 
@@ -86,6 +81,10 @@ Ce sont les packages embarqués dans l'image finale et nécessaires au fonctionn
 
 Le framework HTTP. Express 5 propage automatiquement les erreurs des handlers async vers le middleware d'erreur global — ce qui simplifie l'écriture des controllers et est exploité par `asyncHandler`.
 
+**Better Auth** (`better-auth ^1.7.2`)
+
+Gère l'intégralité de l'authentification : hachage des mots de passe (scrypt), création et vérification des sessions, cookies signés, réinitialisation de mot de passe, et CRUD utilisateurs via son plugin admin. Configurée dans `src/lib/auth.ts` et montée sur `/api/auth/*` (`toNodeHandler(auth)` dans `app.ts`). Le backend n'implémente aucune logique d'authentification lui-même — voir la section [13. Authentification et sessions](#13-authentification-et-sessions).
+
 **pg** (`^8.16.3`)
 
 Driver officiel PostgreSQL pour Node.js. Il expose un pool de connexions configuré dans `src/db.ts` et une fonction générique `query<T>()` utilisée par tous les controllers. Le pool maintient plusieurs connexions ouvertes et les distribue aux requêtes concurrentes sans en ouvrir une nouvelle à chaque appel.
@@ -94,59 +93,43 @@ Driver officiel PostgreSQL pour Node.js. Il expose un pool de connexions configu
 
 Bibliothèque de validation par schémas. Chaque endpoint qui reçoit un corps JSON est protégé par un schéma Zod défini dans `src/schemas/schema.ts` et appliqué via le middleware `validateBody`. Zod retourne des erreurs de validation structurées qui sont ensuite formatées et renvoyées au client avec un statut `400`.
 
-**jsonwebtoken** (`^9.0.2`)
-
-Génère et vérifie les JSON Web Tokens. Le JWT est signé avec `JWT_ACCESS_SECRET` à la connexion et vérifié à chaque requête protégée par le middleware `auth`. Il transporte l'`id`, le `role` et l'`display_name` de l'utilisateur — ces valeurs sont injectées dans `res.locals` pour être accessibles dans les controllers sans aller en base.
-
-**bcrypt** (`^6.0.0`)
-
-Hashage sécurisé des mots de passe avec un coût (`saltRounds`) de 10. Utilisé à la création d'un utilisateur, au changement de mot de passe et à la vérification du mot de passe lors de la connexion. Le hash est stocké en base — le mot de passe en clair ne transite jamais.
-
 **multer** (`^2.1.1`)
 
 Middleware de réception des fichiers `multipart/form-data`. Configuré en mode `memoryStorage` : les fichiers sont conservés en mémoire (`req.file.buffer`) et transmis directement à Sharp pour traitement, sans écriture intermédiaire sur le disque. La taille maximale est limitée à 5 Mo et seuls les types MIME image sont acceptés.
 
-**sharp** (`^0.34.5`)
+**sharp** (`^0.35.3`)
 
 Bibliothèque de traitement d'images haute performance basée sur libvips. Dans le projet, sharp reçoit le buffer de multer et effectue deux opérations : redimensionner l'image à 1600 px de large maximum (en conservant le ratio) puis la convertir en WebP à une qualité de 80. Le fichier résultant est écrit sur le disque avec un nom UUID unique.
 
-**nodemailer** (`^8.0.2`)
+**nodemailer** (`^9.0.3`)
 
-Client SMTP pour l'envoi d'emails. Utilisé dans trois cas : envoi du mot de passe provisoire lors d'une réinitialisation (`forgot-password`), envoi des identifiants à un nouvel utilisateur créé par l'admin, et transfert du formulaire de contact à l'adresse de l'organisation. Le transporteur SMTP est configuré une seule fois dans `src/services/mailer.service.ts`.
-
-**express-rate-limit** (`^8.2.1`)
-
-Middleware de limitation du débit. Appliqué uniquement sur les routes de connexion et de mot de passe oublié : 5 tentatives autorisées par fenêtre de 10 minutes par IP. En production, `trust proxy` est activé dans `app.ts` pour que le middleware lise la vraie IP cliente derrière le reverse proxy, et non l'IP interne Docker.
+Client SMTP pour l'envoi d'emails. Utilisé dans trois cas : envoi du lien de réinitialisation de mot de passe (`sendPasswordResetEmail`, déclenché par Better Auth via `sendResetPassword`), envoi du lien d'invitation à un utilisateur créé par un admin (`sendInviteEmail`, même mécanisme avec un `context=invite` dans l'URL), et transfert du formulaire de contact à l'adresse de l'organisation (`sendContactEmail`). Le transporteur SMTP est configuré une seule fois dans `src/services/mailer.service.ts`.
 
 **dotenv** (`^17.2.3`)
 
 Charge les variables d'environnement depuis le fichier `.env` avant toute autre importation dans `src/index.ts`. Le chargement est la toute première instruction du point d'entrée — avant même l'import de `validateEnv` — pour garantir que les variables sont disponibles au moment de la validation.
 
-**cookie** (`^1.1.1`)
-
-Utilitaire de parsing et sérialisation des cookies HTTP. Utilisé ponctuellement pour lire la valeur du cookie JWT dans des contextes où `req.cookies` d'Express n'est pas disponible (par exemple dans les tests).
-
 ---
 
 ### 2.3. Dépendances de développement
 
-Ces packages ne sont présents que pendant le développement et les tests. Ils ne sont pas inclus dans l'image de production (`npm ci --omit=dev`).
+Ces packages ne sont présents que pendant le développement et les tests. Ils ne sont pas inclus dans l'image de production (`npm install --only=production`).
 
 **TypeScript** (`typescript ^5.9.3`)
 
-Le compilateur TypeScript. Configuré en mode `strict` dans `tsconfig.json` — aucun `any` implicite, nullabilité systématiquement vérifiée. En développement, `ts-node-dev` transpile à la volée sans générer de fichiers JS. En production, `tsc` compile vers `dist/` et `node dist/index.js` lance le serveur.
+Le compilateur TypeScript. Configuré en mode `strict` dans `tsconfig.json` — aucun `any` implicite, nullabilité systématiquement vérifiée. En production, `tsc` compile vers `dist/` et `node dist/index.js` lance le serveur.
+
+**tsx** (`^4.20.6`)
+
+Exécute `src/index.ts` directement en TypeScript en développement, avec rechargement automatique à chaque modification de fichier (`tsx watch`). Remplace un couple bundler + watcher séparé : aucune étape de compilation intermédiaire n'est nécessaire pour lancer le serveur en local.
 
 **Types de bibliothèques** (`@types/*`)
 
-Les paquets de définitions de types pour les bibliothèques JavaScript qui n'en embarquent pas nativement : `@types/express`, `@types/bcrypt`, `@types/jsonwebtoken`, `@types/multer`, `@types/nodemailer`, `@types/pg`, `@types/node`, `@types/supertest`, `@types/cookie`. Sans eux, TypeScript ne connaît pas les signatures des fonctions de ces bibliothèques.
-
-**ts-node-dev** (`^2.0.0`)
-
-Lance le serveur Express en mode développement avec rechargement automatique à chaque modification de fichier TypeScript. Configuré avec `--transpile-only` pour ignorer la vérification de types au redémarrage (TypeScript reste disponible séparément pour le lint) et `--poll` pour la compatibilité avec les volumes Docker sur Windows et macOS.
+Les paquets de définitions de types pour les bibliothèques JavaScript qui n'en embarquent pas nativement : `@types/express`, `@types/multer`, `@types/nodemailer`, `@types/pg`, `@types/node`, `@types/supertest`. Sans eux, TypeScript ne connaît pas les signatures des fonctions de ces bibliothèques. Better Auth, comme la plupart des libs récentes, embarque directement ses propres types — pas de paquet `@types/better-auth` séparé.
 
 **Vitest** (`^4.0.15`)
 
-Framework de tests. Utilisé pour les tests unitaires (services, middlewares) et les tests d'intégration (routes HTTP via Supertest). La configuration se trouve dans `vitest.config.ts`.
+Framework de tests. Utilisé pour les tests unitaires (services, middlewares) et les tests d'intégration (routes HTTP via Supertest). La configuration se trouve dans `vitest.config.ts` — détail complet en section [14. Tests](#14-tests).
 
 **Supertest** (`^7.1.4`)
 
@@ -154,11 +137,15 @@ Bibliothèque de tests HTTP qui monte l'instance Express retournée par `createA
 
 **ESLint** (`eslint ^9.39.1`) + plugins TypeScript et Prettier
 
-Analyse statique du code. Les plugins `@typescript-eslint/eslint-plugin` et `@typescript-eslint/parser` activent les règles spécifiques TypeScript (typage strict, pas d'`any`…). `eslint-plugin-prettier` et `eslint-config-prettier` intègrent Prettier dans ESLint pour unifier le formatage et les règles de style en une seule passe.
+Analyse statique du code. `@typescript-eslint/eslint-plugin` et `@typescript-eslint/parser` activent les règles spécifiques TypeScript. `@eslint/eslintrc` et `@eslint/js` fournissent la compatibilité avec le style de configuration `extends: [...]` utilisé dans `eslint.config.cjs` — détail en section [5.2](#52-eslintconfigcjs). `eslint-plugin-prettier` et `eslint-config-prettier` intègrent Prettier dans ESLint pour unifier le formatage et les règles de style en une seule passe.
 
 **Prettier** (`^3.6.2`)
 
 Formateur de code automatique. Lancé via `npm run format` qui réécrit tous les fichiers selon les règles définies dans `.prettierrc`.
+
+**knip** (`^6.37.0`)
+
+Détecte les fichiers, exports et dépendances déclarées dans `package.json` mais jamais réellement utilisés dans le code (`npx knip`). Utile après une suppression de fonctionnalité — les imports orphelins et les dépendances devenues inutiles ne sont pas toujours évidents à repérer à l'œil.
 
 ---
 
@@ -171,17 +158,18 @@ apps/backend/
 │
 ├── src/
 │   ├── index.ts                          # Point d'entrée — charge .env, valide, lance app.listen()
-│   ├── app.ts                            # createApp() — CORS, routes, handlers d'erreur
+│   ├── app.ts                            # createApp() — CORS, montage Better Auth, routes, handlers d'erreur
 │   ├── db.ts                             # Pool de connexions PostgreSQL + query<T>()
 │   ├── env.ts                            # validateEnv() — arrêt immédiat si variable manquante
-│   ├── type.ts                           # Types TypeScript partagés (DB rows, res.locals)
-│   ├── utils.ts                          # Fonctions utilitaires pures
+│   ├── type.ts                           # Types TypeScript partagés (DB rows, res.locals) — voir TYPE.md
+│   ├── utils.ts                          # getEnv() — seule fonction utilitaire du projet
+│   │
+│   ├── lib/
+│   │   └── auth.ts                       # Configuration Better Auth (emailAndPassword, plugin admin, role)
 │   │
 │   ├── routes/                           # Déclaration des routes Express — aucune logique métier
 │   │   ├── admin.artists.routes.ts       # POST/PATCH/DELETE /admin/artists
-│   │   ├── admin.auth.routes.ts          # POST /admin/auth/login, logout, password…
 │   │   ├── admin.news.routes.ts          # POST/PATCH/DELETE /admin/news
-│   │   ├── admin.users.routes.ts         # GET/POST/PATCH/DELETE /admin/users
 │   │   ├── artists.routes.ts             # GET /public/artists, /public/artists/:id
 │   │   ├── contact.routes.ts             # POST /contact/submit
 │   │   ├── home.routes.ts                # GET /public/home
@@ -193,21 +181,10 @@ apps/backend/
 │   │   │   │   ├── create_artist.controller.ts
 │   │   │   │   ├── update_artist.controller.ts
 │   │   │   │   └── delete_artist.controller.ts
-│   │   │   ├── auth/
-│   │   │   │   ├── login.controller.ts
-│   │   │   │   ├── logout.controller.ts
-│   │   │   │   ├── user_info.controller.ts
-│   │   │   │   ├── change_password.controller.ts
-│   │   │   │   └── forgot_password.controller.ts
-│   │   │   ├── news/
-│   │   │   │   ├── create_news.controller.ts
-│   │   │   │   ├── update_news.controller.ts
-│   │   │   │   └── delete_news.controller.ts
-│   │   │   └── users/
-│   │   │       ├── create_user.controller.ts
-│   │   │       ├── update_user.controller.ts
-│   │   │       ├── delete_user.controller.ts
-│   │   │       └── list_users.controller.ts
+│   │   │   └── news/
+│   │   │       ├── create_news.controller.ts
+│   │   │       ├── update_news.controller.ts
+│   │   │       └── delete_news.controller.ts
 │   │   ├── contact/
 │   │   │   └── submit_contact.controller.ts
 │   │   └── public/
@@ -222,15 +199,12 @@ apps/backend/
 │   │
 │   ├── middlewares/                      # Middlewares Express réutilisables
 │   │   ├── asyncHandler.ts               # Wrap async → propage les erreurs vers next()
-│   │   ├── auth.ts                       # Vérifie le JWT dans le cookie
-│   │   ├── sessionIsOpen.ts              # Vérifie que la session en base est active
+│   │   ├── requireAuth.ts                # requireAuth + optionalAuth — lit la session Better Auth
 │   │   ├── requireRole.ts                # Contrôle le rôle de l'utilisateur connecté
-│   │   ├── authChain.ts                  # adminAuth() — compose auth + session + role
+│   │   ├── authChain.ts                  # adminAuth() — compose requireAuth + requireRole
 │   │   ├── validateBody.ts               # Validation Zod du corps de requête
 │   │   ├── validateUuidParam.ts          # Validation du paramètre :id en UUID
 │   │   ├── upload.ts                     # Configuration Multer (memoryStorage, 5 Mo max)
-│   │   ├── hashPassword.ts               # Hash bcrypt d'un champ du body
-│   │   ├── rateLimitLogin.ts             # Rate limit : 5 tentatives / 10 min
 │   │   └── errorHandler.ts               # notFoundHandler + errorHandler global
 │   │
 │   ├── errors/
@@ -238,52 +212,53 @@ apps/backend/
 │   │   └── errorMessages.ts              # Constantes ERRORS.* — source de vérité des messages
 │   │
 │   ├── schemas/
-│   │   └── schema.ts                     # Schémas Zod pour la validation de tous les endpoints
+│   │   └── schema.ts                     # Schémas Zod : contact, news, artiste
 │   │
 │   └── services/                         # Logique réutilisable sans dépendance Express
 │       ├── imageUpload.service.ts         # saveImage(), deleteImage() — Sharp + disque
 │       ├── mailer.service.ts              # Transporteur SMTP + fonctions d'envoi d'email
-│       └── user.service.ts               # Génération de mot de passe, hashing, unicité
+│       └── user.service.ts               # isNewsPrivileged() — seule fonction du service
 │
-├── tests/
-│   ├── setup.ts                          # Configuration globale Vitest (ex: reset DB)
-│   ├── health.test.ts                    # Test du endpoint /health
+├── tests/                                # Voir TEST.md pour le détail fichier par fichier
+│   ├── setup.ts                          # Mocks globaux, reset DB entre les tests
+│   ├── tsconfig.json                     # Etend tsconfig.json, ajoute tests/ a l'inclusion
 │   ├── helpers/
 │   │   ├── testServer.ts                 # Crée l'instance Express pour les tests (Supertest)
-│   │   ├── createAuthSession.ts          # Crée une session de test avec JWT
-│   │   └── fixtures.ts                   # Données de test réutilisables
+│   │   ├── createAuthSession.ts          # Crée une session Better Auth reelle + cookie signe
+│   │   └── fixtures.ts                   # insertUser (via auth.api.createUser), insertArtist, insertNews
 │   ├── integration/
 │   │   ├── admin/
-│   │   │   ├── auth.test.ts
 │   │   │   ├── artists.test.ts
 │   │   │   ├── news.test.ts
-│   │   │   └── users.test.ts
+│   │   │   └── betterAuth.test.ts        # Sign-in, sign-out, session, reset, plugin admin
 │   │   └── public/
 │   │       ├── public.test.ts
 │   │       └── contact.test.ts
 │   └── unit/
-│       ├── auth.middleware.test.ts
+│       ├── auth.sendResetPassword.test.ts
 │       ├── requireRole.middleware.test.ts
 │       ├── validateBody.middleware.test.ts
 │       ├── validateUuidParam.middleware.test.ts
 │       ├── imageUpload.service.test.ts
-│       ├── mailer.service.test.ts
-│       └── user.service.test.ts
+│       └── mailer.service.test.ts
 │
 ├── uploads/                              # Les images uploadées sont stockées directement sur la machine hôte (pas un volume Docker)
 │   ├── artists/
 │   └── news/
 │
 ├── Dockerfile
-├── .dockerignore
 ├── tsconfig.json
 ├── vitest.config.ts
-├── eslint.config.mjs
+├── eslint.config.cjs
 ├── .prettierrc
 ├── .prettierignore
 ├── API.md                                # Documentation de tous les endpoints de l'API
+├── TYPE.md                                # Règles et catalogue des types partagés
+├── TEST.md                                # Détail fichier par fichier de la suite de tests
 └── package.json
 ```
+
+> Il n'y a pas de `.dockerignore` dans ce dossier. Le `Dockerfile` copie explicitement `package*.json`, `tsconfig.json` et `src/` plutôt que le contexte entier (pas de `COPY . .`), ce qui limite l'impact concret de son absence — mais le contexte envoyé au démon Docker au moment du build reste tout de même le dossier complet (`node_modules/`, `uploads/`... inclus) tant qu'aucun `.dockerignore` ne le filtre.
 
 ---
 
@@ -299,12 +274,12 @@ routes/  ──►  middlewares/  ──►  controllers/  ──►  services/ 
 ```
 
 | Couche         | Responsabilité                                                                             | Ce qu'elle ne fait pas                                                        |
-| -------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| --------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | `routes/`      | Déclare les URLs, les méthodes HTTP et la chaîne de middlewares de chaque endpoint         | Pas de logique métier — uniquement l'assemblage de la chaîne                  |
-| `middlewares/` | Intercepte la requête avant le controller — auth, validation, upload, rate limit           | Pas d'accès direct à la base de données (sauf `auth` et `sessionIsOpen`)      |
+| `middlewares/` | Intercepte la requête avant le controller — session (Better Auth), rôle, validation, upload | Aucun ne touche `db.ts` directement — `requireAuth` délègue à Better Auth   |
 | `controllers/` | Logique métier — lit `req`, interroge la base, appelle les services, retourne la réponse   | Pas de logique réutilisable extraite ici — elle monte dans `services/`        |
-| `services/`    | Fonctions réutilisables sans dépendance Express (`req`, `res`) — image, email, utilisateur | Pas de lecture directe de `req` ou `res`                                      |
-| `db.ts`        | Unique point d'accès à PostgreSQL — pool et fonction `query<T>()`                          | Pas de logique métier — exécute uniquement la requête SQL passée en paramètre |
+| `services/`    | Fonctions réutilisables sans dépendance Express (`req`, `res`) — image, email, rôle news   | Pas de lecture directe de `req` ou `res`                                      |
+| `db.ts`        | Unique point d'accès à PostgreSQL pour **notre** code — pool et fonction `query<T>()`     | Pas de logique métier — exécute uniquement la requête SQL passée en paramètre. Better Auth gère son propre accès à la base (tables `user`, `session`, `account`, `verification`) via son propre adapter, indépendamment de `query<T>()`. |
 | `errors/`      | `AppError` + constantes `ERRORS.*` — source de vérité des messages d'erreur                | Transversal — importé par controllers et middlewares                          |
 | `schemas/`     | Schémas Zod pour la validation des corps de requête                                        | Pas de logique applicative — uniquement la forme des données attendues        |
 
@@ -314,7 +289,7 @@ Chaque controller est un fichier à export nommé unique : `create_artist.contro
 
 **La factory `adminAuth()`**
 
-Toutes les routes protégées utilisent `...adminAuth("admin", "artists")` — le spread d'un tableau de middlewares retourné par la factory `authChain.ts`. Ce pattern regroupe trois middlewares (`auth`, `sessionIsOpen`, `requireRole`) en une seule déclaration lisible dans la route, sans les répéter manuellement à chaque endpoint.
+Toutes les routes protégées utilisent `...adminAuth("admin", "artists")` — le spread d'un tableau de middlewares retourné par la factory `authChain.ts`. Ce pattern regroupe deux middlewares (`requireAuth`, `requireRole`) en une seule déclaration lisible dans la route, sans les répéter manuellement à chaque endpoint.
 
 ---
 
@@ -332,22 +307,17 @@ app.ts — middleware CORS
         │
         ▼
 app.ts — express.json()
-        │   Parse le corps JSON de la requête.
+        │   Parse le corps JSON de la requête (n'affecte pas cette route multipart,
+        │   mais s'applique avant tout routeur — voir 4.2 pour la position vis-à-vis de Better Auth).
         │
         ▼
 admin.artists.routes.ts — router.post("/artists", ...)
         │   Assemble et exécute la chaîne dans l'ordre :
         │
-        ├── asyncHandler(auth)
-        │       Lit le cookie JWT. Vérifie la signature avec JWT_ACCESS_SECRET.
-        │       Injecte userId, userRole, userDisplayName dans res.locals.
-        │       Si le JWT est absent ou invalide → AppError 401.
-        │
-        ├── asyncHandler(sessionIsOpen)
-        │       Cherche la session en base (SELECT ... WHERE id = sessionId).
-        │       Vérifie qu'elle n'est pas révoquée ni expirée.
-        │       Renouvelle le cookie JWT (sliding session).
-        │       Si session invalide → AppError 401.
+        ├── asyncHandler(requireAuth)
+        │       Appelle auth.api.getSession() (Better Auth) avec les headers de la requête.
+        │       Injecte userId, userRole, sessionId dans res.locals.
+        │       Si aucune session valide → AppError 401 (AUTH_MISSING_SESSION).
         │
         ├── requireRole("admin", "artists")
         │       Compare res.locals.userRole à la liste des rôles autorisés.
@@ -392,7 +362,7 @@ admin.artists.routes.ts — router.post("/artists", ...)
         ▼
 errorHandler (fin de chaîne dans app.ts)
         │   Si error instanceof AppError → res.status(error.status).json({ error: error.message })
-        │   Sinon → res.status(500).json({ error: "Internal Server Error" })
+        │   Sinon → res.status(500).json({ error: "Erreur interne du serveur" })
         ▼
 Réponse HTTP (navigateur)
 ```
@@ -415,15 +385,15 @@ C'est le point d'entrée du serveur — le seul fichier exécuté directement pa
 
 ```ts
 import dotenv from "dotenv";
-dotenv.config();           // 1. charge le .env
+dotenv.config(); // 1. charge le .env
 
-import { validateEnv } from "./env";
-import { createApp } from "./app";
+import { validateEnv } from "./env.js";
+import { createApp } from "./app.js";
 
-validateEnv();             // 2. vérifie que toutes les variables sont présentes
-const app = createApp();   // 3. construit l'application Express
+validateEnv(); // 2. vérifie que toutes les variables sont présentes
+const app = createApp(); // 3. construit l'application Express
 const PORT = Number(process.env.PORT) || 4000;
-app.listen(PORT, ...);     // 4. démarre le serveur
+app.listen(PORT, ...); // 4. démarre le serveur
 ```
 
 L'ordre des trois premières étapes est intentionnel et non interchangeable :
@@ -434,11 +404,13 @@ L'ordre des trois premières étapes est intentionnel et non interchangeable :
 
 Ce fichier n'est jamais importé dans les tests — ceux-ci appellent `createApp()` directement depuis `app.ts`, sans passer par `app.listen()`.
 
+Le projet est en ESM natif (`"type": "module"` dans `package.json`) : les imports entre fichiers `src/` utilisent l'extension `.js` (`from "./env.js"`) même si le fichier source est un `.ts` — c'est la convention Node.js pour la résolution de modules ESM, TypeScript ne réécrit pas les chemins d'import à la compilation.
+
 ### 4.2. `src/app.ts`
 
 Ce fichier exporte la fonction `createApp()` qui construit et retourne l'instance Express configurée. Il est séparé de `index.ts` précisément pour que les tests puissent instancier l'application sans démarrer de serveur.
 
-`createApp()` configure l'application en cinq étapes dans l'ordre :
+`createApp()` configure l'application dans un ordre précis :
 
 **1. CORS**
 
@@ -452,28 +424,32 @@ if (process.env.NODE_ENV === "production") {
 }
 ```
 
-En production, le backend est derrière un reverse proxy (nginx, load balancer…). Sans cette option, Express lit l'IP cliente depuis `req.ip` qui retourne l'IP du proxy — toujours la même. `express-rate-limit` utilise `req.ip` pour compter les tentatives par IP : sans `trust proxy`, toutes les requêtes semblent venir de la même adresse et le rate limiting ne fonctionne pas correctement. Avec `trust proxy: 1`, Express lit l'IP réelle du client depuis l'en-tête `X-Forwarded-For` ajouté par le proxy.
+En production, le backend est derrière un reverse proxy. Sans cette option, Express lit l'IP cliente depuis `req.ip`, qui retourne l'IP du proxy — toujours la même. Avec `trust proxy: 1`, Express lit l'IP réelle du client depuis l'en-tête `X-Forwarded-For`. Cette IP est utilisée par le rate limiting interne de Better Auth (voir [13.3](#133-rate-limiting-interne-de-better-auth)).
 
-Ce bloc est conditionnel — en développement, il n'y a pas de proxy et `req.ip` est déjà l'IP correcte.
+**3. Montage de Better Auth — avant `express.json()`**
 
-**3. Parsing du body**
+```ts
+app.all("/api/auth/{*any}", toNodeHandler(auth));
+app.use(express.json());
+```
 
-`express.json()` parse automatiquement le corps des requêtes `Content-Type: application/json` et le rend disponible dans `req.body`.
+`toNodeHandler(auth)` transforme la configuration Better Auth en un handler compatible Express et prend en charge toutes les routes `/api/auth/*`. Il est monté **avant** `express.json()` — Better Auth lit lui-même le corps brut de la requête ; si `express.json()` l'avait déjà consommé, Better Auth ne pourrait plus le lire.
 
-**3. Fichiers statiques et routes API**
+**4. Fichiers statiques et routes API**
 
 ```ts
 app.use("/uploads", express.static(...)); // sert les images uploadées
 app.use("/admin", adminArtists);
 app.use("/admin", adminNews);
-// ...
+app.use("/contact", contact);
 app.use("/public", publicHome);
-// ...
+app.use("/public", publicArtists);
+app.use("/public", publicNews);
 ```
 
 Les images uploadées sont servies statiquement depuis le dossier `uploads/` — le frontend les atteint via `/uploads/artists/<uuid>.webp` sans passer par un controller.
 
-**4. Handlers de fin de chaîne**
+**5. Handlers de fin de chaîne**
 
 ```ts
 app.use(notFoundHandler); // 404 si aucune route ne correspond
@@ -484,7 +460,7 @@ Ces deux middlewares sont enregistrés en dernier — `notFoundHandler` intercep
 
 ### 4.3. `src/db.ts`
 
-Ce fichier est l'unique point d'accès à la base de données PostgreSQL. Aucun controller ne crée de connexion directement — tous passent par les deux exports de ce fichier : `pool` et `query`.
+Ce fichier est l'unique point d'accès de **notre** code à la base de données PostgreSQL — Better Auth gère séparément son propre accès aux tables `user`, `session`, `account` et `verification` via son adapter interne. Aucun controller ne crée de connexion directement — tous passent par les deux exports de ce fichier : `pool` et `query`.
 
 **Le pool de connexions**
 
@@ -498,16 +474,16 @@ export const pool = new Pool({
 });
 ```
 
-Un `Pool` maintient un ensemble de connexions PostgreSQL ouvertes en permanence. Quand un controller appelle `query()`, le pool lui attribue une connexion disponible — sans en ouvrir une nouvelle à chaque requête. Quand la requête est terminée, la connexion est remise dans le pool pour la prochaine requête. Ce mécanisme évite le coût d'ouverture d'une connexion TCP à chaque appel et permet de gérer plusieurs requêtes simultanées.
+Un `Pool` maintient un ensemble de connexions PostgreSQL ouvertes en permanence. Quand un controller appelle `query()`, le pool lui attribue une connexion disponible — sans en ouvrir une nouvelle à chaque requête. Quand la requête est terminée, la connexion est remise dans le pool pour la prochaine requête.
 
-Les valeurs de fallback (`|| "localhost"`, `|| "postgres"`…) ne sont là que pour satisfaire TypeScript — `process.env.*` étant typé `string | undefined`, TypeScript exige une valeur par défaut. En pratique elles ne sont jamais atteintes : `validateEnv()` garantit que toutes les variables sont définies avant que le pool soit créé. En production, ces variables seraient injectées par la plateforme d'hébergement avec les vraies valeurs de l'infrastructure — `"postgres"` comme mot de passe ou `"localhost"` comme host ne seraient pas des valeurs viables.
+Les valeurs de fallback (`|| "localhost"`, `|| "postgres"`…) ne sont là que pour satisfaire TypeScript — `process.env.*` étant typé `string | undefined`, TypeScript exige une valeur par défaut. En pratique elles ne sont jamais atteintes : `validateEnv()` garantit que toutes les variables sont définies avant que le pool soit créé.
 
 `pool` est aussi exporté directement pour être utilisé dans `tests/setup.ts` — le setup de tests crée son propre pool pointant vers `vindhellfest_test` pour isoler les données de test de la base de développement.
 
 **La fonction `query<T>()`**
 
 ```ts
-export async function query<T extends QueryResultRow>(
+export async function query<T extends QueryResultRow = QueryResultRow>(
   text: string,
   params?: unknown[],
 ): Promise<T[]>;
@@ -531,9 +507,19 @@ Ce fichier exporte une seule fonction : `validateEnv()`. Elle est appelée dans 
 
 ```ts
 const envSchema = z.object({
+  PORT: z.string().optional(),
   DB_HOST: z.string(),
   DB_PORT: z.string(),
-  // ...toutes les variables obligatoires
+  DB_USER: z.string(),
+  DB_PASSWORD: z.string(),
+  DB_NAME: z.string(),
+  FRONTEND_ORIGIN: z.string(),
+  SMTP_HOST: z.string(),
+  SMTP_PORT: z.string(),
+  SMTP_SECURE: z.string(),
+  SMTP_USER: z.string(),
+  SMTP_PASS: z.string(),
+  CONTACT_EMAIL: z.string(),
 });
 
 export function validateEnv() {
@@ -545,30 +531,23 @@ export function validateEnv() {
 }
 ```
 
-Zod est utilisé ici de la même façon que pour la validation des corps de requête — `safeParse` tente de valider `process.env` contre le schéma. Si une variable est absente, Zod produit une issue par variable manquante. `.map((i) => i.path[0])` extrait le nom de chaque variable et `.join(", ")` les assemble en un message lisible :
+`.map((i) => i.path[0])` extrait le nom de chaque variable manquante et `.join(", ")` les assemble en un message lisible, par exemple `Missing env vars: DB_PASSWORD, SMTP_HOST`.
 
-```
-Error: Missing env vars: DB_PASSWORD, JWT_ACCESS_SECRET
-```
+> `BETTER_AUTH_SECRET` et `BETTER_AUTH_URL` ne font pas partie de ce schéma — Better Auth les lit lui-même directement depuis `process.env` au moment où `betterAuth({...})` est appelé dans `src/lib/auth.ts`. S'ils sont absents, l'échec se produit à l'initialisation de Better Auth plutôt que via le message clair de `validateEnv()`.
 
 ### 4.5. `src/utils.ts`
 
-Ce fichier regroupe les fonctions utilitaires partagées entre plusieurs middlewares et controllers — principalement liées à l'authentification, aux sessions et aux cookies. Elles n'ont pas de dépendance Express (`req`, `res`) et peuvent être appelées depuis n'importe quelle couche.
+Une seule fonction utilitaire, sans dépendance à Express :
 
-| Fonction                          | Rôle                                                                                                                                                                                                                                                                                         |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `getEnv(name)`                    | Lit une variable d'environnement et lance une erreur si elle est absente —`process.env[name]` étant typé `string \| undefined`, TypeScript refuse de l'utiliser là où un `string` est attendu. `getEnv()` retourne `string` garanti et prévient l'erreur de compilation sans recourir au `!` |
-| `envToStringValue(name)`          | Lit une variable d'environnement et la caste en `StringValue` (type attendu par `jsonwebtoken` pour les durées comme `"1h"`, `"12h"`)                                                                                                                                                        |
-| `initToken(...)`                  | Crée et signe un JWT avec `userId` et `sessionId` comme payload                                                                                                                                                                                                                              |
-| `serializeCookie(...)`            | Sérialise le JWT dans un cookie `httpOnly`, `secure`, `sameSite` — les options sont lues depuis les variables d'environnement                                                                                                                                                                |
-| `userExists(user)`                | Vérifie qu'un utilisateur a été trouvé en base — lance `AppError 401` sinon                                                                                                                                                                                                                  |
-| `passwordIsValid(password, hash)` | Compare le mot de passe en clair avec le hash bcrypt — lance `AppError 401` si invalide                                                                                                                                                                                                      |
-| `sessionExists(session)`          | Vérifie qu'une session a été trouvée en base — lance `AppError 401` sinon                                                                                                                                                                                                                    |
-| `sessionRevoked(session)`         | Vérifie que la session n'est pas révoquée ni expirée — lance `AppError 401` sinon                                                                                                                                                                                                            |
-| `requireUserId(reqUserId)`        | Extrait et valide le `userId` depuis `res.locals` — lance `AppError 401` si absent                                                                                                                                                                                                           |
-| `requireSessionId(reqSessionId)`  | Extrait et valide le `sessionId` depuis `res.locals` — lance `AppError 401` si absent                                                                                                                                                                                                        |
+```ts
+export function getEnv(name: string): string {
+  const variables = process.env[name];
+  if (!variables) throw new Error(`Missing env var: ${name}`);
+  return variables;
+}
+```
 
-Ces fonctions centralisent des vérifications répétées dans plusieurs controllers et middlewares. Sans elles, chaque controller devrait réécrire la même logique de vérification — avec le risque d'oublier un cas ou de retourner des codes d'erreur différents pour la même situation.
+`process.env[name]` est typé `string | undefined` par TypeScript ; utiliser cette valeur là où un `string` est attendu (par exemple la config du transporteur SMTP dans `mailer.service.ts`) provoquerait une erreur de compilation. `getEnv()` retourne un `string` garanti et lève une erreur explicite si la variable est absente, plutôt que de recourir à l'assertion non-null (`!`) qui masquerait silencieusement le problème.
 
 ---
 
@@ -585,6 +564,8 @@ Ces fichiers contrôlent le comportement des outils de développement : compilat
     "module": "Node16",
     "moduleResolution": "node16",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "verbatimModuleSyntax": false,
     "strict": true,
     "skipLibCheck": true,
     "outDir": "dist",
@@ -594,25 +575,34 @@ Ces fichiers contrôlent le comportement des outils de développement : compilat
 }
 ```
 
-Ce fichier contrôle le comportement du compilateur TypeScript. Les options clés du projet :
+| Option                          | Valeur   | Effet                                                                                                          |
+| --------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
+| `strict`                        | `true`   | Active toutes les vérifications strictes — interdit `any` implicite, `null` non vérifié, etc.                    |
+| `target`                        | `ES2020` | Code compilé compatible avec Node.js 20                                                                          |
+| `module`                        | `Node16` | Format de modules natif Node.js — aligné sur `"type": "module"` du `package.json`, imports `.js` obligatoires   |
+| `moduleResolution`              | `node16` | Résolution de modules alignée sur le comportement ESM de Node.js 16+                                             |
+| `esModuleInterop`               | `true`   | Permet d'importer des modules CommonJS avec la syntaxe `import x from "x"`                                       |
+| `allowSyntheticDefaultImports`  | `true`   | Autorise `import x from "x"` sur un module qui n'exporte pas de `default` explicite (vérification de type seule) |
+| `outDir`                        | `dist`   | Dossier de sortie des fichiers JavaScript compilés par `npm run build`                                           |
+| `rootDir`                       | `src`    | Dossier source — seul `src/` est compilé, `tests/` est exclu                                                    |
+| `skipLibCheck`                  | `true`   | Ignore les erreurs de types dans `node_modules/` — accélère la compilation                                       |
 
-| Option             | Valeur   | Effet                                                                                                                                                        |
-| ------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `strict`           | `true`   | Active toutes les vérifications strictes — interdit `any` implicite, `null` non vérifié, etc.                                                                |
-| `target`           | `ES2020` | Code compilé compatible avec Node.js 20                                                                                                                      |
-| `module`           | `Node16` | Format de modules natif Node.js — supporte les imports ES et CommonJS                                                                                        |
-| `moduleResolution` | `node16` | Résolution de modules alignée sur le comportement de Node.js 16+                                                                                             |
-| `esModuleInterop`  | `true`   | Permet d'importer des modules CommonJS avec la syntaxe `import x from "x"` — nécessaire pour `bcrypt`, `dotenv`, `nodemailer` qui sont des packages CommonJS |
-| `outDir`           | `dist`   | Dossier de sortie des fichiers JavaScript compilés par `npm run build`                                                                                       |
-| `rootDir`          | `src`    | Dossier source — seul `src/` est compilé, `tests/` est exclu                                                                                                 |
-| `skipLibCheck`     | `true`   | Ignore les erreurs de types dans `node_modules/` — accélère la compilation                                                                                   |
-
-`"include": ["src"]` exclut explicitement le dossier `tests/` de la compilation de production. Les tests ont leur propre `tests/tsconfig.json` qui étend ce fichier en ajoutant `tests/` à l'inclusion.
+`"include": ["src"]` exclut explicitement le dossier `tests/` de la compilation de production. Les tests ont leur propre `tests/tsconfig.json` qui étend ce fichier, ajoute `rootDir: ".."` et `tests/` à l'inclusion, et déclare les types `vitest/globals` et `node`.
 
 ### 5.2. `eslint.config.cjs`
 
 ```js
+const { FlatCompat } = require("@eslint/eslintrc");
+const js = require("@eslint/js");
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  allConfig: js.configs.all,
+});
+
 module.exports = [
+  { ignores: ["dist/**", "node_modules/**"] },
   ...compat.extends(
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -625,7 +615,9 @@ module.exports = [
 ];
 ```
 
-Le fichier utilise l'extension `.cjs` (CommonJS) plutôt que `.mjs` car le backend n'a pas `"type": "module"` dans son `package.json` — Node.js traite les fichiers `.js` comme CommonJS par défaut, et ESLint doit être dans le même format de modules que le projet.
+Le fichier utilise l'extension `.cjs` plutôt que `.mjs` ou `.js` précisément **parce que** le backend a `"type": "module"` dans son `package.json` : sans le `.cjs` explicite, Node.js traiterait ce fichier comme de l'ESM et les appels `require(...)` échoueraient.
+
+Le style d'écriture (`extends: [...]` avec des chaînes comme `"eslint:recommended"`) est celui du format `.eslintrc` historique, pas le format « flat config » natif d'ESLint 9. `FlatCompat` (package `@eslint/eslintrc`) traduit ces chaînes en config flat à la volée ; pour résoudre `"eslint:recommended"` spécifiquement, elle a besoin qu'on lui fournisse `js.configs.recommended` (package `@eslint/js`) en référence — d'où la dépendance conjointe aux deux packages. Les deux sont déclarés explicitement en devDependency plutôt que de dépendre de leur simple présence transitive via `eslint` (signalé par `knip`).
 
 Trois préréglages sont activés :
 
@@ -633,7 +625,7 @@ Trois préréglages sont activés :
 - **`plugin:@typescript-eslint/recommended`** — règles TypeScript strictes (`no-explicit-any`, typage correct des fonctions…)
 - **`plugin:prettier/recommended`** — intègre Prettier dans ESLint : les violations de formatage sont signalées comme des erreurs ESLint, ce qui permet de tout corriger en une seule passe avec `npm run lint:fix`
 
-Le dernier bloc configure une exception pour le fichier `eslint.config.cjs` lui-même — il utilise `require` et `module.exports` qui sont des globals CommonJS, normalement interdits par les règles TypeScript.
+Le dernier bloc configure une exception pour le fichier `eslint.config.cjs` lui-même — il utilise `require` et `module.exports`, des globals CommonJS normalement interdits par les règles TypeScript.
 
 ### 5.3. `vitest.config.ts`
 
@@ -651,13 +643,11 @@ export default defineConfig({
 });
 ```
 
-Ce fichier configure l'environnement de test. Les paramètres clés :
-
 **`environment: "node"`** — Contrairement au frontend qui utilise `jsdom` pour simuler un navigateur, le backend tourne dans un environnement Node.js pur. Pas de DOM nécessaire — les tests envoient des requêtes HTTP à l'instance Express via Supertest.
 
 **`globals: true`** — Active les globals de test (`describe`, `it`, `expect`, `vi`…) sans avoir à les importer dans chaque fichier de test.
 
-**`setupFiles`** — Exécute `tests/setup.ts` avant chaque suite de tests. Ce fichier mocke Sharp, Nodemailer, le système de fichiers et le rate limiter, charge les variables d'environnement, et configure la base de données de test.
+**`setupFiles`** — Exécute `tests/setup.ts` avant la suite de tests : mock de `sharp`, `fs/promises` et `nodemailer`, chargement des variables d'environnement, réinitialisation du schéma PostgreSQL (`DROP SCHEMA public CASCADE` puis rejeu des migrations SQL — dont le schéma Better Auth généré par sa CLI) et `TRUNCATE` de toutes les tables entre chaque test. Détail complet en section [14. Tests](#14-tests).
 
 **`fileParallelism: false`** — Les fichiers de test s'exécutent séquentiellement. Les tests d'intégration partagent la même base PostgreSQL — exécuter plusieurs fichiers en parallèle provoquerait des conflits sur les migrations et les `TRUNCATE`.
 
@@ -674,16 +664,14 @@ Ce fichier configure l'environnement de test. Les paramètres clés :
 }
 ```
 
-Prettier formate automatiquement le code à chaque exécution de `npm run format`. Les règles sont identiques à celles du frontend :
-
 | Règle         | Valeur  | Signification                                                      |
-| ------------- | ------- | ------------------------------------------------------------------ |
+| -------------- | ------- | ---------------------------------------------------------------------- |
 | `semi`        | `true`  | Point-virgule obligatoire en fin d'instruction                     |
 | `singleQuote` | `false` | Guillemets doubles pour les chaînes de caractères                  |
 | `tabWidth`    | `2`     | Indentation à 2 espaces                                            |
 | `endOfLine`   | `auto`  | Fin de ligne adaptée à l'OS (LF sur Linux/macOS, CRLF sur Windows) |
 
-`.prettierignore` exclut du formatage les fichiers qui n'ont pas à être touchés : `node_modules/`, `dist/` (fichiers compilés) et `README.md`.
+`.prettierignore` exclut du formatage `node_modules/`, `dist/` (fichiers compilés) et `README.md`.
 
 ### 5.5. `Dockerfile`
 
@@ -695,65 +683,53 @@ Installe toutes les dépendances (y compris `devDependencies` nécessaires à `t
 
 **Stage `runner`** — Image de production
 
-Repart d'une image Node.js propre, installe uniquement les dépendances de production (`npm install --only=production`), puis copie depuis `builder` uniquement le dossier `dist/`. L'image finale ne contient ni le code TypeScript source, ni les `devDependencies`, ni le cache de compilation. Elle démarre avec `node dist/index.js`.
+Repart d'une image Node.js propre, installe uniquement les dépendances de production (`npm install --only=production`), puis copie depuis `builder` uniquement le dossier `dist/`. L'image finale ne contient ni le code TypeScript source, ni les `devDependencies`. Elle démarre avec `node dist/index.js`.
 
 **Stage `dev`** — Image de développement
 
-N'exécute pas de compilation — le code source TypeScript est monté depuis l'hôte via un volume Docker et exécuté directement par `ts-node-dev`. Toute modification d'un fichier `.ts` déclenche un rechargement automatique du serveur sans reconstruire l'image.
+N'exécute pas de compilation — le code source TypeScript est monté depuis l'hôte via un volume Docker (`docker-compose.yml`) et exécuté directement par `tsx watch` (`npm run dev`). Toute modification d'un fichier `.ts` déclenche un rechargement automatique du serveur sans reconstruire l'image.
 
-### 5.6. `.dockerignore`
+### 5.6. Variables d'environnement
 
-Ce fichier indique à Docker quels fichiers ne pas envoyer au daemon lors du `docker build`. Sans lui, Docker enverrait l'intégralité du dossier `backend/` — y compris `node_modules/` et `dist/` — ce qui alourdirait inutilement le contexte de build et ralentirait chaque compilation.
+Les variables d'environnement sont définies dans `.env` et `.env.backend` à la racine du projet, injectées au conteneur via `env_file` dans `docker-compose.yml`, et chargées par `dotenv` au démarrage. Les variables listées dans `validateEnv()` (section [4.4](#44-srcenvts)) sont obligatoires — le serveur ne démarre pas si l'une d'elles est absente ; `BETTER_AUTH_SECRET` et `BETTER_AUTH_URL` sont lues directement par Better Auth et ne passent pas par cette validation.
 
-Les fichiers `.env` sont également exclus : les variables d'environnement sont injectées au démarrage du conteneur via `docker-compose.yml`, pas au moment du build.
+| Variable           | Exemple                     | Rôle                                                                       |
+| ------------------- | ---------------------------- | ------------------------------------------------------------------------------ |
+| `PORT`             | `4000`                      | Port d'écoute du serveur Express (optionnel — `4000` par défaut)             |
+| `DB_HOST`          | `db`                        | Hostname PostgreSQL — `db` dans Docker, `localhost` hors Docker              |
+| `DB_PORT`          | `5432`                      | Port PostgreSQL                                                             |
+| `DB_USER`          | `postgres`                  | Utilisateur PostgreSQL                                                      |
+| `DB_PASSWORD`      | `postgres`                  | Mot de passe PostgreSQL                                                     |
+| `DB_NAME`          | `vindhellfest`              | Nom de la base de données                                                  |
+| `FRONTEND_ORIGIN`  | `http://localhost:3000`     | Origine autorisée par le CORS et par `trustedOrigins` de Better Auth        |
+| `BETTER_AUTH_SECRET` | `une-valeur-longue-et-aleatoire` | Clé de signature des sessions Better Auth — lue directement par la lib, pas via `validateEnv()` |
+| `BETTER_AUTH_URL`  | `http://localhost:4000`     | URL de base utilisée par Better Auth pour construire ses liens (reset, invitation) |
+| `SMTP_HOST`        | `smtp.gmail.com`            | Serveur SMTP pour l'envoi d'emails                                          |
+| `SMTP_PORT`        | `587`                       | Port SMTP                                                                   |
+| `SMTP_SECURE`      | `false`                     | `true` si le port SMTP utilise TLS directement (port 465)                  |
+| `SMTP_USER`        | `email@gmail.com`           | Identifiant SMTP                                                            |
+| `SMTP_PASS`        | `xxxx`                      | Mot de passe SMTP — utiliser un mot de passe d'application Gmail           |
+| `CONTACT_EMAIL`    | `email@gmail.com`           | Adresse destinataire des formulaires de contact                            |
 
-### 5.7. Variables d'environnement
-
-Les variables d'environnement sont définies dans `.env.backend` à la racine du projet et chargées par `dotenv` au démarrage. Toutes les variables marquées comme obligatoires sont validées par `validateEnv()` — le serveur ne démarre pas si l'une d'elles est absente.
-
-| Variable                        | Exemple                     | Rôle                                                                   |
-| ------------------------------- | --------------------------- | ---------------------------------------------------------------------- |
-| `PORT`                          | `4000`                      | Port d'écoute du serveur Express (optionnel —`4000` par défaut)        |
-| `DB_HOST`                       | `db`                        | Hostname PostgreSQL —`db` dans Docker, `localhost` hors Docker         |
-| `DB_PORT`                       | `5432`                      | Port PostgreSQL                                                        |
-| `DB_USER`                       | `postgres`                  | Utilisateur PostgreSQL                                                 |
-| `DB_PASSWORD`                   | `postgres`                  | Mot de passe PostgreSQL                                                |
-| `DB_NAME`                       | `vindhellfest`              | Nom de la base de données                                              |
-| `JWT_ACCESS_SECRET`             | `un-super-secret-a-changer` | Clé de signature des JWT — doit être longue et aléatoire en production |
-| `JWT_ACCESS_EXPIRES_IN`         | `1h`                        | Durée de validité du JWT                                               |
-| `COOKIE_ACCESS_TOKEN_NAME`      | `vindhellfest_access_token` | Nom du cookie JWT                                                      |
-| `COOKIE_ACCESS_TOKEN_SECURE`    | `false`                     | `true` en production (HTTPS uniquement), `false` en développement      |
-| `COOKIE_ACCESS_TOKEN_SAME_SITE` | `lax`                       | Politique SameSite du cookie (`lax`, `strict` ou `none`)               |
-| `SESSION_EXPIRES_IN`            | `12h`                       | Durée de validité d'une session en base                                |
-| `FRONTEND_ORIGIN`               | `http://localhost:3000`     | Origine autorisée par le CORS                                          |
-| `SMTP_HOST`                     | `smtp.gmail.com`            | Serveur SMTP pour l'envoi d'emails                                     |
-| `SMTP_PORT`                     | `587`                       | Port SMTP                                                              |
-| `SMTP_SECURE`                   | `false`                     | `true` si le port SMTP utilise TLS directement (port 465)              |
-| `SMTP_USER`                     | `email@gmail.com`           | Identifiant SMTP                                                       |
-| `SMTP_PASS`                     | `xxxx`                      | Mot de passe SMTP — utiliser un mot de passe d'application Gmail       |
-| `CONTACT_EMAIL`                 | `email@gmail.com`           | Adresse destinataire des formulaires de contact                        |
-
-> Les fichiers `.env` ne sont pas versionnés — ils sont exclus par `.gitignore` et `.dockerignore`. Ne jamais commiter des secrets en clair dans le dépôt.
+> Les fichiers `.env` ne sont pas versionnés — ils sont exclus par `.gitignore`. Ne jamais commiter des secrets en clair dans le dépôt.
 
 ---
 
-## 5. Système de types — `src/type.ts`
+## 6. Système de types — `src/type.ts`
 
-Tous les types TypeScript partagés entre plusieurs fichiers sont regroupés dans un fichier unique : `src/type.ts`. Ce fichier est organisé en cinq sections : `EXPRESS`, `USERS`, `SESSIONS`, `NEWS` et `ARTISTS`/`CONCERTS`.
+Tous les types TypeScript partagés entre plusieurs fichiers sont regroupés dans `src/type.ts`. Le catalogue complet (champs, provenance, règles de nommage) est documenté dans **[TYPE.md](./TYPE.md)** — cette section n'en résume que la logique.
 
-### 5.1. Pourquoi centraliser les types
+### 6.1. Pourquoi centraliser les types
 
-Sans fichier central, chaque controller redéfinit localement le même type `NewsItem` ou `ArtistItem`. Si la structure d'une réponse API évolue (ajout d'un champ, changement d'un type nullable), il faut retrouver et corriger toutes les définitions dispersées. Avec un fichier unique, une seule modification se propage à l'ensemble des controllers et middlewares.
+Sans fichier central, chaque controller redéfinirait localement le même type `NewsItem` ou `ArtistItem`. Si la structure d'une réponse API évolue (ajout d'un champ, changement d'un type nullable), il faut retrouver et corriger toutes les définitions dispersées. Avec un fichier unique, une seule modification se propage à l'ensemble des controllers.
 
-Le frontend aligne ses propres types sur ceux du backend : `UserItem`, `NewsItem` et `ArtistItem` sont définis ici et reproduits à l'identique dans `apps/frontend/src/type.ts`. Ce contrat explicite évite les désynchronisations silencieuses entre ce que l'API envoie et ce que le frontend consomme.
+`NewsItem` et `ArtistItem` sont reproduits à l'identique dans `apps/frontend/src/type.ts`. Ce contrat explicite évite les désynchronisations silencieuses entre ce que l'API envoie et ce que le frontend consomme.
 
-> Les types propres à un seul fichier restent locaux à ce fichier avec une déclaration `type` locale — seuls les types réutilisés dans 2+ fichiers remontent dans `src/type.ts`.
+> Règle de placement (détaillée dans TYPE.md) : un type utilisé dans un seul fichier reste déclaré localement dans ce fichier ; seuls les types réutilisés dans 2+ fichiers remontent dans `src/type.ts`.
 
----
+### 6.2. Augmentation d'`Express.Locals`
 
-### 5.2. Augmentation d'`Express.Locals`
-
-Express expose un objet `res.locals` pour transmettre des données entre middlewares et controllers. Sans typage, cet objet est `Record<string, any>`. L'augmentation de module TypeScript permet de typer ce passage sans casser le contrat Express :
+Express expose un objet `res.locals` pour transmettre des données entre middlewares et controllers. L'augmentation de module TypeScript permet de le typer sans casser le contrat Express :
 
 ```ts
 declare global {
@@ -761,164 +737,31 @@ declare global {
     interface Locals {
       userId?: string;
       userRole?: UserRole;
-      userDisplayName?: string;
       sessionId?: string;
     }
   }
 }
 ```
 
-Le middleware `auth` écrit dans `res.locals` après avoir vérifié le JWT ; les controllers lisent ces valeurs sans aucun cast. TypeScript garantit que `res.locals.userRole` est bien un `UserRole` et non un `any`.
+`requireAuth` écrit dans `res.locals` après avoir lu la session Better Auth ; les controllers lisent ces valeurs sans aucun cast. Le compte connecté lui-même (email, nom, mot de passe) reste entièrement géré par Better Auth — seul le strict nécessaire au contrôle d'accès (`userId`, `userRole`, `sessionId`) transite par `res.locals`.
 
----
-
-### 5.3. Types base de données (DB rows)
-
-Ces types correspondent directement aux colonnes retournées par `pg`. Ils sont passés en paramètre de type à `query<T>(...)` pour typer le résultat de chaque requête SQL.
-
-**`IdRow`**
-
-```ts
-type IdRow = { id: string };
-```
-
-Utilisé pour les requêtes de vérification d'existence (`SELECT id FROM users WHERE id = $1`). Plutôt que de définir un type local à chaque controller, `IdRow` est réutilisé partout.
-
-**`UserCredentialsRow`**
-
-```ts
-type UserCredentialsRow = {
-  id: string;
-  email: string;
-  password_hash: string;
-  display_name: string;
-};
-```
-
-Retourné par la requête de connexion (`SELECT id, email, password_hash, display_name FROM users WHERE email = $1`). Le champ `password_hash` ne sort jamais des controllers d'authentification — il n'est jamais inclus dans `UserItem`.
-
-**`SessionRow`**
-
-```ts
-type SessionRow = {
-  id: string;
-  revoked_at: Date | null;
-  expires_at: Date;
-};
-```
-
-Retourné par le middleware `sessionIsOpen` pour vérifier l'état de la session en base. `revoked_at` est nullable : il est `null` tant que la session est active et prend une valeur `Date` lors de la révocation.
-
-**`NewsMediaRow` / `ArtistMediaRow`**
-
-```ts
-type NewsMediaRow = Pick<NewsItem, "id" | "url_media">;
-type ArtistMediaRow = Pick<ArtistItem, "id" | "url_media">;
-```
-
-Construits par composition avec `Pick` — uniquement les champs nécessaires pour retrouver et supprimer le fichier image lors d'une mise à jour ou d'une suppression.
-
-**`ConcertRow`**
-
-```ts
-type ConcertRow = {
-  id: string;
-  artist_id: string;
-  stage: string;
-  start_time: string;
-  end_time: string;
-};
-```
-
-Représente une ligne de la table `concerts`. Distinct d'`ArtistItem` qui inclut déjà `stage`, `start_time` et `end_time` via une jointure — `ConcertRow` est utilisé pour les opérations directes sur la table `concerts`.
-
----
-
-### 5.4. Types métier partagés
-
-Ces types représentent les données telles qu'elles sont retournées par l'API et consommées par le frontend.
-
-**`UserRole`**
-
-```ts
-type UserRole = "admin" | "artists" | "news";
-```
-
-Union littérale des trois rôles autorisés — miroir exact de l'ENUM PostgreSQL `user_role`. Utilisé dans `Express.Locals`, dans `UserItem` et dans le middleware `requireRole`.
-
-**`UserItem`**
-
-```ts
-type UserItem = {
-  id: string;
-  email: string;
-  display_name: string;
-  role: UserRole;
-  created_at: string;
-  password_changed_at: string | null;
-};
-```
-
-Représente une ligne utilisateur telle que retournée par les endpoints de liste et de CRUD. `password_changed_at` est nullable : il est `null` tant que l'utilisateur n'a jamais changé son mot de passe — ce champ déclenche la modale de changement obligatoire côté frontend à la première connexion.
-
-**`NewsItem`**
-
-```ts
-type NewsItem = {
-  id: string;
-  title: string;
-  content: string | null;
-  is_published: boolean;
-  created_at: string;
-  url_media: string;
-  description_media: string;
-  author_name: string | null;
-};
-```
-
-Représente les données complètes d'une actualité. `content` et `author_name` sont nullables car optionnels à la création. Partagé avec le frontend.
-
-**`ArtistItem`**
-
-```ts
-type ArtistItem = {
-  id: string;
-  name: string;
-  genre: string;
-  origin: string;
-  bio: string;
-  url_media: string;
-  description_media: string;
-  youtube_url: string | null;
-  spotify_url: string | null;
-  stage: string | null;
-  start_time: string | null;
-  end_time: string | null;
-  is_featured: boolean;
-};
-```
-
-Représente les données complètes d'un artiste, incluant les informations de concert (`stage`, `start_time`, `end_time`) obtenues via jointure avec la table `concerts`. Les champs de liens externes et de programmation sont nullables : un artiste peut exister sans être encore programmé. Partagé avec le frontend.
-
----
-
-### 5.5. Convention de nommage et règle `no-any`
+### 6.3. Convention de nommage
 
 | Convention | Explication                                                                                                              |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `*Row`     | Type qui représente une ligne brute retournée par `pg` — noms de colonnes en `snake_case`                                |
-| `*Item`    | Type métier exposé par l'API — partagé avec le frontend, noms de champs en `snake_case` (miroir des colonnes PostgreSQL) |
-| `*Role`    | Union littérale miroir d'un ENUM PostgreSQL                                                                              |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `*Row`     | Type qui représente une ligne brute retournée par `pg` — noms de colonnes en `snake_case` (`NewsMediaRow`, `ConcertRow`…) |
+| `*Item`    | Type métier exposé par l'API — partagé avec le frontend (`NewsItem`, `ArtistItem`)                                       |
+| `*Role`    | Union littérale miroir d'un ENUM PostgreSQL (`UserRole`)                                                                  |
 
-La règle ESLint `@typescript-eslint/no-any` est activée dans `eslint.config.cjs`. L'augmentation de `Express.Locals` et le typage explicite de `query<T>(...)` sont les deux mécanismes qui permettent d'éliminer tous les `any` dans les controllers et middlewares.
+La règle ESLint `@typescript-eslint/no-explicit-any` est activée dans `eslint.config.cjs`. L'augmentation de `Express.Locals` et le typage explicite de `query<T>(...)` sont les deux mécanismes qui permettent d'éliminer les `any` dans les controllers et middlewares.
 
 ---
 
-## 6. Gestion des erreurs
+## 7. Gestion des erreurs
 
 La gestion des erreurs repose sur quatre éléments qui travaillent ensemble : une classe `AppError` pour lever des erreurs métier typées, un fichier central qui regroupe tous les messages, un handler global Express qui intercepte toutes les erreurs non catchées, et un wrapper `asyncHandler` qui évite de répéter `try/catch` dans chaque controller.
 
-### 6.1. La classe `AppError`
+### 7.1. La classe `AppError`
 
 `AppError` est une classe qui étend `Error` en ajoutant un code HTTP. Elle est levée partout dans les controllers lorsqu'une erreur métier se produit (ressource introuvable, accès refusé, conflit…), et interceptée en un seul endroit par le handler global.
 
@@ -944,11 +787,11 @@ res.status(404).json({ error: "Utilisateur introuvable" });
 return;
 ```
 
-Avec `AppError`, le controller se contente de lever l'erreur — c'est le `errorHandler` global qui construit la réponse. Si la structure des réponses d'erreur change (ajout d'un champ, d'un timestamp…), il n'y a qu'un seul endroit à modifier. Étendre `Error` plutôt que de lancer un objet brut permet en plus d'utiliser `instanceof AppError` dans le handler pour distinguer une erreur métier intentionnelle d'une erreur JavaScript inattendue.
+Avec `AppError`, le controller se contente de lever l'erreur — c'est le `errorHandler` global qui construit la réponse. Si la structure des réponses d'erreur change, il n'y a qu'un seul endroit à modifier. Étendre `Error` plutôt que de lancer un objet brut permet en plus d'utiliser `instanceof AppError` dans le handler pour distinguer une erreur métier intentionnelle d'une erreur JavaScript inattendue.
 
 **Pourquoi `Object.setPrototypeOf` ?**
 
-Quand TypeScript compile vers CommonJS (`"module": "commonjs"` dans `tsconfig.json`), l'héritage de classes natives comme `Error` peut casser `instanceof`. Cette ligne rétablit la chaîne de prototype correctement après l'appel à `super()`.
+Cette ligne garantit que la chaîne de prototypes reste correcte après l'appel à `super()`, quel que soit le mode de compilation — sans elle, `instanceof AppError` peut échouer sur une instance pourtant construite via `new AppError(...)` dans certaines configurations de compilation JS/TS ciblant des runtimes plus anciens.
 
 Dans un controller, l'usage est systématique :
 
@@ -958,7 +801,7 @@ throw new AppError(ERRORS.USER_NOT_FOUND, 404);
 
 Le code HTTP voyage avec l'erreur jusqu'au handler global, sans avoir à le re-préciser à chaque niveau.
 
-### 6.2. Centralisation des messages — `errors/errorMessages.ts`
+### 7.2. Centralisation des messages — `errors/errorMessages.ts`
 
 Tous les messages d'erreur sont regroupés dans un objet `ERRORS` exporté depuis `errors/errorMessages.ts`. Dans les controllers, on n'écrit jamais de chaîne en dur — on référence toujours une clé :
 
@@ -966,23 +809,21 @@ Tous les messages d'erreur sont regroupés dans un objet `ERRORS` exporté depui
 throw new AppError(ERRORS.USER_NOT_FOUND, 404);
 ```
 
-Le `as const` en fin de fichier est important : il indique à TypeScript que les valeurs sont des littéraux immuables. Sans lui, TypeScript infèrerait `string` pour chaque valeur, et tu perdrais l'autocomplétion et la vérification de typage sur les messages.
+Le `as const` en fin de fichier est important : il indique à TypeScript que les valeurs sont des littéraux immuables. Sans lui, TypeScript inférerait `string` pour chaque valeur, et tu perdrais l'autocomplétion et la vérification de typage sur les messages.
 
 Les clés sont organisées par domaine métier :
 
-| Préfixe                                                   | Domaine                    |
-| --------------------------------------------------------- | -------------------------- |
-| `AUTH_`                                                   | Authentification et tokens |
-| `SESSION_`                                                | État des sessions          |
-| `VALIDATION_`                                             | Corps de requête invalide  |
-| `PASSWORD_`                                               | Format du mot de passe     |
-| `USER_`                                                   | CRUD utilisateurs          |
-| `ARTIST_`                                                 | CRUD artistes              |
-| `NEWS_`                                                   | CRUD actualités            |
-| `MAIL_`                                                   | Envoi d'email              |
-| `FORBIDDEN` / `ROUTE_NOT_FOUND` / `INTERNAL_SERVER_ERROR` | Erreurs génériques HTTP    |
+| Préfixe                                                    | Domaine                                             |
+| ------------------------------------------------------------ | ------------------------------------------------------ |
+| `AUTH_` / `SESSION_`                                        | Session Better Auth manquante ou état de session      |
+| `VALIDATION_`                                                | Corps de requête invalide                           |
+| `USER_`                                                      | Contrôles utilisateurs restants côté backend         |
+| `ARTIST_`                                                    | CRUD artistes                                       |
+| `NEWS_`                                                      | CRUD actualités                                     |
+| `MAIL_`                                                      | Envoi d'email                                        |
+| `FORBIDDEN` / `ROUTE_NOT_FOUND` / `INTERNAL_SERVER_ERROR`   | Erreurs génériques HTTP                             |
 
-### 6.3. Le handler global `errorHandler`
+### 7.3. Le handler global `errorHandler`
 
 Le fichier `middlewares/errorHandler.ts` exporte deux middlewares enregistrés en dernier dans `app.ts`.
 
@@ -1000,7 +841,7 @@ export const notFoundHandler: RequestHandler = (req, res) => {
 
 **`errorHandler`**
 
-Middleware Express à quatre paramètres — c'est cette signature `(err, req, res, next)` qui indique à Express qu'il s'agit d'un gestionnaire d'erreurs. Il est appelé dès qu'une erreur est levée dans un controller (via `asyncHandler`) ou passée à `next(err)`.
+Middleware Express à quatre paramètres — c'est cette signature `(err, req, res, next)` qui indique à Express qu'il s'agit d'un gestionnaire d'erreurs.
 
 ```ts
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
@@ -1019,9 +860,11 @@ Le `instanceof AppError` distingue deux cas :
 - **Erreur métier** (`AppError`) → on renvoie le `status` et le `message` définis par le controller
 - **Erreur inattendue** (bug JavaScript, crash…) → on renvoie toujours un 500 générique, sans exposer les détails internes au client
 
-Le `console.error` n'est actif qu'en dehors de la production — en développement il affiche la trace complète dans le terminal du conteneur, en production le serveur reste silencieux.
+Le `console.error` n'est actif qu'en dehors de la production.
 
-### 6.4. `asyncHandler` — envelopper les controllers async
+> Cette gestion d'erreurs est propre à nos propres routes (`/admin/*`, `/public/*`, `/contact/*`). Les routes `/api/auth/*` sont entièrement gérées par Better Auth, avec son propre format d'erreur — voir [API.md](./API.md).
+
+### 7.4. `asyncHandler` — envelopper les controllers async
 
 Express reconnaît deux types de middlewares selon leur signature :
 
@@ -1029,8 +872,6 @@ Express reconnaît deux types de middlewares selon leur signature :
 - **4 paramètres** `(err, req, res, next)` → gestionnaire d'erreurs
 
 Quand `next(err)` est appelé avec une valeur, Express saute tous les middlewares à 3 paramètres et transmet directement l'erreur au premier middleware à 4 paramètres qu'il trouve — c'est `errorHandler`.
-
-.Sans wrapper, chaque controller devrait gérer ça manuellement avec un `try/catch` et un appel à `next(err)` — ce qui se répète dans chaque route.`asyncHandler` résout ça en enveloppant chaque controller :
 
 ```ts
 export function asyncHandler(
@@ -1063,106 +904,49 @@ throw new AppError(...)
 Dans les routes, l'usage est systématique :
 
 ```ts
-router.get("/", asyncHandler(getUsers));
-router.post("/", asyncHandler(createUser));
+router.get("/", asyncHandler(getArtist));
+router.post("/", asyncHandler(createArtist));
 ```
 
 ---
 
-## 7. Middlewares
+## 8. Middlewares
 
 Les middlewares sont des fonctions qui s'intercalent entre la réception de la requête et le controller. Chacun a une responsabilité unique et s'exécute dans l'ordre où il est déclaré dans la route. Si un middleware lève une `AppError`, la chaîne s'interrompt et `errorHandler` prend la main — le controller n'est jamais atteint.
 
 ```
-requête → auth → sessionIsOpen → requireRole → validateBody → controller
+requête → requireAuth → requireRole → validateBody / upload → controller
 ```
 
-### 7.1. Authentification — `auth`
+### 8.1. Session — `requireAuth` / `optionalAuth`
 
-Le middleware `auth` vérifie que la requête provient d'un utilisateur authentifié. Il s'exécute en trois étapes :
-
-**1. Extraction du token depuis le cookie**
+`requireAuth.ts` exporte deux middlewares, tous deux basés sur `auth.api.getSession()` (Better Auth) :
 
 ```ts
-function getTokenFromCookie(req: Request) {
-  if (!req.headers.cookie) throw new AppError(ERRORS.AUTH_MISSING_COOKIE, 401);
-  const cookies = parse(req.headers.cookie);
-  const token = cookies[getEnv("COOKIE_ACCESS_TOKEN_NAME")];
-  if (!token) throw new AppError(ERRORS.AUTH_MISSING_ACCESS_TOKEN, 401);
-  return token;
+export async function requireAuth(req: Request, res: Response, next: NextFunction) {
+  const result = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  });
+
+  if (!result) {
+    throw new AppError(ERRORS.AUTH_MISSING_SESSION, 401);
+  }
+
+  res.locals.userId = result.user.id;
+  res.locals.sessionId = result.session.id;
+  res.locals.userRole = result.user.role ?? undefined;
+
+  next();
 }
 ```
 
-Le token JWT est transporté dans un cookie `httpOnly` — il n'est pas accessible en JavaScript côté client. Le nom du cookie est lu depuis la variable d'environnement `COOKIE_ACCESS_TOKEN_NAME`.
+`fromNodeHeaders` convertit les en-têtes Express au format attendu par Better Auth. `auth.api.getSession()` décode et valide lui-même le cookie de session (signature, expiration, révocation) — le backend n'a aucune logique de vérification à écrire. Si aucune session valide n'existe, `requireAuth` lève une seule et unique erreur : `AppError(AUTH_MISSING_SESSION, 401)` — Better Auth ne distingue pas, côté appelant, un cookie absent d'un token expiré ou invalide.
 
-**2. Décodage et vérification du JWT**
+**`optionalAuth`** — même appel à `auth.api.getSession()`, mais n'interrompt jamais la requête : elle peuple `res.locals` si une session valide existe, et appelle `next()` dans tous les cas. Utilisée sur les routes semi-publiques (`GET /public/news`, `GET /public/news/:id`) où un visiteur anonyme et un utilisateur `admin`/`news` reçoivent des résultats différents (brouillons inclus ou non) sans que l'authentification soit obligatoire.
 
-```ts
-function decodedToken(token: string) {
-  const decoded = jwt.verify(token, getEnv("JWT_ACCESS_SECRET")) as JwtPayload;
-  return { userId: decoded.userId, sessionId: decoded.sessionId };
-}
-```
+### 8.2. Autorisation — `requireRole`
 
-`jwt.verify` valide la signature et l'expiration du token. Si le token est invalide ou expiré, une `AppError` 401 est levée.
-
-**3. Vérification en base et peuplement de `res.locals`**
-
-```ts
-const user = await query<AuthUserRow>(
-  "SELECT id, display_name, role FROM users WHERE id = $1",
-  [userId],
-);
-if (!user[0]) throw new AppError(ERRORS.AUTH_USER_NOT_FOUND, 401);
-
-res.locals.userId = user[0].id;
-res.locals.userRole = user[0].role;
-res.locals.userDisplayName = user[0].display_name;
-res.locals.sessionId = sessionId;
-```
-
-On vérifie que l'utilisateur existe toujours en base — un token valide ne suffit pas si le compte a été supprimé entre-temps. Les données sont stockées dans `res.locals` pour être lues par les middlewares suivants et les controllers sans avoir à refaire la requête.
-
-**`optionalAuth`**
-
-Variante de `auth` qui n'interrompt pas la requête si le token est absent ou invalide. Elle peuple `res.locals` si le token est valide, et appelle `next()` dans tous les cas. Utilisée sur les routes semi-publiques accessibles aux visiteurs non connectés.
-
-Dans `auth`, si la session est révoquée ou inexistante ce n'est pas grave — `sessionIsOpen` s'en charge juste après dans la chaîne. Les deux middlewares ont des responsabilités séparées : `auth` identifie l'utilisateur, `sessionIsOpen` contrôle l'état de la session.
-
-Dans `optionalAuth` en revanche, `sessionIsOpen` n'est jamais appelé après — la route est semi-publique, il n'y a pas de chaîne de middlewares stricte. Donc `optionalAuth` vérifie elle-même que la session est active et non expirée avant de peupler `res.locals`, sinon un utilisateur avec une session révoquée ou expirée serait quand même considéré comme connecté.
-
-Conséquence : sur ces routes, le token n'est pas renouvelé. Le renouvellement n'a lieu que via `sessionIsOpen`, qui n'est appelé que sur les routes admin. Naviguer uniquement sur les pages publiques sans toucher à l'administration ne suffit pas à maintenir la session active.
-
-### 7.2. Sessions — `sessionIsOpen`
-
-`sessionIsOpen` s'exécute après `auth` sur toutes les routes protégées. Son rôle est double : vérifier que la session en base est encore valide, et renouveler le token JWT à chaque requête.
-
-**Vérification de la session**
-
-```ts
-const rows = await query<SessionRow>(
-  "SELECT id, user_id, expires_at, revoked_at FROM sessions WHERE id = $1 AND user_id = $2",
-  [reqSessionId, reqUserId],
-);
-sessionExists(sessionBdd);
-sessionRevoked(sessionBdd);
-```
-
-`sessionExists` lève une `AppError` 401 si la session est introuvable en base. `sessionRevoked` lève une `AppError` 401 si `revoked_at` n'est pas `null` (session fermée par un logout) ou si `expires_at` est dépassé. Ces deux fonctions sont centralisées dans `utils.ts`.
-
-**Renouvellement du token**
-
-```ts
-const accessToken = initToken(reqUserId, "JWT_ACCESS_SECRET", "JWT_ACCESS_EXPIRES_IN", reqSessionId);
-const accessCookie = serializeCookie("COOKIE_ACCESS_TOKEN_NAME", ...);
-res.setHeader("Set-Cookie", accessCookie);
-```
-
-À chaque requête authentifiée réussie, un nouveau token JWT est généré et renvoyé dans le cookie. Cela permet de maintenir la session active tant que l'utilisateur navigue — le token expire seulement si l'utilisateur reste inactif plus longtemps que `JWT_ACCESS_EXPIRES_IN`.
-
-### 7.3. Autorisation — `requireRole`
-
-`requireRole` est une factory de middleware — elle ne retourne pas directement un middleware, elle retourne une fonction qui en est un. Cela permet de passer des arguments lors de la déclaration dans la route :
+`requireRole` est une factory de middleware — elle ne retourne pas directement un middleware, elle retourne une fonction qui en est un :
 
 ```ts
 export function requireRole(...roles: UserRole[]) {
@@ -1176,39 +960,31 @@ export function requireRole(...roles: UserRole[]) {
 }
 ```
 
-`res.locals.userRole` est peuplé par `auth` en amont. `requireRole` lit cette valeur et vérifie qu'elle fait partie de la liste des rôles autorisés passés en argument. Si ce n'est pas le cas, une `AppError` 403 est levée.
-
-L'opérateur `...roles` permet de passer un ou plusieurs rôles autorisés :
+`res.locals.userRole` est peuplé par `requireAuth` en amont. `requireRole` lit cette valeur et vérifie qu'elle fait partie de la liste des rôles autorisés passés en argument :
 
 ```ts
 requireRole("admin"); // admin uniquement
 requireRole("admin", "news"); // admin ou news
 ```
 
-### 7.4. Composition — `authChain`
+### 8.3. Composition — `authChain`
 
-Plutôt que de répéter `asyncHandler(auth), asyncHandler(sessionIsOpen), requireRole(...)` dans chaque route protégée, `authChain.ts` expose une factory `adminAuth` qui compose les trois middlewares en un seul tableau :
+Plutôt que de répéter `asyncHandler(requireAuth), requireRole(...)` dans chaque route protégée, `authChain.ts` expose une factory `adminAuth` qui compose les deux middlewares en un seul tableau :
 
 ```ts
 export function adminAuth(...roles: UserRole[]): RequestHandler[] {
-  return [
-    asyncHandler(auth),
-    asyncHandler(sessionIsOpen),
-    requireRole(...roles),
-  ];
+  return [asyncHandler(requireAuth), requireRole(...roles)];
 }
 ```
 
 Dans les routes, le tableau est spreadé directement :
 
 ```ts
-router.get("/", ...adminAuth("admin"), asyncHandler(getUsers));
-router.delete("/:id", ...adminAuth("admin"), asyncHandler(deleteUser));
+router.post("/artists", ...adminAuth("admin", "artists"), asyncHandler(createArtist));
+router.delete("/artists/:id", ...adminAuth("admin", "artists"), asyncHandler(deleteArtist));
 ```
 
-Le `...` (spread) déploie le tableau comme si chaque middleware était passé individuellement — Express les exécute dans l'ordre : `auth` → `sessionIsOpen` → `requireRole` → controller.
-
-### 7.5. Validation — `validateBody` et `validateUuidParam`
+### 8.4. Validation — `validateBody` et `validateUuidParam`
 
 Ces deux factories valident les données entrantes avant qu'elles n'atteignent le controller. Comme `requireRole`, elles sont synchrones — pas besoin d'`asyncHandler`.
 
@@ -1227,7 +1003,7 @@ export function validateBody(schema: z.ZodTypeAny) {
 }
 ```
 
-Prend un schéma Zod en argument et valide `req.body`. Si la validation échoue, une `AppError` 400 est transmise à `errorHandler`. Si elle réussit, `req.body` est remplacé par `parsed.data` — les données sont alors typées et nettoyées (champs inconnus supprimés, valeurs transformées selon le schéma).
+Prend un schéma Zod en argument et valide `req.body`. Si la validation échoue, une `AppError` 400 est transmise à `errorHandler`. Si elle réussit, `req.body` est remplacé par `parsed.data` — les données sont alors typées et nettoyées (trim, coercions Zod).
 
 **`validateUuidParam`**
 
@@ -1244,9 +1020,9 @@ export function validateUuidParam(paramName = "id") {
 }
 ```
 
-Valide qu'un paramètre de route est un UUID valide. Évite d'atteindre la base de données avec un identifiant malformé. Par défaut valide `req.params.id`, mais le nom du paramètre est configurable : `validateUuidParam("artistId")`.
+Valide qu'un paramètre de route est un UUID valide. Par défaut valide `req.params.id`, mais le nom du paramètre est configurable : `validateUuidParam("artistId")`.
 
-### 7.6. Upload — `multer` et traitement image
+### 8.5. Upload — `multer` et traitement image
 
 `upload.ts` configure multer pour recevoir les fichiers image envoyés par les formulaires multipart.
 
@@ -1264,123 +1040,29 @@ export const upload = multer({
 });
 ```
 
-**`memoryStorage`** — le fichier n'est pas écrit sur le disque, il est conservé en mémoire sous forme de `Buffer` dans `req.file.buffer`. C'est ce buffer qui est ensuite passé à `sharp` dans le service `imageUpload.service` pour redimensionner et convertir l'image avant de l'écrire dans `uploads/`.
+**`memoryStorage`** — le fichier n'est pas écrit sur le disque, il est conservé en mémoire sous forme de `Buffer` dans `req.file.buffer`. C'est ce buffer qui est ensuite passé à `sharp` dans `imageUpload.service` pour redimensionner et convertir l'image avant de l'écrire dans `uploads/`.
 
-**`fileFilter`** — vérifie le type MIME du fichier avant de l'accepter. Seuls `image/jpeg`, `image/png` et `image/webp` sont autorisés. Si le type est refusé, une `AppError` 400 est levée directement dans le callback multer.
-
-Dans les routes, `upload` est utilisé comme middleware avant le controller :
+**`fileFilter`** — vérifie le type MIME du fichier avant de l'accepter. Seuls `image/jpeg`, `image/png` et `image/webp` sont autorisés.
 
 ```ts
-router.post(
-  "/",
-  ...adminAuth("admin"),
-  upload.single("image"),
-  asyncHandler(createArtist),
-);
+router.post("/", ...adminAuth("admin"), upload.single("image"), asyncHandler(createArtist));
 ```
 
 `upload.single("image")` indique que la requête contient un seul fichier dans le champ `image`.
 
-### 7.7. Rate limiting — `rateLimitLogin`
-
-`rateLimitLogin` est un middleware `express-rate-limit` configuré pour protéger la route de connexion contre les attaques par force brute :
-
-```ts
-export const rateLimitLogin = rateLimit({
-  windowMs: 10 * 60 * 1000, // fenêtre de 10 minutes
-  max: 5, // 5 tentatives max par IP
-  standardHeaders: true, // renvoie les headers RateLimit-* au client
-  legacyHeaders: false,
-  message: { error: ERRORS.RATE_LIMIT_TOO_MANY_ATTEMPTS },
-});
-```
-
-Au-delà de 5 tentatives depuis la même IP en 10 minutes, `express-rate-limit` renvoie automatiquement une réponse 429 avec le message d'erreur — sans atteindre le controller. Le compteur se réinitialise après la fenêtre de 10 minutes.
-
-`standardHeaders: true` ajoute les headers `RateLimit-Limit`, `RateLimit-Remaining` et `RateLimit-Reset` à chaque réponse, ce qui permet au client de savoir combien de tentatives il lui reste avant d'être bloqué.
+> Ce backend n'a plus de middleware de rate limiting propre (`express-rate-limit` n'est pas une dépendance) : aucune de ses routes ne le justifie encore. Better Auth applique son propre rate limiting interne sur `/api/auth/*` — voir [13.3](#133-rate-limiting-interne-de-better-auth).
 
 ---
 
-## 8. Validation des données — `src/schemas/schema.ts`
+## 9. Validation des données — `src/schemas/schema.ts`
 
-Tous les schémas Zod utilisés pour valider les corps de requête sont centralisés dans `src/schemas/schema.ts`. Ils sont passés en argument à `validateBody` dans les routes.
+Tous les schémas Zod utilisés pour valider les corps de requête de **nos** routes sont centralisés dans `src/schemas/schema.ts`. Ils sont passés en argument à `validateBody` dans les routes. Les corps de requête des routes `/api/auth/*` sont validés par Better Auth lui-même, pas par ces schémas.
 
-### 8.1. Pourquoi Zod
+### 9.1. Pourquoi Zod
 
-Sans validation, un controller qui reçoit `req.body` ne peut pas faire confiance aux données — un champ peut être absent, mal typé, ou contenir une valeur malveillante. Zod permet de définir la forme exacte attendue et de rejeter la requête avec un 400 avant d'atteindre la base de données.
+Sans validation, un controller qui reçoit `req.body` ne peut pas faire confiance aux données. Zod permet de définir la forme exacte attendue et de rejeter la requête avec un 400 avant d'atteindre la base de données. `parsed.data` est automatiquement typé selon le schéma — le controller n'a pas besoin de caster ou de vérifier manuellement chaque champ.
 
-Zod présente aussi un avantage TypeScript : `parsed.data` est automatiquement typé selon le schéma. Le controller n'a pas besoin de caster ou de vérifier manuellement chaque champ.
-
-### 8.2. Schémas par domaine
-
-**Authentification**
-
-```ts
-export const loginSchema = z.object({
-  email: z.email(),
-  password: z.string().min(8),
-});
-
-export const forgotPasswordSchema = z.object({
-  email: z.email(),
-});
-
-export const changePasswordSchema = z.object({
-  password: z.string().min(8),
-  newPassword: z.string().min(8),
-});
-```
-
-**Utilisateurs**
-
-```ts
-export const createUserSchema = z.object({
-  email: z.email(),
-  first_name: z.string().min(2).max(30).trim(),
-  last_name: z.string().min(2).max(30).trim(),
-  role: z.enum(["admin", "artists", "news"]),
-});
-```
-
-Utilisé à la fois pour la création (`POST`) et la modification (`PATCH`) — les champs sont les mêmes dans les deux cas.
-
-**Actualités**
-
-```ts
-export const createNewsSchema = z.object({
-  title: z.string().min(2).max(150).trim(),
-  content: z.string().trim().optional().or(z.literal("")),
-  is_published: z.enum(["true", "false"]).optional(),
-  description_media: z.string().min(1).max(255).trim(),
-});
-```
-
-`is_published` est une chaîne `"true"` / `"false"` et non un booléen : les formulaires `multipart/form-data` envoient tous les champs en texte. La conversion en booléen est effectuée dans le controller.
-
-**Artistes**
-
-```ts
-export const createArtistSchema = z.object({
-  name: z.string().min(2).max(100).trim(),
-  // ...
-  youtube_url: z
-    .url()
-    .refine((val) => /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(val))
-    .optional()
-    .or(z.literal("")),
-  spotify_url: z
-    .url()
-    .refine((val) => /^https?:\/\/open\.spotify\.com\//.test(val))
-    .optional()
-    .or(z.literal("")),
-  stage: z.enum(["MainStage", "Tremplin"]),
-  start_time: z.iso.datetime(),
-  end_time: z.iso.datetime(),
-  is_featured: z.enum(["true", "false"]).optional(),
-});
-```
-
-Les URLs YouTube et Spotify utilisent `.refine()` pour vérifier le domaine avec une regex — `z.url()` seul accepterait n'importe quelle URL valide. Le `.optional().or(z.literal(""))` permet d'accepter une chaîne vide quand le champ est laissé vide dans le formulaire.
+### 9.2. Les trois schémas
 
 **Contact**
 
@@ -1393,40 +1075,66 @@ export const contactSchema = z.object({
 });
 ```
 
+**Actualités**
+
+```ts
+export const createNewsSchema = z.object({
+  title: z.string().min(2).max(150).trim(),
+  content: z.string().trim().optional().or(z.literal("")),
+  is_published: z.enum(["true", "false"]).optional(),
+  description_media: z.string().min(1).max(255).trim(),
+});
+```
+
+`is_published` est une chaîne `"true"` / `"false"` et non un booléen : les formulaires `multipart/form-data` envoient tous les champs en texte. La conversion en booléen est effectuée dans le controller. Utilisé pour la création (`POST`) et la modification (`PATCH`).
+
+**Artistes**
+
+```ts
+export const createArtistSchema = z.object({
+  name: z.string().min(2).max(100).trim(),
+  genre: z.string().min(1).max(60).trim(),
+  origin: z.string().min(1).max(80).trim(),
+  bio: z.string().min(1).trim(),
+  description_media: z.string().min(1).max(255).trim(),
+  youtube_url: z
+    .url()
+    .max(255)
+    .refine((val) => /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(val), { message: "..." })
+    .optional()
+    .or(z.literal("")),
+  spotify_url: z
+    .url()
+    .max(255)
+    .refine((val) => /^https?:\/\/open\.spotify\.com\//.test(val), { message: "..." })
+    .optional()
+    .or(z.literal("")),
+  stage: z.enum(["MainStage", "Tremplin"]),
+  start_time: z.iso.datetime(),
+  end_time: z.iso.datetime(),
+  is_featured: z.enum(["true", "false"]).optional(),
+});
+```
+
+Les URLs YouTube et Spotify utilisent `.refine()` pour vérifier le domaine avec une regex — `z.url()` seul accepterait n'importe quelle URL valide. Le `.optional().or(z.literal(""))` permet d'accepter une chaîne vide quand le champ est laissé vide dans le formulaire.
+
 ---
 
-## 9. Couche services — `src/services/`
+## 10. Couche services — `src/services/`
 
-Les services regroupent la logique métier réutilisable entre plusieurs controllers. Un controller délègue aux services les opérations qui dépassent la simple lecture/écriture en base — traitement d'image, envoi d'email, vérification d'unicité. Cela allège les controllers et évite la duplication.
+Les services regroupent la logique métier réutilisable entre plusieurs controllers. Un controller délègue aux services les opérations qui dépassent la simple lecture/écriture en base — traitement d'image, envoi d'email, vérification de rôle.
 
-### 9.1. `imageUpload.service` — pipeline image
+### 10.1. `imageUpload.service` — pipeline image
 
-Deux fonctions exportées, utilisées par les controllers artistes et news.
+**`saveImage(buffer, uploadsDir, urlPrefix)`**
 
-**`saveImage`**
+Reçoit le `Buffer` de `req.file.buffer` (fourni par multer), génère un nom de fichier UUID unique, crée le dossier de destination si absent, redimensionne l'image à 1600 px max en conservant les proportions, convertit en WebP qualité 80 avec `sharp`, écrit le fichier sur le disque et retourne l'URL publique.
 
-```ts
-export async function saveImage(
-  buffer: Buffer,
-  uploadsDir: string,
-  urlPrefix: string,
-): Promise<string>;
-```
+**`deleteImage(uploadsDir, urlMedia)`**
 
-Reçoit le `Buffer` de `req.file.buffer` (fourni par multer), génère un nom de fichier UUID unique, crée le dossier de destination si absent, redimensionne l'image à 1600px max en conservant les proportions, convertit en WebP qualité 80 avec `sharp`, écrit le fichier sur le disque et retourne l'URL publique.
+Supprime silencieusement un fichier image à partir de son URL publique (`.catch(() => undefined)` — pas d'erreur si le fichier est déjà absent). Appelée **après** le commit en base pour les mises à jour — si la requête SQL échoue, l'ancienne image est conservée.
 
-**`deleteImage`**
-
-```ts
-export async function deleteImage(
-  uploadsDir: string,
-  urlMedia: string,
-): Promise<void>;
-```
-
-Supprime silencieusement un fichier image à partir de son URL publique. Le `.catch(() => undefined)` évite de lever une erreur si le fichier est déjà absent. Elle est appelée **après** le commit en base — si la requête SQL échoue, l'ancienne image est conservée.
-
-### 9.2. `mailer.service` — envoi d'emails
+### 10.2. `mailer.service` — envoi d'emails
 
 Le transporteur SMTP est configuré une seule fois au démarrage depuis les variables d'environnement :
 
@@ -1439,883 +1147,247 @@ const transporter = nodemailer.createTransport({
 });
 ```
 
-Trois fonctions sont exportées, chacune pour un cas d'usage distinct :
+Trois fonctions sont exportées :
 
-| Fonction                 | Déclencheur                                   |
-| ------------------------ | --------------------------------------------- |
-| `sendWelcomeEmail`       | Création d'un compte utilisateur par un admin |
-| `sendPasswordResetEmail` | Demande de réinitialisation de mot de passe   |
-| `sendContactEmail`       | Soumission du formulaire de contact public    |
+| Fonction                 | Déclencheur                                                               |
+| ------------------------- | ---------------------------------------------------------------------------- |
+| `sendPasswordResetEmail` | Appelée par le callback `sendResetPassword` de Better Auth (reset classique) |
+| `sendInviteEmail`        | Même callback, quand l'URL de redirection contient `context=invite`         |
+| `sendContactEmail`       | Soumission du formulaire de contact public                                 |
 
-Toutes passent par la fonction interne `sendMail` qui convertit toute erreur nodemailer en `AppError(ERRORS.MAIL_SEND_ERROR, 500)`.
+Toutes passent par la fonction interne `sendMail` qui convertit toute erreur nodemailer en `AppError(ERRORS.MAIL_SEND_ERROR, 500)`. Le choix entre `sendPasswordResetEmail` et `sendInviteEmail` est fait dans `src/lib/auth.ts`, pas dans ce service — voir [13.2](#132-invitation-vs-reinitialisation--sendresetpassword).
 
-### 9.3. `user.service` — logique métier utilisateurs
+### 10.3. `user.service` — rôle news
 
-Regroupe les vérifications et opérations réutilisables par les controllers utilisateurs.
+Une seule fonction :
 
-| Fonction                    | Rôle                                                                       |
-| --------------------------- | -------------------------------------------------------------------------- |
-| `generateTemporaryPassword` | Génère un mot de passe aléatoire de 16 caractères hexadécimaux             |
-| `hashPassword`              | Hash un mot de passe en clair avec bcrypt (coût 10)                        |
-| `checkEmailAvailable`       | Vérifie qu'un email n'est pas déjà utilisé — lève 409 si conflit           |
-| `checkDisplayNameAvailable` | Vérifie qu'un nom d'affichage n'est pas déjà utilisé — lève 409 si conflit |
-| `checkUserExists`           | Vérifie qu'un utilisateur existe en base — lève 404 sinon                  |
-| `isNewsPrivileged`          | Retourne `true` si le rôle est `admin` ou `news`                           |
+```ts
+export function isNewsPrivileged(userRole?: UserRole): boolean {
+  return userRole === "admin" || userRole === "news";
+}
+```
 
-`checkEmailAvailable` et `checkDisplayNameAvailable` acceptent un `excludeId` optionnel pour ignorer l'utilisateur courant lors d'une modification — sans ça, un utilisateur qui garde son propre email lors d'un `PATCH` déclencherait un faux conflit.
+Utilisée par `get_news_list.controller.ts` et `get_news.controller.ts` pour décider si les brouillons (`is_published = FALSE`) doivent être inclus dans la réponse.
 
 ---
 
-## 10. Controllers — `src/controllers/`
+## 11. Controllers — `src/controllers/`
 
-Chaque controller est un handler async enveloppé dans `asyncHandler`. Il lit les données validées depuis `req.body`, `req.params` ou `res.locals`, effectue les opérations en base, appelle les services si nécessaire, et renvoie la réponse JSON.
+Chaque controller est un handler async enveloppé dans `asyncHandler`. Il lit les données validées depuis `req.body`, `req.params` ou `res.locals`, effectue les opérations en base, appelle les services si nécessaire, et renvoie la réponse JSON. Le détail des requêtes/réponses de chaque endpoint est dans [API.md](./API.md) — cette section se concentre sur la logique interne.
 
-### 10.1. `get_home.controller.ts`
+### 11.1. `get_home.controller.ts`
 
-Retourne les données agrégées pour la page d'accueil : les artistes mis en avant et les deux dernières news publiées, en une seule requête parallèle.
+Retourne les artistes mis en avant et les deux dernières news publiées, en une seule paire de requêtes parallèles (`Promise.all`) — indépendantes l'une de l'autre. La jointure `LEFT JOIN concerts` récupère scène et horaires directement avec les données artiste.
 
-```ts
-const [artists, news] = await Promise.all([
-  query<
-    Pick<
-      ArtistItem,
-      | "id"
-      | "name"
-      | "stage"
-      | "start_time"
-      | "end_time"
-      | "url_media"
-      | "description_media"
-    >
-  >(
-    `SELECT a.id, a.name, a.url_media, a.description_media,
-            c.stage, c.start_time, c.end_time
-     FROM artists a
-     LEFT JOIN concerts c ON c.artist_id = a.id
-     WHERE a.is_featured = TRUE`,
-  ),
-  query<
-    Pick<
-      NewsItem,
-      "id" | "title" | "url_media" | "description_media" | "created_at"
-    >
-  >(
-    `SELECT id, title, url_media, description_media, created_at
-     FROM news
-     WHERE is_published = TRUE
-     ORDER BY created_at DESC
-     LIMIT 2`,
-  ),
-]);
+### 11.2. `list_artists.controller.ts`
 
-return res.status(200).json({ artists, news });
-```
+Retourne tous les artistes triés alphabétiquement. `Omit` exclut les champs lourds ou inutiles pour une liste (`bio`, `genre`, `origin`, liens externes, `end_time`). Le `LEFT JOIN concerts` garantit qu'un artiste sans concert programmé apparaît quand même, avec `stage`/`start_time` à `null`.
 
-`Promise.all` exécute les deux requêtes SQL en parallèle — elles sont indépendantes l'une de l'autre et n'ont pas besoin de s'attendre. La jointure `LEFT JOIN concerts` récupère les informations de programmation (scène, horaires) directement avec les données artiste, sans second aller-retour en base.
+### 11.3. `get_artist.controller.ts`
 
-### 10.2. `list_artists.controller.ts`
+Retourne le détail complet d'un artiste par son UUID, tous les champs d'`ArtistItem` inclus. Lève `AppError(ARTIST_NOT_FOUND, 404)` si l'UUID ne correspond à rien.
 
-Retourne la liste de tous les artistes avec leurs informations de programmation, triés alphabétiquement.
+### 11.4. `get_news_list.controller.ts`
 
-```ts
-const artists = await query<
-  Omit<
-    ArtistItem,
-    "bio" | "genre" | "origin" | "youtube_url" | "spotify_url" | "end_time"
-  >
->(
-  `SELECT a.id, a.name, a.url_media, a.description_media, a.is_featured,
-          c.stage, c.start_time
-   FROM artists a
-   LEFT JOIN concerts c ON c.artist_id = a.id
-   ORDER BY a.name ASC`,
-);
+Retourne les news triées par date décroissante. `isNewsPrivileged(res.locals.userRole)` détermine si la clause `WHERE is_published = TRUE` est appliquée. L'auteur est récupéré via `LEFT JOIN "user" u ON u.id = a.user_id` (table Better Auth) — `author_name` reste `null` si l'utilisateur a été supprimé depuis. `content` est exclu (`Omit<NewsItem, "content">`) : pas nécessaire pour une liste.
 
-return res.status(200).json({ artists });
-```
+### 11.5. `get_news.controller.ts`
 
-`Omit` exclut les champs lourds ou inutiles pour la liste (`bio`, `genre`, `origin`, liens externes, `end_time`) — seules les données nécessaires à l'affichage des cards sont retournées. La jointure `LEFT JOIN` garantit que les artistes sans concert programmé apparaissent quand même dans la liste, avec `stage` et `start_time` à `null`.
+Retourne le détail complet d'une news. Vérification en deux temps : la news existe (`404` sinon), puis l'utilisateur y a accès (`404` — pas `403` — si brouillon non accessible, pour ne pas révéler l'existence d'un contenu non publié à un visiteur non privilégié).
 
-### 10.3. `get_artist.controller.ts`
+### 11.6. `create_artist.controller.ts`
 
-Retourne le détail complet d'un artiste par son UUID, incluant tous les champs et son concert associé.
+Crée un artiste et son concert associé dans une transaction SQL. L'image est écrite **avant** la transaction — si l'écriture disque échoue, aucune ligne SQL n'est insérée ; si la transaction échoue, `ROLLBACK` puis `deleteImage` du fichier déjà écrit. La limite des artistes mis en avant est contrôlée par un trigger PostgreSQL qui lève `featured_limit_reached` ; le `catch` intercepte ce message et renvoie `AppError(ARTIST_FEATURED_LIMIT, 409)`.
 
-```ts
-const { id } = req.params;
+### 11.7. `update_artist.controller.ts`
 
-const rows = await query<ArtistItem>(
-  `SELECT a.id, a.name, a.genre, a.origin, a.bio, a.url_media, a.description_media,
-          a.youtube_url, a.spotify_url, a.is_featured,
-          c.stage, c.start_time, c.end_time
-   FROM artists a
-   LEFT JOIN concerts c ON c.artist_id = a.id
-   WHERE a.id = $1`,
-  [id],
-);
+Modifie un artiste et son concert. Différence clé avec la création : si une nouvelle image est fournie, l'**ancienne** n'est supprimée qu'**après** le `COMMIT` — en cas d'échec SQL, le `ROLLBACK` remet la base dans l'état précédent et seule la nouvelle image (si déjà écrite) est supprimée. L'artiste ne se retrouve jamais sans image.
 
-if (!rows[0]) throw new AppError(ERRORS.ARTIST_NOT_FOUND, 404);
+### 11.8. `delete_artist.controller.ts`
 
-return res.status(200).json({ artist: rows[0] });
-```
+`DELETE ... RETURNING id, url_media` en une seule requête. Le concert associé est supprimé en cascade par la contrainte `ON DELETE CASCADE`. Le fichier image est supprimé après le `DELETE` SQL (échec silencieux si absent).
 
-Contrairement à `list_artists`, tous les champs d'`ArtistItem` sont retournés — `bio`, `genre`, `origin`, `youtube_url`, `spotify_url` et `end_time` sont nécessaires pour la page de détail. La vérification `if (!rows[0])` lève une `AppError` 404 si l'UUID ne correspond à aucun artiste en base.
+### 11.9. `create_news.controller.ts`
 
-### 10.4. `get_news_list.controller.ts`
+Même logique image/transaction que `create_artist`. La requête utilise un CTE (`WITH inserted AS (INSERT ... RETURNING *)`) pour insérer la news et récupérer immédiatement `author_name` via `LEFT JOIN "user"` en une seule requête SQL. `res.locals.userId` est injecté comme `user_id`.
 
-Retourne la liste des actualités triées par date décroissante. Le filtre appliqué dépend du rôle de l'utilisateur détecté par `optionalAuth` en amont.
+### 11.10. `update_news.controller.ts`
 
-```ts
-const isPrivileged = isNewsPrivileged(res.locals.userRole);
+Logique image identique à `update_artist` (nouvelle image avant la transaction, ancienne supprimée après le `COMMIT`). Contrairement à `create_news`, le `UPDATE ... RETURNING *` ne peut pas remonter `author_name` (colonne d'une autre table) — un second `SELECT ... LEFT JOIN "user"` est nécessaire après l'`UPDATE`.
 
-const news = await query<Omit<NewsItem, "content">>(
-  `SELECT a.id, a.title, a.is_published, a.created_at,
-          a.url_media, a.description_media,
-          u.display_name AS author_name
-   FROM news a
-   LEFT JOIN users u ON u.id = a.user_id
-   ${isPrivileged ? "" : "WHERE a.is_published = TRUE"}
-   ORDER BY a.created_at DESC`,
-);
+### 11.11. `delete_news.controller.ts`
 
-return res.status(200).json({ news });
-```
+Structure identique à `delete_artist` — `DELETE ... RETURNING`, suppression du fichier image après.
 
-`isNewsPrivileged` retourne `true` si le rôle est `admin` ou `news` — dans ce cas la clause `WHERE is_published = TRUE` est omise et tous les brouillons sont inclus. Le `LEFT JOIN users` récupère le nom de l'auteur ; il reste `null` si l'utilisateur a été supprimé depuis la création de la news. Le champ `content` est exclu avec `Omit` — il n'est pas nécessaire pour l'affichage des cards de liste.
+### 11.12. `submit_contact.controller.ts`
 
-### 10.5. `get_news.controller.ts`
-
-Retourne le détail complet d'une news par son UUID. La logique d'accès aux brouillons est gérée après la requête SQL.
-
-```ts
-const { id } = req.params;
-const isPrivileged = isNewsPrivileged(res.locals.userRole);
-
-const rows = await query<NewsItem>(
-  `SELECT a.id, a.title, a.content, a.is_published, a.created_at,
-          a.url_media, a.description_media,
-          u.display_name AS author_name
-   FROM news a
-   LEFT JOIN users u ON u.id = a.user_id
-   WHERE a.id = $1`,
-  [id],
-);
-
-if (!rows[0]) throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
-if (!isPrivileged && !rows[0].is_published)
-  throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
-
-return res.status(200).json({ news: rows[0] });
-```
-
-La vérification se fait en deux temps : d'abord on vérifie que la news existe, puis que l'utilisateur y a accès. Un utilisateur non privilégié qui tente d'accéder à un brouillon reçoit une `404` et non une `403` — pour ne pas révéler l'existence d'un contenu non publié.
-
-### 10.6. `login.controller.ts`
-
-Gère la connexion en quatre étapes : vérification des identifiants, création de session en base, génération du JWT et pose du cookie.
-
-```ts
-// 1. Récupère l'utilisateur en base
-const email = String(req.body.email).trim().toLowerCase();
-const password = String(req.body.password);
-const user = (await query<UserCredentialsRow>(`SELECT id, email, password_hash, display_name FROM users WHERE email = $1 LIMIT 1`, [email]))[0];
-
-// 2. Vérifie existence et mot de passe
-userExists(user);
-passwordIsValid(password, user.password_hash);
-
-// 3. Crée une session en base et génère le JWT
-const sessionId = await generateSession(user, "SESSION_EXPIRES_IN");
-const accessToken = initToken(user.id, "JWT_ACCESS_SECRET", "JWT_ACCESS_EXPIRES_IN", sessionId);
-
-// 4. Pose le cookie et répond
-res.setHeader("Set-Cookie", serializeCookie(...));
-return res.status(200).json({ message: "Authentification reussie" });
-```
-
-`generateSession` insère une ligne dans la table `sessions` avec une date d'expiration calculée depuis `SESSION_EXPIRES_IN`, et retourne l'UUID de session. Cet UUID est ensuite embarqué dans le payload JWT aux côtés du `userId` — les deux sont nécessaires pour valider chaque requête dans `auth` et `sessionIsOpen`.
-
-`userExists` et `passwordIsValid` sont deux fonctions de `utils.ts` qui lèvent une `AppError` 401 en cas d'échec — sans préciser lequel, pour ne pas indiquer à un attaquant si l'email existe ou non.
-
-### 10.7. `logout.controller.ts`
-
-Révoque la session courante en base. Le cookie JWT n'est pas supprimé côté serveur — c'est le frontend qui le supprime — mais la session étant révoquée, le middleware `sessionIsOpen` bloquera toute requête ultérieure avec ce token.
-
-```ts
-const reqSessionId = requireSessionId(res.locals.sessionId);
-const reqUserId = requireUserId(res.locals.userId);
-
-const rows = await query<SessionRow>(
-  "SELECT id, revoked_at, expires_at FROM sessions WHERE id = $1 AND user_id = $2",
-  [reqSessionId, reqUserId],
-);
-sessionExists(rows[0]);
-sessionRevoked(rows[0]);
-
-await query(
-  "UPDATE sessions SET revoked_at = now() WHERE id = $1 AND user_id = $2",
-  [reqSessionId, reqUserId],
-);
-
-return res.status(200).json({ message: "Deconnexion reussie" });
-```
-
-`sessionExists` et `sessionRevoked` vérifient que la session est bien active avant de la révoquer — évite de mettre à jour une ligne déjà révoquée ou inexistante. L'`UPDATE` pose `revoked_at = now()` : dès lors, `sessionIsOpen` refusera tout token qui embarque cet identifiant de session.
-
-### 10.8. `user_info.controller.ts`
-
-Retourne les informations de l'utilisateur connecté et indique si un changement de mot de passe est obligatoire.
-
-```ts
-const reqUserId = requireUserId(res.locals.userId);
-const rows = await query<Omit<UserItem, "created_at">>(
-  `SELECT id, email, display_name, role, password_changed_at FROM users WHERE id = $1 LIMIT 1`,
-  [reqUserId],
-);
-if (!rows[0]) throw new AppError(ERRORS.AUTH_USER_NOT_FOUND, 401);
-
-return res.status(200).json({
-  user: {
-    id: user.id,
-    email: user.email,
-    display_name: user.display_name,
-    role: user.role,
-  },
-  mustChangePassword: user.password_changed_at === null,
-});
-```
-
-`mustChangePassword` est calculé directement depuis `password_changed_at` : si le champ est `null`, l'utilisateur n'a jamais changé son mot de passe depuis la création de son compte par un admin. Le frontend utilise ce flag pour afficher la modale de changement obligatoire avant l'accès à l'administration.
-
-### 10.9. `change_password.controller.ts`
-
-Permet à l'utilisateur connecté de modifier son mot de passe en vérifiant d'abord l'ancien.
-
-```ts
-// 1. Récupère le hash actuel
-const rows = await query<UserCredentialsRow>(
-  `SELECT id, email, password_hash, display_name FROM users WHERE id = $1 LIMIT 1`,
-  [userId],
-);
-if (!rows[0]) throw new AppError(ERRORS.AUTH_USER_NOT_FOUND, 404);
-
-// 2. Vérifie que le mot de passe actuel est correct
-const isValid = await bcrypt.compare(password, rows[0].password_hash);
-if (!isValid) throw new AppError(ERRORS.AUTH_WRONG_PASSWORD, 401);
-
-// 3. Met à jour le hash et la date de changement
-await query(
-  `UPDATE users SET password_hash = $1, password_changed_at = NOW() WHERE id = $2`,
-  [newPassword, userId],
-);
-```
-
-`newPassword` contient déjà le hash bcrypt — il est haché par le middleware `hashPassword` avant d'atteindre le controller. `password_changed_at = NOW()` est mis à jour à chaque changement — c'est ce champ que `userInfo` vérifie pour calculer `mustChangePassword`.
-
-### 10.10. `forgot_password.controller.ts`
-
-Réinitialise le mot de passe d'un utilisateur à partir de son email en générant un mot de passe temporaire et en le transmettant par email.
-
-```ts
-// 1. Vérifie que l'email existe en base
-const user = (
-  await query<{ id: string; email: string; display_name: string }>(
-    `SELECT id, email, display_name FROM users WHERE email = $1 LIMIT 1`,
-    [email],
-  )
-)[0];
-if (!user) throw new AppError(ERRORS.AUTH_EMAIL_NOT_FOUND, 404);
-
-// 2. Génère un mot de passe temporaire et le hash
-const temporaryPassword = generateTemporaryPassword();
-const passwordHash = await hashPassword(temporaryPassword);
-
-// 3. Remet password_changed_at à null pour forcer le changement à la prochaine connexion
-await query(
-  `UPDATE users SET password_hash = $1, password_changed_at = NULL WHERE id = $2`,
-  [passwordHash, user.id],
-);
-
-// 4. Envoie le mot de passe temporaire par email
-await sendPasswordResetEmail(user.email, user.display_name, temporaryPassword);
-```
-
-`password_changed_at = NULL` est la clé du mécanisme : en remettant ce champ à `null`, `userInfo` calculera `mustChangePassword: true` à la prochaine connexion, forçant l'utilisateur à changer son mot de passe provisoire avant d'accéder à l'administration.
-
-### 10.11. `create_artist.controller.ts`
-
-Crée un artiste et son concert associé dans une transaction SQL. L'image est traitée et écrite sur le disque avant la transaction.
-
-```ts
-// 1. Vérifie la présence du fichier image
-if (!req.file) throw new AppError(ERRORS.ARTIST_FILE_REQUIRED, 400);
-
-// 2. Convertit et écrit l'image avant d'ouvrir la transaction
-const url_media = await saveImage(req.file.buffer, ARTISTS_UPLOADS_DIR, "/uploads/artists");
-
-// 3. Transaction : INSERT artiste + INSERT concert
-await query("BEGIN");
-try {
-  const artist = (await query<ArtistItem>(`INSERT INTO artists (...) VALUES (...) RETURNING ...`, [...]))[0];
-  if (!artist) throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
-
-  const concert = (await query<ConcertRow>(`INSERT INTO concerts (artist_id, stage, start_time, end_time) VALUES ($1, $2, $3, $4) RETURNING ...`, [artist.id, stage, start_time, end_time]))[0];
-  if (!concert) throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
-
-  await query("COMMIT");
-  return res.status(201).json({ artist: { ...artist, stage: concert.stage, start_time: concert.start_time, end_time: concert.end_time } });
-} catch (error) {
-  await query("ROLLBACK");
-  await deleteImage(ARTISTS_UPLOADS_DIR, url_media);
-  if (error instanceof Error && error.message === "featured_limit_reached") {
-    throw new AppError(ERRORS.ARTIST_FEATURED_LIMIT, 409);
-  }
-  throw error;
-}
-```
-
-L'image est écrite **avant** la transaction — si l'écriture disque échoue, aucune ligne SQL n'est insérée. En cas d'erreur SQL, le `ROLLBACK` annule les deux insertions et `deleteImage` supprime le fichier déjà écrit, laissant le système dans un état cohérent.
-
-La limite des artistes mis en avant (`is_featured`) est contrôlée par un trigger PostgreSQL qui lève une erreur `featured_limit_reached` si deux artistes sont déjà en avant — le `catch` intercepte ce message et renvoie une `AppError` 409.
-
-### 10.12. `update_artist.controller.ts`
-
-Modifie un artiste existant et son concert. La gestion de l'image diffère de la création : l'ancienne image n'est supprimée qu'**après** le `COMMIT`.
-
-```ts
-// 1. Vérifie que l'artiste existe et récupère l'url_media actuelle
-const existingArtist = (
-  await query<ArtistMediaRow>(
-    "SELECT id, url_media FROM artists WHERE id = $1 LIMIT 1",
-    [artistId],
-  )
-)[0];
-if (!existingArtist) throw new AppError(ERRORS.ARTIST_NOT_FOUND, 404);
-
-// 2. Si une nouvelle image est fournie, l'écrit avant la transaction
-let url_media = existingArtist.url_media;
-if (req.file)
-  url_media = await saveImage(
-    req.file.buffer,
-    ARTISTS_UPLOADS_DIR,
-    "/uploads/artists",
-  );
-
-// 3. Transaction : UPDATE artiste + UPDATE concert
-await query("BEGIN");
-try {
-  // UPDATE artists ... UPDATE concerts ...
-  await query("COMMIT");
-
-  // 4. Supprime l'ancienne image uniquement après le COMMIT
-  if (req.file)
-    await deleteImage(ARTISTS_UPLOADS_DIR, existingArtist.url_media);
-
-  return res.status(200).json({ artist: { ...artist, ...concert } });
-} catch (error) {
-  await query("ROLLBACK");
-  // Supprime la nouvelle image si elle a été écrite avant l'échec SQL
-  if (req.file) await deleteImage(ARTISTS_UPLOADS_DIR, url_media);
-  throw error;
-}
-```
-
-L'ordre est important : `deleteImage` de l'ancienne image est appelé **après** le `COMMIT`. Si le `UPDATE` SQL échoue, le `ROLLBACK` remet la base dans l'état précédent et la nouvelle image (si écrite) est supprimée — l'ancienne est conservée intacte. L'artiste ne se retrouve jamais sans image.
-
-### 10.13. `delete_artist.controller.ts`
-
-Supprime un artiste, son concert associé et son fichier image.
-
-```ts
-const deletedArtists = await query<ArtistMediaRow>(
-  "DELETE FROM artists WHERE id = $1 RETURNING id, url_media",
-  [req.params.id],
-);
-
-if (!deletedArtists[0]) throw new AppError(ERRORS.ARTIST_NOT_FOUND, 404);
-
-await deleteImage(ARTISTS_UPLOADS_DIR, deletedArtists[0].url_media);
-
-return res.status(200).json({ message: "Artiste supprime" });
-```
-
-Le `RETURNING id, url_media` récupère les données de la ligne supprimée en une seule requête — pas besoin de faire un `SELECT` avant le `DELETE`. Le concert associé est supprimé automatiquement par la contrainte `ON DELETE CASCADE` définie en base. Le fichier image est supprimé **après** le `DELETE` SQL — si la suppression en base échoue, l'image est conservée.
-
-### 10.14. `create_news.controller.ts`
-
-Crée une news avec la même logique image/transaction que `create_artist` — image écrite avant la transaction, supprimée en cas d'échec SQL.
-
-```ts
-if (!req.file) throw new AppError(ERRORS.NEWS_FILE_REQUIRED, 400);
-
-const url_media = await saveImage(
-  req.file.buffer,
-  NEWS_UPLOADS_DIR,
-  "/uploads/news",
-);
-
-await query("BEGIN");
-try {
-  const news = (
-    await query<NewsItem>(
-      `WITH inserted AS (
-       INSERT INTO news (title, content, is_published, url_media, description_media, user_id)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING *
-     )
-     SELECT i.id, i.title, i.content, i.is_published, i.created_at,
-            i.url_media, i.description_media,
-            u.display_name AS author_name
-     FROM inserted i
-     LEFT JOIN users u ON u.id = i.user_id`,
-      [
-        title,
-        content || null,
-        isPublished,
-        url_media,
-        description_media,
-        res.locals.userId,
-      ],
-    )
-  )[0];
-  if (!news) throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
-
-  await query("COMMIT");
-  return res.status(201).json({ news });
-} catch (error) {
-  await query("ROLLBACK");
-  await deleteImage(NEWS_UPLOADS_DIR, url_media);
-  throw error;
-}
-```
-
-La requête utilise un CTE (`WITH inserted AS`) pour insérer la news et récupérer immédiatement le `display_name` de l'auteur via `LEFT JOIN users` — en une seule requête SQL plutôt que deux. `res.locals.userId` est injecté comme `user_id` — c'est l'utilisateur connecté qui est enregistré comme auteur.
-
-### 10.15. `update_news.controller.ts`
-
-Modifie une news existante. La logique image est identique à `update_artist` — nouvelle image écrite avant la transaction, ancienne supprimée après le `COMMIT`.
-
-La différence notable avec `update_artist` : le `UPDATE` ne retourne pas `author_name` car ce champ vient de la table `users`. Un second `SELECT` est donc nécessaire après le `UPDATE` pour récupérer la news complète avec le nom de l'auteur :
-
-```ts
-// UPDATE news ... RETURNING *
-const updatedNews = (await query<NewsItem>(`UPDATE news SET ... WHERE id = $1 RETURNING *`, [...]))[0];
-
-// SELECT avec JOIN users pour récupérer author_name
-const news = (await query<NewsItem>(
-  `SELECT a.*, u.display_name AS author_name
-   FROM news a
-   LEFT JOIN users u ON u.id = a.user_id
-   WHERE a.id = $1`,
-  [newsId],
-))[0];
-
-await query("COMMIT");
-if (req.file) await deleteImage(NEWS_UPLOADS_DIR, existingNews.url_media);
-```
-
-> Ce double aller-retour pourrait être remplacé par un CTE `WITH updated AS (UPDATE ... RETURNING *) SELECT ... JOIN users` — comme dans `create_news`. C'est une simplification possible.
-
-### 10.16. `delete_news.controller.ts`
-
-Structure identique à `delete_artist` — `DELETE ... RETURNING` en une requête, suppression du fichier image après.
-
-```ts
-const deletedNews = await query<NewsMediaRow>(
-  "DELETE FROM news WHERE id = $1 RETURNING id, url_media",
-  [req.params.id],
-);
-
-if (!deletedNews[0]) throw new AppError(ERRORS.NEWS_NOT_FOUND, 404);
-
-await deleteImage(NEWS_UPLOADS_DIR, deletedNews[0].url_media);
-
-return res.status(200).json({ message: "News supprimee" });
-```
-
-### 10.17. `list_users.controller.ts`
-
-Retourne la liste de tous les utilisateurs triés alphabétiquement par nom d'affichage. Seuls les champs utiles au frontend sont sélectionnés — `password_hash` n'est jamais exposé.
-
-```ts
-const users = await query<UserItem>(
-  `SELECT id, email, display_name, role, created_at, password_changed_at
-   FROM users
-   ORDER BY display_name ASC`,
-);
-
-return res.status(200).json({ users });
-```
-
-### 10.18. `create_user.controller.ts`
-
-Crée un compte utilisateur avec un mot de passe temporaire généré automatiquement et envoyé par email.
-
-```ts
-// 1. Construit le display_name depuis first_name + last_name
-const displayName = `${first_name} ${last_name}`.trim();
-
-// 2. Vérifie l'unicité de l'email et du nom d'affichage
-await checkEmailAvailable(email);
-await checkDisplayNameAvailable(displayName);
-
-// 3. Génère et hash le mot de passe temporaire
-const temporaryPassword = generateTemporaryPassword();
-const passwordHash = await hashPassword(temporaryPassword);
-
-// 4. Insère l'utilisateur en base
-const createdUser = (
-  await query<UserItem>(
-    `INSERT INTO users (email, password_hash, display_name, role) VALUES ($1, $2, $3, $4)
-   RETURNING id, email, display_name, role, created_at, password_changed_at`,
-    [email, passwordHash, displayName, role],
-  )
-)[0];
-if (!createdUser) throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
-
-// 5. Envoie les identifiants provisoires par email
-await sendWelcomeEmail(email, displayName, temporaryPassword);
-```
-
-`password_changed_at` est `null` à la création — ce champ non renseigné déclenchera `mustChangePassword: true` à la première connexion, forçant l'utilisateur à changer son mot de passe provisoire.
-
-### 10.19. `update_user.controller.ts`
-
-Modifie les informations d'un utilisateur existant — email, nom d'affichage et rôle.
-
-```ts
-const displayName = `${first_name} ${last_name}`.trim();
-
-await checkUserExists(userId);
-await checkEmailAvailable(email, userId);
-await checkDisplayNameAvailable(displayName, userId);
-
-const updatedUser = (
-  await query<UserItem>(
-    `UPDATE users SET email = $1, display_name = $2, role = $3 WHERE id = $4
-   RETURNING id, email, display_name, role, created_at, password_changed_at`,
-    [email, displayName, role, userId],
-  )
-)[0];
-if (!updatedUser) throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
-```
-
-`checkEmailAvailable` et `checkDisplayNameAvailable` reçoivent `userId` en second argument pour exclure l'utilisateur courant de la vérification d'unicité — sans ça, un utilisateur qui garde son propre email déclencherait un faux conflit 409.
-
-### 10.20. `delete_user.controller.ts`
-
-Supprime définitivement un utilisateur par son UUID.
-
-```ts
-const deletedUsers = await query<IdRow>(
-  "DELETE FROM users WHERE id = $1 RETURNING id",
-  [req.params.id],
-);
-if (!deletedUsers[0]) throw new AppError(ERRORS.USER_NOT_FOUND, 404);
-
-return res.status(200).json({ message: "Utilisateur supprime" });
-```
-
-Pas de fichier image à supprimer ici. Le `RETURNING id` sert uniquement à détecter si la suppression a concerné une ligne — si `deletedUsers[0]` est absent, l'UUID ne correspondait à aucun utilisateur.
-
-### 10.21. `submit_contact.controller.ts`
-
-Le controller le plus simple du projet — les champs sont déjà validés par `validateBody(contactSchema)` en amont, il ne reste qu'à déléguer l'envoi au service mailer.
-
-```ts
-const { email, name, subject, message } = req.body;
-await sendContactEmail(email, name, subject, message);
-return res.status(200).json({ message: "Message envoye" });
-```
-
-Aucune écriture en base — le formulaire de contact transite uniquement par email.
+Le controller le plus simple du projet — les champs sont déjà validés par `validateBody(contactSchema)` en amont, il ne reste qu'à déléguer l'envoi à `sendContactEmail`. Aucune écriture en base.
 
 ---
 
-## 11. Routes — `src/routes/`
+## 12. Routes — `src/routes/`
 
 Chaque fichier de routes déclare les endpoints d'un domaine, compose la chaîne de middlewares et délègue au controller. Les routes ne contiennent aucune logique métier.
 
-### 11.1. `home.routes.ts`
-
-```ts
-router.get("/home", asyncHandler(getHome));
-```
+### 12.1. `home.routes.ts`
 
 | Méthode | Endpoint       | Middlewares | Controller |
-| ------- | -------------- | ----------- | ---------- |
+| -------- | --------------- | ------------ | ----------- |
 | `GET`   | `/public/home` | —           | `getHome`  |
 
-### 11.2. `artists.routes.ts`
-
-```ts
-router.get("/artists", asyncHandler(listArtists));
-router.get("/artists/:id", asyncHandler(getArtist));
-```
+### 12.2. `artists.routes.ts`
 
 | Méthode | Endpoint              | Middlewares | Controller    |
-| ------- | --------------------- | ----------- | ------------- |
+| -------- | ---------------------- | ------------ | -------------- |
 | `GET`   | `/public/artists`     | —           | `listArtists` |
 | `GET`   | `/public/artists/:id` | —           | `getArtist`   |
 
-### 11.3. `news.routes.ts`
-
-```ts
-router.get("/news", asyncHandler(optionalAuth), asyncHandler(getNewsList));
-router.get("/news/:id", asyncHandler(optionalAuth), asyncHandler(getNews));
-```
+### 12.3. `news.routes.ts`
 
 | Méthode | Endpoint           | Middlewares    | Controller    |
-| ------- | ------------------ | -------------- | ------------- |
+| -------- | ------------------- | --------------- | -------------- |
 | `GET`   | `/public/news`     | `optionalAuth` | `getNewsList` |
 | `GET`   | `/public/news/:id` | `optionalAuth` | `getNews`     |
 
-### 11.4. `admin.auth.routes.ts`
-
-```ts
-router.post(
-  "/auth/login",
-  rateLimitLogin,
-  validateBody(loginSchema),
-  asyncHandler(login),
-);
-router.post("/auth/logout", asyncHandler(auth), asyncHandler(logout));
-router.get(
-  "/auth/me",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  asyncHandler(userInfo),
-);
-router.post(
-  "/auth/forgot-password",
-  rateLimitLogin,
-  validateBody(forgotPasswordSchema),
-  asyncHandler(forgotPassword),
-);
-router.patch(
-  "/auth/password",
-  asyncHandler(auth),
-  asyncHandler(sessionIsOpen),
-  validateBody(changePasswordSchema),
-  asyncHandler(hashPassword("newPassword")),
-  asyncHandler(changePassword),
-);
-```
-
-| Méthode | Endpoint                      | Middlewares                                             | Controller       |
-| ------- | ----------------------------- | ------------------------------------------------------- | ---------------- |
-| `POST`  | `/admin/auth/login`           | `rateLimitLogin`, `validateBody`                        | `login`          |
-| `POST`  | `/admin/auth/logout`          | `auth`                                                  | `logout`         |
-| `GET`   | `/admin/auth/me`              | `auth`, `sessionIsOpen`                                 | `userInfo`       |
-| `POST`  | `/admin/auth/forgot-password` | `rateLimitLogin`, `validateBody`                        | `forgotPassword` |
-| `PATCH` | `/admin/auth/password`        | `auth`, `sessionIsOpen`, `validateBody`, `hashPassword` | `changePassword` |
-
-`/auth/me` est la seule route auth qui passe par `sessionIsOpen` — elle renouvelle le token à chaque chargement du layout admin. `/auth/logout` n'en a pas besoin : il révoque la session lui-même.
-
-### 11.5. `admin.artists.routes.ts`
-
-```ts
-router.post(
-  "/artists",
-  ...adminAuth("admin", "artists"),
-  upload.single("image"),
-  validateBody(createArtistSchema),
-  asyncHandler(createArtist),
-);
-router.patch(
-  "/artists/:id",
-  ...adminAuth("admin", "artists"),
-  validateUuidParam(),
-  upload.single("image"),
-  validateBody(createArtistSchema),
-  asyncHandler(updateArtist),
-);
-router.delete(
-  "/artists/:id",
-  ...adminAuth("admin", "artists"),
-  validateUuidParam(),
-  asyncHandler(deleteArtist),
-);
-```
+### 12.4. `admin.artists.routes.ts`
 
 | Méthode  | Endpoint             | Middlewares                                                                   | Controller     |
-| -------- | -------------------- | ----------------------------------------------------------------------------- | -------------- |
+| --------- | --------------------- | ----------------------------------------------------------------------------- | -------------- |
 | `POST`   | `/admin/artists`     | `adminAuth("admin","artists")`, `upload`, `validateBody`                      | `createArtist` |
 | `PATCH`  | `/admin/artists/:id` | `adminAuth("admin","artists")`, `validateUuidParam`, `upload`, `validateBody` | `updateArtist` |
 | `DELETE` | `/admin/artists/:id` | `adminAuth("admin","artists")`, `validateUuidParam`                           | `deleteArtist` |
 
-### 11.6. `admin.news.routes.ts`
-
-```ts
-router.post(
-  "/news",
-  ...adminAuth("admin", "news"),
-  upload.single("image"),
-  validateBody(createNewsSchema),
-  asyncHandler(createNews),
-);
-router.patch(
-  "/news/:id",
-  ...adminAuth("admin", "news"),
-  validateUuidParam(),
-  upload.single("image"),
-  validateBody(createNewsSchema),
-  asyncHandler(updateNews),
-);
-router.delete(
-  "/news/:id",
-  ...adminAuth("admin", "news"),
-  validateUuidParam(),
-  asyncHandler(deleteNews),
-);
-```
+### 12.5. `admin.news.routes.ts`
 
 | Méthode  | Endpoint          | Middlewares                                                                | Controller   |
-| -------- | ----------------- | -------------------------------------------------------------------------- | ------------ |
+| --------- | ------------------ | --------------------------------------------------------------------------- | ------------ |
 | `POST`   | `/admin/news`     | `adminAuth("admin","news")`, `upload`, `validateBody`                      | `createNews` |
 | `PATCH`  | `/admin/news/:id` | `adminAuth("admin","news")`, `validateUuidParam`, `upload`, `validateBody` | `updateNews` |
 | `DELETE` | `/admin/news/:id` | `adminAuth("admin","news")`, `validateUuidParam`                           | `deleteNews` |
 
-### 11.7. `admin.users.routes.ts`
-
-```ts
-router.get("/users", ...adminAuth("admin"), asyncHandler(listUsers));
-router.post(
-  "/users",
-  ...adminAuth("admin"),
-  validateBody(createUserSchema),
-  asyncHandler(createUser),
-);
-router.patch(
-  "/users/:id",
-  ...adminAuth("admin"),
-  validateUuidParam(),
-  validateBody(createUserSchema),
-  asyncHandler(updateUser),
-);
-router.delete(
-  "/users/:id",
-  ...adminAuth("admin"),
-  validateUuidParam(),
-  asyncHandler(deleteUser),
-);
-```
-
-| Méthode  | Endpoint           | Middlewares                                               | Controller   |
-| -------- | ------------------ | --------------------------------------------------------- | ------------ |
-| `GET`    | `/admin/users`     | `adminAuth("admin")`                                      | `listUsers`  |
-| `POST`   | `/admin/users`     | `adminAuth("admin")`, `validateBody`                      | `createUser` |
-| `PATCH`  | `/admin/users/:id` | `adminAuth("admin")`, `validateUuidParam`, `validateBody` | `updateUser` |
-| `DELETE` | `/admin/users/:id` | `adminAuth("admin")`, `validateUuidParam`                 | `deleteUser` |
-
-Seul le rôle `admin` peut gérer les utilisateurs — contrairement aux artistes et news accessibles aussi au rôle dédié.
-
-### 11.8. `contact.routes.ts`
-
-```ts
-router.post(
-  "/submit",
-  validateBody(contactSchema),
-  asyncHandler(submitContact),
-);
-```
+### 12.6. `contact.routes.ts`
 
 | Méthode | Endpoint          | Middlewares    | Controller      |
-| ------- | ----------------- | -------------- | --------------- |
+| -------- | ------------------ | --------------- | ---------------- |
 | `POST`  | `/contact/submit` | `validateBody` | `submitContact` |
 
-Route publique — aucune authentification requise. La validation Zod garantit que le message est complet avant l'envoi email.
+Route publique — aucune authentification requise.
+
+> Les routes `/api/auth/*` (sign-in, sign-out, session, reset de mot de passe, CRUD utilisateurs) ne sont pas déclarées dans `src/routes/` : elles sont entièrement prises en charge par `toNodeHandler(auth)` dans `app.ts`. Détail en section suivante.
 
 ---
 
-## 12. Authentification et sessions
+## 13. Authentification et sessions
 
-### 12.1. Stratégie JWT + sessions en base
+### 13.1. Tout est délégué à Better Auth
 
-L'authentification combine un JWT et une session persistée en base de données. Les deux sont nécessaires : le JWT seul ne peut pas être révoqué avant son expiration, et la session seule nécessiterait un aller-retour en base à chaque requête sans bénéfice du stateless.
+Ce backend n'implémente ni hachage de mot de passe, ni génération de token, ni table de sessions custom. `src/lib/auth.ts` configure une instance Better Auth :
 
-Le JWT embarque `userId` et `sessionId` dans son payload. À chaque requête protégée :
-
-1. `auth` vérifie la signature du JWT et extrait `userId` et `sessionId`
-2. `sessionIsOpen` vérifie en base que la session existe, n'est pas révoquée et n'est pas expirée
-
-Cette combinaison permet de révoquer une session côté serveur (logout, bannissement) sans attendre l'expiration naturelle du JWT.
-
-### 12.2. Cycle de vie d'une session
-
-```
-POST /admin/auth/login
-  → INSERT INTO sessions (user_id, expires_at)  — session créée
-  → JWT généré avec { userId, sessionId }
-  → cookie posé
-
-Chaque requête protégée
-  → sessionIsOpen vérifie sessions WHERE id = sessionId AND user_id = userId
-  → nouveau JWT généré, cookie renouvelé
-
-POST /admin/auth/logout
-  → UPDATE sessions SET revoked_at = now()  — session révoquée
-  → toute requête ultérieure avec ce sessionId → 401
+```ts
+export const auth = betterAuth({
+  database: pool,
+  trustedOrigins: [process.env.FRONTEND_ORIGIN ?? "http://localhost:3000"],
+  rateLimit: { enabled: true },
+  advanced: { database: { generateId: "uuid" } },
+  emailAndPassword: {
+    enabled: true,
+    minPasswordLength: 8,
+    resetPasswordTokenExpiresIn: 60 * 60,
+    revokeSessionsOnPasswordReset: true,
+    sendResetPassword: async ({ user, url }) => { /* voir 13.2 */ },
+  },
+  user: {
+    additionalFields: {
+      role: { type: ["admin", "artists", "news"], required: false, input: false },
+    },
+  },
+  plugins: [admin()],
+});
 ```
 
-La session (`SESSION_EXPIRES_IN`, 12h) définit la durée de vie maximale absolue — au-delà, `sessionIsOpen` refuse toute requête même si l'utilisateur est actif. Le JWT (`JWT_ACCESS_EXPIRES_IN`, 1h) est renouvelé à chaque requête protégée réussie — il n'expire que si l'utilisateur reste inactif plus d'une heure sans faire aucune requête admin.
+Points clés :
 
-### 12.3. Cookies httpOnly — configuration et sécurité
+- **`database: pool`** — Better Auth réutilise le même pool `pg` que le reste du backend (`src/db.ts`), mais gère ses propres tables (`user`, `session`, `account`, `verification`) via son adapter interne, indépendamment de `query<T>()`.
+- **`generateId: "uuid"`** — force des identifiants UUID plutôt que le format par défaut de Better Auth, pour rester cohérent avec le reste du schéma PostgreSQL du projet.
+- **`role` en `additionalFields`** — le seul champ métier ajouté à l'utilisateur Better Auth. `input: false` empêche un utilisateur de définir son propre rôle à l'inscription ; il n'est modifiable que via le plugin admin.
+- **`plugins: [admin()]`** — délègue tout le CRUD utilisateurs (créer, lister, modifier, changer le mot de passe, supprimer) au plugin admin de Better Auth, exposé sur `/api/auth/admin/*`. Par défaut, seul le rôle `admin` y a accès (`adminRoles: ["admin"]`, non surchargé ici — il correspond exactement à notre valeur de `role`).
+- **`revokeSessionsOnPasswordReset: true`** — un reset de mot de passe réussi invalide toutes les autres sessions ouvertes de l'utilisateur.
 
-Le JWT est transmis dans un cookie `httpOnly` — il n'est pas accessible via `document.cookie` en JavaScript, ce qui le protège des attaques XSS.
+Le contrat HTTP complet (endpoints, corps de requête, codes d'erreur) est documenté dans [API.md](./API.md#authentification--utilisateurs).
 
-La configuration du cookie est sérialisée par `serializeCookie` dans `utils.ts` à partir de trois variables d'environnement :
+### 13.2. Invitation vs réinitialisation — `sendResetPassword`
 
-| Variable | Dev | Prod |
-|---|---|---|
-| `COOKIE_ACCESS_TOKEN_SECURE` | `false` | `true` — cookie uniquement sur HTTPS |
-| `COOKIE_ACCESS_TOKEN_SAME_SITE` | `lax` | `strict` ou `lax` selon le déploiement |
-| `COOKIE_ACCESS_TOKEN_NAME` | `vindhellfest_access_token` | identique |
+Better Auth appelle le même callback `sendResetPassword({ user, url })` que ce soit pour un reset classique (« mot de passe oublié ») ou pour l'email envoyé à un utilisateur qu'un admin vient de créer (« choisissez votre mot de passe »). Le projet distingue les deux cas en inspectant le paramètre `callbackURL` encodé dans l'URL générée par Better Auth :
 
-`Secure: true` en production garantit que le cookie n'est jamais transmis en HTTP clair. `SameSite: lax` protège contre les attaques CSRF pour la majorité des cas d'usage.
+```ts
+sendResetPassword: async ({ user, url }) => {
+  const callbackURL = new URL(url).searchParams.get("callbackURL");
+  const isInvite =
+    !!callbackURL &&
+    new URL(callbackURL).searchParams.get("context") === "invite";
 
-### 12.4. Renouvellement du JWT à chaque requête
+  if (isInvite) {
+    await sendInviteEmail(user.email, user.name, url);
+  } else {
+    await sendPasswordResetEmail(user.email, user.name, url);
+  }
+},
+```
 
-`sessionIsOpen` génère un nouveau JWT et le pose dans un `Set-Cookie` à chaque requête authentifiée réussie. Ce mécanisme de sliding session maintient la connexion active tant que l'utilisateur navigue — le JWT expire uniquement si aucune requête protégée n'est faite pendant toute la durée de `JWT_ACCESS_EXPIRES_IN`.
+Le frontend est responsable de fabriquer ce `context=invite` : `AddUserModal.tsx` appelle `authClient.requestPasswordReset({ email, redirectTo: "<origin>/reset-password?context=invite" })` après avoir créé le compte, tandis que `ForgotPassword.tsx` appelle la même méthode avec `redirectTo: "<origin>/reset-password"` (sans context). Cette logique — la seule partie du flux d'authentification écrite par ce projet plutôt que par Better Auth — est testée en isolation dans `tests/unit/auth.sendResetPassword.test.ts` (voir [14. Tests](#14-tests)), en appelant directement `auth.options.emailAndPassword.sendResetPassword(...)` : `betterAuth()` renvoie l'objet `options` tel quel, donc c'est littéralement cette fonction qui est invoquée, sans DB ni HTTP.
 
-Ce renouvellement n'a lieu que sur les routes qui passent par `sessionIsOpen` — les routes publiques avec `optionalAuth` ne renouvellent pas le token.
+### 13.3. Rate limiting interne de Better Auth
+
+Better Auth applique son propre rate limiting (`rateLimit: { enabled: true }` — actif même hors production, pour pouvoir le valider manuellement en développement), indépendant de tout package `express-rate-limit`. Deux règles spéciales, définies par Better Auth lui-même, s'appliquent par IP :
+
+| Chemins concernés                                                | Fenêtre | Max |
+| -------------------------------------------------------------------- | -------- | --- |
+| `/sign-in*`, `/sign-up`, `/change-password`, `/change-email`        | 10 s     | 3   |
+| `/request-password-reset`, `/forget-password*`                      | 60 s     | 3   |
+
+`trust proxy` (section [4.2](#42-srcappts)) est ce qui permet à Better Auth de lire la vraie IP cliente derrière un reverse proxy en production, comme pour tout mécanisme basé sur l'IP.
+
+### 13.4. Ce que lisent `requireAuth` et `requireRole`
+
+Une fois la session validée par Better Auth, le backend n'a besoin de rien de plus que `userId`, `sessionId` et `userRole` pour protéger ses propres routes (`/admin/*`) — voir [8.1](#81-session--requireauth--optionalauth) et [8.2](#82-autorisation--requirerole). Aucune notion de « token » ou de « cookie » n'apparaît dans ce code : c'est entièrement la responsabilité de Better Auth.
 
 ---
 
-## 13. Tests
+## 14. Tests
 
-### 13.1. Organisation des tests
+Le détail fichier par fichier — chaque cas de test, sa description et son `it(...)` exact — est documenté dans **[TEST.md](./TEST.md)**. Cette section résume l'organisation et les mécanismes partagés.
 
-Les tests sont répartis en deux catégories dans `tests/` :
+### 14.1. Organisation
 
 ```
 tests/
-├── setup.ts                          — configuration globale Vitest
+├── setup.ts                          — mocks globaux, reset DB
 ├── helpers/
 │   ├── testServer.ts                 — instance Express pour Supertest
-│   ├── createAuthSession.ts          — helper : crée un user + session + cookie JWT
-│   └── fixtures.ts                   — helpers : insertUser, insertArtist, insertNews
+│   ├── createAuthSession.ts          — cree un user + une vraie session Better Auth (cookie signe)
+│   └── fixtures.ts                   — insertUser (auth.api.createUser), insertArtist, insertNews
 ├── integration/
-│   ├── public/
-│   │   ├── public.test.ts            — GET /public/home, /artists, /news
-│   │   └── contact.test.ts           — POST /contact/submit
-│   └── admin/
-│       ├── auth.test.ts              — login, logout, me, change-password, forgot-password
-│       ├── artists.test.ts           — CRUD artistes
-│       ├── news.test.ts              — CRUD news
-│       └── users.test.ts             — CRUD utilisateurs
+│   ├── admin/
+│   │   ├── artists.test.ts           — CRUD artistes
+│   │   ├── news.test.ts              — CRUD news
+│   │   └── betterAuth.test.ts        — sign-in, sign-out, session, reset, plugin admin (HTTP reel sur /api/auth/*)
+│   └── public/
+│       ├── public.test.ts            — GET /public/home, /artists, /news
+│       └── contact.test.ts           — POST /contact/submit
 └── unit/
-    ├── auth.middleware.test.ts
+    ├── auth.sendResetPassword.test.ts
     ├── requireRole.middleware.test.ts
     ├── validateBody.middleware.test.ts
     ├── validateUuidParam.middleware.test.ts
     ├── imageUpload.service.test.ts
-    ├── mailer.service.test.ts
-    └── user.service.test.ts
+    └── mailer.service.test.ts
 ```
 
-### 13.2. Lancer les tests en local
+11 fichiers, couvrant à la fois nos propres routes et — pour `betterAuth.test.ts` et `auth.sendResetPassword.test.ts` — la configuration Better Auth elle-même, plutôt que de se reposer uniquement sur le fait que Better Auth est une librairie déjà testée en amont.
 
-Les tests d'intégration ont besoin d'une vraie base PostgreSQL nommée `vindhellfest_test`, distincte de la base de développement `vindhellfest`. Elle n'est pas créée automatiquement — contrairement au schéma, qui est rejoué par `tests/setup.ts` à chaque lancement (voir 13.3).
+### 14.2. Lancer les tests en local
+
+Les tests d'intégration ont besoin d'une vraie base PostgreSQL nommée `vindhellfest_test`, distincte de la base de développement `vindhellfest`.
 
 **1. Démarrer PostgreSQL**
 
@@ -2323,13 +1395,11 @@ Les tests d'intégration ont besoin d'une vraie base PostgreSQL nommée `vindhel
 docker compose up -d db
 ```
 
-**2. Créer la base de test**
+**2. Créer la base de test** (une seule fois — persiste dans le volume `pgdata`)
 
 ```bash
 docker exec -it vindhellfest-db psql -U postgres -c "CREATE DATABASE vindhellfest_test"
 ```
-
-Cette étape n'est à faire qu'une seule fois — la base persiste dans le volume `pgdata` (voir [Volume persistant — `pgdata`](../../README.md#volume-persistant--pgdata) à la racine du projet) tant qu'il n'est pas supprimé via `docker compose down -v`.
 
 **3. Lancer les tests**
 
@@ -2337,26 +1407,19 @@ Cette étape n'est à faire qu'une seule fois — la base persiste dans le volum
 npm test
 ```
 
-`tests/setup.ts` se connecte directement à `vindhellfest_test` (voir 4.3), rejoue les migrations SQL et nettoie les données entre chaque test — aucune autre préparation n'est nécessaire.
+À l'intérieur du conteneur backend, si celui-ci tourne déjà via `docker compose up` :
 
-> C'est exactement la séquence reproduite par le job `backend` de la CI (voir [Pipeline CI/CD](../../README.md#pipeline-cicd) à la racine du projet), à l'étape "Create test database".
-
-### 13.3. Tests d'intégration — routes HTTP avec Supertest
-
-Les tests d'intégration envoient de vraies requêtes HTTP contre l'instance Express retournée par `createApp()`, sur une vraie base PostgreSQL `vindhellfest_test`.
-
-`testServer.ts` expose l'instance sans démarrer de serveur réseau — Supertest monte directement l'application :
-
-```ts
-export const app = createApp();
-// Supertest s'occupe d'ouvrir et fermer le port
+```bash
+docker exec vindhellfest-backend npm test
 ```
 
-`setup.ts` prépare la base avant les tests et nettoie après chaque test :
+### 14.3. Réinitialisation de la base entre les tests
+
+`tests/setup.ts` réinitialise entièrement le schéma avant la suite (`beforeAll`) plutôt que de se contenter d'un `TRUNCATE` :
 
 ```ts
 beforeAll(async () => {
-  // rejoue les migrations SQL sur vindhellfest_test
+  await testPool.query("DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
   for (const file of MIGRATION_FILES) {
     const sql = fs.readFileSync(path.join(MIGRATIONS_DIR, file), "utf-8");
     await testPool.query(sql);
@@ -2364,65 +1427,41 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
-  // efface toutes les données entre chaque test
-  await testPool.query("TRUNCATE sessions, news, concerts, artists, users RESTART IDENTITY CASCADE;");
+  await testPool.query(
+    'TRUNCATE "user", session, account, verification, news, concerts, artists RESTART IDENTITY CASCADE;',
+  );
 });
 ```
 
-`setup.ts` mocke aussi les dépendances externes pour éviter les effets de bord :
+Le `DROP SCHEMA` est nécessaire car `01_auth_schema.sql` (généré une fois par `npx @better-auth/cli generate` pour un volume Postgres neuf) n'a pas de `DROP TABLE IF EXISTS` contrairement aux autres fichiers de migration — il n'est pas conçu pour être rejoué sur un schéma déjà peuplé. Repartir d'un schéma `public` vide à chaque lancement de la suite évite ce problème.
 
-| Mock | Raison |
-|---|---|
-| `sharp` | Ne pas traiter de vraies images |
+`setup.ts` mocke aussi les dépendances externes :
+
+| Mock          | Raison                                    |
+| -------------- | -------------------------------------------- |
+| `sharp`       | Ne pas traiter de vraies images             |
 | `fs/promises` (`mkdir`, `unlink`, `writeFile`) | Ne pas écrire sur le disque |
-| `nodemailer` | Ne pas envoyer de vrais emails |
-| `express-rate-limit` | Ne pas bloquer les tests répétés |
+| `nodemailer`  | Ne pas envoyer de vrais emails              |
 
-### 13.4. Tests unitaires — services et middlewares
+Better Auth lui-même n'est jamais mocké : `createAuthSession` et `betterAuth.test.ts` créent de vrais utilisateurs et de vraies sessions contre la base de test.
 
-Les tests unitaires isolent une fonction ou un middleware sans passer par Express. La base de données est mockée via `vi.mock` sur le module `../../src/db`.
+### 14.4. Helpers
 
-Chaque fichier de test unitaire couvre un fichier source :
+**`createAuthSession(role)`**
 
-| Fichier de test | Ce qui est testé |
-|---|---|
-| `auth.middleware.test.ts` | `auth` et `optionalAuth` — cookie absent, token invalide, user inexistant, session révoquée |
-| `requireRole.middleware.test.ts` | `requireRole` — rôle autorisé, rôle refusé, locals absent |
-| `validateBody.middleware.test.ts` | `validateBody` — body valide, body invalide, champs manquants |
-| `validateUuidParam.middleware.test.ts` | `validateUuidParam` — UUID valide, UUID malformé, paramètre absent |
-| `imageUpload.service.test.ts` | `saveImage`, `deleteImage` — appels sharp et fs mockés |
-| `mailer.service.test.ts` | `sendWelcomeEmail`, `sendPasswordResetEmail`, `sendContactEmail` — nodemailer mocké |
-| `user.service.test.ts` | `checkEmailAvailable`, `checkDisplayNameAvailable`, `checkUserExists`, `isNewsPrivileged` |
-
-### 13.5. Helpers et fixtures
-
-**`createAuthSession`**
-
-Insère un utilisateur et une session valide en base, génère un JWT signé et retourne un cookie prêt à passer dans Supertest :
+Crée un utilisateur via `auth.api.createUser` (plugin admin) puis se connecte via `auth.api.signInEmail({ asResponse: true })` pour extraire un cookie de session Better Auth réel et signé — impossible à reconstruire à la main :
 
 ```ts
 const { cookie, userId } = await createAuthSession("admin");
-await request(app).get("/admin/users").set("Cookie", cookie).expect(200);
-```
-
-**`insertUser` / `insertArtist` / `insertNews`**
-
-Fonctions de fixtures pour insérer des données de test directement en base sans passer par l'API. Utilisées pour préparer l'état initial avant de tester un endpoint de lecture, modification ou suppression.
-
-```ts
-const artistId = await insertArtist();
 await request(app).delete(`/admin/artists/${artistId}`).set("Cookie", cookie).expect(200);
 ```
 
+Appeler `auth.api.signInEmail` directement (sans passer par une requête HTTP) n'est pas soumis au rate limiting interne de Better Auth (section [13.3](#133-rate-limiting-interne-de-better-auth)) — ce qui permet à `createAuthSession` d'être appelée dans quasiment chaque test sans jamais déclencher de `429`. Ce n'est pas une garantie générale pour tous les endpoints Better Auth : `requestPasswordReset`/`resetPassword` appelés de la même façon (hors HTTP) se sont révélés peu fiables en CI, pour une raison différente (leur middleware `originCheck` attend un vrai contexte de requête) — `betterAuth.test.ts` les appelle donc exclusivement en HTTP réel, dans la limite du budget de la section 13.3 (détail dans TEST.md).
+
+**`insertArtist` / `insertNews`**
+
+Insèrent des données de test directement en base sans passer par l'API, pour préparer l'état initial avant de tester un endpoint de lecture, modification ou suppression.
+
 **`MINIMAL_PNG`**
 
-Buffer d'une image PNG 1x1px en base64, utilisé comme fichier de test pour les routes multipart qui attendent `req.file` :
-
-```ts
-await request(app)
-  .post("/admin/artists")
-  .set("Cookie", cookie)
-  .attach("image", MINIMAL_PNG, "test.png")
-  .field("name", "Artist Test")
-  ...
-```
+Buffer d'une image PNG 1×1 px en base64, utilisé comme fichier de test pour les routes multipart qui attendent `req.file`.

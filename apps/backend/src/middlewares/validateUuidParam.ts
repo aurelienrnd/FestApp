@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { z } from "zod";
-import { AppError } from "../errors/AppError";
-import { ERRORS } from "../errors/errorMessages";
+import { AppError } from "../errors/AppError.js";
+import { ERRORS } from "../errors/errorMessages.js";
 
 /** Retourne un middleware Express qui valide qu'un parametre de route est un UUID valide.
  * Si la validation echoue, une erreur 400 est transmise au middleware d'erreur.

@@ -316,7 +316,7 @@ Les deux jobs s'exécutent **en parallèle** sur des VM Ubuntu fraîches — ils
 | #  | Étape                         | Commande / Action                                   | Description                                                                                                                                                   |
 | -- | ------------------------------ | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1  | **Checkout**             | `actions/checkout@v4`                             | Clone le dépôt Git sur la VM                                                                                                                                |
-| 2  | **Prepare env files**    | `cat > .env / .env.backend / .env.frontend`       | Crée les trois fichiers d'environnement requis par Docker Compose —`.env.backend` contient toutes les variables nécessaires aux tests (DB, JWT, SMTP...) |
+| 2  | **Prepare env files**    | `cat > .env / .env.backend / .env.frontend`       | Crée les trois fichiers d'environnement requis par Docker Compose —`.env.backend` contient les variables nécessaires aux tests (DB, SMTP...) |
 | 3  | **Build backend image**  | `docker compose build backend`                    | Construit l'image Docker du backend (stage`dev`)                                                                                                            |
 | 4  | **Start database**       | `docker compose up -d db`                         | Lance le conteneur PostgreSQL en arrière-plan                                                                                                                |
 | 5  | **Wait for database**    | `pg_isready` en boucle (20 tentatives, pause 3 s) | Attend que PostgreSQL soit prêt à accepter les connexions avant de continuer                                                                                |
@@ -369,13 +369,9 @@ DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=postgres
 DB_NAME=vindhellfest
-JWT_ACCESS_SECRET=un-super-secret-a-changer
-JWT_ACCESS_EXPIRES_IN=1h
-COOKIE_ACCESS_TOKEN_NAME=vindhellfest_access_token
-COOKIE_ACCESS_TOKEN_SECURE=false
-COOKIE_ACCESS_TOKEN_SAME_SITE=lax
-SESSION_EXPIRES_IN=12h
 FRONTEND_ORIGIN=http://localhost:3000
+BETTER_AUTH_SECRET=un-super-secret-a-changer
+BETTER_AUTH_URL=http://localhost:4000
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_SECURE=false
@@ -422,16 +418,14 @@ Chargé par le service `backend`. Toutes les variables sont validées au démarr
 | `DB_PASSWORD` | `postgres`     | Mot de passe de la base de données                |
 | `DB_NAME`     | `vindhellfest` | Nom de la base de données                         |
 
-**Authentification & sessions**
+**Authentification (Better Auth)**
 
-| Variable                          | Exemple                       | Description                                                        |
-| --------------------------------- | ----------------------------- | ------------------------------------------------------------------ |
-| `JWT_ACCESS_SECRET`             | `un-super-secret-a-changer` | Clé secrète pour signer et vérifier les tokens JWT              |
-| `JWT_ACCESS_EXPIRES_IN`         | `1h`                        | Durée de validité du token JWT                                   |
-| `COOKIE_ACCESS_TOKEN_NAME`      | `vindhellfest_access_token` | Nom du cookie httpOnly stockant le token                           |
-| `COOKIE_ACCESS_TOKEN_SECURE`    | `true`                      | `true` = cookie HTTPS uniquement (mettre `false` en dev local) |
-| `COOKIE_ACCESS_TOKEN_SAME_SITE` | `lax`                       | Politique SameSite du cookie                                       |
-| `SESSION_EXPIRES_IN`            | `12h`                       | Durée de validité maximale d'une session en base                 |
+| Variable               | Exemple                       | Description                                                                                          |
+| ------------------------ | ------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `BETTER_AUTH_SECRET` | `un-super-secret-a-changer` | Clé de signature des sessions Better Auth — lue directement par la lib, pas validée par `env.ts`      |
+| `BETTER_AUTH_URL`    | `http://localhost:4000`     | URL de base utilisée par Better Auth pour construire ses liens (reset de mot de passe, invitation)      |
+
+> Ces deux variables ne sont pas dans le schéma Zod de `env.ts` (voir [apps/backend/README.md](apps/backend/README.md#44-srcenvts)) — si elles sont absentes, l'échec se produit à l'initialisation de Better Auth plutôt que via le message clair de `validateEnv()`.
 
 **SMTP — envoi d'emails**
 
@@ -468,7 +462,7 @@ Chargé par le service `frontend`.
 La base de données du projet repose sur PostgreSQL.
 Le dossier `bd/init/` contient trois types de fichiers exécutés automatiquement par Docker à la création du conteneur `db` :
 
-- **Scripts de schéma** — création des tables (`users`, `sessions`, `news`, `artists`, `concerts`)
+- **Scripts de schéma** — création des tables `news`, `artists`, `concerts`, ainsi que `user`/`session`/`account`/`verification` (générées par la CLI Better Auth, cf. [bd/README.md](bd/README.md))
 - **Scripts de seed** — données initiales insérées au démarrage
 - **Diagramme Draw.io** — modèle conceptuel de données (MCD)
 
@@ -497,8 +491,8 @@ Application Next.js + TypeScript (App Router).
 API REST Express.js + TypeScript.
 
 - Routes et contrôleurs organisés en deux espaces : `admin/` (accès authentifié) et `public/` (accès libre)
-- Middlewares : authentification JWT, validation Zod, gestion d'erreurs, rate limiting
-- Logique de sécurité : JWT, bcrypt, cookies httpOnly, sessions en base
+- Authentification, sessions et CRUD utilisateurs entièrement délégués à Better Auth (`/api/auth/*`) — le backend ne fait que lire la session pour protéger ses propres routes
+- Middlewares : session Better Auth, contrôle de rôle, validation Zod, gestion d'erreurs
 - Upload de fichiers images (multer)
 - Envoi d'emails transactionnels (nodemailer / SMTP)
 - Tests unitaires et d'intégration (Vitest + Supertest)

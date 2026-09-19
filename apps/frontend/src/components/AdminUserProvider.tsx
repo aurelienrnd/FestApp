@@ -7,9 +7,9 @@ import type { AdminAuthMeResponse } from "../type";
 const AdminUserContext = createContext<AdminAuthMeResponse | null>(null);
 
 /** Fournit les donnees utilisateur admin aux pages enfants.
- * Recoit la reponse de /admin/auth/me puis la rend accessible via le context.
+ * Recoit la reponse de /api/auth/get-session (Better Auth) puis la rend accessible via le context.
  * @param {Object} props
- * @param {AdminAuthMeResponse} props.value Donnees utilisateur et indicateur mustChangePassword.
+ * @param {AdminAuthMeResponse} props.value Session et utilisateur connecte.
  * @param {React.ReactNode} props.children Composants enfants de l'espace admin.
  */
 export function AdminUserProvider({

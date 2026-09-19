@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ChangePasswordModal from "@/app/admin/dashboard/ChangePasswordModal";
-import { useMutation } from "@/hooks/useMutation";
+import { authClient } from "@/lib/auth-client";
 
 // react-modal : rendu direct des enfants quand isOpen est true
 vi.mock("react-modal", () => ({
@@ -14,20 +14,19 @@ vi.mock("@fortawesome/react-fontawesome", () => ({
   FontAwesomeIcon: () => null,
 }));
 
-// mock du hook useMutation pour controler mutate et error dans chaque test
-vi.mock("@/hooks/useMutation");
-
-const mockMutate = vi.fn();
-const mockReset = vi.fn();
+// mock du client Better Auth pour controler changePassword dans chaque test
+vi.mock("@/lib/auth-client", () => ({
+  authClient: {
+    changePassword: vi.fn(),
+  },
+}));
 
 beforeEach(() => {
-  // reinitialise les mocks entre chaque test
-  vi.mocked(useMutation).mockReturnValue({
-    mutate: mockMutate,
-    isLoading: false,
+  // par defaut : l'appel Better Auth reussit
+  vi.mocked(authClient.changePassword).mockResolvedValue({
+    data: null,
     error: null,
-    reset: mockReset,
-  });
+  } as never);
 });
 
 // helper : remplit les 3 champs du formulaire
@@ -65,7 +64,7 @@ describe("ChangePasswordModal", () => {
   });
 
   it("affiche une erreur locale si les mots de passe ne correspondent pas", async () => {
-    // la validation est faite cote client avant l'appel API
+    // la validation est faite cote client avant l'appel a Better Auth
     const user = userEvent.setup();
 
     render(<ChangePasswordModal isOpen={true} onClose={vi.fn()} />);
@@ -76,72 +75,40 @@ describe("ChangePasswordModal", () => {
     expect(
       screen.getByText("Les nouveaux mots de passe ne correspondent pas."),
     ).toBeInTheDocument();
+    expect(authClient.changePassword).not.toHaveBeenCalled();
   });
 
-  it("affiche le message de succes et masque le formulaire apres changement reussi", async () => {
+  it("transmet les mots de passe a Better Auth et affiche le succes", async () => {
     const user = userEvent.setup();
-
-    vi.mocked(useMutation).mockReturnValue({
-      mutate: vi.fn().mockImplementation((_data: unknown, onSuccess: () => void) => {
-        onSuccess();
-      }),
-      isLoading: false,
-      error: null,
-      reset: mockReset,
-    });
 
     render(<ChangePasswordModal isOpen={true} onClose={vi.fn()} />);
 
     await fillForm(user);
     await user.click(screen.getByRole("button", { name: "Modifier" }));
 
+    expect(authClient.changePassword).toHaveBeenCalledWith({
+      currentPassword: "AncienMotDePasse",
+      newPassword: "NouveauMotDePasse",
+      revokeOtherSessions: true,
+    });
     expect(
-      screen.getByText(/votre mot de passe a ete modifie/i),
+      await screen.findByText(/votre mot de passe a ete modifie/i),
     ).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Modifier" })).not.toBeInTheDocument();
   });
 
-  it("affiche l'erreur retournee par l'API", () => {
-    vi.mocked(useMutation).mockReturnValue({
-      mutate: mockMutate,
-      isLoading: false,
-      error: "Acces refuse.",
-      reset: mockReset,
-    });
+  it("affiche l'erreur retournee par Better Auth", async () => {
+    const user = userEvent.setup();
+    vi.mocked(authClient.changePassword).mockResolvedValue({
+      data: null,
+      error: { message: "Acces refuse." },
+    } as never);
 
     render(<ChangePasswordModal isOpen={true} onClose={vi.fn()} />);
-
-    expect(screen.getByText("Acces refuse.")).toBeInTheDocument();
-  });
-
-  it("masque le bouton fermer en mode forced", () => {
-    // en mode forced, l'utilisateur ne peut pas fermer la modale avant d'avoir change son mot de passe
-    render(<ChangePasswordModal isOpen={true} onClose={vi.fn()} forced={true} />);
-
-    expect(
-      screen.queryByRole("button", { name: /fermer la modal/i }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("affiche le bouton 'Continuer' apres succes en mode forced", async () => {
-    // en mode forced, un bouton Continuer permet de fermer la modale apres le changement
-    const user = userEvent.setup();
-
-    vi.mocked(useMutation).mockReturnValue({
-      mutate: vi.fn().mockImplementation((_data: unknown, onSuccess: () => void) => {
-        onSuccess();
-      }),
-      isLoading: false,
-      error: null,
-      reset: mockReset,
-    });
-
-    render(<ChangePasswordModal isOpen={true} onClose={vi.fn()} forced={true} />);
 
     await fillForm(user);
     await user.click(screen.getByRole("button", { name: "Modifier" }));
 
-    // le bouton Continuer doit apparaitre uniquement en mode forced apres succes
-    expect(screen.getByRole("button", { name: "Continuer" })).toBeInTheDocument();
+    expect(await screen.findByText("Acces refuse.")).toBeInTheDocument();
   });
 });

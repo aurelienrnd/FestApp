@@ -25,7 +25,7 @@ L'application mélange des pages publiques (accueil, artistes, actualités) et u
 
 **Protection de la zone admin côté serveur**
 
-Le layout `admin/layout.tsx` est un composant serveur asynchrone : il effectue une requête vers l'endpoint `/admin/auth/me` du backend avant même de rendre la page. Si la session est absente ou invalide, Next.js redirige immédiatement vers `/login` côté serveur — sans que le moindre contenu admin ne soit envoyé au navigateur. Cette approche est plus sûre qu'une protection purement côté client.
+Le layout `admin/layout.tsx` est un composant serveur asynchrone : il vérifie la session Better Auth auprès du backend (`GET /api/auth/get-session`) avant même de rendre la page. Si la session est absente ou invalide, Next.js redirige immédiatement vers `/login` côté serveur — sans que le moindre contenu admin ne soit envoyé au navigateur. Cette approche est plus sûre qu'une protection purement côté client.
 
 **Route Groups pour une architecture multi-layout**
 
@@ -68,6 +68,10 @@ Bibliothèque d'icônes SVG utilisée dans toute l'interface (navigation, bouton
 **react-modal** (`^3.16.3`)
 
 Gestion des fenêtres modales accessibles (focus trap, aria). Utilisé pour toutes les modales de l'administration (ajout d'artiste, ajout d'actualité, suppression, changement de mot de passe). Nécessite une initialisation globale de l'`appElement` pour l'accessibilité, gérée dans le composant `ModalSetup`.
+
+**better-auth** (`^1.7.2`)
+
+Client d'authentification, configuré dans `src/lib/auth-client.ts` (`createAuthClient` + plugin `adminClient`) et pointé vers le backend Express qui monte `auth.handler` sur `/api/auth/*`. Tout le flux d'authentification (connexion, déconnexion, session, changement/réinitialisation de mot de passe, CRUD utilisateurs) passe par `authClient` — le frontend n'implémente aucune logique d'auth lui-même, ni appel `fetch` manuel vers ces routes.
 
 ### 2.3. Dépendances de développement
 
@@ -139,8 +143,10 @@ apps/frontend/
 │   │   │
 │   │   ├── (auth)/                   # Route Group — thème authentification
 │   │   │   ├── layout.tsx            # Layout auth : Banner + Footer (thème admin)
-│   │   │   └── login/
-│   │   │       └── page.tsx          # Page /login — formulaire de connexion
+│   │   │   ├── login/
+│   │   │   │   └── page.tsx          # Page /login — formulaire de connexion (Better Auth)
+│   │   │   └── reset-password/
+│   │   │       └── page.tsx          # Page /reset-password — reset ET invitation (?context=invite)
 │   │   │
 │   │   └── admin/                    # Zone administration (protégée côté serveur)
 │   │       ├── layout.tsx            # Layout admin : vérif session + AdminUserProvider
@@ -204,6 +210,9 @@ apps/frontend/
 │   │   ├── ui.ts
 │   │   └── festival.ts
 │   │
+│   ├── lib/
+│   │   └── auth-client.ts            # Client Better Auth (createAuthClient + adminClient)
+│   │
 │   ├── type.ts                       # Types TypeScript métier centralisés
 │   └── declarations.d.ts             # Déclarations de modules pour TypeScript
 │
@@ -229,7 +238,7 @@ Le projet exploite ce mécanisme pour définir trois zones visuellement et fonct
 | Dossier     | URLs concernées                             | Layout appliqué                        | Thème CSS              |
 | ----------- | ------------------------------------------- | -------------------------------------- | ---------------------- |
 | `(public)/` | `/`, `/artists`, `/news`, `/practical-info` | Banner + Footer                        | `data-theme="visitor"` |
-| `(auth)/`   | `/login`                                    | Banner + Footer                        | `data-theme="admin"`   |
+| `(auth)/`   | `/login`, `/reset-password`                 | Banner + Footer                        | `data-theme="admin"`   |
 | `admin/`    | `/admin/*`                                  | Banner + Footer + vérification session | `data-theme="admin"`   |
 
 **Pourquoi `(auth)` partage-t-il le thème admin ?**
@@ -516,33 +525,37 @@ Union littérale des trois rôles autorisés dans l'application. C'est le miroir
 type UserItem = {
   id: string;
   email: string;
-  display_name: string;
+  name: string;
   role: UserRole;
   created_at: string;
-  password_changed_at: string | null;
 };
 ```
 
-Représente une ligne utilisateur complète telle que retournée par l'API. `password_changed_at` est nullable : il est `null` tant que l'utilisateur n'a jamais changé son mot de passe — ce qui déclenche la modale de changement obligatoire à la première connexion.
+Représente une ligne utilisateur telle que retournée par le plugin admin de Better Auth (`authClient.admin.createUser`/`updateUser`/`listUsers`) — aligné sur le schéma Better Auth (colonne `"user".name`, pas de `display_name`). Il n'y a pas de champ équivalent à un ancien `password_changed_at` : un nouvel utilisateur ne reçoit jamais de mot de passe provisoire, il choisit le sien via un lien d'invitation (voir `ResetPasswordPage`, section 12.2).
 
-**`AdminUser`**
+**`AdminUser`** (non exportée — accédée uniquement via `AdminAuthMeResponse.user`)
 
 ```ts
-type AdminUser = Omit<UserItem, "created_at" | "password_changed_at">;
+type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+};
 ```
 
-Version allégée de `UserItem`, construite par composition avec `Omit`. Représente les données de l'utilisateur connecté telles que retournées par `GET /admin/auth/me` — sans les champs de date inutiles au contexte d'affichage.
+Utilisateur connecté tel que renvoyé par la session Better Auth.
 
 **`AdminAuthMeResponse`**
 
 ```ts
 type AdminAuthMeResponse = {
+  session: { id: string; userId: string; expiresAt: string };
   user: AdminUser;
-  mustChangePassword: boolean;
 };
 ```
 
-Envelope complète de la réponse de `GET /admin/auth/me`. Le champ `mustChangePassword` est calculé côté backend et indique si l'utilisateur doit changer son mot de passe avant d'accéder à l'administration. Utilisé dans `admin/layout.tsx` pour injecter ces données dans le contexte via `AdminUserProvider`.
+Réponse de `GET /api/auth/get-session` (`null` si aucune session active). Le champ `session` n'est pas consommé côté front pour l'instant — typé au minimum. Utilisé dans `admin/layout.tsx` pour injecter ces données dans le contexte via `AdminUserProvider`.
 
 ---
 
@@ -644,21 +657,13 @@ Type polyvalent utilisé pour tous les éléments de navigation et de filtrage d
 
 #### Section `API`
 
-**`ApiMessageResponse`**
-
-```ts
-type ApiMessageResponse = { message?: string };
-```
-
-Type utilisé pour les réponses API qui ne retournent qu'un message de confirmation sans entité — login, logout, changement de mot de passe, mot de passe oublié, formulaire de contact. Le champ `message` est optionnel car certains endpoints ne retournent pas de message explicite.
-
 **`CreateApiResponse<T>`**
 
 ```ts
 type CreateApiResponse<T> = { message: string } & T;
 ```
 
-Type générique pour les réponses de création : l'API retourne à la fois un message et l'entité créée. Utilisé pour l'ajout d'un artiste, d'une actualité et d'un utilisateur. L'intersection avec `T` permet de typer précisément le retour selon l'entité concernée — `CreateApiResponse<{ artist: ArtistItem }>`, `CreateApiResponse<{ news: NewsItem }>`, `CreateApiResponse<{ user: UserItem }>`. En pratique, le frontend n'utilise jamais le champ `message` — seule l'entité retournée est exploitée. Le type reflète fidèlement le contrat de l'API backend sans pour autant consommer tous ses champs.
+Type générique pour les réponses de création : l'API retourne à la fois un message et l'entité créée. Utilisé pour l'ajout d'un artiste et d'une actualité (`CreateApiResponse<{ artist: ArtistItem }>`, `CreateApiResponse<{ news: NewsItem }>`) — ces deux endpoints restent des routes Express classiques. La création d'utilisateur n'y a pas recours : elle passe par `authClient.admin.createUser`, dont la réponse a sa propre forme définie par Better Auth. En pratique, le frontend n'utilise jamais le champ `message` — seule l'entité retournée est exploitée.
 
 ---
 
@@ -861,7 +866,7 @@ Les fonctions de ce dossier n'ont pas d'état React : pas de hooks, pas de JSX. 
 
 Chaque hook appelle `apiRequest` avec les options adaptées, ce qui centralise en un seul endroit la construction de la requête, la gestion des cookies et le traitement des erreurs. La fonction accepte deux paramètres :
 
-- `path` — le chemin de l'endpoint API, par exemple `/admin/auth/login`. Il est concaténé avec `NEXT_PUBLIC_API_URL` pour former l'URL complète.
+- `path` — le chemin de l'endpoint API, par exemple `/admin/artists`. Il est concaténé avec `NEXT_PUBLIC_API_URL` pour former l'URL complète.
 - `init` — les options `fetch` optionnelles (`method`, `headers`, `body`…). Ce paramètre est facultatif : omis sur un `GET` simple, renseigné sur un `POST` avec corps JSON.
 
 `apiRequest` retourne toujours un objet `ApiRequestResult<T>` — une union discriminante à deux formes :
@@ -1152,7 +1157,7 @@ Ce dossier regroupe les composants réutilisables entre plusieurs pages. Contrai
 
 Il gère deux comportements visuels : le header devient transparent sur la page d'accueil tant que l'utilisateur n'a pas scrollé (écouté via un event listener `scroll` avec `{ passive: true }` pour ne pas bloquer le défilement), et il bascule entre une navigation desktop et mobile selon la taille de l'écran.
 
-Le logout est géré via `useMutation` sur `POST /admin/auth/logout` — la fonction `handleLogout` encapsule l'appel pour qu'il ne s'exécute qu'au clic et non au rendu.
+Le logout appelle directement `authClient.signOut()` (Better Auth) — la fonction `handleLogout` encapsule l'appel pour qu'il ne s'exécute qu'au clic et non au rendu.
 
 Le composant se compose de trois sous-composants internes :
 
@@ -1230,9 +1235,11 @@ Le bouton d'envoi est désactivé tant que le formulaire est invalide ou pendant
 
 #### `ForgotPassword.tsx`
 
-`ForgotPassword` est le formulaire de réinitialisation de mot de passe. Il contient un seul champ email et utilise `useMutation` sur `POST /admin/auth/forgot-password`.
+`ForgotPassword` est le formulaire de demande de réinitialisation de mot de passe. Il contient un seul champ email et appelle directement `authClient.requestPasswordReset({ email, redirectTo: "<origin>/reset-password" })` — pas de passage par `useMutation`/`apiRequest`, Better Auth gère lui-même la génération du token et l'envoi de l'email.
 
-Le bouton d'envoi est désactivé tant que le champ email n'est pas valide — vérifié via `isEmail` — ou pendant la requête via `isLoading`. En cas de succès, le callback `onSuccess` set `success` à `true` et le formulaire est remplacé par un message de confirmation. En cas d'erreur, le message retourné par `getApiErrorMessage` est affiché sous le formulaire.
+Le bouton d'envoi est désactivé tant que le champ email n'est pas valide (`isEmail`) ou pendant la requête. Le message de succès est volontairement neutre (« si un compte existe... ») : Better Auth répond toujours `200`, que l'email soit connu ou non, pour ne pas laisser deviner qu'un compte existe. En cas d'erreur retournée par Better Auth, le message est affiché sous le formulaire.
+
+`AddUserModal.tsx` réutilise le même appel `authClient.requestPasswordReset`, avec `redirectTo` portant `?context=invite` — c'est `/reset-password` (section 12.2) qui distingue les deux cas à l'affichage.
 
 #### `MobileFiltersButton.tsx`
 
@@ -1265,11 +1272,16 @@ Les données sont soumises en `multipart/form-data` via `useMutation` pour perme
 
 #### `modals/DeleteModal.tsx`
 
-`DeleteModal` est la modale de confirmation de suppression générique, partagée entre artistes, news et utilisateurs. Contrairement à `AddArtistModal` et `AddNewsModal` qui sont dédiés à un seul type d'entité, `DeleteModal` est générique grâce à trois props : `endpoint` (chemin de l'API), `entityName` (nom affiché dans les textes) et `getLabel` (fonction qui extrait le nom de l'item à afficher dans le message de confirmation).
+`DeleteModal` est la modale de confirmation de suppression générique, partagée entre artistes, news et utilisateurs. Contrairement à `AddArtistModal` et `AddNewsModal` qui sont dédiés à un seul type d'entité, `DeleteModal` est générique grâce à `entityName` (nom affiché dans les textes) et `getLabel` (fonction qui extrait le nom de l'item à afficher dans le message de confirmation).
 
 Il est générique au sens TypeScript également — `DeleteModal<T extends { id: string }>` — ce qui garantit que l'item passé possède toujours un `id`.
 
-Il utilise `useDelete` et affiche deux états distincts : pendant la requête, le bouton affiche "Suppression..." via `isSubmitting` et est désactivé. En cas de succès, le contenu est remplacé par un message de confirmation via `isDeleted`. À la fermeture, `reset()` est appelé pour remettre `isDeleted` et `error` à leur valeur initiale avant la prochaine ouverture.
+Deux modes de suppression, selon les props reçues :
+
+- **`endpoint`** (artistes, news) — délègue à `useDelete`, qui appelle l'API REST classique (`DELETE /admin/artists/:id`…).
+- **`onConfirm`** (utilisateurs) — appelle directement la fonction fournie par le parent au lieu de `useDelete` ; `UsersContent.tsx` y passe `authClient.admin.removeUser({ userId })`, puisque la suppression d'utilisateur n'est plus une route REST mais un appel Better Auth.
+
+Dans les deux cas, l'affichage suit le même cycle : pendant la requête, le bouton affiche "Suppression..." et est désactivé ; en cas de succès, le contenu est remplacé par un message de confirmation ; à la fermeture, l'état est remis à zéro avant la prochaine ouverture.
 
 ### 10.4. Composants utilitaires
 
@@ -1293,7 +1305,7 @@ Cette catégorie regroupe les composants qui n'affichent rien directement mais f
 
 `AdminUserProvider` est un provider React qui expose les données de l'utilisateur admin à tous les composants de l'espace admin via le contexte React. Il n'affiche rien — il encapsule ses enfants dans `AdminUserContext.Provider`.
 
-Il reçoit deux props : `value` — un `AdminAuthMeResponse` contenant les données utilisateur et le booléen `mustChangePassword` — et `children` — les composants enfants à envelopper. Il est instancié dans `admin/layout.tsx` avec les données récupérées côté serveur via `/admin/auth/me`.
+Il reçoit deux props : `value` — un `AdminAuthMeResponse` (session + utilisateur) — et `children` — les composants enfants à envelopper. Il est instancié dans `admin/layout.tsx` avec les données récupérées côté serveur via `GET /api/auth/get-session`.
 
 Le fichier exporte également `useAdminUser` — le hook de consommation du contexte. Il retourne `null` si appelé hors du provider (layouts public et auth), ce qui permet aux composants partagés comme `Banner` de s'en servir sans planter.
 
@@ -1335,14 +1347,12 @@ Composant client qui constitue le corps de la page `/admin/dashboard`. Accède a
 
 Il affiche deux zones :
 
-- **Carte profil** — nom d'affichage, rôle, email et bouton d'ouverture de `ChangePasswordModal`. Si `mustChangePassword` est `true`, `useModal` est initialisé avec `initialOpen: true` pour ouvrir la modale automatiquement au montage.
+- **Carte profil** — nom, rôle, email et bouton d'ouverture de `ChangePasswordModal` (`useModal`, sans ouverture automatique).
 - **Grille** — compte à rebours jusqu'au premier jour du festival via `getDaysUntil(FESTIVAL_DAYS[0])`, adresse depuis `FESTIVAL_LOCATION`, et raccourcis vers les sections admin filtrés par rôle via `filterNavByRole`.
-
-À la fermeture de la modale, `router.refresh()` est appelé si `mustChangePassword` était `true` — cela force Next.js à relancer le fetch vers `/admin/auth/me` pour récupérer la nouvelle valeur `mustChangePassword: false`.
 
 **`ChangePasswordModal.tsx`**
 
-Modale de changement de mot de passe. Contient trois champs : ancien mot de passe, nouveau mot de passe et confirmation. Envoie un `PATCH /admin/auth/password` via `useMutation`. La validation côté client bloque l'envoi si les deux nouveaux mots de passe ne correspondent pas ou si un champ est vide.
+Modale de changement de mot de passe. Contient trois champs : ancien mot de passe, nouveau mot de passe et confirmation. Appelle directement `authClient.changePassword({ currentPassword, newPassword, revokeOtherSessions: true })` — `revokeOtherSessions: true` invalide les autres sessions ouvertes de l'utilisateur après le changement. La validation côté client bloque l'envoi si les deux nouveaux mots de passe ne correspondent pas ou si un champ est vide.
 
 ---
 
@@ -1362,7 +1372,7 @@ Même structure qu'`ArtistEditButton`, adapté aux news. Reçoit une `news` et u
 
 **`UsersContent.tsx`**
 
-Composant client qui constitue le corps de la page `/admin/users`. Charge la liste via `useFetch` sur `GET /admin/users` et applique le filtre par rôle (`filterBy`) côté client via `useMemo`.
+Composant client qui constitue le corps de la page `/admin/users`. Contrairement à `ArtistsContent`/`NewsContent`, il ne passe pas par `useFetch` : la liste est chargée dans un `useEffect` dédié qui appelle `authClient.admin.listUsers({ query: { sortBy: "name" } })` (plugin admin de Better Auth) et gère lui-même `isLoading`/`error`, avant d'être adaptée à `UserItem[]` (`createdAt` de Better Auth, un objet `Date`, est converti en chaîne ISO). Le filtre par rôle (`filterBy`) s'applique ensuite côté client via `useMemo`. La suppression passe par la variante `onConfirm` de `DeleteModal`, qui appelle `authClient.admin.removeUser({ userId })` plutôt que le `useDelete` générique.
 
 `baseUsers` est dérivé de `data` dans son propre `useMemo([data])` — contrairement à `ArtistsContent` et `NewsContent` où `baseArtists`/`baseNews` sont dérivés directement à l'intérieur du `useMemo` de la liste filtrée, ici `baseUsers` est aussi utilisé dans `upsertUser` pour détecter l'origine d'un utilisateur modifié. Il doit donc être stable au niveau du composant.
 
@@ -1376,7 +1386,12 @@ Cas particulier : si l'administrateur supprime son propre compte, `router.push("
 
 **`AddUserModal.tsx`**
 
-Modale de création et modification d'utilisateur. Le mode est détecté via la prop `userToEdit` — `null` pour une création, une `UserItem` pour une édition. Contient quatre champs : prénom, nom, email et rôle (sélecteur depuis `USER_ROLES`). Le `display_name` envoyé au backend est construit en concaténant prénom et nom. En création : `POST /admin/users` — le backend génère un mot de passe temporaire et envoie un email de bienvenue. En modification : `PATCH /admin/users/:id`. Les données sont transmises en JSON via `useMutation` et la réponse est retournée au parent via `onUserSaved`.
+Modale de création et modification d'utilisateur, entièrement branchée sur le plugin admin de Better Auth (`authClient.admin.*`) — aucun appel `useMutation`/`apiRequest` ici. Le mode est détecté via la prop `userToEdit` — `null` pour une création, une `UserItem` pour une édition. Contient quatre champs : prénom, nom, email et rôle (sélecteur depuis `USER_ROLES`) ; le `name` envoyé à Better Auth est construit en concaténant prénom et nom.
+
+- **Création** — `authClient.admin.createUser({ email, name, role })` crée le compte sans mot de passe, puis `authClient.requestPasswordReset({ email, redirectTo: "<origin>/reset-password?context=invite" })` envoie le même lien "choisir son mot de passe" que pour un oubli (`ForgotPassword.tsx`). Best effort : Better Auth n'expose jamais un échec d'envoi (SMTP en panne, etc.) au client, donc aucun rollback n'est possible ici si l'email ne part pas — le compte reste créé.
+- **Édition** — `authClient.admin.updateUser({ userId, data: { email, name, role } })` ne déclenche jamais le flux de réinitialisation.
+
+Le résultat est retourné au parent via `handleUserSaved`, avec la même forme `UserItem` que dans les deux cas.
 
 ---
 
@@ -1389,7 +1404,7 @@ Le projet utilise trois **Route Groups** (dossiers entre parenthèses) pour appl
 | Route Group | URL concernées                              | Layout appliqué                                          |
 | ----------- | ------------------------------------------- | -------------------------------------------------------- |
 | `(public)`  | `/`, `/artists`, `/news`, `/practical-info` | Thème visiteur +`Banner` + `Footer`                      |
-| `(auth)`    | `/login`                                    | Thème authentification                                   |
+| `(auth)`    | `/login`, `/reset-password`                 | Thème authentification                                   |
 | `admin`     | `/admin/*`                                  | Thème admin + protection de session +`AdminUserProvider` |
 
 ### 11.1. `src/app/layout.tsx` — racine
@@ -1412,7 +1427,7 @@ Il applique le thème visiteur via `data-theme="visitor"` sur l'élément racine
 
 ### 11.3. `(auth)/layout.tsx`
 
-Le layout auth s'applique aux pages de connexion (`/login`, `/forgot-password`). Sa structure est identique au layout public — `Banner`, `main`, `Footer` — mais il applique le thème admin via `data-theme="admin"` dès le rendu serveur. L'utilisateur voit donc l'interface aux couleurs de l'espace admin avant même de se connecter.
+Le layout auth s'applique aux pages `/login` et `/reset-password`. Sa structure est identique au layout public — `Banner`, `main`, `Footer` — mais il applique le thème admin via `data-theme="admin"` dès le rendu serveur. L'utilisateur voit donc l'interface aux couleurs de l'espace admin avant même de se connecter. Le formulaire "Mot de passe oublié" (`ForgotPassword.tsx`) n'a pas de route dédiée — c'est une modale ouverte depuis `/login`.
 
 ### 11.4. `admin/layout.tsx`
 
@@ -1420,9 +1435,9 @@ Le layout admin est un composant serveur **asynchrone** — il exécute du code 
 
 Il effectue les étapes suivantes dans l'ordre :
 
-1. **Récupération des cookies** — `cookies()` de Next.js lit le cookie de session de la requête entrante côté serveur et le transmet manuellement dans le header `cookie` de la requête vers le backend.
-2. **Vérification de session** — `fetch` vers `/admin/auth/me` avec `cache: "no-store"` pour que la vérification soit faite à chaque requête sans mise en cache. Si `fetch` échoue (réseau, backend inaccessible) ou si la réponse n'est pas `ok`, `redirect("/login")` est appelé immédiatement — aucun contenu admin n'est rendu.
-3. **Injection des données** — si la session est valide, les données utilisateur (`AdminAuthMeResponse`) sont passées à `AdminUserProvider` qui les rend accessibles à tous les composants enfants via le contexte.
+1. **Récupération des cookies** — `cookies()` de Next.js lit le cookie de session Better Auth de la requête entrante côté serveur et le transmet manuellement dans le header `cookie` de la requête vers le backend.
+2. **Vérification de session** — `fetch` vers `GET /api/auth/get-session` avec `cache: "no-store"` pour que la vérification soit faite à chaque requête sans mise en cache. Chaque cas d'échec (réseau injoignable, réponse non-`ok`, `null` renvoyé par Better Auth quand aucune session n'existe) converge vers `me = null`, puis `redirect("/login")` est appelé immédiatement — aucun contenu admin n'est rendu.
+3. **Injection des données** — si la session est valide, `{ session, user }` (`AdminAuthMeResponse`) est passé à `AdminUserProvider` qui le rend accessible à tous les composants enfants via le contexte.
 
 Il applique également `data-theme="admin"` pour le thème et encapsule le contenu dans `Banner` et `Footer`.
 
@@ -1508,15 +1523,21 @@ Page serveur entièrement statique — pas d'appel API, pas d'état client. Elle
 
 Exporte des `metadata` statiques (`title`, `description`) — voir 12.5.
 
-### 12.2. Page d'authentification
+### 12.2. Pages d'authentification
 
 #### `/login`
 
-La page de connexion est un composant client. Elle affiche un formulaire email/mot de passe et utilise `useMutation` sur `POST /admin/auth/login`. La validation frontend bloque l'envoi si l'email est invalide (`isEmail`) ou si le mot de passe fait moins de 8 caractères — aligné sur le schéma Zod backend.
+La page de connexion est un composant client. Elle affiche un formulaire email/mot de passe et appelle directement `authClient.signIn.email({ email, password })` — pas de `useMutation`, Better Auth pose lui-même le cookie de session. La validation frontend bloque l'envoi si l'email est invalide (`isEmail`) ou si le mot de passe fait moins de 8 caractères.
 
-En cas de succès, le callback `onSuccess` redirige vers `/admin/dashboard` via `router.push`. En cas d'échec, le message d'erreur retourné par `getApiErrorMessage` est affiché au-dessus du bouton.
+En cas de succès, `router.push("/admin/dashboard")` est appelé directement. En cas d'échec, le message d'erreur retourné par Better Auth (`result.error.message`) est affiché au-dessus du bouton.
 
 Un bouton "Mot de passe oublié" ouvre une modale contenant `ForgotPassword`.
+
+#### `/reset-password`
+
+Page atteinte depuis le lien reçu par email — reset classique (« mot de passe oublié ») ou invitation (un utilisateur créé par un admin dans `AddUserModal.tsx`, qui n'a jamais eu de mot de passe). Les deux partagent le même token Better Auth et le même appel `authClient.resetPassword({ newPassword, token })` ; seul le contexte (`?context=invite` dans l'URL) change les textes affichés (« Bienvenue » / « Créer mon mot de passe » plutôt que « Réinitialisation » / « Réinitialiser »).
+
+Le token est lu dans l'URL via `useSearchParams` — ce qui impose un `Suspense` boundary en App Router (bascule hors du rendu statique). Si le token est absent, ou si Better Auth a redirigé avec `?error=INVALID_TOKEN` (lien expiré ou déjà consommé), un message d'erreur remplace le formulaire. La page est publique mais ne l'est qu'en apparence : c'est le token — vérifié et consommé une seule fois côté serveur, valable 1h — qui empêche toute modification de mot de passe sans lien valide, pas une vérification frontend.
 
 ### 12.3. Pages d'administration
 
@@ -1526,10 +1547,8 @@ La page dashboard est un composant serveur minimal qui délègue tout à `Dashbo
 
 `DashboardContent` affiche deux zones :
 
-- **Carte profil** — nom, rôle, email et bouton de changement de mot de passe. Si `mustChangePassword` est `true`, `useModal` est initialisé avec `true` pour ouvrir automatiquement la modale de changement de mot de passe au montage.
+- **Carte profil** — nom, rôle, email et bouton de changement de mot de passe (`ChangePasswordModal`, ouverte via `useModal`).
 - **Grille** — un compte à rebours jusqu'au premier jour du festival (calculé via `getDaysUntil`) avec le lieu depuis `FESTIVAL_LOCATION`, et une liste de raccourcis vers les sections admin accessibles selon le rôle de l'utilisateur via `filterNavByRole`.
-
-À la fermeture de la modale de changement de mot de passe, `router.refresh()` est appelé si `mustChangePassword` était `true`. Cela force Next.js à refaire le rendu côté serveur du layout — ce qui relance le fetch vers `/admin/auth/me` et récupère la nouvelle valeur de `mustChangePassword` (`false`). Sans ça, la modale se rouvrirait à chaque rechargement car les données du contexte viendraient encore du serveur avec l'ancienne valeur.
 
 #### `/admin/artists`
 
@@ -1618,7 +1637,7 @@ La branche `if (!data) return {};` reflète ça honnêtement : elle ne définit 
 
 ## 13. Tests
 
-Les tests sont organisés dans un dossier `tests/` à la racine du frontend, en dehors de `src/`. Ils couvrent les hooks, les composants et les fonctions utilitaires — soit 28 fichiers de test au total. La documentation détaillée de chaque test est disponible dans `tests/TEST.md`.
+Les tests sont organisés dans un dossier `tests/` à la racine du frontend, en dehors de `src/`. Ils couvrent les hooks, les composants et les fonctions utilitaires — soit 27 fichiers de test au total. La documentation détaillée de chaque test est disponible dans `tests/TEST.md`.
 
 ### 13.1. Stratégie de test
 

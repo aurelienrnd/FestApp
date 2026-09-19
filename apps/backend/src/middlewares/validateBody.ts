@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import * as z from "zod";
-import { AppError } from "../errors/AppError";
-import { ERRORS } from "../errors/errorMessages";
+import { AppError } from "../errors/AppError.js";
+import { ERRORS } from "../errors/errorMessages.js";
 
 /** Retourne un middleware Express qui valide `req.body`.
  * Si la validation echoue, une reponse 400 est renvoyee.

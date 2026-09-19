@@ -1,13 +1,13 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
 import {
   saveImage,
   deleteImage,
   ARTISTS_UPLOADS_DIR,
-} from "../../../services/imageUpload.service";
-import type { ArtistItem, ConcertRow } from "../../../type";
+} from "../../../services/imageUpload.service.js";
+import type { ArtistItem, ConcertRow } from "../../../type.js";
 
 /** Cree un artiste avec une image convertie en WebP via sharp.
  * Verifie la presence du fichier image, le convertit en WebP (qualite 80),

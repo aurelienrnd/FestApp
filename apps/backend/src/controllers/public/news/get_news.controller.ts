@@ -1,9 +1,9 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
-import { isNewsPrivileged } from "../../../services/user.service";
-import type { NewsItem } from "../../../type";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
+import { isNewsPrivileged } from "../../../services/user.service.js";
+import type { NewsItem } from "../../../type.js";
 
 /** Retourne une news par son identifiant.
  * Si l'utilisateur est authentifie avec le role "admin" ou "news", retourne la news meme si elle est en brouillon.
@@ -22,9 +22,9 @@ export async function getNews(req: Request, res: Response) {
   const rows = await query<NewsItem>(
     `SELECT a.id, a.title, a.content, a.is_published, a.created_at,
             a.url_media, a.description_media,
-            u.display_name AS author_name
+            u.name AS author_name
      FROM news a
-     LEFT JOIN users u ON u.id = a.user_id
+     LEFT JOIN "user" u ON u.id = a.user_id
      WHERE a.id = $1`,
     [id],
   );

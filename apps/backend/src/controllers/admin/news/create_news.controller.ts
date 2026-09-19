@@ -1,18 +1,18 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
 import {
   saveImage,
   deleteImage,
   NEWS_UPLOADS_DIR,
-} from "../../../services/imageUpload.service";
-import type { NewsItem } from "../../../type";
+} from "../../../services/imageUpload.service.js";
+import type { NewsItem } from "../../../type.js";
 
 /** Cree une news avec une image convertie en WebP via sharp.
  * Verifie la presence du fichier image, le convertit en WebP (qualite 80),
  * l'ecrit sur le disque puis insere la news en base de donnees.
- * Retourne la news creee avec le display_name de l'auteur via JOIN users.
+ * Retourne la news creee avec le nom de l'auteur via JOIN "user".
  * @param {Request} req requete Express contenant les champs dans le body et le fichier dans req.file
  * @param {Response} res reponse Express
  * @function query
@@ -40,7 +40,7 @@ export async function createNews(req: Request, res: Response) {
   await query("BEGIN");
 
   try {
-    // insere la news et retourne les donnees avec le display_name de l'auteur via JOIN users
+    // insere la news et retourne les donnees avec le nom de l'auteur via JOIN "user"
     const createdNews = await query<NewsItem>(
       `WITH inserted AS (
          INSERT INTO news (title, content, is_published, url_media, description_media, user_id)
@@ -49,9 +49,9 @@ export async function createNews(req: Request, res: Response) {
        )
        SELECT i.id, i.title, i.content, i.is_published, i.created_at,
               i.url_media, i.description_media,
-              u.display_name AS author_name
+              u.name AS author_name
        FROM inserted i
-       LEFT JOIN users u ON u.id = i.user_id`,
+       LEFT JOIN "user" u ON u.id = i.user_id`,
       [
         title,
         content || null,

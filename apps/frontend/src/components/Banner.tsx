@@ -15,8 +15,7 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { useNavPath } from "../hooks/useNavPath";
 import ModalCloseButton from "./ModalCloseButton";
 import Navigation from "./Navigation";
-import type { ApiMessageResponse } from "../type";
-import { useMutation } from "../hooks/useMutation";
+import { authClient } from "../lib/auth-client";
 
 /** Affiche un bouton de billetterie
  * Contient un lien externe vers un site de recherche de billetterie
@@ -182,7 +181,7 @@ function MobilNav({
  * Affiche DesktopNav sur ecran large, sinon MobilNav
  * Rend le header transparent sur la page d'accueil tant que l'utilisateur n'a pas scrolle
  * @function useNavPath Determine si l'URL correspond a une page admin et fournit le pathname
- * @function useMutation Envoie la requete de deconnexion via POST /admin/auth/logout
+ * @function authClient.signOut Envoie la requete de deconnexion via Better Auth
  * @function useAdminUser Fournit les informations de l'utilisateur via le contexte AdminUserContext
  * @function filterNavByRole Filtre les items de navigation selon le role de l'utilisateur admin
  * @children DesktopNav Affiche le menu de navigation pour l'affichage desktop
@@ -224,15 +223,10 @@ export default function Banner() {
   //
   const isOverHero = isHome && scrollAtTop;
 
-  // Envoie la requete de deconnexion via POST /admin/auth/logout
-  const { mutate: logout } = useMutation<ApiMessageResponse>(
-    "/admin/auth/logout",
-    "POST",
-  );
-
-  // Envoie la requete de deconnexion puis redirige vers `/login`
-  const handleLogout = () => {
-    logout(null, () => router.push("/login"));
+  // Envoie la requete de deconnexion via Better Auth puis redirige vers `/login`
+  const handleLogout = async () => {
+    await authClient.signOut();
+    router.push("/login");
   };
 
   return (

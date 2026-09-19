@@ -13,8 +13,7 @@
 ```
 bd/
 ├── init/
-│   ├── 01_user_schema.sql
-│   ├── 02_sessions_schema.sql
+│   ├── 01_auth_schema.sql
 │   ├── 03_news_schema.sql
 │   ├── 04_artist_schema.sql
 │   ├── 05_concert_schema.sql
@@ -26,6 +25,8 @@ bd/
 ├── mld_vindhellfest.drawio
 └── README.md
 ```
+
+> `01_auth_schema.sql` (tables `user`, `session`, `account`, `verification`) est généré par `npx @better-auth/cli generate` — Better Auth gère lui-même l'authentification, cf. `apps/backend/src/lib/auth.ts`. Il n'est pas conçu à la main comme les autres scripts : le MCD/MLD/MPD ci-dessous documente les choix de conception réellement faits par l'équipe sur `NEWS`, `ARTISTE` et `CONCERT`, ainsi que leur relation vers l'utilisateur Better Auth. `ACCOUNT` et `VERIFICATION` (identifiants de connexion, tokens de reset) sont des tables internes à Better Auth, non modélisées ci-dessous.
 
 ---
 
@@ -64,7 +65,7 @@ Dans le MCD, toutes les entités utilisent un `#identifiant` technique (UUID). I
 | `UTILISATEUR` | `email` (UNIQUE + NOT NULL)                                        | Un email peut changer — instabilité comme identifiant  |
 | `CONCERT`     | `stage` + `start_time` (combinaison unique via contrainte EXCLUDE) | Clé composite plus lourde à manipuler en code et en FK |
 | `ARTISTE`     | aucune —`name` n'est pas UNIQUE                                    | UUID obligatoire                                       |
-| `SESSION`     | aucune                                                             | UUID obligatoire                                       |
+| `SESSION`     | `token` (UNIQUE + NOT NULL)                                        | Change à chaque connexion — instabilité comme identifiant |
 | `NEWS`        | aucune —`title` + `created_at` trop fragile                        | UUID obligatoire                                       |
 
 Pour des raisons de cohérence, de stabilité et de simplicité, l'UUID a été retenu comme identifiant sur toutes les tables.
@@ -77,7 +78,9 @@ Il aurait été possible en Merise strict de modéliser `role` et `stage` comme 
 
 #### `role` sur `UTILISATEUR`
 
-Les rôles (`admin`, `artists`, `news`) forment un ensemble **fermé et connu à l'avance**, qui n'évolue pas sans intervention technique sur le projet. Une entité `ROLE` séparée se justifie uniquement si le rôle possède ses propres attributs ou s'il est amené à être géré dynamiquement. Ici un rôle n'est qu'un libellé fixe — une entité dédiée aurait ajouté une jointure inutile et une complexité de gestion sans valeur métier. En base, un type `ENUM` PostgreSQL garantit la même contrainte d'intégrité directement, sans table supplémentaire.
+Les rôles (`admin`, `artists`, `news`) forment un ensemble **fermé et connu à l'avance**, qui n'évolue pas sans intervention technique sur le projet. Une entité `ROLE` séparée se justifie uniquement si le rôle possède ses propres attributs ou s'il est amené à être géré dynamiquement. Ici un rôle n'est qu'un libellé fixe — une entité dédiée aurait ajouté une jointure inutile et une complexité de gestion sans valeur métier.
+
+> `role` est un champ additionnel Better Auth (`user.additionalFields` dans `auth.ts`), stocké en `TEXT` sur la table `"user"` — Better Auth ne génère pas de contrainte `ENUM` pour ces champs. L'ensemble fermé des 3 valeurs n'est donc garanti qu'au niveau applicatif (validateur Zod dans `auth.ts`), pas par une contrainte SQL. C'est un compromis accepté en déléguant le schéma utilisateur à Better Auth plutôt qu'à un schéma conçu à la main.
 
 #### `stage` sur `CONCERT`
 
@@ -95,52 +98,49 @@ Les scènes (`MainStage`, `Tremplin`) définissent l'infrastructure physique du 
 
 ### Types utilisés
 
-| Type                 | Colonnes associées                                                                        | Raison du choix                                                                                                                                               |
-| -------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `UUID`               | `id` sur toutes les tables                                                                | Identifiant unique universel généré sans coordination entre serveurs, non prédictible (sécurité), portable entre environnements                               |
-| `CITEXT`             | `email` (users), `display_name` (users)                                                   | Comparaison insensible à la casse sans `LOWER()` explicite — `admin@example.com` et `Admin@Example.com` sont traités comme identiques                         |
-| `VARCHAR(255)`       | `password_hash`, `url_media`, `description_media`, `youtube_url`, `spotify_url`           | Chaîne à longueur bornée connue à l'avance — 255 est la limite standard pour les URLs et hashs bcrypt                                                         |
-| `VARCHAR(150)`       | `title` (news)                                                                            | Titre court, longueur métier volontairement contrainte pour éviter les abus                                                                                   |
-| `CITEXT`             | `display_name` (users)                                                                    | Nom d'affichage `UNIQUE` insensible à la casse, minimum 2 caractères — `"Jean"` et `"jean"` sont considérés identiques                                        |
-| `VARCHAR(80)`        | `origin` (artists)                                                                        | Origine géographique — longueur suffisante pour « États-Unis, Los Angeles »                                                                                   |
-| `VARCHAR(150)`       | `name` (artists)                                                                          | Nom d'artiste sensible à la casse — `"AC/DC"` et `"ac/dc"` sont distincts, la casse fait partie du nom                                                        |
-| `VARCHAR(60)`        | `genre` (artists)                                                                         | Genre musical — libellé court, longueur suffisante                                                                                                            |
-| `TEXT`               | `bio` (artists), `content` (news)                                                         | Contenu long sans limite prévisible —`TEXT` en PostgreSQL est illimité et aussi performant que `VARCHAR` sans contrainte                                      |
-| `BOOLEAN`            | `is_published` (news), `is_featured` (artists)                                            | Valeur binaire oui/non — le type le plus direct et lisible pour un état                                                                                       |
-| `TIMESTAMPTZ`        | `created_at`, `expires_at`, `revoked_at`, `password_changed_at`, `start_time`, `end_time` | Stocke la date ET le fuseau horaire — indispensable pour un festival avec des horaires précis et des utilisateurs potentiellement dans des fuseaux différents |
-| `ENUM user_role`     | `role` (users)                                                                            | Ensemble fermé de 3 valeurs (`admin`, `artists`, `news`) — l'ENUM garantit l'intégrité directement en base, plus fiable qu'un `VARCHAR` libre                 |
-| `ENUM concert_stage` | `stage` (concerts)                                                                        | Ensemble fermé de 2 valeurs (`MainStage`, `Tremplin`) — même raison que `user_role`, requis pour les contraintes `EXCLUDE` de chevauchement                   |
+| Type                 | Colonnes associées                                                               | Raison du choix                                                                                                                                               |
+| -------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `UUID`               | `id` sur toutes les tables                                                       | Identifiant unique universel généré sans coordination entre serveurs, non prédictible (sécurité), portable entre environnements                               |
+| `VARCHAR(255)`       | `url_media`, `description_media`, `youtube_url`, `spotify_url`                  | Chaîne à longueur bornée connue à l'avance — 255 est la limite standard pour les URLs                                                                          |
+| `VARCHAR(150)`       | `title` (news)                                                                   | Titre court, longueur métier volontairement contrainte pour éviter les abus                                                                                   |
+| `VARCHAR(80)`        | `origin` (artists)                                                               | Origine géographique — longueur suffisante pour « États-Unis, Los Angeles »                                                                                   |
+| `VARCHAR(150)`       | `name` (artists)                                                                 | Nom d'artiste sensible à la casse — `"AC/DC"` et `"ac/dc"` sont distincts, la casse fait partie du nom                                                        |
+| `VARCHAR(60)`        | `genre` (artists)                                                                | Genre musical — libellé court, longueur suffisante                                                                                                            |
+| `TEXT`               | `bio` (artists), `content` (news)                                                | Contenu long sans limite prévisible —`TEXT` en PostgreSQL est illimité et aussi performant que `VARCHAR` sans contrainte                                      |
+| `BOOLEAN`            | `is_published` (news), `is_featured` (artists)                                   | Valeur binaire oui/non — le type le plus direct et lisible pour un état                                                                                       |
+| `TIMESTAMPTZ`        | `created_at` (news), `start_time`, `end_time` (concerts)                        | Stocke la date ET le fuseau horaire — indispensable pour un festival avec des horaires précis et des utilisateurs potentiellement dans des fuseaux différents |
+| `ENUM concert_stage` | `stage` (concerts)                                                               | Ensemble fermé de 2 valeurs (`MainStage`, `Tremplin`) — requis notamment pour les contraintes `EXCLUDE` de chevauchement                                      |
+
+> La table `"user"` générée par Better Auth utilise ses propres types (`TEXT` pour `email`/`name`/`role`, `TIMESTAMPTZ` pour `createdAt`/`updatedAt` avec `DEFAULT CURRENT_TIMESTAMP`) — pas de `CITEXT` ni d'`ENUM`, cf. note sur `role` plus haut.
 
 ---
 
 ### Clés primaires et clés étrangères
 
-Chaque table possède une clé primaire `id (UUID)` générée automatiquement. Les relations entre tables sont assurées par 3 clés étrangères.
+Chaque table possède une clé primaire `id (UUID)` générée automatiquement. Les relations entre tables applicatives sont assurées par 2 clés étrangères vers `"user"` et `artists`.
 
 | Clé étrangère        | Table source | Référence    | Nullable | Comportement à la suppression                                          |
 | -------------------- | ------------ | ------------ | -------- | ---------------------------------------------------------------------- |
-| `sessions.user_id`   | `sessions`   | `users.id`   | NON      | `ON DELETE CASCADE` — la session est supprimée avec l'utilisateur      |
-| `news.user_id`       | `news`       | `users.id`   | OUI      | `ON DELETE SET NULL` — la news est conservée, l'auteur devient inconnu |
+| `news.user_id`       | `news`       | `"user".id`  | OUI      | `ON DELETE SET NULL` — la news est conservée, l'auteur devient inconnu |
 | `concerts.artist_id` | `concerts`   | `artists.id` | NON      | `ON DELETE CASCADE` — le concert est supprimé avec l'artiste           |
 
-Les tables `users` et `artists` n'ont aucune clé étrangère — ce sont les racines du schéma. Toutes les dépendances partent d'elles vers les autres tables.
+Les tables `"user"` et `artists` n'ont elles-mêmes aucune clé étrangère — ce sont les racines du schéma. À l'intérieur du schéma Better Auth, `session.userId` et `account.userId` référencent également `"user".id` en `ON DELETE CASCADE`, mais ces tables sont générées par Better Auth et hors du périmètre modélisé ici.
 
-> **Contrainte UNIQUE sur `display_name` :** L'unicité du nom d'affichage est garantie à deux niveaux — au niveau applicatif via `checkDisplayNameAvailable` (renvoie un `409 Conflict` si le nom est déjà pris) et au niveau SQL via une contrainte `UNIQUE` sur la colonne. Cette double garantie assure que même une insertion directe en base contournant l'API ne peut pas créer de doublon.
+> **Contrainte UNIQUE sur `email` :** Better Auth déclare `"email" text not null unique` directement sur la table `"user"` — l'unicité est garantie en base, pas seulement au niveau applicatif.
 
-> **Note sur `news.user_id` :** Un membre de l'organisation peut quitter le festival — les news qu'il a rédigées doivent pouvoir rester en ligne indépendamment de son départ. C'est pourquoi la suppression d'un utilisateur passe son `user_id` à `NULL` plutôt que de supprimer les news en cascade. Une alternative aurait été de ne jamais supprimer un utilisateur mais de le passer comme inactif (`is_active = FALSE`), ce qui aurait permis de conserver une trace de qui a écrit quoi. Cette approche de désactivation douce (soft delete) pourrait être ajoutée dans une version future de l'application.
+> **Note sur `news.user_id` :** Un membre de l'organisation peut quitter le festival — les news qu'il a rédigées doivent pouvoir rester en ligne indépendamment de son départ. C'est pourquoi la suppression d'un utilisateur passe son `user_id` à `NULL` plutôt que de supprimer les news en cascade. Une alternative aurait été de ne jamais supprimer un utilisateur mais de le bannir (`banned = TRUE`, déjà présent sur la table `"user"` via le plugin admin de Better Auth), ce qui aurait permis de conserver une trace de qui a écrit quoi.
 
 ---
 
 ## MPD
 
-> Scripts : `bd/init/01_user_schema.sql` à `bd/init/05_concert_schema.sql`
+> Scripts : `bd/init/01_auth_schema.sql` (Better Auth) et `bd/init/03_news_schema.sql` à `bd/init/05_concert_schema.sql`
 
 ### Extensions PostgreSQL
 
-| Extension    | Tables concernées  | Rôle                                                                                                                           |
+| Extension    | Tables concernées | Rôle                                                                                                                           |
 | ------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
 | `pgcrypto`   | toutes             | Fournit `gen_random_uuid()` pour la génération des UUID                                                                        |
-| `citext`     | `users`, `artists` | Fournit le type `CITEXT` pour les comparaisons insensibles à la casse sur `email` et `name`                                    |
 | `btree_gist` | `concerts`         | Permet les contraintes `EXCLUDE USING gist` sur des colonnes scalaires (`stage`) combinées à des plages horaires (`tstzrange`) |
 
 ---
@@ -150,8 +150,10 @@ Les tables `users` et `artists` n'ont aucune clé étrangère — ce sont les ra
 | Valeur par défaut           | Colonnes concernées                            | Rôle                                                                                                                          |
 | --------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `DEFAULT gen_random_uuid()` | `id` sur toutes les tables                     | Génère automatiquement un UUID à l'insertion — aucune valeur à fournir côté application                                       |
-| `DEFAULT NOW()`             | `created_at` (users, sessions, news)           | Horodate automatiquement la création de la ligne                                                                              |
+| `DEFAULT NOW()`             | `created_at` (news)                            | Horodate automatiquement la création de la ligne                                                                              |
 | `DEFAULT FALSE`             | `is_published` (news), `is_featured` (artists) | Une news est brouillon et un artiste n'est pas mis en avant par défaut — un choix explicite est requis pour activer ces états |
+
+> La table `"user"` (et `session`, `account`, `verification`) utilise `DEFAULT CURRENT_TIMESTAMP` pour ses colonnes `createdAt`/`updatedAt` — équivalent fonctionnel de `NOW()`, généré tel quel par la CLI Better Auth.
 
 > **Note sur l'absence de `created_at` sur `artists` et `concerts` :** Ces deux tables ne tracent pas la date de création. Un `created_at` pourrait être utile en cas d'audit ou de débogage, mais ni le backend ni le frontend ne l'utilisent — aucune route ne le lit, aucun composant ne l'affiche. L'ajouter aurait été de la complexité sans valeur fonctionnelle pour ce projet.
 
@@ -163,12 +165,11 @@ Les contraintes `CHECK` garantissent la cohérence des données directement en b
 
 | Table      | Contrainte                             | Règle                                                                                                      |
 | ---------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `sessions` | `chk_session_expires_after_created`    | `expires_at > created_at` — une session ne peut pas expirer avant d'avoir été créée                        |
-| `sessions` | `chk_session_revoked_after_created`    | `revoked_at IS NULL OR revoked_at >= created_at` — une session ne peut pas être révoquée avant sa création |
 | `news`     | `CHECK char_length(title) >= 2`        | Le titre d'une news doit faire au moins 2 caractères                                                       |
 | `artists`  | `CHECK char_length(name) >= 2`         | Le nom d'un artiste doit faire au moins 2 caractères                                                       |
-| `users`    | `CHECK char_length(display_name) >= 2` | Le nom d'affichage doit faire au moins 2 caractères                                                        |
 | `concerts` | `chk_concert_end_after_start`          | `end_time > start_time` — un concert ne peut pas se terminer avant de commencer                            |
+
+> La table `"user"` n'a aucune contrainte `CHECK` — le format (email valide, longueur du nom, valeurs autorisées pour `role`...) est validé par Better Auth et par le schéma Zod de `src/lib/auth.ts`, pas par des contraintes SQL.
 
 ---
 
@@ -204,9 +205,6 @@ Les index accélèrent les requêtes fréquentes en évitant un parcours complet
 
 | Index                      | Table      | Colonne(s)            | Requêtes optimisées                                  |
 | -------------------------- | ---------- | --------------------- | ---------------------------------------------------- |
-| `idx_sessions_user_id`     | `sessions` | `user_id`             | Récupérer les sessions d'un utilisateur              |
-| `idx_sessions_expires_at`  | `sessions` | `expires_at`          | Vérifier si une session est expirée                  |
-| `idx_sessions_revoked_at`  | `sessions` | `revoked_at`          | Vérifier si une session est révoquée                 |
 | `idx_news_created_at`      | `news`     | `created_at`          | Trier les news par date                              |
 | `idx_news_is_published`    | `news`     | `is_published`        | Filtrer les news publiées                            |
 | `idx_artists_genre`        | `artists`  | `genre`               | Filtrer les artistes par genre                       |
@@ -215,7 +213,7 @@ Les index accélèrent les requêtes fréquentes en évitant un parcours complet
 | `idx_concerts_stage_start` | `concerts` | `(stage, start_time)` | Récupérer le programme d'une scène triée par horaire |
 | `idx_concerts_start_time`  | `concerts` | `start_time`          | Trier tous les concerts par horaire                  |
 
-> La table `users` n'a pas d'index supplémentaire — `email` est déjà indexé implicitement par sa contrainte `UNIQUE`.
+> La table `"user"` n'a pas d'index supplémentaire au-delà de celui implicite créé par sa contrainte `UNIQUE` sur `email`. Le schéma Better Auth crée ses propres index sur ses tables : `session_userId_idx`, `account_userId_idx`, `verification_identifier_idx`, et un index unique composite `account_issuer_accountId_uidx` sur `(issuer, accountId)`.
 
 ---
 
@@ -229,19 +227,24 @@ Les scripts seed insèrent des données de développement réalistes pour pouvoi
 
 ### 06_seed_users.sql — Utilisateurs
 
-3 comptes administrateurs, un par rôle. Tous partagent le même mot de passe `MyPassword` (hash bcrypt stocké). Le champ `password_changed_at` est initialisé à `NOW()` pour simuler un compte actif.
+Insère des données dans les 4 tables Better Auth, pas seulement `"user"` — le seed a dû être adapté au schéma généré par Better Auth :
 
-| `display_name`    | `email`                 | `role`    |
-| ----------------- | ----------------------- | --------- |
-| `Admin`           | `admin@example.com`     | `admin`   |
-| `artists Manager` | `artists@example.com`   | `artists` |
-| `News Editor`     | `news@example.com`      | `news`    |
+- **`"user"`** — 3 comptes, un par rôle. Tous partagent le même mot de passe `Password123!`.
+- **`account`** — un compte `credential` par utilisateur, avec le hash scrypt du mot de passe (`issuer = 'local:credential'`, `accountId = userId` — convention interne de Better Auth pour les comptes email/mot de passe). Le hash est généré via `better-auth/crypto`, dans le même format que celui vérifié par `/api/auth/sign-in/email`.
+- **`session`** — une session par utilisateur, à titre illustratif uniquement : sans le cookie signé correspondant côté navigateur, ces lignes ne permettent pas de se connecter directement en tant que cet utilisateur. Une vraie session s'obtient via `/api/auth/sign-in/email`.
+- **`verification`** — un exemple de token de reset de mot de passe pour l'admin (`identifier = 'reset-password:<token>'`, `value = userId`, convention Better Auth).
+
+| `name`             | `email`                 | `role`    |
+| ------------------ | ----------------------- | --------- |
+| `Admin`            | `admin@example.com`     | `admin`   |
+| `Artists Manager`  | `artists@example.com`   | `artists` |
+| `News Editor`      | `news@example.com`      | `news`    |
 
 ---
 
 ### 07_seed_news.sql — News
 
-10 articles insérés avec des contenus longs et réalistes. Tous sont associés à `admin@example.com` via un `SELECT id FROM users WHERE email = '...'` — ce qui évite de coder en dur un UUID et garantit la cohérence avec le seed utilisateur.
+10 articles insérés avec des contenus longs et réalistes. Tous sont associés à `admin@example.com` via un `SELECT id FROM "user" WHERE email = '...'` — ce qui évite de coder en dur un UUID et garantit la cohérence avec le seed utilisateur.
 
 | `title`                                         | `is_published` | `created_at`              |
 | ----------------------------------------------- | -------------- | ------------------------- |

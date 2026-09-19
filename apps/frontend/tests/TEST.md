@@ -124,7 +124,7 @@ Vérifie que le hook protège les routes admin en redirigeant vers `/admin/dashb
 
 ### `tests/components/DeleteModal.test.tsx`
 
-Vérifie le cycle complet de la modale de suppression : confirmation, affichage de l'erreur API, message de succès et fermeture. Garantit que `getLabel` est bien utilisé pour personnaliser le texte de confirmation.
+Vérifie le cycle complet de la modale de suppression : confirmation, affichage de l'erreur API, message de succès et fermeture. Garantit que `getLabel` est bien utilisé pour personnaliser le texte de confirmation. Couvre aussi la variante `onConfirm` (suppression custom sans passer par `useDelete`, utilisée pour les utilisateurs — cf. `UsersContent.tsx`).
 
 | # | Description | `it(...)` |
 |---|---|---|
@@ -132,6 +132,8 @@ Vérifie le cycle complet de la modale de suppression : confirmation, affichage 
 | 2 | Erreur API affichée sous le bouton | `"affiche l'erreur retournee par l'API si la suppression echoue"` |
 | 3 | Message de succès et bouton "Confirmer" masqué quand `isDeleted` est `true` | `"affiche un message de succes quand isDeleted est true"` |
 | 4 | Clic sur le bouton fermer appelle `onClose` | `"un clic sur le bouton fermer appelle onClose"` |
+| 5 | `onConfirm` fourni → appelé à la place de `useDelete`, `onDeleted` appelé au succès | `"appelle onConfirm (pas useDelete) et onDeleted quand onConfirm est fourni"` |
+| 6 | Erreur retournée par `onConfirm` affichée sans marquer la suppression réussie | `"affiche l'erreur retournee par onConfirm sans marquer la suppression reussie"` |
 
 ---
 
@@ -199,14 +201,17 @@ Vérifie l'affichage des news, les mises à jour optimistes, le tri par filtre, 
 
 ### `tests/components/AddUserModal.test.tsx`
 
-Vérifie la validation du formulaire (tous les champs requis), la fermeture, la logique de découpe du `display_name` en prénom/nom en mode édition, et l'affichage de l'erreur API.
+Vérifie la validation du formulaire (tous les champs requis), la fermeture, la logique de découpe du `name` en prénom/nom en mode édition, et le branchement sur `authClient` (`admin.createUser`, `admin.updateUser`, `requestPasswordReset`) mocké — aucune requête réelle vers Better Auth.
 
 | # | Description | `it(...)` |
 |---|---|---|
 | 1 | Bouton "Ajouter" désactivé si les champs requis sont vides | `"desactive le bouton 'Ajouter' si les champs requis sont vides"` |
 | 2 | Clic sur le bouton fermer appelle `onClose` | `"un clic sur le bouton fermer appelle onClose"` |
-| 3 | `display_name` découpé en prénom et nom en mode édition | `"splittes display_name en prenom et nom en mode edition"` |
-| 4 | Erreur API affichée sous le bouton | `"affiche l'erreur retournee par l'API"` |
+| 3 | `name` découpé en prénom et nom en mode édition | `"splittes name en prenom et nom en mode edition"` |
+| 4 | Création : `authClient.admin.createUser` appelé, puis `requestPasswordReset` avec `redirectTo=...?context=invite` | `"cree l'utilisateur via Better Auth et envoie un lien de reinitialisation"` |
+| 5 | Erreur de création affichée, `requestPasswordReset` non appelé | `"affiche l'erreur retournee par Better Auth en mode creation"` |
+| 6 | Édition : `authClient.admin.updateUser` appelé, jamais de `requestPasswordReset` | `"modifie l'utilisateur via Better Auth en mode edition"` |
+| 7 | Erreur de modification affichée | `"affiche l'erreur retournee par Better Auth en mode edition"` |
 
 ---
 
@@ -236,29 +241,28 @@ Vérifie que le footer gère correctement ses deux modales indépendantes (conta
 
 ### `tests/components/ForgotPassword.test.tsx`
 
-Vérifie que le formulaire de mot de passe oublié exige un email, affiche un message de succès après envoi et expose l'erreur API.
+Vérifie que le formulaire de mot de passe oublié exige un email, appelle `authClient.requestPasswordReset` (mocké) avec un `redirectTo` absolu vers `/reset-password`, affiche un message de succès neutre après envoi et expose l'erreur retournée par Better Auth.
 
 | # | Description | `it(...)` |
 |---|---|---|
 | 1 | Bouton "Envoyer" désactivé si le champ email est vide | `"desactive le bouton 'Envoyer' si le champ email est vide"` |
-| 2 | Message de succès affiché et formulaire masqué après envoi réussi | `"affiche un message de succes et masque le formulaire apres envoi reussi"` |
-| 3 | Erreur API affichée sous le bouton | `"affiche l'erreur retournee par l'API"` |
+| 2 | `authClient.requestPasswordReset` appelé avec l'email et un `redirectTo` absolu vers `/reset-password` | `"transmet l'email et un redirectTo absolu vers /reset-password a Better Auth"` |
+| 3 | Message de succès neutre affiché et formulaire masqué (pas de confirmation que le compte existe) | `"affiche un message de succes neutre et masque le formulaire apres envoi reussi"` |
+| 4 | Erreur retournée par Better Auth affichée sous le bouton | `"affiche l'erreur retournee par Better Auth"` |
 
 ---
 
 ### `tests/components/ChangePasswordModal.test.tsx`
 
-Vérifie la validation client (champs requis, correspondance des mots de passe), le mode `forced` (bouton fermer masqué, bouton "Continuer" après succès), et l'affichage de l'erreur API.
+Vérifie la validation client (champs requis, correspondance des mots de passe), le branchement sur `authClient.changePassword` (mocké, avec `revokeOtherSessions: true`) et l'affichage de l'erreur retournée par Better Auth. Le composant n'a pas de mode `forced` : un nouvel utilisateur choisit son mot de passe via le lien d'invitation (`ResetPasswordPage.test.tsx`, `context=invite`), pas via un changement obligatoire à la première connexion.
 
 | # | Description | `it(...)` |
 |---|---|---|
 | 1 | Bouton "Modifier" désactivé si les 3 champs sont vides | `"desactive le bouton 'Modifier' si les champs sont vides"` |
 | 2 | Clic sur le bouton fermer appelle `onClose` | `"un clic sur le bouton fermer appelle onClose"` |
-| 3 | Erreur locale si les nouveaux mots de passe ne correspondent pas | `"affiche une erreur locale si les mots de passe ne correspondent pas"` |
-| 4 | Message de succès et formulaire masqué après changement réussi | `"affiche le message de succes et masque le formulaire apres changement reussi"` |
-| 5 | Erreur API affichée | `"affiche l'erreur retournee par l'API"` |
-| 6 | Bouton fermer masqué en mode `forced` | `"masque le bouton fermer en mode forced"` |
-| 7 | Bouton "Continuer" affiché après succès en mode `forced` | `"affiche le bouton 'Continuer' apres succes en mode forced"` |
+| 3 | Erreur locale si les nouveaux mots de passe ne correspondent pas, `authClient.changePassword` non appelé | `"affiche une erreur locale si les mots de passe ne correspondent pas"` |
+| 4 | `authClient.changePassword` appelé avec `currentPassword`/`newPassword`/`revokeOtherSessions: true`, message de succès affiché | `"transmet les mots de passe a Better Auth et affiche le succes"` |
+| 5 | Erreur retournée par Better Auth affichée | `"affiche l'erreur retournee par Better Auth"` |
 
 ---
 
@@ -276,17 +280,35 @@ Vérifie le formulaire de connexion : validation, affichage de l'erreur API, red
 
 ---
 
+### `tests/components/ResetPasswordPage.test.tsx`
+
+Vérifie la page `/reset-password` (lien reçu par email, `?token=...` dans l'URL, lu via `useSearchParams` mocké). Couvre les deux usages du même mécanisme de token Better Auth : réinitialisation classique et invitation (`?context=invite`, pour un utilisateur créé par un admin dans `AddUserModal.tsx`, qui n'a jamais eu de mot de passe) — les deux partagent le même appel `authClient.resetPassword`, seuls les textes affichés diffèrent.
+
+| # | Description | `it(...)` |
+|---|---|---|
+| 1 | Pas de token dans l'URL → lien invalide affiché, formulaire masqué | `"affiche un lien invalide et masque le formulaire quand le token est absent"` |
+| 2 | `?error=INVALID_TOKEN` (token expiré/déjà consommé, redirigé par Better Auth) → lien invalide affiché | `"affiche un lien invalide quand Better Auth redirige avec ?error=INVALID_TOKEN"` |
+| 3 | Token présent → formulaire affiché, bouton désactivé tant que les champs sont vides | `"affiche le formulaire quand un token est present dans l'URL"` |
+| 4 | Erreur locale si les deux mots de passe ne correspondent pas, `authClient.resetPassword` non appelé | `"affiche une erreur locale si les mots de passe ne correspondent pas"` |
+| 5 | `authClient.resetPassword` appelé avec `{ newPassword, token }`, message de succès affiché | `"transmet le nouveau mot de passe et le token a Better Auth et affiche le succes"` |
+| 6 | Clic sur "Se connecter" après succès redirige vers `/login` | `"redirige vers /login au clic sur 'Se connecter' apres succes"` |
+| 7 | Erreur retournée par Better Auth affichée (ex : token déjà consommé) | `"affiche l'erreur retournee par Better Auth (ex: token deja consomme)"` |
+| 8 | `context=invite` → texte de bienvenue, bouton "Creer mon mot de passe", pas de mention de "réinitialisation" | `"affiche un texte de bienvenue et le bouton adapte quand context=invite"` |
+| 9 | `context=invite` + lien cassé → message d'invitation invalide (pas de réinitialisation) | `"affiche un message d'invitation invalide (pas de reinitialisation) quand context=invite et le lien est casse"` |
+| 10 | `context=invite` + succès → message de compte activé (pas de "mot de passe modifié") | `"affiche un message de compte active (pas de mot de passe modifie) apres succes quand context=invite"` |
+
+---
+
 ### `tests/components/DashboardContent.test.tsx`
 
-Vérifie que le tableau de bord affiche les informations de l'utilisateur connecté, filtre les raccourcis selon le rôle, gère l'ouverture de la modale de changement de mot de passe, et l'ouvre automatiquement en mode `forced` si `mustChangePassword` est vrai.
+Vérifie que le tableau de bord affiche les informations de l'utilisateur connecté (issues de la session Better Auth via `useAdminUser`), filtre les raccourcis selon le rôle, et gère l'ouverture de la modale de changement de mot de passe.
 
 | # | Description | `it(...)` |
 |---|---|---|
 | 1 | Rendu vide si `adminUser` est `null` | `"retourne null si adminUser est null"` |
-| 2 | Affiche le `display_name` et le rôle de l'utilisateur connecté | `"affiche le display_name et le role de l'utilisateur connecte"` |
+| 2 | Affiche le `name` et le rôle de l'utilisateur connecté | `"affiche le name et le role de l'utilisateur connecte"` |
 | 3 | Affiche uniquement les liens accessibles selon le rôle | `"affiche uniquement les liens accessibles selon le role"` |
 | 4 | Clic sur "Modifier" ouvre la modale de changement de mot de passe | `"ouvre la modale au clic sur le bouton 'Modifier'"` |
-| 5 | Modale ouverte automatiquement en mode `forced` si `mustChangePassword` est `true` | `"ouvre la modale en mode forced si mustChangePassword est true"` |
 
 ---
 
@@ -299,7 +321,7 @@ Vérifie les opérations CRUD optimistes sur la liste des utilisateurs, la mise 
 | 1 | Affiche les utilisateurs retournés par l'API | `"affiche les utilisateurs retournes par l'API"` |
 | 2 | Ajout optimiste : nouvel utilisateur visible sans refetch | `"ajoute l'utilisateur a la liste localement apres un ajout reussi"` |
 | 3 | Suppression optimiste : utilisateur retiré sans refetch | `"retire l'utilisateur de la liste localement apres une suppression reussie"` |
-| 4 | Modification optimiste : `display_name` mis à jour via override sans refetch | `"met a jour l'utilisateur dans la liste localement apres une modification reussie"` |
+| 4 | Modification optimiste : `name` mis à jour via override sans refetch | `"met a jour l'utilisateur dans la liste localement apres une modification reussie"` |
 | 5 | Redirection vers `/login` si l'utilisateur supprimé est l'utilisateur connecté | `"redirige vers /login si l'utilisateur supprime est l'utilisateur connecte"` |
 | 6 | Clic sur "Modifier" ouvre la modale d'édition | `"clic sur 'Modifier' ouvre la modale d'edition"` |
 | 7 | Clic sur "Supprimer" ouvre la modale de suppression | `"clic sur 'Supprimer' ouvre la modale de suppression"` |

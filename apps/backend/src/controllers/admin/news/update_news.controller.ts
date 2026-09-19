@@ -1,13 +1,13 @@
 import type { Request, Response } from "express";
-import { query } from "../../../db";
-import { AppError } from "../../../errors/AppError";
-import { ERRORS } from "../../../errors/errorMessages";
+import { query } from "../../../db.js";
+import { AppError } from "../../../errors/AppError.js";
+import { ERRORS } from "../../../errors/errorMessages.js";
 import {
   saveImage,
   deleteImage,
   NEWS_UPLOADS_DIR,
-} from "../../../services/imageUpload.service";
-import type { NewsItem, NewsMediaRow } from "../../../type";
+} from "../../../services/imageUpload.service.js";
+import type { NewsItem, NewsMediaRow } from "../../../type.js";
 
 /** Modifie une news existante.
  * Si une nouvelle image est fournie, elle remplace l'ancienne (conversion WebP, suppression de l'ancienne).
@@ -67,13 +67,13 @@ export async function updateNews(req: Request, res: Response) {
       throw new AppError(ERRORS.INTERNAL_SERVER_ERROR, 500);
     }
 
-    // recupere le display_name de l'auteur via JOIN users
+    // recupere le nom de l'auteur via JOIN "user"
     const newsWithAuthor = await query<NewsItem>(
       `SELECT a.id, a.title, a.content, a.is_published, a.created_at,
               a.url_media, a.description_media,
-              u.display_name AS author_name
+              u.name AS author_name
        FROM news a
-       LEFT JOIN users u ON u.id = a.user_id
+       LEFT JOIN "user" u ON u.id = a.user_id
        WHERE a.id = $1`,
       [newsId],
     );

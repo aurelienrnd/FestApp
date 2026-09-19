@@ -7,7 +7,6 @@ declare global {
     interface Locals {
       userId?: string;
       userRole?: UserRole;
-      userDisplayName?: string;
       sessionId?: string;
     }
   }
@@ -15,38 +14,8 @@ declare global {
 
 /* === USERS === */
 
-/** Type representant une ligne retournant uniquement l'id — utilise pour les verifications d'existence en BDD. */
-export type IdRow = { id: string };
-
-/** Type representant une ligne de la table users retournee par la base de donnees. */
-export type UserCredentialsRow = {
-  id: string;
-  email: string;
-  password_hash: string;
-  display_name: string;
-};
-
 /** Les rôles utilisateur autorisés — miroir du type ENUM PostgreSQL `user_role`. */
 export type UserRole = "admin" | "artists" | "news";
-
-/** Type representant les donnees utilisateur retournees par les endpoints de liste/CRUD — partage avec le front. */
-export type UserItem = {
-  id: string;
-  email: string;
-  display_name: string;
-  role: UserRole;
-  created_at: string;
-  password_changed_at: string | null;
-};
-
-/* === SESSIONS === */
-
-/** Type representant une ligne de session retournee par la base de donnees. */
-export type SessionRow = {
-  id: string;
-  revoked_at: Date | null;
-  expires_at: Date;
-};
 
 /* === NEWS === */
 

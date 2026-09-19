@@ -1,44 +1,37 @@
-import { query } from "../../src/db";
-import { initToken, getEnv } from "../../src/utils";
+import { auth } from "../../src/lib/auth";
 import type { UserRole } from "../../src/type";
 
-/** Insere un user et une session en base, retourne un cookie JWT valide pour Supertest.
+/** Cree un utilisateur et une vraie session Better Auth, retourne un cookie pret pour Supertest.
+ * auth.api.createUser (plugin admin) cree le compte + son credential (scrypt) sans passer par
+ * une route HTTP. auth.api.signInEmail avec asResponse: true renvoie un vrai Response fetch,
+ * dont on extrait le Set-Cookie signe par Better Auth (impossible a reconstruire a la main).
  * @param {UserRole} role role de l'utilisateur a creer
  * @returns cookie pret a passer dans .set("Cookie", cookie) et userId
  */
 export async function createAuthSession(
   role: UserRole,
 ): Promise<{ cookie: string; userId: string }> {
-  // Insere un user de test avec le role demande
+  // Cree un utilisateur de test avec le role demande et un mot de passe connu
   const email = `test-${role}-${Date.now()}@test.com`;
-  const users = await query<{ id: string }>(
-    `INSERT INTO users (email, password_hash, display_name, role)
-     VALUES ($1, $2, $3, $4)
-     RETURNING id`,
-    [email, "hashed-password", `Test ${role}`, role],
-  );
-  const userId = users[0].id;
+  const password = "TestPassword123!";
 
-  // Insere une session valide (non revoquee, expiration dans 1h)
-  const sessions = await query<{ id: string }>(
-    `INSERT INTO sessions (user_id, expires_at)
-     VALUES ($1, NOW() + INTERVAL '1 hour')
-     RETURNING id`,
-    [userId],
-  );
-  const sessionId = sessions[0].id;
+  const { user } = await auth.api.createUser({
+    body: { email, password, name: `Test ${role}`, role },
+  });
 
-  // Genere un JWT signe avec le secret de test
-  const token = initToken(
-    userId,
-    "JWT_ACCESS_SECRET",
-    "JWT_ACCESS_EXPIRES_IN",
-    sessionId,
-  );
+  // Se connecte pour obtenir une vraie session Better Auth (cookie signe avec BETTER_AUTH_SECRET)
+  const response = await auth.api.signInEmail({
+    body: { email, password },
+    asResponse: true,
+  });
 
-  // Format Cookie request header : juste nom=valeur, sans les attributs Set-Cookie
-  const cookieName = getEnv("COOKIE_ACCESS_TOKEN_NAME");
-  const cookie = `${cookieName}=${token}`;
+  // Ne garde que "nom=valeur" du Set-Cookie (les attributs Path/HttpOnly/SameSite ne sont pas
+  // valides dans un header Cookie de requete)
+  const [setCookie] = response.headers.getSetCookie();
+  if (!setCookie) {
+    throw new Error("auth.api.signInEmail n'a renvoye aucun cookie de session");
+  }
+  const cookie = setCookie.split(";")[0]!;
 
-  return { cookie, userId };
+  return { cookie, userId: user.id };
 }

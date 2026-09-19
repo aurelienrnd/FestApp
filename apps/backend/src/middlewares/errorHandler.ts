@@ -1,6 +1,6 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
-import { AppError } from "../errors/AppError";
-import { ERRORS } from "../errors/errorMessages";
+import { AppError } from "../errors/AppError.js";
+import { ERRORS } from "../errors/errorMessages.js";
 
 /** Middleware de fin de chaine pour les routes non trouvees.
  * Il est execute uniquement si aucune route precedente n'a repondu.
