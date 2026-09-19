@@ -108,10 +108,5 @@ export type NavItem = {
 
 /* === API === */
 
-/** Type representant une reponse API generique avec un message optionnel. */
-export type ApiMessageResponse = {
-  message?: string;
-};
-
 /** Type representant une reponse API de creation ou modification — message + entite retournee. */
 export type CreateApiResponse<T> = { message: string } & T;
