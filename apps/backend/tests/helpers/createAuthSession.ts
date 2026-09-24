@@ -1,5 +1,5 @@
-import { auth } from "../../src/lib/auth";
-import type { UserRole } from "../../src/type";
+import { auth } from "../../src/lib/auth.js";
+import type { UserRole } from "../../src/type.js";
 
 /** Cree un utilisateur et une vraie session Better Auth, retourne un cookie pret pour Supertest.
  * auth.api.createUser (plugin admin) cree le compte + son credential (scrypt) sans passer par
@@ -16,7 +16,7 @@ export async function createAuthSession(
   const password = "TestPassword123!";
 
   const { user } = await auth.api.createUser({
-    body: { email, password, name: `Test ${role}`, role },
+    body: { email, password, name: `Test ${role}`, role: role as never },
   });
 
   // Se connecte pour obtenir une vraie session Better Auth (cookie signe avec BETTER_AUTH_SECRET)

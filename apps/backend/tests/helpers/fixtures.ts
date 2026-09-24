@@ -1,6 +1,6 @@
-import { query } from "../../src/db";
-import { auth } from "../../src/lib/auth";
-import type { UserRole } from "../../src/type";
+import { query } from "../../src/db.js";
+import { auth } from "../../src/lib/auth.js";
+import type { UserRole } from "../../src/type.js";
 
 /** Image PNG minimale valide (1x1 px) utilisee comme fichier de test pour les routes multipart. */
 export const MINIMAL_PNG = Buffer.from(
@@ -21,7 +21,7 @@ export async function insertUser(
   role: UserRole = "admin",
 ): Promise<string> {
   const { user } = await auth.api.createUser({
-    body: { email, password: "TestPassword123!", name, role },
+    body: { email, password: "TestPassword123!", name, role: role as never },
   });
   return user.id;
 }

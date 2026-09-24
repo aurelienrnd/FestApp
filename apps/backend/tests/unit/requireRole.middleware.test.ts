@@ -1,6 +1,6 @@
-import { requireRole } from "../../src/middlewares/requireRole";
-import { AppError } from "../../src/errors/AppError";
-import { ERRORS } from "../../src/errors/errorMessages";
+import { requireRole } from "../../src/middlewares/requireRole.js";
+import { AppError } from "../../src/errors/AppError.js";
+import { ERRORS } from "../../src/errors/errorMessages.js";
 import type { Request, Response, NextFunction } from "express";
 
 // ---------------------------------------------------------------------------

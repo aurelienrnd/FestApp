@@ -1,8 +1,8 @@
 import request from "supertest";
-import { app } from "../../helpers/testServer";
-import { createAuthSession } from "../../helpers/createAuthSession";
-import { MINIMAL_PNG, insertNews } from "../../helpers/fixtures";
-import { ERRORS } from "../../../src/errors/errorMessages";
+import { app } from "../../helpers/testServer.js";
+import { createAuthSession } from "../../helpers/createAuthSession.js";
+import { MINIMAL_PNG, insertNews } from "../../helpers/fixtures.js";
+import { ERRORS } from "../../../src/errors/errorMessages.js";
 
 // champs valides pour la creation d'une news (sans image)
 const VALID_NEWS_FIELDS = {

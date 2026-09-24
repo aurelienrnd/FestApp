@@ -3,7 +3,7 @@ import {
   sendPasswordResetEmail,
   sendInviteEmail,
   sendContactEmail,
-} from "../../src/services/mailer.service";
+} from "../../src/services/mailer.service.js";
 
 // Recupere sendMail depuis le transporter cree par le service au chargement du module.
 let sendMailMock: ReturnType<typeof vi.fn>;

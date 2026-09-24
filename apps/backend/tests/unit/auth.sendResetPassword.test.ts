@@ -1,8 +1,8 @@
-import { auth } from "../../src/lib/auth";
+import { auth } from "../../src/lib/auth.js";
 import {
   sendPasswordResetEmail,
   sendInviteEmail,
-} from "../../src/services/mailer.service";
+} from "../../src/services/mailer.service.js";
 
 /** betterAuth() renvoie l'objet options tel quel (cf. node_modules/better-auth/dist/auth/base.mjs,
  * createBetterAuth retourne { ..., options } sans le transformer) : auth.options.emailAndPassword

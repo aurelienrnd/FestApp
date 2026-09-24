@@ -1,12 +1,12 @@
 import request from "supertest";
-import { app } from "../../helpers/testServer";
-import { auth } from "../../../src/lib/auth";
-import { createAuthSession } from "../../helpers/createAuthSession";
-import { insertUser } from "../../helpers/fixtures";
+import { app } from "../../helpers/testServer.js";
+import { auth } from "../../../src/lib/auth.js";
+import { createAuthSession } from "../../helpers/createAuthSession.js";
+import { insertUser } from "../../helpers/fixtures.js";
 import {
   sendPasswordResetEmail,
   sendInviteEmail,
-} from "../../../src/services/mailer.service";
+} from "../../../src/services/mailer.service.js";
 
 /** mock des fonctions de mail */
 vi.mock("../../../src/services/mailer.service", () => ({
