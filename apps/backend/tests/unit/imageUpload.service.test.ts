@@ -1,7 +1,10 @@
 import path from "path";
 import { mkdir, unlink } from "fs/promises";
 import sharp from "sharp";
-import { saveImage, deleteImage } from "../../src/services/imageUpload.service.js";
+import {
+  saveImage,
+  deleteImage,
+} from "../../src/services/imageUpload.service.js";
 
 // simule le type des mocks pour eviter les erreurs de typage
 const sharpMock = vi.mocked(sharp);
