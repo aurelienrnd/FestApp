@@ -1,6 +1,6 @@
-import { validateUuidParam } from "../../src/middlewares/validateUuidParam";
-import { AppError } from "../../src/errors/AppError";
-import { ERRORS } from "../../src/errors/errorMessages";
+import { validateUuidParam } from "../../src/middlewares/validateUuidParam.js";
+import { AppError } from "../../src/errors/AppError.js";
+import { ERRORS } from "../../src/errors/errorMessages.js";
 import type { Request, Response, NextFunction } from "express";
 
 // ---------------------------------------------------------------------------

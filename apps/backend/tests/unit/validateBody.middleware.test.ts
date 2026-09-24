@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { validateBody } from "../../src/middlewares/validateBody";
-import { AppError } from "../../src/errors/AppError";
-import { ERRORS } from "../../src/errors/errorMessages";
+import { validateBody } from "../../src/middlewares/validateBody.js";
+import { AppError } from "../../src/errors/AppError.js";
+import { ERRORS } from "../../src/errors/errorMessages.js";
 import type { Request, Response, NextFunction } from "express";
 
 // schema de test simple : nom de 2 caracteres minimum, trimme automatiquement
