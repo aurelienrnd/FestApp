@@ -91,6 +91,11 @@ jobs:
       - name: Lint
         run: docker compose run --rm backend npm run lint
 
+      # Signale le code mort / dependances inutilisees (knip) — non bloquant, juste un rapport
+      - name: Check dead code (knip)
+        continue-on-error: true
+        run: docker compose run --rm backend npx knip
+
       # Lance les tests automatisés
       - name: Test
         run: docker compose run --rm backend npm test
@@ -138,6 +143,11 @@ jobs:
       # Vérifie la qualité du code avec Lint
       - name: Lint
         run: docker compose run --rm --no-deps frontend npm run lint
+
+      # Signale le code mort / dependances inutilisees (knip) — non bloquant, juste un rapport
+      - name: Check dead code (knip)
+        continue-on-error: true
+        run: docker compose run --rm --no-deps frontend npx knip
 
       # Lance les tests automatisé
       - name: Test
