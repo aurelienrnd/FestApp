@@ -7,7 +7,7 @@ FestApp s'appuie sur une architecture frontend / backend / base de données orch
 | Couche                     | Technologie                                      |
 | -------------------------- | ------------------------------------------------ |
 | **Frontend**         | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| **Backend**          | Express.js 5, TypeScript, Node.js 20             |
+| **Backend**          | Express.js 5, TypeScript, Node.js 24             |
 | **Base de données** | PostgreSQL 18 (Alpine)                           |
 | **DevOps**           | Docker Compose, GitHub Actions CI/CD             |
 
@@ -363,7 +363,7 @@ Le fichier `.github/dependabot.yml` configure **Dependabot**, le robot GitHub qu
 | ---------------- | ---------------------------------- | -------------------------------------------------------- |
 | `github-actions` | `/`                                | Les actions des workflows (`actions/checkout@v4`...)     |
 | `npm`            | `/apps/backend`, `/apps/frontend`  | Les paquets des `package.json` / `package-lock.json`     |
-| `docker`         | `/apps/backend`, `/apps/frontend`  | Les images de base des `Dockerfile` (`node:20-alpine`)   |
+| `docker`         | `/apps/backend`, `/apps/frontend`  | Les images de base des `Dockerfile` (`node:24-alpine`)   |
 | `docker-compose` | `/`                                | Les images du `docker-compose.yml` (`postgres:18-alpine`) |
 
 Réglages communs :
@@ -374,7 +374,7 @@ Réglages communs :
   - **`react`** — `react`, `react-dom`, `@types/react` et `@types/react-dom` arrivent toujours **dans la même PR**. `react` et `react-dom` doivent avoir exactement la même version : mis à jour séparément, chaque PR ferait planter l'app (versions incompatibles).
   - **`fontawesome`** — tous les paquets `@fortawesome/*` (noyau, icônes, composant React) arrivent dans la même PR : ils évoluent ensemble, et des PR séparées se mettaient en conflit l'une après l'autre sur `package.json` / `package-lock.json`.
   - **`dev-dependencies`** — les mises à jour **mineures et correctives** des `devDependencies` sont regroupées en **une seule PR par app**. Les **versions majeures** (ex. TypeScript, ESLint, Vitest) arrivent chacune dans **leur propre PR**, pour pouvoir les tester et les corriger une par une.
-- **`ignore`** (npm) — les **versions majeures de `@types/node`** ne sont pas proposées : ces types doivent correspondre à la version de Node.js de l'image Docker (`node:XX-alpine`) et se montent à la main, en même temps qu'elle.
+- **`ignore`** (npm) — les **versions majeures de `@types/node`** ne sont pas proposées : ces types doivent correspondre à la version de Node.js de l'image Docker (`node:XX-alpine`) et se montent à la main, en même temps qu'elle. Aujourd'hui : `node:24-alpine` et `@types/node@^24` dans les deux apps. Sinon TypeScript accepterait des API absentes du Node réellement exécuté, qui planteraient à l'exécution.
 - **`ignore`** (docker-compose) — les **versions majeures de Postgres** ne sont jamais proposées : elles changent le format des données du volume `pgdata` et se font à la main (voir [Volume persistant — `pgdata`](#volume-persistant--pgdata)). Les versions mineures restent proposées.
 
 > Dependabot ne lit la configuration que sur la branche par défaut (`main`). Les alertes et correctifs de sécurité s'activent séparément dans **Settings → Code security** (*Dependabot alerts* et *Dependabot security updates*) et ne sont pas soumis au cooldown.

@@ -578,7 +578,7 @@ Ces fichiers contrôlent le comportement des outils de développement : compilat
 | Option                          | Valeur   | Effet                                                                                                          |
 | --------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
 | `strict`                        | `true`   | Active toutes les vérifications strictes — interdit `any` implicite, `null` non vérifié, etc.                    |
-| `target`                        | `ES2020` | Code compilé compatible avec Node.js 20                                                                          |
+| `target`                        | `ES2020` | Code compilé compatible avec Node.js 24                                                                          |
 | `module`                        | `Node16` | Format de modules natif Node.js — aligné sur `"type": "module"` du `package.json`, imports `.js` obligatoires   |
 | `moduleResolution`              | `node16` | Résolution de modules alignée sur le comportement ESM de Node.js 16+                                             |
 | `esModuleInterop`               | `true`   | Permet d'importer des modules CommonJS avec la syntaxe `import x from "x"`                                       |
@@ -675,7 +675,7 @@ export default defineConfig({
 
 ### 5.5. `Dockerfile`
 
-Le Dockerfile du backend est organisé en **trois stages multi-étapes** :
+Le Dockerfile du backend est organisé en **trois stages multi-étapes**, tous basés sur `node:24-alpine` (Node.js 24 LTS — `@types/node` doit rester sur la même version majeure) :
 
 **Stage `builder`** — Compilation TypeScript
 
