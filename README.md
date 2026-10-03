@@ -8,7 +8,7 @@ FestApp s'appuie sur une architecture frontend / backend / base de données orch
 | -------------------------- | ------------------------------------------------ |
 | **Frontend**         | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
 | **Backend**          | Express.js 5, TypeScript, Node.js 20             |
-| **Base de données** | PostgreSQL 16 (Alpine)                           |
+| **Base de données** | PostgreSQL 18 (Alpine)                           |
 | **DevOps**           | Docker Compose, GitHub Actions CI/CD             |
 
 ---
@@ -49,7 +49,7 @@ Il est composé de **3 services**, connectés par **1 réseau interne** et utili
 
 | Propriété      | Valeur                                                                                                    |
 | ---------------- | --------------------------------------------------------------------------------------------------------- |
-| Image            | `postgres:16-alpine`                                                                                    |
+| Image            | `postgres:18-alpine`                                                                                    |
 | Nom du conteneur | `vindhellfest-db`                                                                                       |
 | Port             | Interne uniquement (non exposé à l'hôte)                                                               |
 | Variables d'env  | Chargées depuis`.env`                                                                                  |
@@ -60,7 +60,7 @@ Volumes montés :
 
 | Volume                                    | Rôle                                                             |
 | ----------------------------------------- | ----------------------------------------------------------------- |
-| `pgdata`                                | Stockage persistant des données PostgreSQL                       |
+| `pgdata:/var/lib/postgresql`            | Stockage persistant des données PostgreSQL                       |
 | `./bd/init:/docker-entrypoint-initdb.d` | Scripts SQL exécutés automatiquement à la création de la base |
 
 ---
@@ -177,6 +177,10 @@ Il stocke les fichiers de données PostgreSQL dans un emplacement isolé sur la 
 
 Sans ce volume, **toutes les données seraient perdues** à chaque suppression ou recréation du conteneur `db`.
 Avec ce volume, les données survivent aux `docker compose down` et aux rebuilds d'image.
+
+Le volume est monté sur **`/var/lib/postgresql`** (et non `/var/lib/postgresql/data` comme avant Postgres 18). Depuis la version 18, l'image officielle range les données dans un sous-dossier propre à la version (`/var/lib/postgresql/18/docker`) et refuse de démarrer si un volume est monté sur l'ancien chemin. Ce découpage par version facilite les futures montées de version majeure.
+
+> ⚠️ Une **version majeure** de Postgres (ex. `18` → `19`) change le format des fichiers de données : la nouvelle image ne peut pas lire un volume créé par l'ancienne. Il faut exporter les données (`pg_dump`), changer l'image, puis les réimporter. En développement, les données ne venant que du seed, il suffit de recréer le volume (`docker compose down -v` puis `up`).
 
 ---
 
@@ -360,18 +364,16 @@ Le fichier `.github/dependabot.yml` configure **Dependabot**, le robot GitHub qu
 | `github-actions` | `/`                                | Les actions des workflows (`actions/checkout@v4`...)     |
 | `npm`            | `/apps/backend`, `/apps/frontend`  | Les paquets des `package.json` / `package-lock.json`     |
 | `docker`         | `/apps/backend`, `/apps/frontend`  | Les images de base des `Dockerfile` (`node:20-alpine`)   |
-| `docker-compose` | `/`                                | Les images du `docker-compose.yml` (`postgres:16-alpine`) |
+| `docker-compose` | `/`                                | Les images du `docker-compose.yml` (`postgres:18-alpine`) |
 
 Réglages communs :
 
 - **`schedule: weekly`** — vérification une fois par semaine
 - **`cooldown: 7 jours`** — une nouvelle version n'est proposée qu'après 7 jours, pour éviter d'installer une release compromise (attaque supply chain)
 - **`groups`** (npm) — toutes les `devDependencies` sont regroupées en **une seule PR par app** ; les dépendances de production gardent une PR chacune
+- **`ignore`** (docker-compose) — les **versions majeures de Postgres** ne sont jamais proposées : elles changent le format des données du volume `pgdata` et se font à la main (voir [Volume persistant — `pgdata`](#volume-persistant--pgdata)). Les versions mineures restent proposées.
 
 > Dependabot ne lit la configuration que sur la branche par défaut (`main`). Les alertes et correctifs de sécurité s'activent séparément dans **Settings → Code security** (*Dependabot alerts* et *Dependabot security updates*) et ne sont pas soumis au cooldown.
-
-> ⚠️ **Postgres** : ne pas merger une PR qui change la version majeure (ex. `16` → `18`). Le volume `pgdata` est au format de Postgres 16 et la nouvelle image refuserait de démarrer — une montée de version majeure nécessite un `pg_dump` / restauration.
-
 ---
 
 ## Fichiers d'environnement
