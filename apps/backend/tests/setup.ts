@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 import path from "path";
-import fs from "node:fs";
 import { Pool } from "pg";
 
 /** Remplace le module sharp par un mock pour les tests.
@@ -68,30 +67,7 @@ const testPool = new Pool({
   database: process.env.DB_NAME,
 });
 
-// Définit le chemin vers le répertoire contenant les fichiers de migration SQL.
-const MIGRATIONS_DIR = path.resolve(process.cwd(), "bd/init");
-
-// Liste des fichiers de migration à exécuter pour préparer la base de données de test.
-const MIGRATION_FILES = [
-  "01_auth_schema.sql",
-  "03_news_schema.sql",
-  "04_artist_schema.sql",
-  "05_concert_schema.sql",
-];
-
-/** Prépare la base de données de test avant l'exécution des tests.
- * Reinitialise le schema public avant de rejouer les migrations : 01_auth_schema.sql n'a pas
- * de DROP TABLE IF EXISTS (contrairement aux 3 autres fichiers) — il est genere par la CLI
- * Better Auth pour un volume Postgres neuf, pas pour etre rejoue a chaque lancement.
- */
-beforeAll(async () => {
-  await testPool.query("DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
-
-  for (const file of MIGRATION_FILES) {
-    const sql = fs.readFileSync(path.join(MIGRATIONS_DIR, file), "utf-8");
-    await testPool.query(sql);
-  }
-});
+// Le schema de la base de test est cree une seule fois par tests/setupTestDb.ts, avant tout import.
 
 /** Nettoie la base de données de test après chaque test.
  * Exécute une requête TRUNCATE pour effacer toutes les données des tables.

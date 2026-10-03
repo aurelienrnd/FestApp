@@ -25,9 +25,8 @@ create table "session" (
 );
 
 create table "account" (
-    "id" uuid default pg_catalog.gen_random_uuid() not null primary key, 
-    "issuer" text not null, 
-    "accountId" text not null, 
+    "id" uuid default pg_catalog.gen_random_uuid() not null primary key,
+    "accountId" text not null,
     "providerId" text not null, 
     "userId" uuid not null references "user" ("id") on delete cascade, 
     "accessToken" text, 
@@ -54,5 +53,3 @@ create index "session_userId_idx" on "session" ("userId");
 create index "account_userId_idx" on "account" ("userId");
 
 create index "verification_identifier_idx" on "verification" ("identifier");
-
-create unique index "account_issuer_accountId_uidx" on "account" ("issuer", "accountId");

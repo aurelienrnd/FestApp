@@ -4,6 +4,8 @@ export default defineConfig({
   test: {
     environment: "node",
     globals: true,
+    // Cree le schema de la base de test une seule fois, avant l'import de l'app (cf. setupTestDb.ts)
+    globalSetup: ["./tests/setupTestDb.ts"],
     setupFiles: ["./tests/setup.ts"],
     testTimeout: 10000,
     hookTimeout: 20000,
