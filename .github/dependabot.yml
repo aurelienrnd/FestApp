@@ -38,3 +38,8 @@ updates:
       interval: weekly
     cooldown:
       default-days: 7
+    # Une version majeure de Postgres change le format des donnees du volume pgdata :
+    # elle se fait a la main (pg_dump / restauration), pas via une PR Dependabot.
+    ignore:
+      - dependency-name: postgres
+        update-types: ["version-update:semver-major"]
