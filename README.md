@@ -284,7 +284,7 @@ push / pull_request (toutes branches)
             │        ├─ 6. Crée la base de test (vindhellfest_test)
             │        ├─ 7. npm ci
             │        ├─ 8. Lint (ESLint)
-            │        ├─ 9. Code mort (knip, non bloquant)
+            │        ├─ 9. Code mort (knip)
             │        ├─ 10. Tests (Vitest + Supertest)
             │        └─ 11. Shutdown (toujours exécuté)
             │
@@ -295,7 +295,7 @@ push / pull_request (toutes branches)
                      ├─ 3. Build image Docker (stage dev)
                      ├─ 4. npm ci (--no-deps)
                      ├─ 5. Lint (ESLint + Next.js)
-                     ├─ 6. Code mort (knip, non bloquant)
+                     ├─ 6. Code mort (knip)
                      ├─ 7. Tests (Vitest, mode one-shot)
                      └─ 8. Shutdown (toujours exécuté)
 ```
@@ -325,7 +325,7 @@ Les deux jobs s'exécutent **en parallèle** sur des VM Ubuntu fraîches — ils
 | 6  | **Create test database** | `psql -c "CREATE DATABASE vindhellfest_test"`     | Crée la base de données dédiée aux tests d'intégration                                                                                                   |
 | 7  | **Install dependencies** | `npm ci`                                          | Installe les dépendances npm de façon déterministe depuis`package-lock.json`                                                                             |
 | 8  | **Lint**                 | `npm run lint`                                    | Analyse statique du code — vérifie les règles ESLint                                                                                                       |
-| 9  | **Check dead code (knip)** | `npx knip`                                      | Signale le code mort et les dépendances inutilisées — **non bloquant** (`continue-on-error: true`)                                                        |
+| 9  | **Check dead code (knip)** | `npm run knip`                                  | Signale le code mort et les dépendances inutilisées — **bloquant** : fait échouer le build                                                        |
 | 10 | **Test**                 | `npm test`                                        | Exécute tous les tests (unitaires + intégration) via Vitest                                                                                                 |
 | 11 | **Shutdown**             | `docker compose down -v`                          | Arrête et supprime les conteneurs, réseaux et volumes —**toujours exécuté**, même en cas d'échec                                                 |
 
@@ -342,7 +342,7 @@ Les deux jobs s'exécutent **en parallèle** sur des VM Ubuntu fraîches — ils
 | 3 | **Build frontend image** | `docker compose build frontend`             | Construit l'image Docker du frontend (stage`dev`)                                                   |
 | 4 | **Install dependencies** | `npm ci` (`--no-deps`)                    | Installe les dépendances npm sans démarrer les services liés (backend, db)                         |
 | 5 | **Lint**                 | `npm run lint` (`--no-deps`)              | Analyse statique du code — vérifie les règles ESLint et Next.js                                    |
-| 6 | **Check dead code (knip)** | `npx knip` (`--no-deps`)                | Signale le code mort et les dépendances inutilisées — **non bloquant** (`continue-on-error: true`) |
+| 6 | **Check dead code (knip)** | `npm run knip` (`--no-deps`)            | Signale le code mort et les dépendances inutilisées — **bloquant** : fait échouer le build |
 | 7 | **Test**                 | `npm run test:run` (`--no-deps`)          | Exécute tous les tests en mode one-shot via Vitest (`test:run` = pas de watch mode, adapté au CI) |
 | 8 | **Shutdown**             | `docker compose down -v`                    | Supprime les conteneurs et ressources Docker —**toujours exécuté**, même en cas d'échec    |
 

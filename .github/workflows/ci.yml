@@ -93,8 +93,7 @@ jobs:
 
       # Signale le code mort / dependances inutilisees (knip) — non bloquant, juste un rapport
       - name: Check dead code (knip)
-        continue-on-error: true
-        run: docker compose run --rm backend npx knip
+        run: docker compose run --rm backend npm run knip
 
       # Lance les tests automatisés
       - name: Test
@@ -146,8 +145,7 @@ jobs:
 
       # Signale le code mort / dependances inutilisees (knip) — non bloquant, juste un rapport
       - name: Check dead code (knip)
-        continue-on-error: true
-        run: docker compose run --rm --no-deps frontend npx knip
+        run: docker compose run --rm --no-deps frontend npm run knip
 
       # Lance les tests automatisé
       - name: Test
