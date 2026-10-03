@@ -17,7 +17,8 @@
 
 ```
 tests/
-├── setup.ts                      ← mocks globaux (nodemailer, sharp, fs)
+├── setupTestDb.ts                ← cree le schema de la base de test, une fois, avant tout import
+├── setup.ts                      ← mocks globaux (nodemailer, sharp, fs) + TRUNCATE entre les tests
 ├── helpers/
 │   ├── testServer.ts             ← instance Express partagée
 │   ├── createAuthSession.ts      ← cree un user + une vraie session Better Auth (cookie signe)
@@ -63,7 +64,7 @@ L'envoi d'email et le traitement d'image sont mockés globalement dans `setup.ts
 
 > `setup.ts` mocke aussi `express-rate-limit`, mais ce mock est mort : le package n'est pas une dépendance du backend (`npm ls express-rate-limit` échoue) et rien dans `src/` ne l'importe — aucune route custom n'a de rate limiting propre. A supprimer si `knip`/un futur nettoyage le signale.
 
-La base de données **n'est pas mockée** dans les tests d'intégration : une vraie instance PostgreSQL de test est utilisée. Son schéma est réinitialisé une fois avant toute la suite (`beforeAll` : `DROP SCHEMA public CASCADE` puis rejeu des migrations SQL, dont le schéma Better Auth généré par sa CLI) et vidée entre chaque test (`afterEach` : `TRUNCATE` de toutes les tables, y compris `user`/`session`/`account`/`verification`).
+La base de données **n'est pas mockée** dans les tests d'intégration : une vraie instance PostgreSQL de test est utilisée. Son schéma est réinitialisé une fois avant toute la suite (`setupTestDb.ts` : `DROP SCHEMA public CASCADE` puis rejeu des migrations SQL, dont le schéma Better Auth généré par sa CLI — exécuté avant l'import de l'app, car Better Auth vérifie le schéma dès sa création et garde l'erreur en cache) et vidée entre chaque test (`afterEach` : `TRUNCATE` de toutes les tables, y compris `user`/`session`/`account`/`verification`).
 
 ---
 
