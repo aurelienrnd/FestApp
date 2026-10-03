@@ -316,7 +316,7 @@ Ce fichier contrôle le comportement du compilateur TypeScript. Les options clé
 | ------------------ | ----------------- | ---------------------------------------------------------------------------------------------------- |
 | `strict`           | `true`            | Active toutes les vérifications strictes — interdit `any` implicite, `null` non vérifié, etc.        |
 | `noEmit`           | `true`            | TypeScript vérifie les types mais ne génère pas de fichiers JS — c'est Next.js qui compile           |
-| `target`           | `ES2017`          | Code compilé compatible avec les navigateurs modernes et Node.js 20                                  |
+| `target`           | `ES2017`          | Code compilé compatible avec les navigateurs modernes et Node.js 24                                  |
 | `moduleResolution` | `bundler`         | Résolution de modules adaptée aux bundlers modernes (Next.js / Webpack / Turbopack)                  |
 | `paths`            | `@/*` → `./src/*` | Alias d'import —`import X from "@/components/X"` au lieu de chemins relatifs profonds                |
 | `isolatedModules`  | `true`            | Chaque fichier est traité indépendamment, requis pour la compatibilité avec les transpileurs rapides |
@@ -407,7 +407,7 @@ Prettier formate automatiquement le code à chaque exécution de `npm run format
 
 ### 4.7. `Dockerfile`
 
-Le Dockerfile du frontend est organisé en **trois stages multi-étapes** :
+Le Dockerfile du frontend est organisé en **trois stages multi-étapes**, tous basés sur `node:24-alpine` (Node.js 24 LTS — `@types/node` doit rester sur la même version majeure) :
 
 **Stage `deps`** — Installation des dépendances
 
