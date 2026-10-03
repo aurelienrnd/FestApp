@@ -1,6 +1,6 @@
 # --- 1 IMAGE DE BASE ---
 # On choisit une image de base
-FROM node:20-alpine AS base
+FROM node:26-alpine AS base
 
 # Répertoire de travail à l’intérieur du conteneur et suppression de la telemetry
 WORKDIR /app
