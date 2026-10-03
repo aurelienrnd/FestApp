@@ -213,7 +213,7 @@ Les index accélèrent les requêtes fréquentes en évitant un parcours complet
 | `idx_concerts_stage_start` | `concerts` | `(stage, start_time)` | Récupérer le programme d'une scène triée par horaire |
 | `idx_concerts_start_time`  | `concerts` | `start_time`          | Trier tous les concerts par horaire                  |
 
-> La table `"user"` n'a pas d'index supplémentaire au-delà de celui implicite créé par sa contrainte `UNIQUE` sur `email`. Le schéma Better Auth crée ses propres index sur ses tables : `session_userId_idx`, `account_userId_idx`, `verification_identifier_idx`, et un index unique composite `account_issuer_accountId_uidx` sur `(issuer, accountId)`.
+> La table `"user"` n'a pas d'index supplémentaire au-delà de celui implicite créé par sa contrainte `UNIQUE` sur `email`. Le schéma Better Auth crée ses propres index sur ses tables : `session_userId_idx`, `account_userId_idx` et `verification_identifier_idx`.
 
 ---
 
@@ -230,7 +230,7 @@ Les scripts seed insèrent des données de développement réalistes pour pouvoi
 Insère des données dans les 4 tables Better Auth, pas seulement `"user"` — le seed a dû être adapté au schéma généré par Better Auth :
 
 - **`"user"`** — 3 comptes, un par rôle. Tous partagent le même mot de passe `Password123!`.
-- **`account`** — un compte `credential` par utilisateur, avec le hash scrypt du mot de passe (`issuer = 'local:credential'`, `accountId = userId` — convention interne de Better Auth pour les comptes email/mot de passe). Le hash est généré via `better-auth/crypto`, dans le même format que celui vérifié par `/api/auth/sign-in/email`.
+- **`account`** — un compte `credential` par utilisateur, avec le hash scrypt du mot de passe (`providerId = 'credential'`, `accountId = userId` — convention interne de Better Auth pour les comptes email/mot de passe). Le hash est généré via `better-auth/crypto`, dans le même format que celui vérifié par `/api/auth/sign-in/email`.
 - **`session`** — une session par utilisateur, à titre illustratif uniquement : sans le cookie signé correspondant côté navigateur, ces lignes ne permettent pas de se connecter directement en tant que cet utilisateur. Une vraie session s'obtient via `/api/auth/sign-in/email`.
 - **`verification`** — un exemple de token de reset de mot de passe pour l'admin (`identifier = 'reset-password:<token>'`, `value = userId`, convention Better Auth).
 
