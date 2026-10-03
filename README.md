@@ -20,8 +20,9 @@ Voici l'architecture globale du projet avec l'explication du rôle de chaque dos
 ```
 vindhellfest/
 ├── .github/
-│   └── workflows/
-│       └── ci.yml
+│   ├── workflows/
+│   │   └── ci.yml
+│   └── dependabot.yml
 ├── apps/
 │   ├── frontend/
 │   └── backend/
@@ -347,6 +348,29 @@ Les deux jobs s'exécutent **en parallèle** sur des VM Ubuntu fraîches — ils
 | 8 | **Shutdown**             | `docker compose down -v`                    | Supprime les conteneurs et ressources Docker —**toujours exécuté**, même en cas d'échec    |
 
 > **`--no-deps`** : indique à Docker Compose de ne pas démarrer les services dont le frontend dépend (`backend`, `db`). Les tests frontend sont purement unitaires et n'ont pas besoin d'une API active.
+
+---
+
+### Dependabot — mises à jour des dépendances
+
+Le fichier `.github/dependabot.yml` configure **Dependabot**, le robot GitHub qui surveille les dépendances du projet et ouvre automatiquement une **pull request vers `main`** pour chaque nouvelle version. La CI s'exécute sur chacune de ces PR (lint, knip, tests) : il suffit de vérifier qu'elle passe avant de merger.
+
+| Écosystème       | Dossier(s)                         | Ce qui est surveillé                                     |
+| ---------------- | ---------------------------------- | -------------------------------------------------------- |
+| `github-actions` | `/`                                | Les actions des workflows (`actions/checkout@v4`...)     |
+| `npm`            | `/apps/backend`, `/apps/frontend`  | Les paquets des `package.json` / `package-lock.json`     |
+| `docker`         | `/apps/backend`, `/apps/frontend`  | Les images de base des `Dockerfile` (`node:20-alpine`)   |
+| `docker-compose` | `/`                                | Les images du `docker-compose.yml` (`postgres:16-alpine`) |
+
+Réglages communs :
+
+- **`schedule: weekly`** — vérification une fois par semaine
+- **`cooldown: 7 jours`** — une nouvelle version n'est proposée qu'après 7 jours, pour éviter d'installer une release compromise (attaque supply chain)
+- **`groups`** (npm) — toutes les `devDependencies` sont regroupées en **une seule PR par app** ; les dépendances de production gardent une PR chacune
+
+> Dependabot ne lit la configuration que sur la branche par défaut (`main`). Les alertes et correctifs de sécurité s'activent séparément dans **Settings → Code security** (*Dependabot alerts* et *Dependabot security updates*) et ne sont pas soumis au cooldown.
+
+> ⚠️ **Postgres** : ne pas merger une PR qui change la version majeure (ex. `16` → `18`). Le volume `pgdata` est au format de Postgres 16 et la nouvelle image refuserait de démarrer — une montée de version majeure nécessite un `pg_dump` / restauration.
 
 ---
 
