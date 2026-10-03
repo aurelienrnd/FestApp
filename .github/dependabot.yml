@@ -27,8 +27,24 @@ updates:
           - "react-dom"
           - "@types/react"
           - "@types/react-dom"
+
+      # Les paquets Font Awesome (noyau, icones, composant React) evoluent ensemble :
+      # une seule PR evite les conflits en chaine sur package.json / package-lock.json.
+      fontawesome:
+        patterns:
+          - "@fortawesome/*"
+
+      # Seules les versions mineures / correctives sont groupees : chaque version majeure
+      # (typescript, eslint, vitest...) arrive dans sa propre PR pour etre traitee une par une.
       dev-dependencies:
         dependency-type: development
+        update-types: ["minor", "patch"]
+        
+    # @types/node doit suivre la version de Node.js utilisee (image node:XX-alpine) :
+    # ses versions majeures se montent a la main, en meme temps que l'image.
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   # Images de base des Dockerfile (node:…)
   - package-ecosystem: docker
