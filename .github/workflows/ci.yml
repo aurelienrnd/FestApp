@@ -26,7 +26,7 @@ jobs:
 
       # Clone le repo dans la VM
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Creer les fichiers .env necessaires au projet.
       # .env est lu par docker compose pour configurer la BDD,
@@ -115,7 +115,7 @@ jobs:
 
       # Clone le repo dans la VM
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Creer les fichiers .env necessaires au projet.
       # .env et .env.backend sont crees pour eviter des erreurs de fichier manquant
