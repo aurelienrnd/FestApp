@@ -370,7 +370,8 @@ Réglages communs :
 
 - **`schedule: weekly`** — vérification une fois par semaine
 - **`cooldown: 7 jours`** — une nouvelle version n'est proposée qu'après 7 jours, pour éviter d'installer une release compromise (attaque supply chain)
-- **`groups`** (npm) — toutes les `devDependencies` sont regroupées en **une seule PR par app** ; les dépendances de production gardent une PR chacune
+- **`groups`** (npm) — toutes les `devDependencies` sont regroupées en **une seule PR par app** ; les dépendances de production gardent une PR chacune, sauf :
+  - **`react`** — `react`, `react-dom`, `@types/react` et `@types/react-dom` arrivent toujours **dans la même PR**. `react` et `react-dom` doivent avoir exactement la même version : mis à jour séparément, chaque PR ferait planter l'app (versions incompatibles). Ce groupe est déclaré avant `dev-dependencies`, car un paquet va dans le premier groupe qui lui correspond.
 - **`ignore`** (docker-compose) — les **versions majeures de Postgres** ne sont jamais proposées : elles changent le format des données du volume `pgdata` et se font à la main (voir [Volume persistant — `pgdata`](#volume-persistant--pgdata)). Les versions mineures restent proposées.
 
 > Dependabot ne lit la configuration que sur la branche par défaut (`main`). Les alertes et correctifs de sécurité s'activent séparément dans **Settings → Code security** (*Dependabot alerts* et *Dependabot security updates*) et ne sont pas soumis au cooldown.

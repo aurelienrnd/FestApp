@@ -18,6 +18,15 @@ updates:
     cooldown:
       default-days: 7
     groups:
+      # react et react-dom doivent toujours avoir exactement la meme version :
+      # mis a jour separement, chaque PR casse l'app. Declare avant dev-dependencies
+      # car un paquet va dans le premier groupe qui le correspond (@types/* sont des devDependencies).
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
       dev-dependencies:
         dependency-type: development
 
