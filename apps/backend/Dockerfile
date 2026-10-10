@@ -1,6 +1,6 @@
 # --- 1 IMAGE de BUILD ---
 # On choisit une image de base
-FROM node:24-alpine AS builder
+FROM node:25-alpine AS builder
 
 # Répertoire de travail à l’intérieur du conteneur
 WORKDIR /app
@@ -17,7 +17,7 @@ RUN npm run build
 
 # --- 2 IMAGE DE PRODUCTION ---
 # On choisit une image de base
-FROM node:24-alpine AS runner
+FROM node:25-alpine AS runner
 
 # Répertoire de travail à l’intérieur du conteneur
 WORKDIR /app
@@ -37,7 +37,7 @@ CMD ["node", "dist/index.js"]
 
 # --- 3 IMAGE DE DEV ---
 # Étape 3 : image de développement (avec hot reload)
-FROM node:24-alpine AS dev
+FROM node:25-alpine AS dev
 
 # Répertoire de travail à l’intérieur du conteneur
 WORKDIR /app
